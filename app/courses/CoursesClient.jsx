@@ -342,12 +342,12 @@ function CourseCard({ course, delay = 0 }) {
 /* ─────────────────────────────────────────────
    Main Client Component
 ───────────────────────────────────────────── */
-export default function CoursesClient() {
+export default function CoursesClient({ initialCourses = [] }) {
   const router       = useRouter();
   const searchParams = useSearchParams();
 
-  const [courses,  setCourses]  = useState([]);
-  const [loading,  setLoading]  = useState(true);
+  const [courses,  setCourses]  = useState(initialCourses);
+  const [loading,  setLoading]  = useState(initialCourses.length === 0);
   const [filter,   setFilter]   = useState(searchParams.get("level") || "all");
   const [sort,     setSort]     = useState(searchParams.get("sort")  || "newest");
   const [search,   setSearch]   = useState(searchParams.get("q")     || "");
@@ -355,7 +355,7 @@ export default function CoursesClient() {
   const searchRef  = useRef(null);
   const debounceRef = useRef(null);
 
-  /* Fetch courses */
+  /* Fetch courses — skip if server already provided data */
   const fetchCourses = useCallback(async () => {
     setLoading(true);
     const { data } = await supabase
@@ -367,7 +367,9 @@ export default function CoursesClient() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchCourses(); }, [fetchCourses]);
+  useEffect(() => {
+    if (initialCourses.length === 0) fetchCourses();
+  }, [fetchCourses, initialCourses.length]);
 
   /* Realtime: new course published → auto-appears */
   useEffect(() => {

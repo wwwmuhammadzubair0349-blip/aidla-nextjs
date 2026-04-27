@@ -114,35 +114,50 @@ const QUOTES =[
 
 const JSON_LD = {
   "@context": "https://schema.org",
-  "@graph":[
+  "@graph": [
     {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
       url: SITE_URL,
-      name: "AIDLA — Learn, Earn & Grow",
+      name: "AIDLA",
+      alternateName: "AIDLA — Learn, Earn & Grow",
       description: "Pakistan's #1 free education platform. Complete quizzes, earn coins, win prizes, access free learning resources.",
-      inLanguage:["en", "ur", "ar"],
+      inLanguage: ["en", "ur"],
+      publisher: { "@id": `${SITE_URL}/#organization` },
       potentialAction: {
         "@type": "SearchAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
-        },
+        target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/faqs?q={search_term_string}` },
         "query-input": "required name=search_term_string",
       },
     },
     {
-      "@type": "Organization",
+      "@type": ["Organization", "EducationalOrganization"],
       "@id": `${SITE_URL}/#organization`,
       name: "AIDLA",
+      alternateName: "AI-Driven Learning Academy",
       url: SITE_URL,
       logo: {
         "@type": "ImageObject",
+        "@id": `${SITE_URL}/#logo`,
         url: `${SITE_URL}/logo.png`,
+        contentUrl: `${SITE_URL}/logo.png`,
         width: 200,
         height: 60,
+        caption: "AIDLA",
       },
-      sameAs:[
+      image: { "@id": `${SITE_URL}/#logo` },
+      description: "AIDLA is Pakistan's #1 free education and rewards platform. Students take quizzes, earn AIDLA Coins, spin the lucky wheel, win real cash prizes, and access free study materials — all 100% free.",
+      foundingDate: "2024",
+      inLanguage: ["en", "ur"],
+      areaServed: { "@type": "Country", name: "Pakistan" },
+      address: { "@type": "PostalAddress", addressCountry: "PK" },
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        url: `${SITE_URL}/contact`,
+        availableLanguage: ["English", "Urdu"],
+      },
+      sameAs: [
         "https://facebook.com/aidla",
         "https://instagram.com/aidla",
         "https://youtube.com/aidla",
@@ -157,16 +172,40 @@ const JSON_LD = {
       publisher: { "@id": `${SITE_URL}/#organization` },
       inLanguage: "en",
       dateModified: LAST_MODIFIED,
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: SITE_URL }],
+      },
     },
     {
       "@type": "HowTo",
       name: "How to Earn Coins on AIDLA",
       description: "Four simple steps from sign-up to cash in hand on AIDLA.",
-      step:[
-        { "@type": "HowToStep", name: "Sign Up Free", text: "Create your account in under 30 seconds." },
-        { "@type": "HowToStep", name: "Learn & Play", text: "Take quizzes, enter draws, spin the lucky wheel." },
-        { "@type": "HowToStep", name: "Earn Coins", text: "Collect AIDLA Coins for every achievement." },
-        { "@type": "HowToStep", name: "Cash Out", text: "Redeem rewards or withdraw to your bank account." },
+      step: [
+        { "@type": "HowToStep", name: "Sign Up Free",  text: "Create your account in under 30 seconds — no payment needed." },
+        { "@type": "HowToStep", name: "Learn & Play",  text: "Take quizzes, enter lucky draws, spin the lucky wheel." },
+        { "@type": "HowToStep", name: "Earn Coins",    text: "Collect AIDLA Coins for every quiz, draw entry, and achievement." },
+        { "@type": "HowToStep", name: "Cash Out",      text: "Redeem rewards or withdraw your earnings to your bank account." },
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Is AIDLA free?",
+          acceptedAnswer: { "@type": "Answer", text: "Yes. AIDLA is 100% free — no subscription, no hidden fees." },
+        },
+        {
+          "@type": "Question",
+          name: "How do I earn coins on AIDLA?",
+          acceptedAnswer: { "@type": "Answer", text: "Complete quizzes, enter lucky draws, spin the lucky wheel, and refer friends to earn AIDLA Coins." },
+        },
+        {
+          "@type": "Question",
+          name: "Can I withdraw my AIDLA coins?",
+          acceptedAnswer: { "@type": "Answer", text: "Yes. AIDLA Coins can be redeemed for prizes or withdrawn to your bank account once you reach the minimum threshold." },
+        },
       ],
     },
   ],

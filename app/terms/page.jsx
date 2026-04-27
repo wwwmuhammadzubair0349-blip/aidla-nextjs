@@ -1,35 +1,53 @@
 import TermsClient from "./TermsClient";
 
-// Metadata for SEO - must be in Server Component
+const SITE_URL = "https://www.aidla.online";
+
 export const metadata = {
   title: "Terms & Conditions | AIDLA – User Agreement",
   description: "Read AIDLA's Terms and Conditions. Learn about user responsibilities, rewards, prohibited activities, and your legal agreement with our platform.",
-  keywords: "AIDLA terms, terms and conditions, user agreement, legal, educational platform, Pakistan",
-  robots: "index, follow",
-  alternates: {
-    canonical: "https://www.aidla.online/terms",
-  },
+  keywords: ["AIDLA terms", "terms and conditions", "user agreement", "legal", "educational platform", "Pakistan"],
+  robots: { index: true, follow: true },
+  alternates: { canonical: `${SITE_URL}/terms` },
   openGraph: {
     title: "AIDLA Terms & Conditions",
     description: "Understand the rules and guidelines for using AIDLA's learning and rewards platform.",
     type: "website",
-    url: "https://www.aidla.online/terms",
-    images: [
-      {
-        url: "https://www.aidla.online/og-home.jpg",
-        alt: "AIDLA Terms and Conditions",
-      },
-    ],
+    url: `${SITE_URL}/terms`,
     siteName: "AIDLA",
+    images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA Terms and Conditions" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "AIDLA Terms & Conditions",
     description: "Read our user agreement before using AIDLA.",
-    images: ["https://www.aidla.online/og-home.jpg"],
+    images: [`${SITE_URL}/og-home.jpg`],
+  },
+};
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${SITE_URL}/terms`,
+  url: `${SITE_URL}/terms`,
+  name: "Terms & Conditions — AIDLA",
+  description: "AIDLA's Terms and Conditions: user responsibilities, rewards policy, and legal agreement.",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  publisher: { "@id": `${SITE_URL}/#organization` },
+  inLanguage: "en",
+  breadcrumb: {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home",                item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Terms & Conditions",  item: `${SITE_URL}/terms` },
+    ],
   },
 };
 
 export default function Terms() {
-  return <TermsClient />;
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <TermsClient />
+    </>
+  );
 }

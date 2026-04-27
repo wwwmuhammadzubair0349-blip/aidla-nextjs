@@ -34,7 +34,7 @@ async function fetchTable(table, select, filters = []) {
 export default async function sitemap() {
   const base = "https://www.aidla.online";
 
-  const [blogs, news, faqs, studyMaterials] = await Promise.all([
+  const [blogs, news, faqs, studyMaterials, courses] = await Promise.all([
     fetchTable("blogs_posts", "slug,updated_at,created_at", [
       ["status", "eq.published"],
       ["deleted_at", "is.null"],
@@ -50,6 +50,9 @@ export default async function sitemap() {
     fetchTable("study_materials", "slug,updated_at,created_at", [
       ["status", "eq.published"],
       ["deleted_at", "is.null"],
+    ]),
+    fetchTable("course_courses", "slug,updated_at,created_at", [
+      ["status", "eq.published"],
     ]),
   ]);
 
@@ -73,6 +76,7 @@ export default async function sitemap() {
     { url: `${base}/tools/ai/autotube` },
     { url: `${base}/tools/career/cv-maker` },
     { url: `${base}/tools/career/cover-letter-maker` },
+    { url: `${base}/courses`, priority: 0.9 },
   ];
 
   const blogPages = blogs.map(b => ({
@@ -95,11 +99,17 @@ export default async function sitemap() {
     lastModified: toDate(m.updated_at || m.created_at),
   }));
 
+  const coursePages = courses.map(c => ({
+    url: `${base}/courses/${c.slug}`,
+    lastModified: toDate(c.updated_at || c.created_at),
+  }));
+
   return [
     ...staticPages,
     ...blogPages,
     ...newsPages,
     ...faqPages,
     ...resourcePages,
+    ...coursePages,
   ];
 }

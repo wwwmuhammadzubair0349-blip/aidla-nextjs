@@ -1,5 +1,5 @@
 // app/news/page.jsx
-import { supabase } from "@/lib/supabase";
+import { serverFetch } from "@/lib/supabaseServer";
 import NewsClient from "./NewsClient";
 
 export const revalidate = 60;
@@ -29,20 +29,13 @@ export const metadata = {
 };
 
 export default async function NewsPage() {
-  let posts = [];
-  let fetchError = false;
-
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("news_posts")
-      .select("id,title,slug,excerpt,cover_image_url,published_at,tags,view_count")
-      .is("deleted_at", null)
-      .eq("status", "published")
-      .order("published_at", { ascending: false });
-
-    posts = data || [];
-    fetchError = !!error;
-  }
+  const { data: posts, error } = await serverFetch("news_posts", {
+    select: "id,title,slug,excerpt,cover_image_url,published_at,tags,view_count",
+    "deleted_at": "is.null",
+    "status": "eq.published",
+    order: "published_at.desc",
+  });
+  const fetchError = !!error;
 
   const structuredData = {
     "@context": "https://schema.org",

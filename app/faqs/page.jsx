@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { serverFetch } from "@/lib/supabaseServer";
 import FaqsClient from "./FaqsClient";
 
 export const revalidate = 60;
@@ -27,21 +27,13 @@ export const metadata = {
 };
 
 export default async function FAQsPage() {
-  let faqs = [];
-  let fetchError = false;
-
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("faqs")
-      .select("*", { count: "exact" })
-      .eq("status", "published")
-      .eq("is_visible", true)
-      .order("sort_order")
-      .order("created_at");
-
-    faqs = data || [];
-    fetchError = !!error;
-  }
+  const { data: faqs, error } = await serverFetch("faqs", {
+    select: "*",
+    "status": "eq.published",
+    "is_visible": "eq.true",
+    order: "sort_order.asc,created_at.asc",
+  });
+  const fetchError = !!error;
 
   const structuredData = {
     "@context": "https://schema.org",

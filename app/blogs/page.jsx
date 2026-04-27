@@ -1,10 +1,8 @@
 // app/blogs/page.jsx
-import { supabase } from "@/lib/supabase"; // Update with your actual supabase path
+import { serverFetch } from "@/lib/supabaseServer";
 import BlogsClient from "./BlogsClient";
 
-// 🚀 ISR: Caches the page on the edge and regenerates it every 60 seconds.
-// This guarantees a 100% Speed Score (TTFB under 50ms) while keeping data fresh.
-export const revalidate = 60; 
+export const revalidate = 60;
 
 const CANONICAL_URL = "https://www.aidla.online/blogs";
 const OG_IMAGE = "https://www.aidla.online/og-home.jpg";
@@ -32,20 +30,12 @@ export const metadata = {
 };
 
 export default async function BlogsPage() {
-  // ⚡ SERVER-SIDE FETCH (100% AI Bot Readability)
-  let posts = null;
-  let error = null;
-  
-  if (supabase) {
-    const result = await supabase
-      .from("blogs_posts")
-      .select("id,title,slug,excerpt,cover_image_url,published_at,tags,view_count")
-      .is("deleted_at", null)
-      .eq("status", "published")
-      .order("published_at", { ascending: false });
-    posts = result.data;
-    error = result.error;
-  }
+  const { data: posts, error } = await serverFetch("blogs_posts", {
+    select: "id,title,slug,excerpt,cover_image_url,published_at,tags,view_count",
+    "deleted_at": "is.null",
+    "status": "eq.published",
+    order: "published_at.desc",
+  });
 
   // 🤖 AI STRUCTURED DATA (JSON-LD)
   const structuredData = {
@@ -72,7 +62,7 @@ export default async function BlogsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       {/* Pass the server-fetched data straight into the interactive client layout */}
-      <BlogsClient initialPosts={posts || []} fetchError={!!error} />
+      <BlogsClient initialPosts={posts} fetchError={!!error} />
     </>
   );
 }

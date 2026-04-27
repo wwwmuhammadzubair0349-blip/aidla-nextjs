@@ -1,10 +1,9 @@
 // app/courses/page.jsx
-// Next.js 15 App Router — Public Course Catalog
-// ✅ 100% SSR/SSG metadata  ✅ Schema.org JSON-LD  ✅ Semantic HTML
-// ✅ WCAG AA accessible     ✅ No layout shift      ✅ Lighthouse 100
-
 import { Suspense } from "react";
+import { serverFetch } from "@/lib/supabaseServer";
 import CoursesClient from "./CoursesClient";
+
+export const revalidate = 60;
 
 /* ─────────────────────────────────────────────
    Static metadata (crawled by every bot)
@@ -36,55 +35,49 @@ export const metadata = {
 };
 
 /* ─────────────────────────────────────────────
-   JSON-LD: ItemList schema for course catalog
-   Injected server-side — fully crawlable
+   Page
 ───────────────────────────────────────────── */
-function CourseListSchema() {
+export default async function CoursesPage() {
+  const { data: courses } = await serverFetch("course_courses", {
+    select: "id,title,slug,description,cover_image_url,category,difficulty,enrollment_count,is_free,coin_reward,lesson_count,created_at,status",
+    "status": "eq.published",
+    order: "created_at.desc",
+  });
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "AIDLA Online Courses",
     description: "Free and paid online courses on AIDLA — Pakistan's #1 educational rewards platform.",
     url: "https://www.aidla.online/courses",
-    itemListElement: [], // populated client-side via script injection if needed
+    itemListElement: courses.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      item: {
+        "@type": "Course",
+        name: c.title,
+        description: c.description || "",
+        url: `https://www.aidla.online/courses/${c.slug}`,
+        provider: { "@type": "Organization", name: "AIDLA", url: "https://www.aidla.online" },
+      },
+    })),
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-function OrganizationSchema() {
-  const schema = {
+  const orgSchema = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     name: "AIDLA",
     url: "https://www.aidla.online",
     logo: "https://www.aidla.online/logo.png",
-    sameAs: ["https://www.aidla.online"],
     description: "Pakistan's #1 educational rewards platform. Learn, earn coins and win real prizes.",
   };
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-    />
-  );
-}
 
-/* ─────────────────────────────────────────────
-   Page
-───────────────────────────────────────────── */
-export default function CoursesPage() {
   return (
     <>
-      <CourseListSchema />
-      <OrganizationSchema />
-      {/* useSearchParams inside CoursesClient needs Suspense */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
       <Suspense fallback={<CoursesPageSkeleton />}>
-        <CoursesClient />
+        <CoursesClient initialCourses={courses} />
       </Suspense>
     </>
   );

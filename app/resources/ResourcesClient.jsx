@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 // ── Constants ─────────────────────────────────────────────
-const CATEGORIES = [
+const CATEGORIES =[
   { value: "",              label: "All Types",      icon: "🗂️" },
   { value: "notes",         label: "Notes",          icon: "📝" },
   { value: "past_papers",   label: "Past Papers",    icon: "📋" },
@@ -48,7 +48,7 @@ function formatBytes(bytes) {
 
 const LIMIT = 12;
 
-// ── Skeleton card ─────────────────────────────────────────
+// ── UI Components ─────────────────────────────────────────
 function SkeletonCard() {
   return (
     <div style={{ background:"#fff", borderRadius:16, overflow:"hidden", border:"1px solid #f1f5f9" }}>
@@ -98,7 +98,7 @@ function ActiveChip({ label, onRemove }) {
 function MaterialCard({ item }) {
   const ft  = FILE_TYPE_ICONS[item.file_type] || FILE_TYPE_ICONS.link;
   const cat = CATEGORIES.find(c => c.value === item.category);
-  const isLink = ["video_link","external_link"].includes(item.category);
+  const isLink =["video_link","external_link"].includes(item.category);
   const accentColor = CAT_COLORS[item.category] || "#6366f1";
 
   return (
@@ -256,15 +256,16 @@ function FilterSidebar({ filters, options, onChange, onReset, total, isMobile, o
 }
 
 // ── MAIN CLIENT COMPONENT ─────────────────────────────────
-export default function ResourcesClient() {
+export default function ResourcesClient({ initialMaterials = [], initialTotal = 0, initialOptions = { subjects:[], universities:[], classes:[], years:[] } }) {
   const router       = useRouter();
   const searchParams = useSearchParams();
 
-  const [materials,  setMaterials]  = useState([]);
-  const [loading,    setLoading]    = useState(true);
-  const [total,      setTotal]      = useState(0);
-  const [page,       setPage]       = useState(1);
-  const [options,    setOptions]    = useState({ subjects:[], universities:[], classes:[], years:[] });
+  // 100% BOT READABLE: State is initialized with Server Data, NOT blank arrays. loading is FALSE initially.
+  const [materials,  setMaterials]  = useState(initialMaterials);
+  const [total,      setTotal]      = useState(initialTotal);
+  const [options,    setOptions]    = useState(initialOptions);
+  const [loading,    setLoading]    = useState(false); 
+  const [page,       setPage]       = useState(parseInt(searchParams.get("page")) || 1);
   const [showFilter, setShowFilter] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -278,12 +279,6 @@ export default function ResourcesClient() {
 
   const searchInputRef = useRef(null);
   const debounceRef    = useRef(null);
-
-  useEffect(() => {
-    supabase.rpc("study_materials_filter_options").then(({ data }) => {
-      if (data) setOptions(data);
-    });
-  }, []);
 
   const load = useCallback(async (f, p = 1) => {
     setLoading(true);
@@ -302,11 +297,9 @@ export default function ResourcesClient() {
       setTotal(data[0]?.total_count || 0);
     }
     setLoading(false);
-  }, []);
+  },[]);
 
-  useEffect(() => { load(filters, 1); }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const pushParams = (f) => {
+  const pushParams = (f, p = 1) => {
     const params = new URLSearchParams();
     if (f.search)      params.set("q",          f.search);
     if (f.category)    params.set("category",   f.category);
@@ -314,6 +307,7 @@ export default function ResourcesClient() {
     if (f.university)  params.set("university", f.university);
     if (f.class_level) params.set("class",      f.class_level);
     if (f.year)        params.set("year",       f.year);
+    if (p > 1)         params.set("page",       p.toString());
     const qs = params.toString();
     router.replace(`/resources${qs ? `?${qs}` : ""}`, { scroll: false });
   };
@@ -321,7 +315,7 @@ export default function ResourcesClient() {
   const applyFilters = (newFilters, newPage = 1) => {
     setFilters(newFilters);
     setPage(newPage);
-    pushParams(newFilters);
+    pushParams(newFilters, newPage);
     load(newFilters, newPage);
   };
 
@@ -370,7 +364,7 @@ export default function ResourcesClient() {
         @media (max-width: 520px) {
           .res-cards { grid-template-columns: 1fr !important; }
           .res-hero-pills { gap: 6px !important; }
-          .res-hero-pills button { font-size: 10px !important; padding: 5px 9px !important; }
+          .res-hero-pills .cat-pill { font-size: 10px !important; padding: 5px 9px !important; }
         }
         @media (min-width: 1100px) {
           .res-cards { grid-template-columns: repeat(3, 1fr) !important; }
@@ -404,19 +398,31 @@ export default function ResourcesClient() {
               )}
             </div>
             <div className="res-hero-pills" style={{ display:"flex", flexWrap:"wrap", gap:7, justifyContent:"center" }}>
-              {CATEGORIES.filter(c => c.value).map(c => (
-                <button key={c.value}
-                  onClick={() => handleFilterChange("category", filters.category === c.value ? "" : c.value)}
-                  style={{
-                    padding:"6px 12px", borderRadius:24, fontSize:11, fontWeight:700, cursor:"pointer", border:"1px solid",
-                    background:  filters.category === c.value ? "#fff" : "rgba(255,255,255,0.12)",
-                    color:       filters.category === c.value ? "#1a3a8f" : "rgba(255,255,255,0.9)",
-                    borderColor: filters.category === c.value ? "#fff" : "rgba(255,255,255,0.25)",
-                    transition:"all 0.15s",
+              {CATEGORIES.filter(c => c.value).map(c => {
+                const isActive = filters.category === c.value;
+                const newParams = new URLSearchParams(searchParams.toString());
+                if (isActive) newParams.delete("category");
+                else newParams.set("category", c.value);
+                const href = `/resources?${newParams.toString()}`;
+
+                return (
+                  // BOT FIX: Used Links to wrap pills. e.preventDefault ensures smooth client-side filtering.
+                  <Link key={c.value} href={href} prefetch={false} style={{ textDecoration: 'none' }} onClick={(e) => {
+                    e.preventDefault();
+                    handleFilterChange("category", isActive ? "" : c.value);
                   }}>
-                  {c.icon} {c.label}
-                </button>
-              ))}
+                    <div className="cat-pill" style={{
+                      padding:"6px 12px", borderRadius:24, fontSize:11, fontWeight:700, cursor:"pointer", border:"1px solid",
+                      background:  isActive ? "#fff" : "rgba(255,255,255,0.12)",
+                      color:       isActive ? "#1a3a8f" : "rgba(255,255,255,0.9)",
+                      borderColor: isActive ? "#fff" : "rgba(255,255,255,0.25)",
+                      transition:"all 0.15s",
+                    }}>
+                      {c.icon} {c.label}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -466,6 +472,7 @@ export default function ResourcesClient() {
                 </div>
               )}
 
+              {/* Bot natively reads this material grid now since loading is false! */}
               {loading ? (
                 <div className="res-cards">{Array.from({length:6}).map((_,i) => <SkeletonCard key={i}/>)}</div>
               ) : materials.length === 0 ? (
@@ -479,22 +486,44 @@ export default function ResourcesClient() {
                 <div className="res-cards">{materials.map(m => <MaterialCard key={m.id} item={m} />)}</div>
               )}
 
+              {/* BOT FIX: Pagination wrapped in crawlable links */}
               {totalPages > 1 && !loading && (
                 <div style={{ display:"flex", justifyContent:"center", alignItems:"center", gap:6, marginTop:28, flexWrap:"wrap" }}>
-                  <button onClick={() => { const p = Math.max(1,page-1); setPage(p); load(filters,p); }} disabled={page===1}
-                    style={{ padding:"8px 16px", border:"1px solid #e2e8f0", borderRadius:8, background:"#fff", cursor:page===1?"not-allowed":"pointer", color:page===1?"#cbd5e1":"#334155", fontWeight:600, fontSize:13 }}>
-                    ← Prev
-                  </button>
-                  {Array.from({length: Math.min(totalPages,7)}, (_,i) => i+1).map(p => (
-                    <button key={p} onClick={() => { setPage(p); load(filters,p); }}
-                      style={{ width:34, height:34, border:"1px solid", borderRadius:8, cursor:"pointer", fontWeight:700, fontSize:13, background:page===p?"linear-gradient(135deg,#1a3a8f,#3b82f6)":"#fff", color:page===p?"#fff":"#334155", borderColor:page===p?"#1a3a8f":"#e2e8f0" }}>
-                      {p}
-                    </button>
-                  ))}
-                  <button onClick={() => { const p = Math.min(totalPages,page+1); setPage(p); load(filters,p); }} disabled={page===totalPages}
-                    style={{ padding:"8px 16px", border:"1px solid #e2e8f0", borderRadius:8, background:"#fff", cursor:page===totalPages?"not-allowed":"pointer", color:page===totalPages?"#cbd5e1":"#334155", fontWeight:600, fontSize:13 }}>
-                    Next →
-                  </button>
+                  {page > 1 ? (
+                    <Link href={`/resources?${new URLSearchParams({...filters, page: page - 1}).toString()}`} prefetch={false} style={{ textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); const p = Math.max(1,page-1); applyFilters(filters, p); }}>
+                      <div style={{ padding:"8px 16px", border:"1px solid #e2e8f0", borderRadius:8, background:"#fff", cursor:"pointer", color:"#334155", fontWeight:600, fontSize:13 }}>
+                        ← Prev
+                      </div>
+                    </Link>
+                  ) : (
+                    <div style={{ padding:"8px 16px", border:"1px solid #e2e8f0", borderRadius:8, background:"#fff", cursor:"not-allowed", color:"#cbd5e1", fontWeight:600, fontSize:13 }}>
+                      ← Prev
+                    </div>
+                  )}
+
+                  {Array.from({length: Math.min(totalPages,7)}, (_,i) => i+1).map(p => {
+                    const pageParams = new URLSearchParams({...filters});
+                    if (p > 1) pageParams.set("page", p); else pageParams.delete("page");
+                    return (
+                      <Link key={p} href={`/resources?${pageParams.toString()}`} prefetch={false} style={{ textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); applyFilters(filters, p); }}>
+                        <div style={{ width:34, height:34, display:"flex", alignItems:"center", justifyContent:"center", border:"1px solid", borderRadius:8, cursor:"pointer", fontWeight:700, fontSize:13, background:page===p?"linear-gradient(135deg,#1a3a8f,#3b82f6)":"#fff", color:page===p?"#fff":"#334155", borderColor:page===p?"#1a3a8f":"#e2e8f0" }}>
+                          {p}
+                        </div>
+                      </Link>
+                    )
+                  })}
+
+                  {page < totalPages ? (
+                    <Link href={`/resources?${new URLSearchParams({...filters, page: page + 1}).toString()}`} prefetch={false} style={{ textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); const p = Math.min(totalPages,page+1); applyFilters(filters, p); }}>
+                      <div style={{ padding:"8px 16px", border:"1px solid #e2e8f0", borderRadius:8, background:"#fff", cursor:"pointer", color:"#334155", fontWeight:600, fontSize:13 }}>
+                        Next →
+                      </div>
+                    </Link>
+                  ) : (
+                    <div style={{ padding:"8px 16px", border:"1px solid #e2e8f0", borderRadius:8, background:"#fff", cursor:"not-allowed", color:"#cbd5e1", fontWeight:600, fontSize:13 }}>
+                      Next →
+                    </div>
+                  )}
                 </div>
               )}
             </div>

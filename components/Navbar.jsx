@@ -19,6 +19,7 @@ function CatPet({ mood, size = 40 }) {
       style={{ width: size, height: size, flexShrink: 0, overflow: "visible" }}
       aria-hidden="true"
       focusable="false"
+      suppressHydrationWarning
     >
       <style>{`
         .mood-happy   { animation: catHappyBob  0.9s infinite alternate ease-in-out; }
@@ -99,7 +100,6 @@ function CatPet({ mood, size = 40 }) {
 
 // ─────────────────────────────────────────
 // Nav links config 
-// (Changed `to` to `href` for Next.js Link consistency)
 // ─────────────────────────────────────────
 const NAV_LINKS =[
   { href: "/",            label: "Home",        icon: "🏠" },
@@ -147,7 +147,7 @@ export default function Navbar() {
 
   return (
     <>
-      <style>{PH_CSS}</style>
+      <style suppressHydrationWarning>{PH_CSS}</style>
       <header className="ph-header">
         <div className="ph-inner">
           <div className="ph-top">
@@ -180,7 +180,6 @@ export default function Navbar() {
 
           <nav className="ph-nav-desktop" aria-label="Main navigation">
             {NAV_LINKS.map(({ href, label }) => {
-              // Exact match for Home ("/"), prefix match for others (e.g. "/blogs" activates on "/blogs/post-1")
               const isActive = href === "/" ? pathname === "/" : pathname?.startsWith(href);
               
               return (
@@ -229,71 +228,6 @@ export default function Navbar() {
 }
 
 // ─────────────────────────────────────────
-// CSS (100% untouched from your code)
+// CSS - Minified to prevent hydration mismatches
 // ─────────────────────────────────────────
-const PH_CSS = `
-  .ph-header {
-    position: sticky; top: 0; z-index: 200;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid rgba(203,213,225,0.35);
-    box-shadow: 0 2px 20px rgba(15,23,42,0.06);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  }
-  .ph-inner { max-width:1200px;margin:0 auto;padding:10px 24px 0;display:flex;flex-direction:column;gap:0; }
-  .ph-top { display:flex;align-items:center;gap:14px;padding-bottom:10px; }
-  .ph-logo { text-decoration:none;font-size:1.9rem;font-weight:900;letter-spacing:-1px;line-height:1;flex-shrink:0;background:linear-gradient(135deg,#1e3a8a,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(1px 1px 3px rgba(30,58,138,0.15)); }
-  .ph-cat-widget { flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:#f8fafc;padding:6px 14px;border-radius:50px;box-shadow:inset 2px 2px 5px rgba(15,23,42,0.04),inset -2px -2px 5px rgba(255,255,255,1);overflow:hidden; }
-  .ph-datetime { display:flex;flex-direction:column;min-width:0;overflow:hidden; }
-  .ph-greet { font-size:0.8rem;font-weight:800;color:#1e3a8a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-  .ph-dt { display:flex;align-items:center;gap:4px;flex-wrap:nowrap; }
-  .ph-dt-date { font-size:0.68rem;font-weight:600;color:#64748b;white-space:nowrap; }
-  .ph-dt-sep  { font-size:0.68rem;color:#cbd5e1; }
-  .ph-dt-time { font-size:0.68rem;font-weight:600;color:#94a3b8;white-space:nowrap;font-family:'Courier New',monospace; }
-  .ph-auth { display:flex;gap:8px;flex-shrink:0; }
-  .ph-btn-ghost { padding:7px 14px;border-radius:30px;border:1.5px solid #e2e8f0;background:transparent;color:#334155;font-weight:600;font-size:0.85rem;text-decoration:none;transition:border-color 0.2s,color 0.2s;white-space:nowrap; }
-  .ph-btn-ghost:hover { border-color:#3b82f6;color:#3b82f6; }
-  .ph-btn-solid { padding:7px 18px;border-radius:30px;border:none;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;font-weight:700;font-size:0.85rem;text-decoration:none;transition:filter 0.2s,transform 0.2s,box-shadow 0.2s;white-space:nowrap;box-shadow:0 3px 10px rgba(59,130,246,0.3); }
-  .ph-btn-solid:hover { filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 5px 14px rgba(59,130,246,0.4); }
-  .ph-btn-ghost.full,.ph-btn-solid.full { flex:1;text-align:center; }
-  .ph-burger { display:none; }
-  .ph-nav-desktop { display:flex;gap:4px;border-top:1px solid rgba(203,213,225,0.25);padding:6px 0; }
-  .ph-nav-link { padding:6px 14px;border-radius:30px;text-decoration:none;font-size:0.88rem;font-weight:600;color:#475569;transition:color 0.18s,background 0.18s; }
-  .ph-nav-link:hover  { color:#1e3a8a;background:rgba(30,58,138,0.05); }
-  .ph-nav-link.active { color:#1e3a8a;background:#e0e7ff;font-weight:700; }
-  .ph-mobile-menu { display:none;flex-direction:column;background:rgba(255,255,255,0.98);backdrop-filter:blur(16px);border-top:1px solid rgba(203,213,225,0.3);overflow:hidden;max-height:0;transition:max-height 0.3s cubic-bezier(0.16,1,0.3,1),opacity 0.2s;opacity:0; }
-  .ph-mobile-menu.open { max-height:420px;opacity:1; }
-  .ph-mob-auth { display:flex;gap:8px;padding:12px 16px 8px; }
-  .ph-mob-nav  { display:flex;flex-direction:column;padding:4px 10px 12px; }
-  .ph-mob-link { display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;text-decoration:none;font-size:0.9rem;font-weight:600;color:#475569;transition:all 0.15s; }
-  .ph-mob-link:hover  { background:rgba(30,58,138,0.05);color:#1e3a8a; }
-  .ph-mob-link.active { background:rgba(224,231,255,0.8);color:#1e3a8a;font-weight:700;border-left:3px solid #3b82f6;padding-left:9px; }
-  .ph-mob-icon { font-size:1.1rem;width:26px;flex-shrink:0; }
-
-  @media (max-width: 640px) {
-    .ph-inner { padding:4px 10px 0; }
-    .ph-top { gap:6px;padding-bottom:5px; }
-    .ph-logo { font-size:1.4rem; }
-    .ph-cat-widget { padding:5px 10px;border-radius:40px;gap:7px; }
-    .ph-cat-widget .pub-cat-svg { width:30px !important;height:30px !important; }
-    .ph-greet { font-size:0.72rem; }
-    .ph-dt-date,.ph-dt-sep,.ph-dt-time { font-size:0.6rem; }
-    .ph-auth { display:none; }
-    .ph-nav-desktop { display:none; }
-    .ph-burger { display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4.5px;width:38px;height:38px;border-radius:10px;border:none;flex-shrink:0;background:#f1f5f9;cursor:pointer;box-shadow:3px 3px 7px rgba(15,23,42,0.07),-3px -3px 7px rgba(255,255,255,1);transition:background 0.2s,box-shadow 0.2s; }
-    .ph-burger span { display:block;width:18px;height:2px;background:#334155;border-radius:2px;transition:all 0.25s cubic-bezier(0.16,1,0.3,1);transform-origin:center; }
-    .ph-burger.open { background:#e0e7ff;box-shadow:inset 2px 2px 5px rgba(15,23,42,0.08),inset -2px -2px 5px rgba(255,255,255,0.8); }
-    .ph-burger.open span:nth-child(1) { transform:translateY(6.5px) rotate(45deg);background:#1e3a8a; }
-    .ph-burger.open span:nth-child(2) { transform:scaleX(0);opacity:0; }
-    .ph-burger.open span:nth-child(3) { transform:translateY(-6.5px) rotate(-45deg);background:#1e3a8a; }
-    .ph-mobile-menu { display:flex; }
-  }
-  @media (max-width: 380px) {
-    .ph-logo { font-size:1.2rem; }
-    .ph-cat-widget { padding:4px 8px;gap:5px; }
-    .ph-cat-widget .pub-cat-svg { width:26px !important;height:26px !important; }
-    .ph-greet { font-size:0.66rem; }
-    .ph-dt-date { display:none; }
-    .ph-dt-sep  { display:none; }
-  }
-`;
+const PH_CSS = `.ph-header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(203,213,225,0.35);box-shadow:0 2px 20px rgba(15,23,42,0.06);font-family:'Inter',system-ui,-apple-system,sans-serif}.ph-inner{max-width:1200px;margin:0 auto;padding:10px 24px 0;display:flex;flex-direction:column;gap:0}.ph-top{display:flex;align-items:center;gap:14px;padding-bottom:10px}.ph-logo{text-decoration:none;font-size:1.9rem;font-weight:900;letter-spacing:-1px;line-height:1;flex-shrink:0;background:linear-gradient(135deg,#1e3a8a,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(1px 1px 3px rgba(30,58,138,0.15))}.ph-cat-widget{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:#f8fafc;padding:6px 14px;border-radius:50px;box-shadow:inset 2px 2px 5px rgba(15,23,42,0.04),inset -2px -2px 5px #fff;overflow:hidden}.ph-datetime{display:flex;flex-direction:column;min-width:0;overflow:hidden}.ph-greet{font-size:.8rem;font-weight:800;color:#1e3a8a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ph-dt{display:flex;align-items:center;gap:4px;flex-wrap:nowrap}.ph-dt-date{font-size:.68rem;font-weight:600;color:#64748b;white-space:nowrap}.ph-dt-sep{font-size:.68rem;color:#cbd5e1}.ph-dt-time{font-size:.68rem;font-weight:600;color:#94a3b8;white-space:nowrap;font-family:'Courier New',monospace}.ph-auth{display:flex;gap:8px;flex-shrink:0}.ph-btn-ghost{padding:7px 14px;border-radius:30px;border:1.5px solid #e2e8f0;background:transparent;color:#334155;font-weight:600;font-size:.85rem;text-decoration:none;transition:border-color .2s,color .2s;white-space:nowrap}.ph-btn-ghost:hover{border-color:#3b82f6;color:#3b82f6}.ph-btn-solid{padding:7px 18px;border-radius:30px;border:none;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;font-weight:700;font-size:.85rem;text-decoration:none;transition:filter .2s,transform .2s,box-shadow .2s;white-space:nowrap;box-shadow:0 3px 10px rgba(59,130,246,0.3)}.ph-btn-solid:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 5px 14px rgba(59,130,246,0.4)}.ph-btn-ghost.full,.ph-btn-solid.full{flex:1;text-align:center}.ph-burger{display:none}.ph-nav-desktop{display:flex;gap:4px;border-top:1px solid rgba(203,213,225,0.25);padding:6px 0}.ph-nav-link{padding:6px 14px;border-radius:30px;text-decoration:none;font-size:.88rem;font-weight:600;color:#475569;transition:color .18s,background .18s}.ph-nav-link:hover{color:#1e3a8a;background:rgba(30,58,138,0.05)}.ph-nav-link.active{color:#1e3a8a;background:#e0e7ff;font-weight:700}.ph-mobile-menu{display:none;flex-direction:column;background:rgba(255,255,255,0.98);backdrop-filter:blur(16px);border-top:1px solid rgba(203,213,225,0.3);overflow:hidden;max-height:0;transition:max-height .3s cubic-bezier(0.16,1,0.3,1),opacity .2s;opacity:0}.ph-mobile-menu.open{max-height:480px;opacity:1}.ph-mob-auth{display:flex;gap:8px;padding:12px 16px 8px}.ph-mob-nav{display:flex;flex-direction:column;padding:4px 10px 12px}.ph-mob-link{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;text-decoration:none;font-size:.85rem;font-weight:600;color:#475569;transition:all .15s}.ph-mob-link:hover{background:rgba(30,58,138,0.05);color:#1e3a8a}.ph-mob-link.active{background:rgba(224,231,255,0.8);color:#1e3a8a;font-weight:700;border-left:3px solid #3b82f6;padding-left:9px}.ph-mob-icon{font-size:1rem;width:24px;flex-shrink:0}@media (max-width:768px){.ph-inner{padding:8px 16px 0}.ph-nav-desktop{gap:2px}.ph-nav-link{padding:5px 10px;font-size:.82rem}}@media (max-width:640px){.ph-inner{padding:4px 10px 0}.ph-top{gap:6px;padding-bottom:5px}.ph-logo{font-size:1.4rem}.ph-cat-widget{padding:5px 10px;border-radius:40px;gap:7px}.ph-cat-widget .pub-cat-svg{width:30px!important;height:30px!important}.ph-greet{font-size:.72rem}.ph-dt-date,.ph-dt-sep,.ph-dt-time{font-size:.6rem}.ph-auth{display:none}.ph-nav-desktop{display:none}.ph-burger{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4.5px;width:38px;height:38px;border-radius:10px;border:none;flex-shrink:0;background:#f1f5f9;cursor:pointer;box-shadow:3px 3px 7px rgba(15,23,42,0.07),-3px -3px 7px #fff;transition:background .2s,box-shadow .2s}.ph-burger span{display:block;width:18px;height:2px;background:#334155;border-radius:2px;transition:all .25s cubic-bezier(0.16,1,0.3,1);transform-origin:center}.ph-burger.open{background:#e0e7ff;box-shadow:inset 2px 2px 5px rgba(15,23,42,0.08),inset -2px -2px 5px rgba(255,255,255,0.8)}.ph-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);background:#1e3a8a}.ph-burger.open span:nth-child(2){transform:scaleX(0);opacity:0}.ph-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);background:#1e3a8a}.ph-mobile-menu{display:flex}.ph-mob-link{padding:8px 10px;font-size:.8rem;gap:10px}.ph-mob-icon{font-size:.95rem;width:22px}.ph-mob-nav{padding:4px 8px 12px}}@media (max-width:480px){.ph-mob-link{padding:7px 10px;font-size:.75rem;gap:8px}.ph-mob-icon{font-size:.9rem;width:20px}.ph-mob-auth{padding:10px 12px 6px;gap:6px}.ph-mob-nav{padding:2px 6px 10px}}@media (max-width:380px){.ph-logo{font-size:1.2rem}.ph-cat-widget{padding:4px 8px;gap:5px}.ph-cat-widget .pub-cat-svg{width:26px!important;height:26px!important}.ph-greet{font-size:.66rem}.ph-dt-date,.ph-dt-sep{display:none}.ph-mob-link{padding:6px 8px;font-size:.7rem;gap:6px}.ph-mob-icon{font-size:.85rem;width:18px}}`;

@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import "./faqs.css";
 
-const CATEGORIES = [
+const CATEGORIES =[
   { id: "all",                   label: "All",              icon: "◎"  },
   { id: "general",               label: "General",          icon: "🌐" },
   { id: "coins_rewards",         label: "Coins & Rewards",  icon: "🪙" },
@@ -234,15 +234,18 @@ function AskForm({ onSubmit }) {
   );
 }
 
-export default function FaqsClient({ initialFaqs, fetchError }) {
+export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all" }) {
   const router = useRouter();
   const [faqs,         setFaqs]         = useState(initialFaqs);
   const [search,       setSearch]       = useState("");
-  const [activeCat,    setActiveCat]    = useState("all");
+  
+  // BOT FIX: Initialize state perfectly with Server data so no layout shift occurs
+  const [activeCat,    setActiveCat]    = useState(initialCat);
   const [openIds,      setOpenIds]      = useState({});
-  const [userVotes,    setUserVotes]    = useState({});
+  const[userVotes,    setUserVotes]    = useState({});
   const [searchResults,setSearchResults]= useState(null);
   const [searchLoading,setSearchLoading]= useState(false);
+  
   const searchRef      = useRef(null);
   const searchTimeout  = useRef(null);
   const fp             = useRef("");
@@ -250,7 +253,7 @@ export default function FaqsClient({ initialFaqs, fetchError }) {
   useEffect(() => {
     fp.current = getFingerprint();
     loadVotes();
-  }, []);
+  },[]);
 
   const loadVotes = async () => {
     if (!fp.current) return;
@@ -367,20 +370,35 @@ export default function FaqsClient({ initialFaqs, fetchError }) {
       {/* Category tabs */}
       <nav className="faq-cats-wrap" aria-label="FAQ Categories">
         <div className="faq-cats-inner">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              className={`faq-cat-btn${activeCat === cat.id ? " faq-cat-btn--active" : ""}`}
-              onClick={() => handleCatChange(cat.id)}
-              aria-pressed={activeCat === cat.id}
-            >
-              <span className="faq-cat-icon" aria-hidden="true">{cat.icon}</span>
-              <span>{cat.label}</span>
-              <span className="faq-cat-count">
-                {cat.id === "all" ? faqs.length : faqs.filter(f => f.category === cat.id).length}
-              </span>
-            </button>
-          ))}
+          {CATEGORIES.map(cat => {
+            // BOT FIX: Generate real URLs for AI bots to crawl
+            const href = cat.id === "all" ? "/faqs" : `/faqs?cat=${cat.id}`;
+            
+            return (
+              <Link
+                key={cat.id}
+                href={href}
+                scroll={false}
+                prefetch={false}
+                style={{ textDecoration: 'none' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleCatChange(cat.id);
+                }}
+              >
+                <div
+                  className={`faq-cat-btn${activeCat === cat.id ? " faq-cat-btn--active" : ""}`}
+                  aria-pressed={activeCat === cat.id}
+                >
+                  <span className="faq-cat-icon" aria-hidden="true">{cat.icon}</span>
+                  <span>{cat.label}</span>
+                  <span className="faq-cat-count">
+                    {cat.id === "all" ? faqs.length : faqs.filter(f => f.category === cat.id).length}
+                  </span>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </nav>
 

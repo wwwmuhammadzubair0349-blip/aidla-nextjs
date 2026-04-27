@@ -32,12 +32,13 @@ export default async function FAQsPage({ searchParams }) {
   const params     = await searchParams;
   const initialCat = params?.cat || "all";
 
-  const { data: faqs, error } = await serverFetch("faqs", {
-    select:        "*",
-    "status":      "eq.published",
-    "is_visible":  "eq.true",
-    order:         "sort_order.asc,created_at.asc",
-  });
+const { data: faqs, error } = await supabase
+  .from("faqs")
+  .select("*")
+  .eq("status", "published")
+  .eq("is_visible", true)
+  .order("sort_order", { ascending: true })
+  .order("created_at", { ascending: true });
 
   const safeFaqs   = faqs   || [];
   const fetchError = !!error;

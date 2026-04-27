@@ -27,19 +27,26 @@ export const metadata = {
 };
 
 export default async function FAQsPage() {
-  const { data: faqs, error } = await supabase
-    .from("faqs")
-    .select("*", { count: "exact" })
-    .eq("status", "published")
-    .eq("is_visible", true)
-    .order("sort_order")
-    .order("created_at");
+  let faqs = [];
+  let fetchError = false;
 
-  // JSON-LD
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("faqs")
+      .select("*", { count: "exact" })
+      .eq("status", "published")
+      .eq("is_visible", true)
+      .order("sort_order")
+      .order("created_at");
+
+    faqs = data || [];
+    fetchError = !!error;
+  }
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: (faqs || []).map(f => ({
+    mainEntity: faqs.map(f => ({
       "@type": "Question",
       name: f.question,
       acceptedAnswer: { "@type": "Answer", text: f.answer },
@@ -57,13 +64,15 @@ export default async function FAQsPage() {
 
   return (
     <>
-      <script type="application/ld+json"
+      <script
+        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <script type="application/ld+json"
+      <script
+        type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <FaqsClient initialFaqs={faqs || []} fetchError={!!error} />
+      <FaqsClient initialFaqs={faqs} fetchError={fetchError} />
     </>
   );
 }

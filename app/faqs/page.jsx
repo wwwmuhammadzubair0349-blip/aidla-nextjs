@@ -42,6 +42,12 @@ export default async function FAQsPage({ searchParams }) {
   const safeFaqs   = faqs   || [];
   const fetchError = !!error;
 
+  // Filter FAQs by category on server for SEO
+  let filteredFaqs = safeFaqs;
+  if (initialCat !== "all") {
+    filteredFaqs = safeFaqs.filter(f => f.category === initialCat);
+  }
+
   /* ── JSON-LD: FAQPage — answer HTML stripped for clean schema text (fixed) ── */
   const structuredData = {
     "@context":   "https://schema.org",
@@ -78,7 +84,7 @@ export default async function FAQsPage({ searchParams }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <FaqsClient
-        initialFaqs={safeFaqs}
+        initialFaqs={filteredFaqs}
         fetchError={fetchError}
         initialCat={initialCat}
       />

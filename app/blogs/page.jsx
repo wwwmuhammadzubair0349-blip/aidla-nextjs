@@ -34,7 +34,12 @@ export const metadata = {
   },
 };
 
-export default async function BlogsPage() {
+export default async function BlogsPage({ searchParams }) {
+  const params = await searchParams;
+  const tag = params?.tag || "all";
+  const cat = params?.cat || "all";
+  const q = params?.q || "";
+
   const { data: posts, error } = await serverFetch("blogs_posts", {
     select:       "id,title,slug,excerpt,cover_image_url,published_at,tags,view_count",
     "deleted_at": "is.null",
@@ -44,6 +49,23 @@ export default async function BlogsPage() {
 
   const safePosts  = posts  || [];
   const fetchError = !!error;
+
+  // Filter posts on server for SEO
+  let filteredPosts = safePosts;
+  if (cat !== "all") {
+    filteredPosts = safePosts.filter(p => (p.tags || []).includes(cat));
+  }
+  if (tag !== "all") {
+    filteredPosts = filteredPosts.filter(p => (p.tags || []).includes(tag));
+  }
+  if (q.trim()) {
+    const query = q.toLowerCase();
+    filteredPosts = filteredPosts.filter(p =>
+      p.title.toLowerCase().includes(query) ||
+      p.excerpt?.toLowerCase().includes(query) ||
+      (p.tags || []).some(t => t.toLowerCase().includes(query))
+    );
+  }
 
   /* ── JSON-LD: Blog + BlogPosting list (mirrors News @graph pattern) ── */
   const structuredData = {
@@ -58,7 +80,7 @@ export default async function BlogsPage() {
         isPartOf:      { "@type": "WebSite", name: "AIDLA", url: SITE_URL },
         publisher:     { "@type": "Organization", name: "AIDLA", url: SITE_URL },
       },
-      ...safePosts.slice(0, 15).map(post => ({
+      ...filteredPosts.slice(0, 15).map(post => ({
         "@type":       "BlogPosting",
         headline:      post.title,
         description:   post.excerpt || "",
@@ -78,7 +100,7 @@ export default async function BlogsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <BlogsClient initialPosts={safePosts} fetchError={fetchError} />
+      <BlogsClient initialPosts={filteredPosts} fetchError={fetchError} />
     </>
   );
 }

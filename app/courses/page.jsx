@@ -52,15 +52,34 @@ export default async function CoursesPage({ searchParams }) {
   });
 
   const courses = coursesData ||[];
-
+  // Filter courses on server for SEO
+  let filteredCourses = courses;
+  if (level !== "all") {
+    filteredCourses = courses.filter(c => c.level === level || c.difficulty === level);
+  }
+  if (q.trim()) {
+    const query = q.toLowerCase();
+    filteredCourses = filteredCourses.filter(c =>
+      c.title.toLowerCase().includes(query) ||
+      c.description?.toLowerCase().includes(query) ||
+      c.subject?.toLowerCase().includes(query)
+    );
+  }
+  // Sort
+  if (sort === "newest") {
+    filteredCourses.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  } else if (sort === "oldest") {
+    filteredCourses.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  } else if (sort === "title") {
+    filteredCourses.sort((a, b) => a.title.localeCompare(b.title));
+  }
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: `AIDLA Online Courses ${level !== "all" ? `- ${level.toUpperCase()}` : ""}`,
     description: "Free and paid online courses on AIDLA — Pakistan's #1 educational rewards platform.",
     url: `${SITE_URL}/courses${level !== "all" ? `?level=${level}` : ""}`,
-    itemListElement: courses
-      .filter(c => level === "all" || c.level === level || c.difficulty === level) 
+    itemListElement: filteredCourses
       .map((c, i) => ({
       "@type": "ListItem",
       position: i + 1,
@@ -90,7 +109,7 @@ export default async function CoursesPage({ searchParams }) {
 
       <Suspense fallback={<CoursesPageSkeleton />}>
         <CoursesClient 
-          initialCourses={courses} 
+          initialCourses={filteredCourses} 
           initialLevel={level} 
           initialSort={sort} 
           initialSearch={q} 

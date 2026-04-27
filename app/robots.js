@@ -6,7 +6,7 @@ export default function robots() {
     sitemap: "https://www.aidla.online/sitemap.xml",
 
     rules: [
-      // Default rule
+      // Default rule //
       {
         userAgent: "*",
         allow: [

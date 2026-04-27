@@ -1,3 +1,4 @@
+// app/faqs/[slug]/FaqPageClient.jsx
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
@@ -5,6 +6,9 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import "./faqspage.css";
 
+/* ══════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════ */
 const SITE_URL = "https://www.aidla.online";
 
 const CATEGORIES = [
@@ -27,6 +31,9 @@ const CATEGORIES = [
 ];
 const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
 
+/* ══════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════ */
 function getFingerprint() {
   if (typeof window === "undefined") return "ssr-fp";
   const key = "aidla_fp";
@@ -38,11 +45,13 @@ function getFingerprint() {
   return fp;
 }
 
-/* ── Ask Form ── */
+/* ══════════════════════════════════════════════
+   ASK FORM
+══════════════════════════════════════════════ */
 function AskForm() {
-  const [form, setForm]         = useState({ name: "", email: "", question: "" });
-  const [state, setState]       = useState("idle");
-  const [msg, setMsg]           = useState("");
+  const [form,      setForm]      = useState({ name: "", email: "", question: "" });
+  const [state,     setState]     = useState("idle");
+  const [msg,       setMsg]       = useState("");
   const [duplicate, setDuplicate] = useState(null);
   const charLeft = 500 - form.question.length;
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
@@ -58,14 +67,13 @@ function AskForm() {
       setState("err"); setMsg("Question must be at least 10 characters."); return;
     }
     setState("loading");
-
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/auto-faq-generator`,
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":  "application/json",
             "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
           },
           body: JSON.stringify({
@@ -88,10 +96,8 @@ function AskForm() {
       email:    form.email.trim().toLowerCase(),
       question: form.question.trim(),
     });
-
     if (error) {
-      setState("err");
-      setMsg("Something went wrong. Please try again.");
+      setState("err"); setMsg("Something went wrong. Please try again.");
     } else {
       setState("ok");
       setMsg("✅ Question submitted! Our team will answer and publish it soon.");
@@ -100,16 +106,14 @@ function AskForm() {
   };
 
   const handleSubmitAnyway = async () => {
-    setDuplicate(null);
-    setState("loading");
+    setDuplicate(null); setState("loading");
     const { error } = await supabase.from("user_questions").insert({
       name:     form.name.trim(),
       email:    form.email.trim().toLowerCase(),
       question: form.question.trim(),
     });
     if (error) {
-      setState("err");
-      setMsg("Something went wrong. Please try again.");
+      setState("err"); setMsg("Something went wrong. Please try again.");
     } else {
       setState("ok");
       setMsg("✅ Question submitted!");
@@ -119,25 +123,17 @@ function AskForm() {
 
   return (
     <>
-      {/* Duplicate Modal */}
       {duplicate && (
         <div style={{
-          position: "fixed", inset: 0,
-          background: "rgba(0,0,0,0.55)",
-          zIndex: 9999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 20,
-        }}>
-          <div style={{
-            background: "#fff", borderRadius: 20, padding: 28,
-            maxWidth: 420, width: "100%",
-            boxShadow: "0 24px 60px rgba(0,0,0,0.2)",
-            textAlign: "center",
-          }}>
-            <div style={{ fontSize: "2.5rem", marginBottom: 12 }}>💡</div>
-            <h3 style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.2rem", fontWeight: 900, color: "#0b1437", margin: "0 0 8px" }}>
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)",
+          zIndex: 9999, display: "flex", alignItems: "center",
+          justifyContent: "center", padding: 20,
+        }}
+          role="dialog" aria-modal="true" aria-labelledby="dup-modal-title"
+        >
+          <div style={{ background: "#fff", borderRadius: 20, padding: 28, maxWidth: 420, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.2)", textAlign: "center" }}>
+            <div style={{ fontSize: "2.5rem", marginBottom: 12 }} aria-hidden="true">💡</div>
+            <h3 id="dup-modal-title" style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.2rem", fontWeight: 900, color: "#0b1437", margin: "0 0 8px" }}>
               We Already Have This Answer!
             </h3>
             <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "0 0 16px" }}>
@@ -147,24 +143,13 @@ function AskForm() {
               "{duplicate.question}"
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-              <Link
-                href={`/faqs/${duplicate.slug}`}
-                style={{ padding: "10px 22px", borderRadius: 30, background: "linear-gradient(135deg,#0b1437,#1a3a8f)", color: "#fff", textDecoration: "none", fontWeight: 800, fontSize: "0.88rem" }}
-              >
+              <Link href={`/faqs/${duplicate.slug}`} style={{ padding: "10px 22px", borderRadius: 30, background: "linear-gradient(135deg,#0b1437,#1a3a8f)", color: "#fff", textDecoration: "none", fontWeight: 800, fontSize: "0.88rem" }}>
                 View Answer →
               </Link>
-              <button
-                onClick={handleSubmitAnyway}
-                suppressHydrationWarning
-                style={{ padding: "10px 22px", borderRadius: 30, background: "#fff", border: "1.5px solid rgba(26,58,143,0.2)", color: "#475569", fontWeight: 700, fontSize: "0.88rem", cursor: "pointer" }}
-              >
+              <button onClick={handleSubmitAnyway} suppressHydrationWarning style={{ padding: "10px 22px", borderRadius: 30, background: "#fff", border: "1.5px solid rgba(26,58,143,0.2)", color: "#475569", fontWeight: 700, fontSize: "0.88rem", cursor: "pointer" }}>
                 Submit Anyway
               </button>
-              <button
-                onClick={() => setDuplicate(null)}
-                suppressHydrationWarning
-                style={{ padding: "10px 22px", borderRadius: 30, background: "#fff", border: "1.5px solid #e2e8f0", color: "#94a3b8", fontWeight: 700, fontSize: "0.88rem", cursor: "pointer" }}
-              >
+              <button onClick={() => setDuplicate(null)} suppressHydrationWarning style={{ padding: "10px 22px", borderRadius: 30, background: "#fff", border: "1.5px solid #e2e8f0", color: "#94a3b8", fontWeight: 700, fontSize: "0.88rem", cursor: "pointer" }}>
                 Cancel
               </button>
             </div>
@@ -172,7 +157,6 @@ function AskForm() {
         </div>
       )}
 
-      {/* Ask Form */}
       <div className="ask-form-wrap" id="ask-question">
         <div className="ask-form-header">
           <span className="ask-form-icon" aria-hidden="true">💬</span>
@@ -181,56 +165,24 @@ function AskForm() {
             <p className="ask-form-sub">Ask us — our team will answer and publish it to help others.</p>
           </div>
         </div>
-
         {state === "ok"  && <div className="ask-msg ask-msg--ok"  role="alert">{msg}</div>}
         {state === "err" && <div className="ask-msg ask-msg--err" role="alert">{msg}</div>}
-
         {state !== "ok" && (
           <>
             <div className="ask-row-2">
               <div>
                 <label className="ask-label" htmlFor="faqp-name">Your Name *</label>
-                <input
-                  id="faqp-name"
-                  className="ask-input"
-                  placeholder="Muhammad Ali"
-                  value={form.name}
-                  onChange={e => set("name", e.target.value)}
-                  autoComplete="name"
-                  suppressHydrationWarning
-                />
+                <input id="faqp-name" className="ask-input" placeholder="Muhammad Ali" value={form.name} onChange={e => set("name", e.target.value)} autoComplete="name" suppressHydrationWarning />
               </div>
               <div>
                 <label className="ask-label" htmlFor="faqp-email">Email Address *</label>
-                <input
-                  id="faqp-email"
-                  className="ask-input"
-                  type="email"
-                  placeholder="you@email.com"
-                  value={form.email}
-                  onChange={e => set("email", e.target.value)}
-                  autoComplete="email"
-                  suppressHydrationWarning
-                />
+                <input id="faqp-email" className="ask-input" type="email" placeholder="you@email.com" value={form.email} onChange={e => set("email", e.target.value)} autoComplete="email" suppressHydrationWarning />
               </div>
             </div>
             <label className="ask-label" htmlFor="faqp-question">Your Question *</label>
-            <textarea
-              id="faqp-question"
-              className="ask-textarea"
-              placeholder="Type your question clearly..."
-              value={form.question}
-              onChange={e => set("question", e.target.value.slice(0, 500))}
-              rows={4}
-              suppressHydrationWarning
-            />
+            <textarea id="faqp-question" className="ask-textarea" placeholder="Type your question clearly..." value={form.question} onChange={e => set("question", e.target.value.slice(0, 500))} rows={4} suppressHydrationWarning />
             <div className="ask-char-count" aria-live="polite">{charLeft} characters left</div>
-            <button
-              className="ask-submit"
-              onClick={handleSubmit}
-              disabled={state === "loading"}
-              suppressHydrationWarning
-            >
+            <button className="ask-submit" onClick={handleSubmit} disabled={state === "loading"} aria-busy={state === "loading"} suppressHydrationWarning>
               {state === "loading" ? <span className="ask-spinner" aria-hidden="true" /> : "🚀 Submit Question"}
             </button>
             <p className="ask-privacy">🔒 Your email is only used to notify you — never shared publicly.</p>
@@ -241,7 +193,10 @@ function AskForm() {
   );
 }
 
-/* ── Main Component ── */
+/* ══════════════════════════════════════════════
+   MAIN CLIENT COMPONENT
+   Props: faq (full row, server-fetched)
+══════════════════════════════════════════════ */
 export default function FaqPageClient({ faq: initialFaq }) {
   const [faq,      setFaq]      = useState(initialFaq);
   const [related,  setRelated]  = useState([]);
@@ -253,12 +208,16 @@ export default function FaqPageClient({ faq: initialFaq }) {
     fp.current = getFingerprint();
 
     const init = async () => {
-      // Track view
-      try {
-        await supabase.rpc("faq_increment_view", { p_faq_id: faq.id });
-      } catch {}
+      // View tracking — sessionStorage dedup (mirrors News, fixes double-count on remount)
+      const viewKey = `faq_viewed_${faq.id}`;
+      if (!sessionStorage.getItem(viewKey)) {
+        sessionStorage.setItem(viewKey, "1");
+        try {
+          await supabase.rpc("faq_increment_view", { p_faq_id: faq.id });
+        } catch {}
+      }
 
-      // Load related FAQs
+      // Related FAQs
       try {
         const { data } = await supabase.rpc("get_related_faqs", {
           p_faq_id:   faq.id,
@@ -269,7 +228,7 @@ export default function FaqPageClient({ faq: initialFaq }) {
         setRelated(data || []);
       } catch {}
 
-      // Load user vote
+      // Load user's existing vote
       try {
         const { data } = await supabase
           .from("faq_helpful_votes")
@@ -288,6 +247,7 @@ export default function FaqPageClient({ faq: initialFaq }) {
     const prev    = userVote;
     const newVote = prev === vote ? null : vote;
 
+    // Optimistic update
     setUserVote(newVote);
     setFaq(f => {
       let yes = f.helpful_yes;
@@ -327,9 +287,14 @@ export default function FaqPageClient({ faq: initialFaq }) {
   const helpfulPct = totalVotes > 0 ? Math.round((faq.helpful_yes / totalVotes) * 100) : null;
 
   return (
-    <main className="faqp-page">
+    // itemScope on root — bots read Q&A from microdata even without JS (new)
+    <main
+      className="faqp-page"
+      itemScope
+      itemType="https://schema.org/QAPage"
+    >
 
-      {/* Hero */}
+      {/* ── Hero ── */}
       <header className="faqp-hero">
         <div className="faqp-hero-bg" aria-hidden="true" />
         <div className="faqp-hero-inner">
@@ -351,8 +316,13 @@ export default function FaqPageClient({ faq: initialFaq }) {
             <span>{cat?.label}</span>
           </div>
 
-          {/* H1 */}
-          <h1 className="faqp-hero-title">{faq.question}</h1>
+          {/* H1 — itemProp="name" so bots read the question (new) */}
+          <h1
+            className="faqp-hero-title"
+            itemProp="name"
+          >
+            {faq.question}
+          </h1>
 
           {/* Meta */}
           <div className="faqp-hero-meta">
@@ -363,9 +333,12 @@ export default function FaqPageClient({ faq: initialFaq }) {
               <>
                 <span className="faqp-meta-dot" aria-hidden="true">·</span>
                 <span>
-                  Updated {new Date(faq.updated_at).toLocaleDateString("en-PK", {
-                    day: "2-digit", month: "short", year: "numeric",
-                  })}
+                  Updated{" "}
+                  <time dateTime={faq.updated_at}>
+                    {new Date(faq.updated_at).toLocaleDateString("en-PK", {
+                      day: "2-digit", month: "short", year: "numeric",
+                    })}
+                  </time>
                 </span>
               </>
             )}
@@ -373,17 +346,24 @@ export default function FaqPageClient({ faq: initialFaq }) {
         </div>
       </header>
 
-      {/* Content */}
+      {/* ── Content ── */}
       <div className="faqp-content-wrap">
 
-        {/* Answer Card */}
-        <article className="faqp-answer-card">
+        {/* Answer Card — itemScope wraps the accepted answer (new) */}
+        <article
+          className="faqp-answer-card"
+          itemScope
+          itemType="https://schema.org/Answer"
+          itemProp="acceptedAnswer"
+        >
           <div className="faqp-answer-label">
             <span className="faqp-answer-label-dot" aria-hidden="true" />
             Official Answer
           </div>
+          {/* itemProp="text" so bots read the answer body directly (new) */}
           <div
             className="faqp-answer-text"
+            itemProp="text"
             dangerouslySetInnerHTML={{ __html: faq.answer }}
           />
           <div className="faqp-answer-author">
@@ -391,9 +371,12 @@ export default function FaqPageClient({ faq: initialFaq }) {
             <div>
               <div className="faqp-author-name">AIDLA Support Team</div>
               <div className="faqp-author-role">
-                Official Answer · {new Date(faq.updated_at || faq.created_at).toLocaleDateString("en-PK", {
-                  day: "2-digit", month: "short", year: "numeric",
-                })}
+                Official Answer ·{" "}
+                <time dateTime={faq.updated_at || faq.created_at}>
+                  {new Date(faq.updated_at || faq.created_at).toLocaleDateString("en-PK", {
+                    day: "2-digit", month: "short", year: "numeric",
+                  })}
+                </time>
               </div>
             </div>
           </div>
@@ -428,6 +411,7 @@ export default function FaqPageClient({ faq: initialFaq }) {
           <button
             className="faqp-share-btn"
             onClick={handleShare}
+            aria-label="Share this FAQ"
             suppressHydrationWarning
           >
             {shared ? "✅ Copied!" : "🔗 Share"}
@@ -461,7 +445,6 @@ export default function FaqPageClient({ faq: initialFaq }) {
 
         {/* Ask form */}
         <AskForm />
-
       </div>
     </main>
   );

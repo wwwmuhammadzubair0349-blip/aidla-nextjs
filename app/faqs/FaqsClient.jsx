@@ -1,12 +1,16 @@
+// app/faqs/FaqsClient.jsx
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import "./faqs.css";
 
-const CATEGORIES =[
+/* ══════════════════════════════════════════════
+   CONSTANTS
+══════════════════════════════════════════════ */
+const CATEGORIES = [
   { id: "all",                   label: "All",              icon: "◎"  },
   { id: "general",               label: "General",          icon: "🌐" },
   { id: "coins_rewards",         label: "Coins & Rewards",  icon: "🪙" },
@@ -27,6 +31,9 @@ const CATEGORIES =[
 ];
 const CAT_MAP = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
 
+/* ══════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════ */
 function getFingerprint() {
   if (typeof window === "undefined") return "ssr-fp";
   const key = "aidla_fp";
@@ -54,11 +61,15 @@ function highlightHtml(html, query) {
   return html.replace(new RegExp(`(${escaped})`, "gi"), '<mark class="faq-highlight">$1</mark>');
 }
 
+/* ══════════════════════════════════════════════
+   FAQ ITEM
+   — itemScope/itemProp microdata for bots (new)
+══════════════════════════════════════════════ */
 function FAQItem({ faq, isOpen, onToggle, searchQuery, userVotes, onVote }) {
   const [copied, setCopied] = useState(false);
-  const voted = userVotes[faq.id];
+  const voted      = userVotes[faq.id];
   const totalVotes = faq.helpful_yes + faq.helpful_no;
-  const pct = totalVotes > 0 ? Math.round((faq.helpful_yes / totalVotes) * 100) : null;
+  const pct        = totalVotes > 0 ? Math.round((faq.helpful_yes / totalVotes) * 100) : null;
 
   const handleShare = () => {
     const url = faq.slug
@@ -74,7 +85,13 @@ function FAQItem({ faq, isOpen, onToggle, searchQuery, userVotes, onVote }) {
   };
 
   return (
-    <div id={`faq-${faq.id}`} className={`faq-item${isOpen ? " faq-item--open" : ""}`}>
+    // itemScope + itemType so bots read Q&A even without JS (new)
+    <div
+      id={`faq-${faq.id}`}
+      className={`faq-item${isOpen ? " faq-item--open" : ""}`}
+      itemScope
+      itemType="https://schema.org/Question"
+    >
       <button
         className="faq-question"
         onClick={onToggle}
@@ -82,17 +99,26 @@ function FAQItem({ faq, isOpen, onToggle, searchQuery, userVotes, onVote }) {
         aria-controls={`faq-body-${faq.id}`}
       >
         <span className="faq-q-icon" aria-hidden="true">{isOpen ? "−" : "+"}</span>
-        <h3 className="faq-q-text">{highlight(faq.question, searchQuery)}</h3>
+        {/* itemProp="name" so bots index the question text (new) */}
+        <h3 className="faq-q-text" itemProp="name">
+          {highlight(faq.question, searchQuery)}
+        </h3>
       </button>
 
       <div
         id={`faq-body-${faq.id}`}
         className={`faq-answer-wrap${isOpen ? " faq-answer-wrap--open" : ""}`}
         role="region"
+        // itemScope on answer wrapper (new)
+        itemScope
+        itemType="https://schema.org/Answer"
+        itemProp="acceptedAnswer"
       >
         <div className="faq-answer-inner">
+          {/* itemProp="text" so bots read answer body even if collapsed (new) */}
           <div
             className="faq-answer-text"
+            itemProp="text"
             dangerouslySetInnerHTML={{ __html: highlightHtml(faq.answer, searchQuery) }}
           />
           <div className="faq-meta-row">
@@ -116,7 +142,12 @@ function FAQItem({ faq, isOpen, onToggle, searchQuery, userVotes, onVote }) {
               aria-pressed={voted === "no"}
             >👎 {faq.helpful_no}</button>
             {pct !== null && <span className="faq-helpful-pct">{pct}% found helpful</span>}
-            <button className="faq-helpful-btn" onClick={handleShare} style={{ marginLeft: "auto" }}>
+            <button
+              className="faq-helpful-btn"
+              onClick={handleShare}
+              style={{ marginLeft: "auto" }}
+              aria-label="Share this FAQ"
+            >
               {copied ? "✅ Copied!" : "🔗 Share"}
             </button>
           </div>
@@ -126,10 +157,13 @@ function FAQItem({ faq, isOpen, onToggle, searchQuery, userVotes, onVote }) {
   );
 }
 
+/* ══════════════════════════════════════════════
+   ASK FORM
+══════════════════════════════════════════════ */
 function AskForm({ onSubmit }) {
-  const [form, setForm]   = useState({ name: "", email: "", question: "" });
-  const [state, setState] = useState("idle");
-  const [msg, setMsg]     = useState("");
+  const [form,      setForm]      = useState({ name: "", email: "", question: "" });
+  const [state,     setState]     = useState("idle");
+  const [msg,       setMsg]       = useState("");
   const [duplicate, setDuplicate] = useState(null);
   const charLeft = 500 - form.question.length;
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
@@ -146,27 +180,39 @@ function AskForm({ onSubmit }) {
     }
     setState("loading");
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/auto-faq-generator`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({ secret: "aidla_faqs_2025", action: "check_duplicate", question: form.question.trim() }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/auto-faq-generator`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":  "application/json",
+            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            secret:   "aidla_faqs_2025",
+            action:   "check_duplicate",
+            question: form.question.trim(),
+          }),
+        }
+      );
       const data = await res.json();
       if (data.ok && data.isDuplicate && data.matchedSlug) {
         setDuplicate({ question: data.matchedQuestion, slug: data.matchedSlug });
-        setState("idle"); return;
+        setState("idle");
+        return;
       }
     } catch {}
 
     const { error } = await supabase.from("user_questions").insert({
-      name: form.name.trim(), email: form.email.trim().toLowerCase(), question: form.question.trim(),
+      name:     form.name.trim(),
+      email:    form.email.trim().toLowerCase(),
+      question: form.question.trim(),
     });
-    if (error) { setState("err"); setMsg("Something went wrong. Please try again."); }
-    else {
-      setState("ok"); setMsg("✅ Question submitted! Our team will answer and publish it soon.");
+    if (error) {
+      setState("err"); setMsg("Something went wrong. Please try again.");
+    } else {
+      setState("ok");
+      setMsg("✅ Question submitted! Our team will answer and publish it soon.");
       setForm({ name: "", email: "", question: "" });
       if (onSubmit) onSubmit();
     }
@@ -175,32 +221,57 @@ function AskForm({ onSubmit }) {
   const handleSubmitAnyway = async () => {
     setDuplicate(null); setState("loading");
     const { error } = await supabase.from("user_questions").insert({
-      name: form.name.trim(), email: form.email.trim().toLowerCase(), question: form.question.trim(),
+      name:     form.name.trim(),
+      email:    form.email.trim().toLowerCase(),
+      question: form.question.trim(),
     });
-    if (error) { setState("err"); setMsg("Something went wrong."); }
-    else { setState("ok"); setMsg("✅ Question submitted!"); setForm({ name: "", email: "", question: "" }); if (onSubmit) onSubmit(); }
+    if (error) {
+      setState("err"); setMsg("Something went wrong.");
+    } else {
+      setState("ok");
+      setMsg("✅ Question submitted!");
+      setForm({ name: "", email: "", question: "" });
+      if (onSubmit) onSubmit();
+    }
   };
 
   return (
     <>
       {duplicate && (
-        <div style={{ position:"fixed",inset:0,background:"rgba(0,0,0,0.55)",zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",padding:20 }}>
-          <div style={{ background:"#fff",borderRadius:20,padding:28,maxWidth:420,width:"100%",boxShadow:"0 24px 60px rgba(0,0,0,0.2)",textAlign:"center" }}>
-            <div style={{ fontSize:"2.5rem",marginBottom:12 }}>💡</div>
-            <h3 style={{ fontFamily:"'Playfair Display',serif",fontSize:"1.2rem",fontWeight:900,color:"#0b1437",margin:"0 0 8px" }}>We Already Have This Answer!</h3>
-            <p style={{ fontSize:"0.85rem",color:"#64748b",margin:"0 0 16px" }}>Your question is similar to:</p>
-            <div style={{ background:"#f0f4ff",border:"1.5px solid rgba(26,58,143,0.15)",borderRadius:12,padding:"12px 16px",marginBottom:20,fontSize:"0.9rem",fontWeight:700,color:"#0b1437" }}>"{duplicate.question}"</div>
-            <div style={{ display:"flex",gap:10,justifyContent:"center",flexWrap:"wrap" }}>
-              <Link href={`/faqs/${duplicate.slug}`} style={{ padding:"10px 22px",borderRadius:30,background:"linear-gradient(135deg,#0b1437,#1a3a8f)",color:"#fff",textDecoration:"none",fontWeight:800,fontSize:"0.88rem" }}>View Answer →</Link>
-              <button onClick={handleSubmitAnyway} style={{ padding:"10px 22px",borderRadius:30,background:"#fff",border:"1.5px solid rgba(26,58,143,0.2)",color:"#475569",fontWeight:700,fontSize:"0.88rem",cursor:"pointer" }}>Submit Anyway</button>
-              <button onClick={() => setDuplicate(null)} style={{ padding:"10px 22px",borderRadius:30,background:"#fff",border:"1.5px solid #e2e8f0",color:"#94a3b8",fontWeight:700,fontSize:"0.88rem",cursor:"pointer" }}>Cancel</button>
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)",
+          zIndex: 9999, display: "flex", alignItems: "center",
+          justifyContent: "center", padding: 20,
+        }}
+          role="dialog" aria-modal="true" aria-labelledby="dup-modal-title"
+        >
+          <div style={{ background: "#fff", borderRadius: 20, padding: 28, maxWidth: 420, width: "100%", boxShadow: "0 24px 60px rgba(0,0,0,0.2)", textAlign: "center" }}>
+            <div style={{ fontSize: "2.5rem", marginBottom: 12 }} aria-hidden="true">💡</div>
+            <h3 id="dup-modal-title" style={{ fontFamily: "'Playfair Display',serif", fontSize: "1.2rem", fontWeight: 900, color: "#0b1437", margin: "0 0 8px" }}>
+              We Already Have This Answer!
+            </h3>
+            <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "0 0 16px" }}>Your question is similar to:</p>
+            <div style={{ background: "#f0f4ff", border: "1.5px solid rgba(26,58,143,0.15)", borderRadius: 12, padding: "12px 16px", marginBottom: 20, fontSize: "0.9rem", fontWeight: 700, color: "#0b1437" }}>
+              "{duplicate.question}"
+            </div>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+              <Link href={`/faqs/${duplicate.slug}`} style={{ padding: "10px 22px", borderRadius: 30, background: "linear-gradient(135deg,#0b1437,#1a3a8f)", color: "#fff", textDecoration: "none", fontWeight: 800, fontSize: "0.88rem" }}>
+                View Answer →
+              </Link>
+              <button onClick={handleSubmitAnyway} style={{ padding: "10px 22px", borderRadius: 30, background: "#fff", border: "1.5px solid rgba(26,58,143,0.2)", color: "#475569", fontWeight: 700, fontSize: "0.88rem", cursor: "pointer" }}>
+                Submit Anyway
+              </button>
+              <button onClick={() => setDuplicate(null)} style={{ padding: "10px 22px", borderRadius: 30, background: "#fff", border: "1.5px solid #e2e8f0", color: "#94a3b8", fontWeight: 700, fontSize: "0.88rem", cursor: "pointer" }}>
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
+
       <div className="ask-form-wrap" id="ask-question">
         <div className="ask-form-header">
-          <span className="ask-form-icon">💬</span>
+          <span className="ask-form-icon" aria-hidden="true">💬</span>
           <div>
             <h2 className="ask-form-title">Can't find your answer?</h2>
             <p className="ask-form-sub">Ask us — our team will answer and publish it to help others.</p>
@@ -222,9 +293,9 @@ function AskForm({ onSubmit }) {
             </div>
             <label className="ask-label" htmlFor="ask-question">Your Question *</label>
             <textarea id="ask-question" className="ask-textarea" placeholder="Type your question clearly..." value={form.question} onChange={e => set("question", e.target.value.slice(0, 500))} rows={4} />
-            <div className="ask-char-count">{charLeft} characters left</div>
-            <button className="ask-submit" onClick={handleSubmit} disabled={state === "loading"}>
-              {state === "loading" ? <span className="ask-spinner" /> : "🚀 Submit Question"}
+            <div className="ask-char-count" aria-live="polite">{charLeft} characters left</div>
+            <button className="ask-submit" onClick={handleSubmit} disabled={state === "loading"} aria-busy={state === "loading"}>
+              {state === "loading" ? <span className="ask-spinner" aria-hidden="true" /> : "🚀 Submit Question"}
             </button>
             <p className="ask-privacy">🔒 Your email is only used to notify you — never shared publicly.</p>
           </>
@@ -234,30 +305,35 @@ function AskForm({ onSubmit }) {
   );
 }
 
+/* ══════════════════════════════════════════════
+   MAIN CLIENT COMPONENT
+   Props: initialFaqs, fetchError, initialCat
+══════════════════════════════════════════════ */
 export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all" }) {
   const router = useRouter();
-  const [faqs,         setFaqs]         = useState(initialFaqs);
-  const [search,       setSearch]       = useState("");
-  
-  // BOT FIX: Initialize state perfectly with Server data so no layout shift occurs
-  const [activeCat,    setActiveCat]    = useState(initialCat);
-  const [openIds,      setOpenIds]      = useState({});
-  const[userVotes,    setUserVotes]    = useState({});
-  const [searchResults,setSearchResults]= useState(null);
-  const [searchLoading,setSearchLoading]= useState(false);
-  
-  const searchRef      = useRef(null);
-  const searchTimeout  = useRef(null);
-  const fp             = useRef("");
+
+  const [faqs,          setFaqs]          = useState(initialFaqs);
+  const [search,        setSearch]        = useState("");
+  const [activeCat,     setActiveCat]     = useState(initialCat);
+  const [openIds,       setOpenIds]       = useState({});
+  const [userVotes,     setUserVotes]     = useState({});
+  const [searchResults, setSearchResults] = useState(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const searchTimeout = useRef(null);
+  const fp            = useRef("");
 
   useEffect(() => {
     fp.current = getFingerprint();
     loadVotes();
-  },[]);
+  }, []);
 
   const loadVotes = async () => {
     if (!fp.current) return;
-    const { data } = await supabase.from("faq_helpful_votes").select("faq_id,vote").eq("fingerprint", fp.current);
+    const { data } = await supabase
+      .from("faq_helpful_votes")
+      .select("faq_id,vote")
+      .eq("fingerprint", fp.current);
     if (data) {
       const map = {};
       data.forEach(v => { map[v.faq_id] = v.vote; });
@@ -274,8 +350,13 @@ export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all"
   const handleToggle = useCallback(async (id) => {
     const isOpen = openIds[id];
     if (!isOpen) {
-      await supabase.rpc("faq_increment_view", { p_faq_id: id });
-      setFaqs(prev => prev.map(f => f.id === id ? { ...f, view_count: f.view_count + 1 } : f));
+      // sessionStorage dedup — mirrors News/BlogPost (new)
+      const key = `faq_viewed_${id}`;
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        await supabase.rpc("faq_increment_view", { p_faq_id: id });
+        setFaqs(prev => prev.map(f => f.id === id ? { ...f, view_count: f.view_count + 1 } : f));
+      }
     }
     setOpenIds(prev => ({ ...prev, [id]: !prev[id] }));
   }, [openIds]);
@@ -283,13 +364,25 @@ export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all"
   const handleVote = useCallback(async (faqId, vote) => {
     const prev = userVotes[faqId];
     setUserVotes(p => ({ ...p, [faqId]: prev === vote ? undefined : vote }));
-    const { data } = await supabase.rpc("faq_toggle_helpful", { p_faq_id: faqId, p_fingerprint: fp.current, p_vote: vote });
-    if (data) setFaqs(p => p.map(f => f.id === faqId ? { ...f, helpful_yes: data.helpful_yes, helpful_no: data.helpful_no } : f));
+    const { data } = await supabase.rpc("faq_toggle_helpful", {
+      p_faq_id:      faqId,
+      p_fingerprint: fp.current,
+      p_vote:        vote,
+    });
+    if (data) {
+      setFaqs(p => p.map(f => f.id === faqId
+        ? { ...f, helpful_yes: data.helpful_yes, helpful_no: data.helpful_no }
+        : f
+      ));
+    }
   }, [userVotes]);
 
+  // Debounced full-text search via Supabase RPC
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    if (!search.trim() || search.trim().length < 2) { setSearchResults(null); setOpenIds({}); setSearchLoading(false); return; }
+    if (!search.trim() || search.trim().length < 2) {
+      setSearchResults(null); setOpenIds({}); setSearchLoading(false); return;
+    }
     setSearchLoading(true);
     searchTimeout.current = setTimeout(async () => {
       try {
@@ -299,12 +392,18 @@ export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all"
           const matches = {};
           data.forEach(f => { matches[f.id] = true; });
           setOpenIds(matches);
-        } else { setSearchResults(null); }
-      } catch { setSearchResults(null); }
-      finally { setSearchLoading(false); }
+        } else {
+          setSearchResults(null);
+        }
+      } catch {
+        setSearchResults(null);
+      } finally {
+        setSearchLoading(false);
+      }
     }, 400);
   }, [search]);
 
+  // Filtered list
   const filtered = search.trim().length >= 2 && searchResults !== null
     ? searchResults
     : faqs.filter(f => {
@@ -315,6 +414,7 @@ export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all"
         return f.question.toLowerCase().includes(q) || f.answer.toLowerCase().includes(q);
       });
 
+  // Group by category when showing all
   const grouped = {};
   if (activeCat === "all") {
     CATEGORIES.filter(c => c.id !== "all").forEach(cat => {
@@ -322,13 +422,14 @@ export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all"
       if (items.length) grouped[cat.id] = items;
     });
     const knownIds = new Set(CATEGORIES.map(c => c.id));
-    const orphans = filtered.filter(f => !knownIds.has(f.category));
+    const orphans  = filtered.filter(f => !knownIds.has(f.category));
     if (orphans.length) grouped["__other__"] = orphans;
   }
 
   return (
     <main className="faq-page">
-      {/* Hero */}
+
+      {/* ── Hero ── */}
       <section className="faq-hero" aria-label="FAQ page header">
         <div className="faq-hero-bg" aria-hidden="true" />
         <div className="faq-hero-inner">
@@ -343,11 +444,12 @@ export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all"
             Frequently Asked<br />
             <span className="faq-hero-accent">Questions</span>
           </h1>
-          <p className="faq-hero-sub">{faqs.length} answers — find yours instantly or ask below.</p>
+          <p className="faq-hero-sub">
+            {faqs.length} answers — find yours instantly or ask below.
+          </p>
           <div className="faq-search-wrap" role="search">
             <span className="faq-search-icon" aria-hidden="true">🔍</span>
             <input
-              ref={searchRef}
               className="faq-search-input"
               type="search"
               placeholder="Search questions and answers…"
@@ -356,88 +458,134 @@ export default function FaqsClient({ initialFaqs, fetchError, initialCat = "all"
               aria-label="Search FAQs"
             />
             {search && (
-              <button className="faq-search-clear" onClick={() => setSearch("")} aria-label="Clear search">✕</button>
+              <button
+                className="faq-search-clear"
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
+              >✕</button>
             )}
           </div>
           {search && (
             <div className="faq-search-result-count" aria-live="polite">
-              {searchLoading ? "🔍 Searching…" : `${filtered.length} result${filtered.length !== 1 ? "s" : ""} for "${search}"`}
+              {searchLoading
+                ? "🔍 Searching…"
+                : `${filtered.length} result${filtered.length !== 1 ? "s" : ""} for "${search}"`
+              }
             </div>
           )}
         </div>
       </section>
 
-      {/* Category tabs */}
+      {/* ── Category Tabs ── */}
+      {/* Each tab is a real <Link> with a crawlable href (unchanged — already correct for bots) */}
       <nav className="faq-cats-wrap" aria-label="FAQ Categories">
         <div className="faq-cats-inner">
           {CATEGORIES.map(cat => {
-            // BOT FIX: Generate real URLs for AI bots to crawl
             const href = cat.id === "all" ? "/faqs" : `/faqs?cat=${cat.id}`;
-            
             return (
               <Link
                 key={cat.id}
                 href={href}
                 scroll={false}
                 prefetch={false}
-                style={{ textDecoration: 'none' }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleCatChange(cat.id);
-                }}
+                style={{ textDecoration: "none" }}
+                onClick={e => { e.preventDefault(); handleCatChange(cat.id); }}
+                aria-label={`Filter by ${cat.label}`}
               >
+                {/* button semantics via role (fixed — was aria-pressed on a div) */}
                 <div
                   className={`faq-cat-btn${activeCat === cat.id ? " faq-cat-btn--active" : ""}`}
+                  role="button"
                   aria-pressed={activeCat === cat.id}
                 >
                   <span className="faq-cat-icon" aria-hidden="true">{cat.icon}</span>
                   <span>{cat.label}</span>
                   <span className="faq-cat-count">
-                    {cat.id === "all" ? faqs.length : faqs.filter(f => f.category === cat.id).length}
+                    {cat.id === "all"
+                      ? faqs.length
+                      : faqs.filter(f => f.category === cat.id).length
+                    }
                   </span>
                 </div>
               </Link>
-            )
+            );
           })}
         </div>
       </nav>
 
-      {/* Content */}
+      {/* ── Content ── */}
       <div className="faq-content-wrap">
-        {fetchError && <div className="np-error">Unable to load FAQs right now. Please try again later.</div>}
+        {fetchError && (
+          <div className="np-error" role="alert">
+            Unable to load FAQs right now. Please try again later.
+          </div>
+        )}
 
+        {/* Empty state — distinguishes "no results" vs "no FAQs yet" (mirrors News/Blogs) */}
         {filtered.length === 0 && (
           <div className="faq-empty" role="status">
             <span className="faq-empty-icon" aria-hidden="true">🤔</span>
             <h2 className="faq-empty-title">No results found</h2>
-            <p className="faq-empty-sub">{search ? `Nothing matched "${search}".` : "No FAQs in this category yet."}</p>
-            {search && <button className="faq-empty-btn" onClick={() => setSearch("")}>Clear search</button>}
+            <p className="faq-empty-sub">
+              {search ? `Nothing matched "${search}".` : "No FAQs in this category yet."}
+            </p>
+            {search && (
+              <button className="faq-empty-btn" onClick={() => setSearch("")}>Clear search</button>
+            )}
           </div>
         )}
 
-        {/* All grouped */}
+        {/* All — grouped by category */}
         {activeCat === "all" && !search && filtered.length > 0 && (
           Object.entries(grouped).map(([catId, items]) => (
-            <section key={catId} id={catId} className="faq-group" aria-labelledby={`cat-heading-${catId}`}>
+            <section
+              key={catId}
+              id={catId}
+              className="faq-group"
+              aria-labelledby={`cat-heading-${catId}`}
+              // itemScope on each category section (new)
+              itemScope
+              itemType="https://schema.org/ItemList"
+            >
               <div className="faq-group-header">
                 <span className="faq-group-icon" aria-hidden="true">{CAT_MAP[catId]?.icon}</span>
-                <h2 className="faq-group-title" id={`cat-heading-${catId}`}>{CAT_MAP[catId]?.label}</h2>
-                <span className="faq-group-count">{items.length} question{items.length !== 1 ? "s" : ""}</span>
+                <h2 className="faq-group-title" id={`cat-heading-${catId}`}>
+                  {CAT_MAP[catId]?.label}
+                </h2>
+                <span className="faq-group-count">
+                  {items.length} question{items.length !== 1 ? "s" : ""}
+                </span>
               </div>
               <div className="faq-list">
                 {items.map(faq => (
-                  <FAQItem key={faq.id} faq={faq} isOpen={!!openIds[faq.id]} onToggle={() => handleToggle(faq.id)} searchQuery={search} userVotes={userVotes} onVote={handleVote} />
+                  <FAQItem
+                    key={faq.id}
+                    faq={faq}
+                    isOpen={!!openIds[faq.id]}
+                    onToggle={() => handleToggle(faq.id)}
+                    searchQuery={search}
+                    userVotes={userVotes}
+                    onVote={handleVote}
+                  />
                 ))}
               </div>
             </section>
           ))
         )}
 
-        {/* Single cat or search */}
+        {/* Single category or search results — flat list */}
         {(activeCat !== "all" || search) && filtered.length > 0 && (
           <div className="faq-list faq-list--flat">
             {filtered.map(faq => (
-              <FAQItem key={faq.id} faq={faq} isOpen={!!openIds[faq.id]} onToggle={() => handleToggle(faq.id)} searchQuery={search} userVotes={userVotes} onVote={handleVote} />
+              <FAQItem
+                key={faq.id}
+                faq={faq}
+                isOpen={!!openIds[faq.id]}
+                onToggle={() => handleToggle(faq.id)}
+                searchQuery={search}
+                userVotes={userVotes}
+                onVote={handleVote}
+              />
             ))}
           </div>
         )}

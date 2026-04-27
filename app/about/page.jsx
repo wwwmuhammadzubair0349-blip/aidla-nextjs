@@ -156,6 +156,10 @@ export default function About() {
 
       {/* Hero Section */}
       <section className={styles.hero} aria-label="About AIDLA">
+        <div className={styles.heroAurora} aria-hidden="true">
+          <div className={styles.auroraBlob1} />
+          <div className={styles.auroraBlob2} />
+        </div>
         <nav className={styles.breadcrumb} aria-label="Breadcrumb">
           <ol itemScope itemType="https://schema.org/BreadcrumbList">
             <li itemScope itemType="https://schema.org/ListItem" itemProp="itemListElement">
@@ -183,6 +187,15 @@ export default function About() {
           <Link href="/tools" className={styles.btnGhost}>🔧 Free Tools</Link>
           <Link href="/faqs" className={styles.btnGhost}>💬 FAQs</Link>
         </div>
+        <div className={styles.heroStats} aria-label="Platform statistics">
+          <div className={styles.heroStat}><strong>50K+</strong><span>Learners</span></div>
+          <div className={styles.heroStatDivider} aria-hidden="true" />
+          <div className={styles.heroStat}><strong>₨2M+</strong><span>Coins Earned</span></div>
+          <div className={styles.heroStatDivider} aria-hidden="true" />
+          <div className={styles.heroStat}><strong>1,200+</strong><span>Prizes Won</span></div>
+          <div className={styles.heroStatDivider} aria-hidden="true" />
+          <div className={styles.heroStat}><strong>100%</strong><span>Free Forever</span></div>
+        </div>
       </section>
 
 
@@ -192,6 +205,13 @@ export default function About() {
             
 
            
+        <div className={styles.missionBlock}>
+          <div className={styles.missionDecor} aria-hidden="true">
+            <div className={styles.missionDecorIcon}>🎓</div>
+            <div className={styles.missionDecorGrid}>
+              <span>📚</span><span>🪙</span><span>🏆</span>
+              <span>🎲</span><span>🤖</span><span>🔧</span>
+            </div>
           </div>
           <div className={styles.missionText}>
             <span className={styles.label}>Our Mission</span>
@@ -211,7 +231,7 @@ export default function About() {
               ))}
             </div>
           </div>
-        
+        </div>
 
         {/* Free Tools Section */}
         <section className={styles.section} aria-labelledby="tools-heading">
@@ -379,6 +399,7 @@ export default function About() {
           </div>
         </div>
       </div>
-   
+    </div>
+
   );
 }

@@ -1,60 +1,45 @@
 // app/courses/[slug]/page.jsx
-// Next.js 15 App Router — Public Course Detail Page
-// ✅ Per-course SSR metadata (title/desc/OG fetched server-side)
-// ✅ Course + BreadcrumbList + Organization JSON-LD
-// ✅ Canonical URL  ✅ WCAG AA  ✅ Lighthouse 100
-
-import { createClient } from "@supabase/supabase-js";
+import { notFound }    from "next/navigation";
+import { serverFetch } from "@/lib/supabaseServer";
 import CourseDetailClient from "./CourseDetailClient";
-import { toSlug } from "../CoursesClient";
+import { toSlug }     from "../CoursesClient";
+
+export const revalidate = 60;
+
+const SITE_URL = "https://www.aidla.online";
 
 /* ─────────────────────────────────────────────
    Server-side data helper
 ───────────────────────────────────────────── */
-async function getCourse(slug) {
-  try {
-    // Handle build-time scenario where environment variables are not available
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      return null;
-    }
-    
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    );
-    const { data } = await supabase
-      .from("course_courses")
-      .select("*")
-      .eq("status", "published");
-
-    if (!data?.length) return null;
-    return data.find(c => toSlug(c.title) === slug) || null;
-  } catch {
-    return null;
-  }
+async function getAllCourses() {
+  const { data } = await serverFetch("course_courses", {
+    select:   "*",
+    "status": "eq.published",
+  });
+  return data || [];
 }
 
 /* ─────────────────────────────────────────────
    Dynamic metadata — unique per course
-   Crawled by Google/social bots before JS runs
 ───────────────────────────────────────────── */
 export async function generateMetadata({ params }) {
-  const { slug } = await params; // Next.js 15: await params
-  const c = await getCourse(slug);
+  const { slug } = await params;
+  const courses  = await getAllCourses();
+  const c        = courses.find(c => toSlug(c.title) === slug) || null;
 
   if (!c) {
     return {
-      title: "Course Not Found | AIDLA",
+      title:       "Course Not Found | AIDLA",
       description: "This course could not be found on AIDLA.",
-      robots: { index: false, follow: false },
+      robots:      { index: false, follow: false },
     };
   }
 
   const desc =
     (c.description || "").slice(0, 155).replace(/\n/g, " ") +
     " — Enroll free on AIDLA, Pakistan's #1 educational rewards platform.";
-  const url   = `https://www.aidla.online/courses/${slug}`;
-  const image = c.thumbnail_url || "https://www.aidla.online/og-home.jpg";
+  const url   = `${SITE_URL}/courses/${slug}`;
+  const image = c.thumbnail_url || `${SITE_URL}/og-home.jpg`;
   const title = `${c.title} | AIDLA Online Courses`;
 
   return {
@@ -81,49 +66,57 @@ export async function generateMetadata({ params }) {
 }
 
 /* ─────────────────────────────────────────────
-   JSON-LD — injected server-side, crawlable
+   Page component
 ───────────────────────────────────────────── */
-async function CourseJsonLd({ slug }) {
-  const c = await getCourse(slug);
-  if (!c) return null;
+export default async function CourseDetailPage({ params }) {
+  const { slug }  = await params;
+  const courses   = await getAllCourses();
+  const course    = courses.find(c => toSlug(c.title) === slug) || null;
 
-  const isFree = !c.price || c.price === 0;
-  const url    = `https://www.aidla.online/courses/${slug}`;
+  if (!course) notFound();
+
+  /* Related: same category or level, exclude current, max 4 */
+  const related = courses
+    .filter(c => c.id !== course.id && (c.category === course.category || c.level === course.level))
+    .slice(0, 4);
+
+  const isFree = !course.price || course.price === 0;
+  const url    = `${SITE_URL}/courses/${slug}`;
 
   const courseSchema = {
     "@context": "https://schema.org",
-    "@type": "Course",
-    name:        c.title,
-    description: c.description || "",
+    "@type":    "Course",
+    name:        course.title,
+    description: course.description || "",
     url,
-    image:       c.thumbnail_url || "https://www.aidla.online/og-home.jpg",
-    courseLevel: c.level || "beginner",
+    image:       course.thumbnail_url || `${SITE_URL}/og-home.jpg`,
+    courseLevel: course.level || "beginner",
     provider: {
       "@type": "EducationalOrganization",
       name:    "AIDLA",
-      url:     "https://www.aidla.online",
+      url:     SITE_URL,
     },
     offers: {
       "@type":        "Offer",
-      price:          c.price || 0,
+      price:          course.price || 0,
       priceCurrency:  "USD",
       availability:   "https://schema.org/InStock",
-      url:            "https://www.aidla.online/signup",
+      url:            `${SITE_URL}/signup`,
       category:       isFree ? "Free" : "Paid",
     },
-    ...(c.duration_estimate && { timeRequired: c.duration_estimate }),
-    ...(c.category && { educationalLevel: c.category }),
-    inLanguage: "en",
+    ...(course.duration_estimate && { timeRequired: course.duration_estimate }),
+    ...(course.category && { educationalLevel: course.category }),
+    inLanguage:          "en",
     isAccessibleForFree: isFree,
   };
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
+    "@type":    "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home",    item: "https://www.aidla.online"         },
-      { "@type": "ListItem", position: 2, name: "Courses", item: "https://www.aidla.online/courses"  },
-      { "@type": "ListItem", position: 3, name: c.title,   item: url                                 },
+      { "@type": "ListItem", position: 1, name: "Home",    item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Courses", item: `${SITE_URL}/courses` },
+      { "@type": "ListItem", position: 3, name: course.title, item: url },
     ],
   };
 
@@ -137,20 +130,11 @@ async function CourseJsonLd({ slug }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-    </>
-  );
-}
-
-/* ─────────────────────────────────────────────
-   Page component
-───────────────────────────────────────────── */
-export default async function CourseDetailPage({ params }) {
-  const { slug } = await params; // Next.js 15: await params
-
-  return (
-    <>
-      <CourseJsonLd slug={slug} />
-      <CourseDetailClient slug={slug} />
+      <CourseDetailClient
+        slug={slug}
+        initialCourse={course}
+        initialRelated={related}
+      />
     </>
   );
 }

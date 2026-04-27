@@ -1,5 +1,7 @@
-import { supabase } from "@/lib/supabase";
+import { serverRpc } from "@/lib/supabaseServer";
 import ResourcesClient from "./ResourcesClient";
+
+export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
 
@@ -43,7 +45,7 @@ export default async function ResourcesPage({ searchParams }) {
 
   // 2. Fetch Data ON THE SERVER for 100% AI Readability
   const [{ data: materialsData }, { data: optionsData }] = await Promise.all([
-    supabase.rpc("study_materials_public_list", {
+    serverRpc("study_materials_public_list", {
       p_search: q || null,
       p_category: category || null,
       p_subject: subject || null,
@@ -53,7 +55,7 @@ export default async function ResourcesPage({ searchParams }) {
       p_limit: 12,
       p_offset: (page - 1) * 12,
     }),
-    supabase.rpc("study_materials_filter_options")
+    serverRpc("study_materials_filter_options"),
   ]);
 
   const initialMaterials = materialsData || [];

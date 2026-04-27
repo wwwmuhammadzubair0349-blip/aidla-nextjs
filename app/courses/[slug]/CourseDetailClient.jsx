@@ -283,15 +283,16 @@ function LoadingSkeleton() {
 /* ─────────────────────────────────────────────
    Main Client Component
 ───────────────────────────────────────────── */
-export default function CourseDetailClient({ slug }) {
+export default function CourseDetailClient({ slug, initialCourse = null, initialRelated = [] }) {
   const router    = useRouter();
-  const [course,   setCourse]   = useState(null);
-  const [related,  setRelated]  = useState([]);
-  const [loading,  setLoading]  = useState(true);
+  const [course,   setCourse]   = useState(initialCourse);
+  const [related,  setRelated]  = useState(initialRelated);
+  const [loading,  setLoading]  = useState(!initialCourse);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (initialCourse) return; // already have server-fetched data
     (async () => {
       setLoading(true);
       const { data } = await supabase
@@ -312,7 +313,7 @@ export default function CourseDetailClient({ slug }) {
       setRelated(rel);
       setLoading(false);
     })();
-  }, [slug]);
+  }, [slug]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) return <><style>{CSS}</style><LoadingSkeleton /></>;
 

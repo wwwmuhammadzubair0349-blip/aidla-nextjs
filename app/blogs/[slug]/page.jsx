@@ -3,27 +3,24 @@
 //  ISR — revalidates every 60 s
 //  Top 50 slugs pre-built at deploy time (mirrors news/[slug]/page.jsx)
 // ════════════════════════════════════════════════════════
-import { notFound }    from "next/navigation";
-import { supabase }    from "@/lib/supabase";
-import BlogPostClient  from "./BlogPostClient";
+import { notFound }       from "next/navigation";
+import { serverFetch }    from "@/lib/supabaseServer";
+import BlogPostClient     from "./BlogPostClient";
 
 export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
 const OG_IMAGE = `${SITE_URL}/og-home.jpg`;
 
-/* ── Pre-build top 50 slugs at deploy time (new — mirrors News) ── */
+/* ── Pre-build top 50 slugs at deploy time ── */
 export async function generateStaticParams() {
-  if (!supabase) return [];
-
-  const { data } = await supabase
-    .from("blogs_posts")
-    .select("slug")
-    .is("deleted_at", null)
-    .eq("status", "published")
-    .order("view_count", { ascending: false })
-    .limit(50);
-
+  const { data } = await serverFetch("blogs_posts", {
+    select:        "slug",
+    "deleted_at":  "is.null",
+    "status":      "eq.published",
+    order:         "view_count.desc",
+    limit:         "50",
+  });
   return (data || []).map(p => ({ slug: p.slug }));
 }
 
@@ -31,15 +28,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
 
-  if (!supabase) return { title: "Insight Not Found — AIDLA" };
-
-  const { data: post } = await supabase
-    .from("blogs_posts")
-    .select("title,excerpt,cover_image_url,tags,published_at,updated_at,author_name")
-    .eq("slug", slug)
-    .is("deleted_at", null)
-    .eq("status", "published")
-    .maybeSingle();
+  const { data: posts } = await serverFetch("blogs_posts", {
+    select:       "title,excerpt,cover_image_url,tags,published_at,updated_at,author_name",
+    slug:         `eq.${slug}`,
+    "deleted_at": "is.null",
+    "status":     "eq.published",
+    limit:        "1",
+  });
+  const post = posts?.[0] || null;
 
   if (!post) return { title: "Insight Not Found — AIDLA" };
 
@@ -79,24 +75,25 @@ export async function generateMetadata({ params }) {
 export default async function BlogPostPage({ params }) {
   const { slug } = await params;
 
-  /* Parallel fetch: article + related (new — mirrors News) */
-  const [{ data: post, error }, { data: allPosts }] = await Promise.all([
-    supabase
-      .from("blogs_posts")
-      .select("*")
-      .eq("slug", slug)
-      .eq("status", "published")
-      .is("deleted_at", null)
-      .single(),
-    supabase
-      .from("blogs_posts")
-      .select("id,title,slug,cover_image_url,published_at,tags,view_count")
-      .is("deleted_at", null)
-      .eq("status", "published")
-      .order("published_at", { ascending: false })
-      .limit(20),
+  /* Parallel fetch: article + related */
+  const [{ data: postArr, error }, { data: allPosts }] = await Promise.all([
+    serverFetch("blogs_posts", {
+      select:       "*",
+      slug:         `eq.${slug}`,
+      "deleted_at": "is.null",
+      "status":     "eq.published",
+      limit:        "1",
+    }),
+    serverFetch("blogs_posts", {
+      select:       "id,title,slug,cover_image_url,published_at,tags,view_count",
+      "deleted_at": "is.null",
+      "status":     "eq.published",
+      order:        "published_at.desc",
+      limit:        "20",
+    }),
   ]);
 
+  const post = postArr?.[0] || null;
   if (error || !post) notFound();
 
   /* Related: same-tag posts, exclude current, max 4 */
@@ -113,7 +110,7 @@ export default async function BlogPostPage({ params }) {
 
   const canonical = `${SITE_URL}/blogs/${slug}`;
 
-  /* ── JSON-LD: Article + BreadcrumbList (new — mirrors News) ── */
+  /* ── JSON-LD: Article + BreadcrumbList ── */
   const articleSchema = {
     "@context":    "https://schema.org",
     "@type":       "BlogPosting",

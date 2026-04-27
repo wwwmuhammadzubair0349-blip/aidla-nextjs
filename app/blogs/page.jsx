@@ -35,13 +35,12 @@ export const metadata = {
 };
 
 export default async function BlogsPage() {
-const { data: posts, error } = await supabase
-  .from("blogs_posts")
-  .select("id,title,slug,excerpt,cover_image_url,published_at,tags,view_count")
-  .is("deleted_at", null)
-  .eq("status", "published")
-  .order("published_at", { ascending: false });
-
+  const { data: posts, error } = await serverFetch("blogs_posts", {
+    select:       "id,title,slug,excerpt,cover_image_url,published_at,tags,view_count",
+    "deleted_at": "is.null",
+    "status":     "eq.published",
+    order:        "published_at.desc",
+  });
 
   const safePosts  = posts  || [];
   const fetchError = !!error;

@@ -1,24 +1,21 @@
 // app/faqs/[slug]/page.jsx
 import { notFound }    from "next/navigation";
-import { supabase }    from "@/lib/supabase";
+import { serverFetch } from "@/lib/supabaseServer";
 import FaqPageClient   from "./FaqPageClient";
 
 export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
 
-/* ── Pre-build top 100 slugs by view_count at deploy time (fixed — was unordered) ── */
+/* ── Pre-build top 100 slugs by view_count at deploy time ── */
 export async function generateStaticParams() {
-  if (!supabase) return [];
-
-  const { data } = await supabase
-    .from("faqs")
-    .select("slug")
-    .eq("status", "published")
-    .eq("is_visible", true)
-    .order("view_count", { ascending: false })  // top viewed first (new)
-    .limit(100);
-
+  const { data } = await serverFetch("faqs", {
+    select:       "slug",
+    "status":     "eq.published",
+    "is_visible": "eq.true",
+    order:        "view_count.desc",
+    limit:        "100",
+  });
   return (data || []).map(f => ({ slug: f.slug }));
 }
 
@@ -26,19 +23,17 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
 
-  if (!supabase) return { title: "FAQ Not Found — AIDLA" };
-
-  const { data: faq } = await supabase
-    .from("faqs")
-    .select("question,answer,slug,updated_at,created_at")
-    .eq("slug", slug)
-    .eq("status", "published")
-    .eq("is_visible", true)
-    .single();
+  const { data: faqs } = await serverFetch("faqs", {
+    select:       "question,answer,slug,updated_at,created_at",
+    slug:         `eq.${slug}`,
+    "status":     "eq.published",
+    "is_visible": "eq.true",
+    limit:        "1",
+  });
+  const faq = faqs?.[0] || null;
 
   if (!faq) return { title: "FAQ Not Found — AIDLA" };
 
-  // Strip HTML for clean meta description (unchanged — already correct)
   const desc      = faq.answer.replace(/<[^>]+>/g, "").slice(0, 155);
   const canonical = `${SITE_URL}/faqs/${faq.slug}`;
 
@@ -52,7 +47,6 @@ export async function generateMetadata({ params }) {
       url:          canonical,
       siteName:     "AIDLA",
       type:         "article",
-      // modifiedTime added for freshness signal (new)
       modifiedTime: faq.updated_at || faq.created_at,
       images:       [{ url: `${SITE_URL}/og-home.jpg` }],
     },
@@ -69,19 +63,20 @@ export async function generateMetadata({ params }) {
 export default async function FAQSlugPage({ params }) {
   const { slug } = await params;
 
-  const { data: faq, error } = await supabase
-    .from("faqs")
-    .select("*")
-    .eq("slug", slug)
-    .eq("status", "published")
-    .eq("is_visible", true)
-    .single();
+  const { data: faqs, error } = await serverFetch("faqs", {
+    select:       "*",
+    slug:         `eq.${slug}`,
+    "status":     "eq.published",
+    "is_visible": "eq.true",
+    limit:        "1",
+  });
+  const faq = faqs?.[0] || null;
 
   if (error || !faq) notFound();
 
   const canonical = `${SITE_URL}/faqs/${faq.slug}`;
 
-  /* ── JSON-LD: QAPage — answer HTML stripped for clean schema text (fixed) ── */
+  /* ── JSON-LD: QAPage ── */
   const qaSchema = {
     "@context":  "https://schema.org",
     "@type":     "QAPage",
@@ -91,7 +86,6 @@ export default async function FAQSlugPage({ params }) {
       text:          faq.question,
       dateCreated:   faq.created_at,
       answerCount:   1,
-      // author added at Question level (was missing in original)
       author: {
         "@type": "Organization",
         name:    "AIDLA",
@@ -99,7 +93,6 @@ export default async function FAQSlugPage({ params }) {
       },
       acceptedAnswer: {
         "@type":       "Answer",
-        // Strip HTML for clean schema text (fixed — was raw HTML in original)
         text:          faq.answer.replace(/<[^>]+>/g, "").trim(),
         dateCreated:   faq.updated_at || faq.created_at,
         upvoteCount:   faq.helpful_yes,

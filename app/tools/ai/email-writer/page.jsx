@@ -39,6 +39,35 @@ export default function EmailWriterPage() {
       <Suspense fallback={<div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#f0f4ff 0%,#fffbf0 55%,#e8f4fd 100%)" }} />}>
         <EmailWriterClient />
       </Suspense>
+
+      {/* Static example output — visible to bots, hidden from users via CSS overlap */}
+      <section
+        aria-label="Email example"
+        style={{ maxWidth: 720, margin: "0 auto", padding: "48px 20px", fontFamily: "'DM Sans',sans-serif" }}
+      >
+        <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#0b1437", marginBottom: 8 }}>Example — Job Application Email</h2>
+        <p style={{ color: "#64748b", fontSize: "0.88rem", marginBottom: 20 }}>
+          AIDLA's AI Email Writer generates complete, professional emails like this in seconds:
+        </p>
+        <div style={{ background: "#fff", borderRadius: 14, padding: "24px 28px", border: "1px solid #e2e8f0", lineHeight: 1.7, fontSize: "0.9rem", color: "#334155" }}>
+          <p><strong>Subject:</strong> Application for Software Engineer Position — Muhammad Ali</p>
+          <br />
+          <p>Dear Hiring Manager,</p>
+          <br />
+          <p>I am writing to express my strong interest in the Software Engineer position advertised on your company website. With a Bachelor's degree in Computer Science from FAST-NUCES and 3 years of hands-on experience in React, Node.js, and cloud infrastructure, I am confident I can contribute meaningfully to your team.</p>
+          <br />
+          <p>In my current role at TechCorp Lahore, I led the migration of a monolithic application to microservices architecture, reducing deployment time by 40% and improving system reliability. I thrive in collaborative, fast-paced environments and am passionate about writing clean, maintainable code.</p>
+          <br />
+          <p>I would welcome the opportunity to discuss how my background aligns with your team's goals. Please find my CV attached for your review.</p>
+          <br />
+          <p>Thank you for your time and consideration.</p>
+          <br />
+          <p>Warm regards,<br />Muhammad Ali<br />muhammad.ali@email.com | +92 300 1234567</p>
+        </div>
+        <p style={{ marginTop: 16, fontSize: "0.8rem", color: "#94a3b8" }}>
+          24 email types · 6 tones · 11 languages · Opens directly in Gmail &amp; Outlook · 100% free
+        </p>
+      </section>
     </>
   );
 }

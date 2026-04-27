@@ -72,10 +72,44 @@ export default async function CoursesPage() {
     description: "Pakistan's #1 educational rewards platform. Learn, earn coins and win real prizes.",
   };
 
+  const COURSE_CATEGORIES = [
+    { icon: "📐", name: "Mathematics",     desc: "Algebra, calculus, statistics and more — from Matric to university level." },
+    { icon: "🔬", name: "Science",         desc: "Physics, Chemistry, Biology and Computer Science courses with practicals." },
+    { icon: "📖", name: "English",         desc: "Grammar, essay writing, IELTS preparation and communication skills." },
+    { icon: "💻", name: "Computer Science",desc: "Programming, web development, AI basics and digital literacy." },
+    { icon: "📊", name: "Commerce",        desc: "Accounting, economics, business studies and finance fundamentals." },
+    { icon: "🏛️", name: "CSS / PMS",      desc: "Comprehensive preparation courses for CSS, PMS, and other civil service exams." },
+  ];
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+
+      {/* Static content — visible to bots before JS */}
+      {courses.length === 0 && (
+        <section
+          style={{ maxWidth: 960, margin: "0 auto", padding: "48px 20px 0", fontFamily: "'DM Sans',sans-serif" }}
+          aria-label="Course categories"
+        >
+          <h1 style={{ fontSize: "clamp(1.6rem,5vw,2.4rem)", fontWeight: 900, color: "#0b1437", marginBottom: 8 }}>
+            Free Online Courses
+          </h1>
+          <p style={{ color: "#64748b", fontSize: "1rem", marginBottom: 36, maxWidth: 640 }}>
+            Expert-led courses for Pakistani students — earn coins and get certificates as you learn. All courses are 100% free.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 16, marginBottom: 48 }}>
+            {COURSE_CATEGORIES.map(c => (
+              <div key={c.name} style={{ background: "#fff", borderRadius: 14, padding: "20px 22px", border: "1px solid #e2e8f0" }}>
+                <div style={{ fontSize: "1.8rem", marginBottom: 10 }} aria-hidden="true">{c.icon}</div>
+                <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "#0b1437", marginBottom: 6 }}>{c.name}</h2>
+                <p style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.5 }}>{c.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       <Suspense fallback={<CoursesPageSkeleton />}>
         <CoursesClient initialCourses={courses} />
       </Suspense>

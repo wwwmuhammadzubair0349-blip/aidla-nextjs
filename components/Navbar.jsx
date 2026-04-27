@@ -17,6 +17,8 @@ function CatPet({ mood, size = 40 }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       style={{ width: size, height: size, flexShrink: 0, overflow: "visible" }}
+      aria-hidden="true"
+      focusable="false"
     >
       <style>{`
         .mood-happy   { animation: catHappyBob  0.9s infinite alternate ease-in-out; }
@@ -150,14 +152,14 @@ export default function Navbar() {
         <div className="ph-inner">
           <div className="ph-top">
             <Link href="/" className="ph-logo">AIDLA</Link>
-            <div className="ph-cat-widget">
+            <div className="ph-cat-widget" aria-hidden="true" role="presentation">
               <CatPet mood={mood} size={38} />
               <div className="ph-datetime">
-                <span className="ph-greet">Good {greetWord}!</span>
+                <span className="ph-greet">{mounted ? `Good ${greetWord}!` : ""}</span>
                 <span className="ph-dt">
-                  <span className="ph-dt-date">{dateStr}</span>
-                  <span className="ph-dt-sep">·</span>
-                  <span className="ph-dt-time">{timeStr}</span>
+                  <span className="ph-dt-date">{mounted ? dateStr : ""}</span>
+                  {mounted && <span className="ph-dt-sep">·</span>}
+                  <span className="ph-dt-time">{mounted ? timeStr : ""}</span>
                 </span>
               </div>
             </div>

@@ -151,6 +151,22 @@ function CvMakerSkeleton() {
 /* ─────────────────────────────────────────────
    Page
 ───────────────────────────────────────────── */
+const CV_TEMPLATES = [
+  "Modern Stack", "Pure White", "Swiss Clean", "Ink Line", "Sidebar Dark",
+  "Gulf Premium", "Infographic Split", "Diamond", "Ivy League", "Double Column",
+  "Navy Executive", "Timeline Pro", "Coral Modern", "Slate Pro", "Compact ATS",
+  "Bold Header", "Dubai Pro",
+];
+
+const CV_FEATURES = [
+  { icon: "🤖", title: "AI Writing Assistant",   desc: "Describe your experience in plain words — AI rewrites it into professional, ATS-optimized bullet points." },
+  { icon: "📄", title: "17 Premium Templates",   desc: "Professional designs for UAE, Saudi Arabia, Pakistan and global job markets. Modern, Classic, Executive and more." },
+  { icon: "✅", title: "ATS Score Checker",       desc: "Real-time ATS compatibility score. Identifies missing keywords so your CV passes automated screening." },
+  { icon: "⬇️", title: "Instant PDF Download",   desc: "High-quality, print-ready PDF with real selectable text — not a screenshot — parseable by any ATS." },
+  { icon: "🌍", title: "Multi-Language Support",  desc: "Generate CVs in English, Arabic, Urdu, French, German, Spanish and more." },
+  { icon: "🆓", title: "100% Free",               desc: "No subscription, no sign-up required. Unlimited CV downloads, completely free." },
+];
+
 export default function CvMakerPage() {
   return (
     <>
@@ -158,6 +174,34 @@ export default function CvMakerPage() {
       <Suspense fallback={<CvMakerSkeleton />}>
         <CvMakerClient />
       </Suspense>
+
+      {/* Static content section — readable by bots */}
+      <section
+        aria-label="CV Maker features"
+        style={{ maxWidth: 960, margin: "0 auto", padding: "48px 20px 64px", fontFamily: "'DM Sans',sans-serif" }}
+      >
+        <h2 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#0b1437", marginBottom: 6 }}>
+          Why Use AIDLA CV Maker?
+        </h2>
+        <p style={{ color: "#64748b", marginBottom: 32, maxWidth: 600 }}>
+          The only free CV builder with AI writing, ATS checking, and professional templates — built specifically for Pakistani, UAE and Gulf job seekers.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16, marginBottom: 40 }}>
+          {CV_FEATURES.map(f => (
+            <div key={f.title} style={{ background: "#fff", borderRadius: 14, padding: "20px 22px", border: "1px solid #e2e8f0" }}>
+              <div style={{ fontSize: "1.6rem", marginBottom: 8 }} aria-hidden="true">{f.icon}</div>
+              <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#0b1437", marginBottom: 6 }}>{f.title}</h3>
+              <p style={{ fontSize: "0.83rem", color: "#64748b", lineHeight: 1.5 }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+        <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0b1437", marginBottom: 12 }}>Available Templates</h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {CV_TEMPLATES.map(t => (
+            <span key={t} style={{ background: "#f1f5f9", color: "#334155", borderRadius: 20, padding: "4px 14px", fontSize: "0.8rem", fontWeight: 600 }}>{t}</span>
+          ))}
+        </div>
+      </section>
     </>
   );
 }

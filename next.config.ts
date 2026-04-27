@@ -26,15 +26,16 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
+      // ✅ Sitemap — correct MIME type for bots and Google Search Console
+      {
+        source: "/sitemap.xml",
+        headers: [{ key: "Content-Type", value: "application/xml; charset=utf-8" }],
+      },
+
       // ✅ API routes (no cache)
       {
         source: "/api/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "no-store",
-          },
-        ],
+        headers: [{ key: "Cache-Control", value: "no-store" }],
       },
 
       // ✅ Security headers

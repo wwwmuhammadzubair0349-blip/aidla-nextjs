@@ -63,6 +63,10 @@ export default function robots() {
       { userAgent: "omgili", allow: "/" },
       { userAgent: "Grok", allow: "/" },
       { userAgent: "ia_archiver", allow: "/" },
+      { userAgent: "Gemini-AI-Bot", allow: "/" },
+      { userAgent: "MistralBot", allow: "/" },
+      { userAgent: "Kangaroo Bot", allow: "/" },
+      { userAgent: "PetalBot", allow: "/" },
     ],
   };
 }

@@ -199,29 +199,33 @@ export default async function Home() {
   const votedFeatures = cookieStore.get("aidla_voted_fp")?.value || "{}";
   const userVoted = JSON.parse(votedFeatures);
 
-  const[
-    { data: blogs },
-    { data: news },
-    { data: announcements },
-    { data: draws },
-    { data: wheelRaw },
-    { data: testers },
-    { data: reviews },
-    { data: faqs },
-  ] = await Promise.all([
-    supabase.from("blogs_posts").select("id,title,excerpt,tags,published_at,slug,view_count").is("deleted_at", null).eq("status", "published").order("published_at", { ascending: false }).limit(6),
-    supabase.from("news_posts").select("id,title,excerpt,tags,published_at,slug,view_count").is("deleted_at", null).eq("status", "published").order("published_at", { ascending: false }).limit(6),
-    supabase.from("announcements").select("*").eq("is_visible", true).order("sort_order", { ascending: true }),
-    supabase.from("luckydraw_results").select("id,winner_name,draw_title,prize_text,announced_at").order("announced_at", { ascending: false }).limit(5),
-    supabase.from("luckywheel_history").select("id,user_id,result_type,coins_won,created_at").in("result_type", ["coins", "gift"]).order("created_at", { ascending: false }).limit(5),
-    supabase.from("test_winners").select("id,user_name,rank_no,approved_at,test_id,test_tests(title)").order("approved_at", { ascending: false }).limit(5),
-    supabase.from("user_reviews").select("id,full_name,rating,review_text,created_at").eq("is_approved", true).order("created_at", { ascending: false }).limit(10),
-    supabase.from("faqs").select("id,question,answer,slug,category").eq("status", "published").eq("is_visible", true).order("helpful_yes", { ascending: false }).limit(6),
-  ]);
+  let blogs = null, news = null, announcements = null, draws = null, wheelRaw = null, testers = null, reviews = null, faqs = null;
+
+  // Only fetch data if supabase is initialized
+  if (supabase) {
+    const results = await Promise.all([
+      supabase.from("blogs_posts").select("id,title,excerpt,tags,published_at,slug,view_count").is("deleted_at", null).eq("status", "published").order("published_at", { ascending: false }).limit(6),
+      supabase.from("news_posts").select("id,title,excerpt,tags,published_at,slug,view_count").is("deleted_at", null).eq("status", "published").order("published_at", { ascending: false }).limit(6),
+      supabase.from("announcements").select("*").eq("is_visible", true).order("sort_order", { ascending: true }),
+      supabase.from("luckydraw_results").select("id,winner_name,draw_title,prize_text,announced_at").order("announced_at", { ascending: false }).limit(5),
+      supabase.from("luckywheel_history").select("id,user_id,result_type,coins_won,created_at").in("result_type", ["coins", "gift"]).order("created_at", { ascending: false }).limit(5),
+      supabase.from("test_winners").select("id,user_name,rank_no,approved_at,test_id,test_tests(title)").order("approved_at", { ascending: false }).limit(5),
+      supabase.from("user_reviews").select("id,full_name,rating,review_text,created_at").eq("is_approved", true).order("created_at", { ascending: false }).limit(10),
+      supabase.from("faqs").select("id,question,answer,slug,category").eq("status", "published").eq("is_visible", true).order("helpful_yes", { ascending: false }).limit(6),
+    ]);
+    blogs = results[0].data;
+    news = results[1].data;
+    announcements = results[2].data;
+    draws = results[3].data;
+    wheelRaw = results[4].data;
+    testers = results[5].data;
+    reviews = results[6].data;
+    faqs = results[7].data;
+  }
 
   const userIds = wheelRaw?.map((w) => w.user_id) ||[];
   let userMap = {};
-  if (userIds.length) {
+  if (userIds.length && supabase) {
     const { data: profiles } = await supabase.from("users_profiles").select("id,full_name").in("id", userIds);
     if (profiles) userMap = Object.fromEntries(profiles.map((p) =>[p.id, p.full_name || "Anonymous"]));
   }

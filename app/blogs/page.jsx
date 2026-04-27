@@ -33,12 +33,19 @@ export const metadata = {
 
 export default async function BlogsPage() {
   // ⚡ SERVER-SIDE FETCH (100% AI Bot Readability)
-  const { data: posts, error } = await supabase
-    .from("blogs_posts")
-    .select("id,title,slug,excerpt,cover_image_url,published_at,tags,view_count")
-    .is("deleted_at", null)
-    .eq("status", "published")
-    .order("published_at", { ascending: false });
+  let posts = null;
+  let error = null;
+  
+  if (supabase) {
+    const result = await supabase
+      .from("blogs_posts")
+      .select("id,title,slug,excerpt,cover_image_url,published_at,tags,view_count")
+      .is("deleted_at", null)
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+    posts = result.data;
+    error = result.error;
+  }
 
   // 🤖 AI STRUCTURED DATA (JSON-LD)
   const structuredData = {

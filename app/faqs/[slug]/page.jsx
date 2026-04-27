@@ -7,6 +7,9 @@ export const revalidate = 60;
 const SITE_URL = "https://www.aidla.online";
 
 export async function generateStaticParams() {
+  // Handle build-time scenario where supabase is not initialized
+  if (!supabase) return [];
+  
   const { data } = await supabase
     .from("faqs")
     .select("slug")
@@ -18,6 +21,10 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
+  
+  // Handle build-time scenario where supabase is not initialized
+  if (!supabase) return { title: "FAQ Not Found — AIDLA" };
+  
   const { data: faq } = await supabase
     .from("faqs")
     .select("question, answer, slug")

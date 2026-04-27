@@ -14,6 +14,9 @@ const OG_IMAGE = `${SITE_URL}/og-home.jpg`;
 
 /* Pre-build the 50 most-viewed slugs at deploy time */
 export async function generateStaticParams() {
+  // Handle build-time scenario where supabase is not initialized
+  if (!supabase) return [];
+  
   const { data } = await supabase
     .from("news_posts")
     .select("slug")
@@ -31,6 +34,15 @@ export async function generateStaticParams() {
 ───────────────────────────────────────────── */
 export async function generateMetadata({ params }) {
     const { slug } = await params;
+  
+  // Handle build-time scenario where supabase is not initialized
+  if (!supabase) {
+    return {
+      title:       "News Not Found — AIDLA",
+      description: "This article could not be found.",
+    };
+  }
+  
   const { data: post } = await supabase
     .from("news_posts")
     .select("title,excerpt,cover_image_url,published_at,tags,slug")

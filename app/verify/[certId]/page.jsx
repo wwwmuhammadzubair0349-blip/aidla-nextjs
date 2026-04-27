@@ -56,6 +56,9 @@ function SealBadge({ size = 46 }) {
 
 /* ── Server-side data fetch ── */
 async function getCertificate(certId) {
+  // Handle build-time scenario where supabase is not initialized
+  if (!supabase) return null;
+  
   try {
     const { data, error } = await supabase
       .from("course_certificates")

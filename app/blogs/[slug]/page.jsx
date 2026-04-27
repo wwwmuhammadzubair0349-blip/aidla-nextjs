@@ -9,6 +9,9 @@ export async function generateMetadata({ params }) {
   // ⬅️ FIX: Await the params object (Required for Next.js 15+)
   const { slug } = await params; 
   
+  // Handle build-time scenario where supabase is not initialized
+  if (!supabase) return { title: "Insight Not Found | AIDLA" };
+  
   const { data: post } = await supabase
     .from("blogs_posts")
     .select("title, excerpt, cover_image_url, tags, published_at, author_name")

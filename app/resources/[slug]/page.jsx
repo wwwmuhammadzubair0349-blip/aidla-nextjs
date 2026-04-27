@@ -5,6 +5,11 @@ import ResourceDetailClient from "./ResourceDetailClient";
 
 async function getMaterial(slug) {
   try {
+    // Handle build-time scenario where environment variables are not available
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      return null;
+    }
+    
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY

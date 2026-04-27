@@ -108,7 +108,6 @@ export default async function sitemap() {
 
   return [
     ...staticPages,
-    ...boardPages,
     ...blogPages,
     ...newsPages,
     ...faqPages,

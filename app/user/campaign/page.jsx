@@ -436,12 +436,14 @@ export default function UserCampaignPage() {
                       </div>
                     )}
 
-                    {subFormat === "video" && (
+                    {subFormat && (
                       <div className="video-instructions mt-6">
-                        <div className="vid-step"><div className="vs-num">1</div> <div className="vs-text">Record an authentic video about AIDLA</div></div>
-                        <div className="vid-step"><div className="vs-num">2</div> <div className="vs-text">Show your screen (Boosts conversion)</div></div>
+                        <div className="vid-step"><div className="vs-num">1</div> <div className="vs-text">Create authentic AIDLA content for {subPlatform}</div></div>
+                        <div className="vid-step"><div className="vs-num">2</div> <div className="vs-text">Include a clear AIDLA screen view or screenshot (Boosts conversion)</div></div>
                         <div className="vid-step"><div className="vs-num">3</div> <div className="vs-text">Clearly state your referral code</div></div>
-                        <div className="vid-step"><div className="vs-num">4</div> <div className="vs-text">Use a trending audio on {subPlatform}</div></div>
+                        <div className="vid-step"><div className="vs-num">4</div> <div className="vs-text">Use a trending audio on {subPlatform} when possible</div></div>
+                        <div className="vid-step"><div className="vs-num">5</div> <div className="vs-text">Mention / tag AIDLA Official account — mandatory</div></div>
+                        <div className="vid-note mt-4">Official AIDLA profiles: TikTok <a href="https://www.tiktok.com/@aidla_official" target="_blank" rel="noopener noreferrer">@aidla_official</a>, Instagram <a href="https://www.instagram.com/aidla_official/" target="_blank" rel="noopener noreferrer">@aidla_official</a>, LinkedIn <a href="https://www.linkedin.com/company/aidla" target="_blank" rel="noopener noreferrer">AIDLA</a>, Facebook <a href="https://www.facebook.com/profile.php?id=61586195563121" target="_blank" rel="noopener noreferrer">AIDLA</a>, WhatsApp <a href="https://whatsapp.com/channel/0029VbC6yju0rGiV5JaCqj42" target="_blank" rel="noopener noreferrer">AIDLA Channel</a>.</div>
                       </div>
                     )}
                   </div>

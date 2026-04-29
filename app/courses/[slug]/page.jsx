@@ -2,11 +2,14 @@
 import { notFound }    from "next/navigation";
 import { serverFetch } from "@/lib/supabaseServer";
 import CourseDetailClient from "./CourseDetailClient";
-import { toSlug }     from "../CoursesClient";
 
 export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
+
+function toSlug(title = "") {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
 
 /* ─────────────────────────────────────────────
    Server-side data helper

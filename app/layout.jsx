@@ -104,6 +104,19 @@ const GLOBAL_SCHEMA = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        {/* ✅ PERFORMANCE FIX: Preconnect to Google Fonts domains BEFORE fetching */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* ✅ PERFORMANCE FIX: Load Playfair Display + DM Sans via <link> (non-blocking)
+            instead of CSS @import (render-blocking).
+            Only load weights actually used: Playfair 700+900, DM Sans 400+600+700 */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className={inter.className}>
         <script
           type="application/ld+json"

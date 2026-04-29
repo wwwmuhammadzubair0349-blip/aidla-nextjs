@@ -899,7 +899,7 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
       background: var(--bg);
       min-height: ${paperH}px;
       padding: 35px;
-      overflow: hidden;
+      overflow: visible;
     }
     h1, h2, h3 { margin: 0; }
     .cv-name { font-size: 2.2em; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }

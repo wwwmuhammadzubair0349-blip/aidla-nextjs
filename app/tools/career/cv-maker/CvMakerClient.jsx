@@ -391,6 +391,7 @@ textarea.cv-inp { height:auto; min-height:80px; padding:10px 11px; resize:vertic
   .cv-main-tabs { display:none; }
   .cv-panel { display:block!important; }
   .cv-grid { display:grid; grid-template-columns:440px 1fr; gap:14px; align-items:start; }
+  .cv-col-prev { min-width: 500px; }
   .cv-desktop-only { display:block!important; }
 }
 @media (max-width:959px) {

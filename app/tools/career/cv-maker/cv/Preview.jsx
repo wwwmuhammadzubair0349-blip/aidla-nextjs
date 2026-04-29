@@ -117,6 +117,7 @@ const PREVIEW_CSS = `
   -webkit-overflow-scrolling: touch;
   max-height: 52vh;
   width: 100%;
+  min-width: 0;
   scrollbar-width: thin;
   scrollbar-color: rgba(37,99,235,.3) transparent;
 }
@@ -127,13 +128,16 @@ const PREVIEW_CSS = `
 
 .cv-prev-scale {
   position: relative;
-  flex-shrink: 0;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 0;
 }
 #cv-paper {
   background: #fff;
   box-shadow: 0 3px 20px rgba(15,23,42,.16);
   transform-origin: top left;
+  flex-shrink: 0;
 }
 
 .cv-prev-download {

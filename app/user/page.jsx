@@ -185,6 +185,7 @@ const CSS = `
   .ic-amber  { background: rgba(254,243,199,0.8); border: 1px solid rgba(252,211,77,0.35);  }
   .ic-purple { background: rgba(237,233,254,0.8); border: 1px solid rgba(196,181,253,0.35); }
   .ic-coral  { background: rgba(254,226,226,0.8); border: 1px solid rgba(252,165,165,0.35); }
+  .ic-green  { background: rgba(209,250,229,0.8); border: 1px solid rgba(110,231,183,0.35); }
 
   .reg-title { font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; letter-spacing: -0.15px; }
   .reg-sub   { font-size: 0.7rem; color: #64748b; line-height: 1.3; }
@@ -310,6 +311,14 @@ export default function UserDashboard() {
         <RegCard title="Lucky Draw"  subtitle="Scheduled draws & big prizes"  icon="🎟️" to="/user/lucky-draw"  iconClass="ic-amber" />
         <RegCard title="Lucky Wheel" subtitle="Spin the wheel & win rewards"  icon="🎡" to="/user/lucky-wheel" iconClass="ic-amber" />
         <RegCard title="Shop"        subtitle="Buy products with AIDLA coins" icon="🛍️" to="/user/shop"        iconClass="ic-amber" />
+      </Section>
+
+      {/* Career */}
+      <Section label="📄 Career" labelClass="label-blue">
+        <RegCard title="My CV Maker"        subtitle="Edit, save & download your CV anytime"        icon="📝" to="/user/cv-maker"      iconClass="ic-blue"   />
+       {/* <RegCard title="Build New CV"        subtitle="Create a CV from scratch in 5 minutes"        icon="✨" to="/cv-builder"          iconClass="ic-amber"  /> */}
+        <RegCard title="My Cover Letters"    subtitle="Manage your AI-crafted cover letters"          icon="✉️" to="/user/cover-letter"  iconClass="ic-purple" />
+       {/* <RegCard title="Build Cover Letter"  subtitle="Write a tailored cover letter with AI"         icon="🤖" to="/cover-letter"        iconClass="ic-green"  /> */}
       </Section>
 
       {/* Tools */}

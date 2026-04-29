@@ -16,20 +16,30 @@ import { usePathname } from "next/navigation";
 import PublicHeader from "@/components/Navbar"; // your existing header
 import Footer from "@/components/Footer";             // your existing footer
 
-const HIDE_PUBLIC_CHROME = ["/user", "/admin"];
+const HIDE_PUBLIC_CHROME  = ["/user", "/admin"];
+// Wizard pages need the nav but not a <main> container or footer
+const WIZARD_PAGES = ["/cover-letter", "/cv-builder"];
 
 export default function PublicShell({ children }) {
   const pathname = usePathname();
 
   const hideChrome = HIDE_PUBLIC_CHROME.some(p => pathname.startsWith(p));
+  const isWizard   = WIZARD_PAGES.some(p => pathname.startsWith(p));
 
   if (hideChrome) {
-    // /user/* and /admin/* — render ONLY the page content.
-    // UserLayout / AdminLayout wrap it with their own header.
     return <>{children}</>;
   }
 
-  // Public pages — render with nav header + footer
+  if (isWizard) {
+    // Show navbar but let the wizard's root div fill the full viewport
+    return (
+      <>
+        <PublicHeader />
+        {children}
+      </>
+    );
+  }
+
   return (
     <>
       <PublicHeader />

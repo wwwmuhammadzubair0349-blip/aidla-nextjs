@@ -43,22 +43,29 @@ function rankEmoji(r) {
   return `#${r}`;
 }
 
+// ✅ ACCESSIBILITY FIX: Added aria-label for screen readers
 function RankBadge({ rank }) {
   const cls = rank === 1 ? styles.r1 : rank === 2 ? styles.r2 : rank === 3 ? styles.r3 : styles.rn;
   const label = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : rank;
-  return <div className={`${styles.rankBadge} ${cls}`}>{label}</div>;
+  const ariaLabel = rank <= 3 ? `Rank ${rank}` : `#${rank}`;
+  return (
+    <div className={`${styles.rankBadge} ${cls}`} aria-label={ariaLabel} role="img">
+      {label}
+    </div>
+  );
 }
 
 function SkeletonRows({ n = 5 }) {
   return Array.from({ length: n }).map((_, i) => (
-    <div key={i} className={styles.rankRow}>
-      <div className={styles.skelBg} style={{ width: 36, height: 36, borderRadius: 12, flexShrink: 0 }} />
+    // ✅ ACCESSIBILITY FIX: Added role and aria-label for skeleton loaders
+    <div key={i} className={styles.rankRow} role="status" aria-label="Loading...">
+      <div className={styles.skelBg} style={{ width: 36, height: 36, borderRadius: 12, flexShrink: 0 }} aria-hidden="true" />
       <div>
-        <div className={styles.skelBg} style={{ height: 13, width: 120, marginBottom: 5 }} />
-        <div className={styles.skelBg} style={{ height: 10, width: 70 }} />
+        <div className={styles.skelBg} style={{ height: 13, width: 120, marginBottom: 5 }} aria-hidden="true" />
+        <div className={styles.skelBg} style={{ height: 10, width: 70 }} aria-hidden="true" />
       </div>
-      <div className={styles.skelBg} style={{ height: 18, width: 40 }} />
-      <div className={styles.skelBg} style={{ height: 12, width: 36 }} />
+      <div className={styles.skelBg} style={{ height: 18, width: 40 }} aria-hidden="true" />
+      <div className={styles.skelBg} style={{ height: 12, width: 36 }} aria-hidden="true" />
     </div>
   ));
 }
@@ -129,47 +136,58 @@ function LiveLeaderboard() {
 
   if (!loading && tests.length === 0 && !error) {
     return (
-      <div className={styles.lbSection}>
+      <section className={styles.lbSection} aria-label="Live Leaderboard">
         <div className={styles.lbSectionHeader}>
-          <h3 className={styles.lbSectionTitle}>
-            🏁 Live Leaderboard
-            <span className={styles.liveBadge}><span className={styles.liveDot} />Live</span>
-          </h3>
+          <h2 className={styles.lbSectionTitle}>
+            <span aria-hidden="true">🏁</span> Live Leaderboard
+            <span className={styles.liveBadge} role="status" aria-live="polite">
+              <span className={styles.liveDot} aria-hidden="true" />Live
+            </span>
+          </h2>
         </div>
-        <div className={styles.lbEmpty}>
-          <span className={styles.lbEmptyIcon}>🏁</span>
+        <div className={styles.lbEmpty} role="status">
+          <span className={styles.lbEmptyIcon} aria-hidden="true">🏁</span>
           No live tests running right now. Check back soon!
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className={styles.lbSection}>
+    <section className={styles.lbSection} aria-label="Live Leaderboard">
       <div className={styles.lbSectionHeader}>
-        <h3 className={styles.lbSectionTitle}>
-          🏁 Live Leaderboard
-          <span className={styles.liveBadge}><span className={styles.liveDot} />Live</span>
-        </h3>
+        <h2 className={styles.lbSectionTitle}>
+          <span aria-hidden="true">🏁</span> Live Leaderboard
+          <span className={styles.liveBadge} role="status" aria-live="polite">
+            <span className={styles.liveDot} aria-hidden="true" />Live
+          </span>
+        </h2>
       </div>
       {tests.length > 1 && (
-        <div className={styles.testSelector}>
+        // ✅ ACCESSIBILITY FIX: role="group" with label for pill selectors
+        <div className={styles.testSelector} role="group" aria-label="Select a test">
           {tests.map(t => (
             <button key={t.id}
               className={`${styles.testPill} ${selectedTest?.id === t.id ? styles.active : ""}`}
-              onClick={() => setSelectedTest(t)}>
+              onClick={() => setSelectedTest(t)}
+              aria-pressed={selectedTest?.id === t.id}>
               {t.title || "Untitled Test"}
             </button>
           ))}
         </div>
       )}
-      {selectedTest && <div className={styles.eventStrip}>📋 {selectedTest.title || "Untitled Test"}</div>}
-      {error && <div className={styles.lbError}>{error}</div>}
-      <ul className={styles.rankList}>
+      {selectedTest && (
+        <div className={styles.eventStrip} aria-label={`Current test: ${selectedTest.title}`}>
+          <span aria-hidden="true">📋</span> {selectedTest.title || "Untitled Test"}
+        </div>
+      )}
+      {error && <div className={styles.lbError} role="alert">{error}</div>}
+      {/* ✅ ACCESSIBILITY FIX: ol instead of ul for ordered rankings */}
+      <ol className={styles.rankList} aria-label="Live leaderboard rankings" aria-live="polite">
         {loading ? <SkeletonRows n={5} /> :
           rows.length === 0 ? (
-            <li className={styles.lbEmpty}>
-              <span className={styles.lbEmptyIcon}>⏳</span>
+            <li className={styles.lbEmpty} role="status">
+              <span className={styles.lbEmptyIcon} aria-hidden="true">⏳</span>
               Waiting for participants to join...
             </li>
           ) : (
@@ -181,25 +199,35 @@ function LiveLeaderboard() {
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className={`${styles.rankRow} ${styles[`rank${i + 1}`] || ""} ${move === "up" ? styles.movedUp : move === "down" ? styles.movedDown : ""}`}
+                    aria-label={`Rank ${i + 1}: ${r.user_name}, ${r.score} points, ${r.correct_count} correct`}
                   >
                     <RankBadge rank={i + 1} />
                     <div>
                       <div className={styles.rankName}>{r.user_name}</div>
-                      <div className={styles.rankSub}>{r.correct_count} correct · {r.status === "finished" ? "Finished" : "In Progress"}</div>
+                      <div className={styles.rankSub} aria-label={`${r.correct_count} correct answers, ${r.status === "finished" ? "finished" : "in progress"}`}>
+                        {r.correct_count} correct · {r.status === "finished" ? "Finished" : "In Progress"}
+                      </div>
                     </div>
-                    <div>
+                    <div aria-label={`${r.score} points`}>
                       <div className={styles.rankScore}>{r.score}</div>
-                      <div className={styles.rankScoreLabel}>pts</div>
+                      <div className={styles.rankScoreLabel} aria-hidden="true">pts</div>
                     </div>
-                    <div className={styles.rankTime}>{fmtTime(r.total_time_ms)}</div>
-                    {move && <span className={`${styles.rankArrow} ${move === "up" ? styles.up : styles.down}`}>{move === "up" ? "▲" : "▼"}</span>}
+                    <div className={styles.rankTime} aria-label={`Time: ${fmtTime(r.total_time_ms)}`}>{fmtTime(r.total_time_ms)}</div>
+                    {move && (
+                      <span
+                        className={`${styles.rankArrow} ${move === "up" ? styles.up : styles.down}`}
+                        aria-label={move === "up" ? "Moved up" : "Moved down"}
+                      >
+                        {move === "up" ? "▲" : "▼"}
+                      </span>
+                    )}
                   </motion.li>
                 );
               })}
             </AnimatePresence>
           )}
-      </ul>
-    </div>
+      </ol>
+    </section>
   );
 }
 
@@ -243,55 +271,61 @@ function TestResults() {
   };
 
   return (
-    <div className={styles.lbSection}>
+    <section className={styles.lbSection} aria-label="Test Results">
       <div className={styles.lbSectionHeader}>
-        <h3 className={styles.lbSectionTitle}>🏆 Test Results</h3>
+        <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🏆</span> Test Results</h2>
       </div>
       {tests.length > 0 && (
-        <div className={styles.testSelector}>
+        <div className={styles.testSelector} role="group" aria-label="Select a test">
           {tests.map(t => (
             <button key={t.id}
               className={`${styles.testPill} ${selectedTest?.id === t.id ? styles.active : ""}`}
-              onClick={() => setSelectedTest(t)}>
+              onClick={() => setSelectedTest(t)}
+              aria-pressed={selectedTest?.id === t.id}>
               {t.title || "Untitled Test"}
             </button>
           ))}
         </div>
       )}
-      {selectedTest && <div className={styles.eventStrip}>📋 {selectedTest.title || "Untitled Test"}</div>}
-      {error && <div className={styles.lbError}>{error}</div>}
+      {selectedTest && (
+        <div className={styles.eventStrip}>
+          <span aria-hidden="true">📋</span> {selectedTest.title || "Untitled Test"}
+        </div>
+      )}
+      {error && <div className={styles.lbError} role="alert">{error}</div>}
       {loading ? (
-        <div style={{ padding: "20px 28px", display: "flex", gap: 12 }}>
-          {[1, 2, 3].map(n => <div key={n} style={{ flex: 1 }}><div className={styles.skelBg} style={{ height: 130, borderRadius: 18 }} /></div>)}
+        <div style={{ padding: "20px 28px", display: "flex", gap: 12 }} role="status" aria-label="Loading results">
+          {[1, 2, 3].map(n => <div key={n} style={{ flex: 1 }}><div className={styles.skelBg} style={{ height: 130, borderRadius: 18 }} aria-hidden="true" /></div>)}
         </div>
       ) : winners.length === 0 ? (
-        <div className={styles.lbEmpty}>
-          <span className={styles.lbEmptyIcon}>🏆</span>
+        <div className={styles.lbEmpty} role="status">
+          <span className={styles.lbEmptyIcon} aria-hidden="true">🏆</span>
           No winners announced yet for this test.
         </div>
       ) : (
         <div className={styles.winnersGrid}>
           {winners.map((w, i) => (
-            <motion.div key={w.id} className={rankCardClass(w.rank_no)}
+            <motion.article key={w.id} className={rankCardClass(w.rank_no)}
+              aria-label={`Rank ${w.rank_no}: ${w.user_name}`}
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}>
-              <span className={styles.winnerEmoji}>{rankEmoji(w.rank_no)}</span>
+              <span className={styles.winnerEmoji} aria-hidden="true">{rankEmoji(w.rank_no)}</span>
               <div className={styles.winnerRankLabel}>Rank #{w.rank_no}</div>
               <div className={styles.winnerName}>{w.user_name}</div>
-              <div className={styles.winnerEvent}>📋 {selectedTest?.title || "Test"}</div>
-              {w.prize_text && <div className={styles.winnerPrize}>🎁 {w.prize_text}</div>}
+              <div className={styles.winnerEvent}><span aria-hidden="true">📋</span> {selectedTest?.title || "Test"}</div>
+              {w.prize_text && <div className={styles.winnerPrize}><span aria-hidden="true">🎁</span> {w.prize_text}</div>}
               {Number(w.coins_amount) > 0 && (
                 <div className={`${styles.winnerPrize} ${styles.winnerPrizeBlue}`}>
-                  🪙 {fmtCoins(w.coins_amount)} coins
+                  <span aria-hidden="true">🪙</span> {fmtCoins(w.coins_amount)} coins
                 </div>
               )}
               {w.note && <div className={styles.winnerNote}>{w.note}</div>}
-              <div className={styles.winnerDate}>{fmtDate(w.approved_at)}</div>
-            </motion.div>
+              <time className={styles.winnerDate} dateTime={w.approved_at}>{fmtDate(w.approved_at)}</time>
+            </motion.article>
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -333,45 +367,51 @@ function LuckyDrawResults() {
   }, [selectedDraw]);
 
   return (
-    <div className={styles.lbSection}>
+    <section className={styles.lbSection} aria-label="Lucky Draw Results">
       <div className={styles.lbSectionHeader}>
-        <h3 className={styles.lbSectionTitle}>🎰 Lucky Draw Results</h3>
+        <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🎰</span> Lucky Draw Results</h2>
       </div>
       {draws.length > 0 && (
-        <div className={styles.drawSelector}>
+        <div className={styles.drawSelector} role="group" aria-label="Select a draw">
           {draws.map(d => (
             <button key={d.draw_id}
               className={`${styles.testPill} ${selectedDraw?.draw_id === d.draw_id ? styles.active : ""}`}
-              onClick={() => setSelectedDraw(d)}>
+              onClick={() => setSelectedDraw(d)}
+              aria-pressed={selectedDraw?.draw_id === d.draw_id}>
               {d.draw_title || "Draw"}
             </button>
           ))}
         </div>
       )}
-      {selectedDraw && <div className={styles.eventStrip}>🎰 {selectedDraw.draw_title || "Lucky Draw"}</div>}
-      {error && <div className={styles.lbError}>{error}</div>}
+      {selectedDraw && (
+        <div className={styles.eventStrip}>
+          <span aria-hidden="true">🎰</span> {selectedDraw.draw_title || "Lucky Draw"}
+        </div>
+      )}
+      {error && <div className={styles.lbError} role="alert">{error}</div>}
       {loading ? (
-        <div style={{ padding: "12px 0" }}><SkeletonRows n={4} /></div>
+        <div style={{ padding: "12px 0" }} role="status" aria-label="Loading results"><SkeletonRows n={4} /></div>
       ) : results.length === 0 ? (
-        <div className={styles.lbEmpty}>
-          <span className={styles.lbEmptyIcon}>🎰</span>
+        <div className={styles.lbEmpty} role="status">
+          <span className={styles.lbEmptyIcon} aria-hidden="true">🎰</span>
           No lucky draw results yet.
         </div>
       ) : results.map((r, i) => (
         <motion.div key={r.id} className={styles.resultRow}
+          aria-label={`Winner ${r.seq_no}: ${r.winner_name}`}
           initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
           transition={{ delay: i * 0.05 }}>
-          <div className={styles.resultSeq}>{r.seq_no}</div>
+          <div className={styles.resultSeq} aria-hidden="true">{r.seq_no}</div>
           <div className={styles.resultInfo}>
             <div className={styles.resultName}>{r.winner_name}</div>
             <div className={styles.resultSub}>
-              🎰 {r.draw_title || selectedDraw?.draw_title || "Lucky Draw"} · {fmtDate(r.announced_at)}
+              <span aria-hidden="true">🎰</span> {r.draw_title || selectedDraw?.draw_title || "Lucky Draw"} · <time dateTime={r.announced_at}>{fmtDate(r.announced_at)}</time>
             </div>
           </div>
           <div className={`${styles.resultPrize} ${styles.gold}`}>{fmtDrawPrize(r)}</div>
         </motion.div>
       ))}
-    </div>
+    </section>
   );
 }
 
@@ -416,29 +456,30 @@ function LuckyWheelHistory() {
   };
 
   return (
-    <div className={styles.lbSection}>
+    <section className={styles.lbSection} aria-label="Lucky Wheel Winners">
       <div className={styles.lbSectionHeader}>
-        <h3 className={styles.lbSectionTitle}>🎡 Lucky Wheel Winners</h3>
-        <span style={{ fontSize: "0.7rem", color: "#64748b", fontWeight: 600 }}>Last 50 wins</span>
+        <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🎡</span> Lucky Wheel Winners</h2>
+        <span style={{ fontSize: "0.7rem", color: "#4b5563", fontWeight: 700 }}>Last 50 wins</span>
       </div>
-      <div className={styles.eventStrip}>🎡 Lucky Wheel</div>
-      {error && <div className={styles.lbError}>{error}</div>}
+      <div className={styles.eventStrip}><span aria-hidden="true">🎡</span> Lucky Wheel</div>
+      {error && <div className={styles.lbError} role="alert">{error}</div>}
       {loading ? (
-        <div style={{ padding: "12px 0" }}><SkeletonRows n={5} /></div>
+        <div style={{ padding: "12px 0" }} role="status" aria-label="Loading results"><SkeletonRows n={5} /></div>
       ) : results.length === 0 ? (
-        <div className={styles.lbEmpty}>
-          <span className={styles.lbEmptyIcon}>🎡</span>
+        <div className={styles.lbEmpty} role="status">
+          <span className={styles.lbEmptyIcon} aria-hidden="true">🎡</span>
           No lucky wheel wins yet.
         </div>
       ) : results.map((r, i) => (
         <motion.div key={r.id} className={styles.resultRow}
+          aria-label={`${r.full_name} won ${resultLabel(r.result_type)}`}
           initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
           transition={{ delay: Math.min(i * 0.04, 0.4) }}>
-          <div className={styles.resultIcon}>{wheelIcon(r.result_type)}</div>
+          <div className={styles.resultIcon} aria-hidden="true">{wheelIcon(r.result_type)}</div>
           <div className={styles.resultInfo}>
             <div className={styles.resultName}>{r.full_name || "—"}</div>
             <div className={styles.resultSub}>
-              🎡 Lucky Wheel · {fmtDate(r.created_at)} · {r.entry_type === "paid" ? "Paid Spin" : "Free Spin"}
+              <span aria-hidden="true">🎡</span> Lucky Wheel · <time dateTime={r.created_at}>{fmtDate(r.created_at)}</time> · {r.entry_type === "paid" ? "Paid Spin" : "Free Spin"}
             </div>
           </div>
           <div className={`${styles.resultPrize} ${styles.blue}`}>
@@ -447,16 +488,16 @@ function LuckyWheelHistory() {
           </div>
         </motion.div>
       ))}
-    </div>
+    </section>
   );
 }
 
 /* ── Tabs ── */
 const TABS = [
-  { id: "live", label: "🏁 Live Board" },
+  { id: "live",    label: "🏁 Live Board"   },
   { id: "results", label: "🏆 Test Results" },
-  { id: "draw", label: "🎰 Lucky Draw" },
-  { id: "wheel", label: "🎡 Lucky Wheel" },
+  { id: "draw",    label: "🎰 Lucky Draw"   },
+  { id: "wheel",   label: "🎡 Lucky Wheel"  },
 ];
 
 export default function LeaderboardClient() {
@@ -464,7 +505,7 @@ export default function LeaderboardClient() {
 
   return (
     <div className={styles.lbRoot}>
-      <div className={styles.bgOrbs}>
+      <div className={styles.bgOrbs} aria-hidden="true">
         <div className={styles.bgOrb1} />
         <div className={styles.bgOrb2} />
         <div className={styles.bgOrb3} />
@@ -472,26 +513,50 @@ export default function LeaderboardClient() {
       <div className={styles.lbContainer}>
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <span className={styles.secLabel}>Community</span>
+          {/* ✅ ACCESSIBILITY FIX: h1 is the page title */}
           <h1 className={styles.secTitle}>AIDLA <span>Leaderboard</span></h1>
           <p className={styles.secDesc}>Celebrate our top learners, test champions, lucky draw winners, and lucky wheel winners.</p>
         </motion.div>
-        <motion.div className={styles.lbTabs} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          {TABS.map(t => (
-            <button key={t.id}
-              className={`${styles.lbTab} ${activeTab === t.id ? styles.active : ""}`}
-              onClick={() => setActiveTab(t.id)}>
-              {t.label}
-            </button>
-          ))}
-        </motion.div>
+
+        {/* ✅ ACCESSIBILITY FIX: nav + role="tablist" for proper tab semantics */}
+        <nav aria-label="Leaderboard sections">
+          <motion.div
+            className={styles.lbTabs}
+            role="tablist"
+            aria-label="Leaderboard sections"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+          >
+            {TABS.map(t => (
+              <button key={t.id}
+                role="tab"
+                id={`tab-${t.id}`}
+                aria-selected={activeTab === t.id}
+                aria-controls={`panel-${t.id}`}
+                className={`${styles.lbTab} ${activeTab === t.id ? styles.active : ""}`}
+                onClick={() => setActiveTab(t.id)}>
+                {t.label}
+              </button>
+            ))}
+          </motion.div>
+        </nav>
+
         <AnimatePresence mode="wait">
-          <motion.div key={activeTab}
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
-            {activeTab === "live" && <LiveLeaderboard />}
+          <motion.div
+            key={activeTab}
+            id={`panel-${activeTab}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${activeTab}`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+          >
+            {activeTab === "live"    && <LiveLeaderboard />}
             {activeTab === "results" && <TestResults />}
-            {activeTab === "draw" && <LuckyDrawResults />}
-            {activeTab === "wheel" && <LuckyWheelHistory />}
+            {activeTab === "draw"    && <LuckyDrawResults />}
+            {activeTab === "wheel"   && <LuckyWheelHistory />}
           </motion.div>
         </AnimatePresence>
       </div>

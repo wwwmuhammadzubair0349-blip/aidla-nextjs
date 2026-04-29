@@ -146,9 +146,12 @@ export default function Navbar() {
   const timeStr = mounted ? time.toLocaleString(undefined, { hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:true }) : "--:--:--";
 
   return (
-    <>
+    // ✅ FIX 1: Replaced <> fragment with <div> so we can add suppressHydrationWarning
+    <div suppressHydrationWarning>
+      {/* ✅ FIX 2: suppressHydrationWarning already on style tag — this is correct, keep it */}
       <style suppressHydrationWarning>{PH_CSS}</style>
-      <header className="ph-header">
+      {/* ✅ FIX 3: Added suppressHydrationWarning to header */}
+      <header className="ph-header" suppressHydrationWarning>
         <div className="ph-inner">
           <div className="ph-top">
             <Link href="/" className="ph-logo">AIDLA</Link>
@@ -223,7 +226,7 @@ export default function Navbar() {
           </nav>
         </div>
       </header>
-    </>
+    </div>
   );
 }
 

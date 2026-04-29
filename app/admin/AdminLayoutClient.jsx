@@ -231,6 +231,7 @@ export default function AdminLayout({ children }) {
             <Tab to="/admin/AdminStudyMaterials"  label="Study Materials"   />
             <Tab to="/admin/AutoBlogTab"          label="Auto Blog"         />
             <Tab to="/admin/AutoNewsTab"          label="Auto News"         />
+            <Tab to="/admin/campaign"          label="Campaign"         />
           </nav>
         </div>
       </header>

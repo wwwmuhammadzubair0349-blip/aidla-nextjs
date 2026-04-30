@@ -1,13 +1,34 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase"; // Make sure this path matches your Next.js project structure
+import { supabase } from "@/lib/supabase";
+import styles from "./signup.module.css";
 
-// We wrap the main form logic in a sub-component so useSearchParams() doesn't
-// cause de-optimization warnings during Next.js build.
-function SignupForm() {
+// ── Social Proof Data ──
+const SP_NAMES = [
+  "Ali Khan","Muhammad Usman","Ahmed Raza","Fatima Noor",
+  "Ayesha Khan","Hassan Ali","Sana Ahmed","Usman Tariq",
+  "Zainab Malik","Omar Sheikh","Bilal Chaudhry","Hira Baig",
+  "Imran Siddiqui","Maria Qureshi","Saad Butt","Nadia Iqbal",
+];
+const SP_DOMAINS = ["gmail.com","yahoo.com","hotmail.com","outlook.com"];
+const SP_CITIES = ["Karachi","Lahore","Dubai","Islamabad","London","Toronto"];
+
+function spMaskEmail(name) {
+  const parts = name.toLowerCase().split(" ");
+  const local = (parts[0].slice(0,2) + parts[1]?.slice(0,1) || "").replace(/\s/g,"");
+  const stars = "*".repeat(Math.floor(Math.random()*3)+3);
+  const domain = SP_DOMAINS[Math.floor(Math.random()*SP_DOMAINS.length)];
+  return `${local}${stars}@${domain}`;
+}
+
+function spRandInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export default function SignupClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -15,30 +36,34 @@ function SignupForm() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [refCode, setRefCode] = useState(searchParams.get("ref") || "");
-  const [password, setPassword] = useState("");
+  const[password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   // UI State
   const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [nameError, setNameError] = useState("");
+  const[nameError, setNameError] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [emailFormatError, setEmailFormatError] = useState("");
+  const[emailFormatError, setEmailFormatError] = useState("");
   const [passwordMismatch, setPasswordMismatch] = useState(false);
   const [refCodeError, setRefCodeError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const[showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
 
-  // 1) Real-Time Name Validation Check
+  // Success Modal State
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+  const [spToasts, setSpToasts] = useState([]);
+const spTimerRef = useRef(null);
+const spExitTimerRef = useRef(null);
+
+
+  // 1) Real-Time Name Validation
   useEffect(() => {
-    if (!fullName.trim()) {
-      setNameError("Please enter your name");
-    } else {
-      setNameError("");
-    }
+    if (!fullName.trim()) setNameError("Please enter your name");
+    else setNameError("");
   }, [fullName]);
 
-  // 2) Real-Time Email Validation Check
+  // 2) Real-Time Email Validation & Supabase Check
   useEffect(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     
@@ -63,11 +88,8 @@ function SignupForm() {
           .eq("email", email.toLowerCase())
           .maybeSingle();
 
-        if (data) {
-          setEmailError("This email is already registered. Please login.");
-        } else {
-          setEmailError("");
-        }
+        if (data) setEmailError("Email already registered. Please login.");
+        else setEmailError("");
       } catch (err) {
         console.error("Email check error:", err);
       }
@@ -77,7 +99,7 @@ function SignupForm() {
     return () => clearTimeout(timeoutId);
   }, [email]);
 
-  // 3) Password Strength Calculator
+  // 3) Password Strength
   useEffect(() => {
     let strength = 0;
     if (password.length > 5) strength += 1;
@@ -88,16 +110,13 @@ function SignupForm() {
     setPasswordStrength(Math.min(strength, 4));
   }, [password]);
 
-  // 4) Real-Time Password Match Check
+  // 4) Password Match Check
   useEffect(() => {
-    if (confirmPassword && password !== confirmPassword) {
-      setPasswordMismatch(true);
-    } else {
-      setPasswordMismatch(false);
-    }
+    if (confirmPassword && password !== confirmPassword) setPasswordMismatch(true);
+    else setPasswordMismatch(false);
   }, [password, confirmPassword]);
 
-  // 5) Real-Time Referral Code Validation
+  // 5) Referral Code Validation
   useEffect(() => {
     if (!refCode.trim()) {
       setRefCodeError("");
@@ -106,7 +125,7 @@ function SignupForm() {
 
     const refCodeRegex = /^AIDLA-\d{6}$/;
     if (!refCodeRegex.test(refCode.trim())) {
-      setRefCodeError("Invalid format. Use AIDLA-XXXXXX (6 digits)");
+      setRefCodeError("Invalid format. Use AIDLA-XXXXXX");
       return;
     }
 
@@ -120,13 +139,10 @@ function SignupForm() {
 
         if (error) throw error;
 
-        if (!data) {
-          setRefCodeError("Invalid code or does not exist");
-        } else {
-          setRefCodeError("");
-        }
+        if (!data) setRefCodeError("Invalid or missing code");
+        else setRefCodeError("");
       } catch (err) {
-        console.error("Referral code check error:", err);
+        console.error("Ref code error:", err);
         setRefCodeError("Error verifying code");
       }
     };
@@ -135,25 +151,78 @@ function SignupForm() {
     return () => clearTimeout(timeoutId);
   }, [refCode]);
 
+  // 6) Auto Redirect Countdown Timer
+  useEffect(() => {
+    let timer;
+    if (showSuccessModal && countdown > 0) {
+      timer = setInterval(() => setCountdown((prev) => prev - 1), 1000);
+    } else if (showSuccessModal && countdown === 0) {
+      router.push("/login");
+    }
+    return () => clearInterval(timer);
+  }, [showSuccessModal, countdown, router]);
+
+  // ── Social Proof Effect ──
+useEffect(() => {
+  const MAX = 3;
+
+  function showNext() {
+    const name = SP_NAMES[spRandInt(0, SP_NAMES.length - 1)];
+    const city = SP_CITIES[spRandInt(0, SP_CITIES.length - 1)];
+    const useEmail = Math.random() > 0.5;
+    const text = useEmail
+      ? `New user ${spMaskEmail(name)} joined`
+      : `${name} just signed up from ${city}`;
+    const id = Date.now();
+
+    setSpToasts(prev => {
+      const next = [...prev, { id, text, exiting: false }];
+      return next.length > MAX ? next.slice(next.length - MAX) : next;
+    });
+
+    // mark exiting after 3.2s
+    spExitTimerRef.current = setTimeout(() => {
+      setSpToasts(prev => prev.map(t => t.id === id ? { ...t, exiting: true } : t));
+      // remove after exit anim
+      setTimeout(() => {
+        setSpToasts(prev => prev.filter(t => t.id !== id));
+      }, 380);
+    }, 3200);
+
+    spTimerRef.current = setTimeout(showNext, spRandInt(5000, 12000));
+  }
+
+  spTimerRef.current = setTimeout(showNext, spRandInt(3000, 6000));
+
+  return () => {
+    clearTimeout(spTimerRef.current);
+    clearTimeout(spExitTimerRef.current);
+  };
+}, []);
+
+  // Robust cross-platform Gmail handler
+  const handleOpenGmail = () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+
+    if (isIOS) {
+      window.location.href = "googlegmail://";
+      setTimeout(() => { window.location.href = "https://mail.google.com/"; }, 1500);
+    } else if (isAndroid) {
+      window.location.href = "intent://#Intent;package=com.google.android.gm;scheme=mailto;end;";
+      setTimeout(() => { window.location.href = "https://mail.google.com/"; }, 1500);
+    } else {
+      window.open("https://mail.google.com/", "_blank");
+    }
+  };
+
   async function onSubmit(e) {
     e.preventDefault();
-    setMsg("");
 
     if (emailError) return;
-
-    if (refCode && refCodeError) {
-      setMsg("Please enter a valid referral code");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setMsg("Passwords do not match.");
-      return;
-    }
-    if (password.length < 6) {
-      setMsg("Password must be at least 6 characters.");
-      return;
-    }
+    if (refCode && refCodeError) return;
+    if (password !== confirmPassword) return;
+    if (password.length < 6) return;
 
     setLoading(true);
 
@@ -163,9 +232,7 @@ function SignupForm() {
         password,
         options: {
           emailRedirectTo: "https://www.aidla.online/email-confirmed",
-          data: {
-            full_name: fullName,
-          },
+          data: { full_name: fullName },
         },
       });
       if (error) throw error;
@@ -186,9 +253,7 @@ function SignupForm() {
             .eq("my_refer_code", myReferCode)
             .maybeSingle();
           
-          if (!existing) {
-            isUnique = true;
-          }
+          if (!existing) isUnique = true;
         }
 
         const { error: profileError } = await supabase
@@ -205,415 +270,184 @@ function SignupForm() {
         if (profileError) throw profileError;
       }
 
-      setMsg("Signup successful. Check your email for confirmation, then login.");
-      // Changed navigate() to router.push() for Next.js
-      setTimeout(() => router.push("/login"), 2000);
+      setShowSuccessModal(true);
     } catch (err) {
-      setMsg(err.message || "Signup failed");
+      console.error(err);
+      alert("Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
   }
 
-  const css = `
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    .fullscreen-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #f0f4f8;
-      overflow-y: auto;
-      overflow-x: hidden;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      z-index: 99999;
-      padding: 50px 20px; 
-    }
-
-    .bg-orb {
-      position: fixed;
-      border-radius: 50%;
-      filter: blur(80px);
-      z-index: -1;
-      animation: float 20s infinite alternate ease-in-out;
-    }
-    .orb-1 {
-      width: 400px;
-      height: 400px;
-      background: rgba(30, 58, 138, 0.15);
-      top: -100px;
-      left: -100px;
-    }
-    .orb-2 {
-      width: 300px;
-      height: 300px;
-      background: rgba(59, 130, 246, 0.15);
-      bottom: -50px;
-      right: -50px;
-      animation-duration: 25s;
-    }
-
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(50px, 50px) scale(1.1); }
-    }
-
-    .card-2060 {
-      width: 100%;
-      max-width: 480px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 1);
-      border-radius: 28px;
-      padding: 40px;
-      box-shadow: 
-        20px 20px 60px rgba(15, 23, 42, 0.08), 
-        -20px -20px 60px rgba(255, 255, 255, 0.9),
-        inset 0 0 0 2px rgba(255, 255, 255, 0.5);
-      animation: popIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      opacity: 0;
-      transform: translateY(30px) scale(0.95);
-      position: relative;
-    }
-
-    @keyframes popIn {
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      margin-bottom: 10px;
-      background: #ffffff;
-      color: #1e3a8a;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 0.85rem;
-      border-radius: 12px;
-      box-shadow: 
-        4px 4px 10px rgba(15, 23, 42, 0.05), 
-        -4px -4px 10px rgba(255, 255, 255, 1);
-      transition: all 0.2s ease;
-    }
-    .back-btn:hover { color: #3b82f6; transform: translateY(-2px); }
-    .back-btn:active {
-      transform: translateY(1px);
-      box-shadow: inset 2px 2px 5px rgba(15,23,42,0.05), inset -2px -2px 5px rgba(255,255,255,1);
-    }
-    .back-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 3; fill: none; }
-
-    .brand-header { text-align: center; margin-bottom: 30px; margin-top: 10px; }
-    .brand-title {
-      font-size: 3rem;
-      font-weight: 900;
-      letter-spacing: -1px;
-      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(2px 4px 6px rgba(30, 58, 138, 0.2));
-      margin-bottom: 5px;
-    }
-    .brand-subtitle { font-size: 0.9rem; color: #64748b; font-weight: 600; letter-spacing: 0.5px; }
-
-    .eco-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .eco-badge {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 10px 5px;
-      background: #ffffff;
-      border-radius: 14px;
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: #1e3a8a;
-      box-shadow: 5px 5px 15px rgba(15, 23, 42, 0.05), -5px -5px 15px rgba(255, 255, 255, 0.8);
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .eco-badge:hover { transform: translateY(-4px) scale(1.05); }
-    .eco-badge svg { width: 18px; height: 18px; margin-bottom: 4px; stroke: #3b82f6; stroke-width: 2; fill: none; }
-
-    .input-group { margin-bottom: 20px; position: relative; }
-    .label-3d { display: block; margin-bottom: 8px; font-weight: 700; color: #334155; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .input-wrapper { position: relative; width: 100%; }
-    .input-3d {
-      width: 100%;
-      padding: 16px 20px;
-      border-radius: 16px;
-      border: 2px solid transparent;
-      background: #f8fafc;
-      color: #0f172a;
-      font-size: 1rem;
-      font-weight: 600;
-      box-shadow: inset 5px 5px 10px rgba(15, 23, 42, 0.06), inset -5px -5px 10px rgba(255, 255, 255, 1);
-      transition: all 0.3s ease;
-    }
-    .input-3d::placeholder { color: #cbd5e1; font-weight: 500; }
-    .input-3d:focus {
-      outline: none;
-      background: #ffffff;
-      border-color: rgba(59, 130, 246, 0.4);
-      box-shadow: 
-        inset 2px 2px 5px rgba(15, 23, 42, 0.03), 
-        inset -2px -2px 5px rgba(255, 255, 255, 1),
-        0 0 15px rgba(59, 130, 246, 0.2);
-    }
-
-    .input-error { border-color: rgba(239, 68, 68, 0.5); box-shadow: 0 0 15px rgba(239, 68, 68, 0.1); }
-    .error-text { color: #ef4444; font-size: 0.75rem; font-weight: 600; margin-top: 6px; display: block; animation: fadeIn 0.3s ease; }
-
-    .eye-btn {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s;
-    }
-    .eye-btn:hover { color: #1e3a8a; }
-    
-    .strength-meter { display: flex; gap: 4px; margin-top: 8px; height: 4px; border-radius: 2px; overflow: hidden; }
-    .strength-bar { flex: 1; background: #e2e8f0; transition: all 0.4s ease; border-radius: 2px; }
-    .strength-1 { background: #ef4444; }
-    .strength-2 { background: #f59e0b; }
-    .strength-3 { background: #3b82f6; }
-    .strength-4 { background: #10b981; }
-
-    .btn-2060 {
-      width: 100%;
-      padding: 18px;
-      margin-top: 10px;
-      border-radius: 16px;
-      border: none;
-      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-      color: #ffffff;
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      cursor: pointer;
-      box-shadow: 
-        0 10px 0 #1e3a8a, 
-        0 20px 25px rgba(30, 58, 138, 0.3),
-        inset 0 2px 0 rgba(255, 255, 255, 0.2);
-      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-    }
-    .btn-2060:hover:not(:disabled) {
-      filter: brightness(1.1);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 0 #1e3a8a, 0 25px 30px rgba(30, 58, 138, 0.4), inset 0 2px 0 rgba(255,255,255,0.2);
-    }
-    .btn-2060:active:not(:disabled) {
-      transform: translateY(10px);
-      box-shadow: 0 0px 0 #1e3a8a, 0 5px 10px rgba(30, 58, 138, 0.3), inset 0 2px 0 rgba(255,255,255,0.2);
-    }
-    .btn-2060:disabled {
-      background: #94a3b8; box-shadow: 0 10px 0 #64748b; cursor: not-allowed; opacity: 0.8;
-    }
-
-    .login-link {
-      display: block;
-      text-align: center;
-      margin-top: 25px;
-      color: #64748b;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: 0.95rem;
-      transition: color 0.2s;
-    }
-    .login-link span { color: #3b82f6; font-weight: 800; }
-    .login-link:hover span { color: #1e3a8a; text-decoration: underline; }
-
-    .msg-box {
-      margin-top: 20px; padding: 16px; border-radius: 14px; text-align: center; font-weight: 700; font-size: 0.95rem;
-      animation: fadeIn 0.4s ease;
-    }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-    @media (max-width: 500px) {
-      .fullscreen-wrapper { padding: 30px 15px; }
-      .card-2060 { padding: 30px 20px; border-radius: 20px; }
-      .brand-title { font-size: 2.4rem; }
-      .input-3d { padding: 14px 16px; font-size: 0.95rem; }
-      .btn-2060 { padding: 16px; font-size: 1.05rem; }
-      .eco-grid { gap: 6px; }
-      .eco-badge { padding: 8px 2px; font-size: 0.55rem; }
-    }
-  `;
-
   return (
-    <div className="fullscreen-wrapper">
-      <style>{css}</style>
-      
-      <div className="bg-orb orb-1"></div>
-      <div className="bg-orb orb-2"></div>
+    <div className={styles.pageWrapper}>
+      <div className={`${styles.orb} ${styles.orbBlue}`}></div>
+      <div className={`${styles.orb} ${styles.orbCyan}`}></div>
 
-      <div className="card-2060">
-        
-        {/* Changed 'to' prop to 'href' for Next.js Link component */}
-        <Link href="/" className="back-btn">
-          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          Back
-        </Link>
-        
-        <div className="brand-header">
-          <h1 className="brand-title">AIDLA</h1>
-          <p className="brand-subtitle">The Ecosystem of Tomorrow</p>
+      <div className={styles.authCard}>
+        <div className={styles.headerSection}>
+          <Link href="/" className={styles.backBtn}>
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            Back
+          </Link>
+          <h1 className={styles.brandTitle}>AIDLA</h1>
+          <p className={styles.brandSubtitle}>The Ecosystem of Tomorrow</p>
           
-          <div className="eco-grid">
-            <div className="eco-badge">
+          <div className={styles.ecoGrid}>
+            <div className={styles.ecoBadge}>
               <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
-              Education
+              Learn
             </div>
-            <div className="eco-badge">
+            <div className={styles.ecoBadge}>
               <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>
-              Mining
+              Mine
             </div>
-            <div className="eco-badge">
+            <div className={styles.ecoBadge}>
               <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></svg>
-              Earning
+              Earn
             </div>
-            <div className="eco-badge">
+            <div className={styles.ecoBadge}>
               <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></svg>
               Shop
             </div>
           </div>
         </div>
+        {/* Social Proof Toasts */}
+      <div className={styles.toastContainer}>
+        {spToasts.map(t => (
+          <div key={t.id} className={`${styles.toast} ${t.exiting ? styles.toastExiting : ""}`}>
+            <div className={styles.toastDot} />
+            <div>
+              <div className={styles.toastText}>{t.text}</div>
+              <div className={styles.toastSub}>just joined AIDLA</div>
+            </div>
+          </div>
+        ))}
+      </div>
 
         <form onSubmit={onSubmit}>
-          
-          <div className="input-group">
-            <label className="label-3d">Full Name</label>
+          <div className={styles.inputGroup}>
+            <label className={styles.labelCompact}>Full Name</label>
             <input
-              className={`input-3d ${nameError ? 'input-error' : ''}`}
+              className={`${styles.inputCore} ${nameError ? styles.inputError : ''}`}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
-              placeholder="Enter your name"
+              placeholder="Enter your full name"
             />
-            {nameError && <span className="error-text">{nameError}</span>}
+            {nameError && <span className={styles.errorMsg}>{nameError}</span>}
           </div>
 
-          <div className="input-group">
-            <label className="label-3d">Email Address</label>
+          <div className={styles.inputGroup}>
+            <label className={styles.labelCompact}>Email Address</label>
             <input
-              className={`input-3d ${emailFormatError || emailError ? 'input-error' : ''}`}
+              className={`${styles.inputCore} ${emailFormatError || emailError ? styles.inputError : ''}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               type="email"
               required
               placeholder="name@example.com"
             />
-            {emailFormatError && <span className="error-text">{emailFormatError}</span>}
-            {!emailFormatError && emailError && <span className="error-text">{emailError}</span>}
+            {emailFormatError && <span className={styles.errorMsg}>{emailFormatError}</span>}
+            {!emailFormatError && emailError && <span className={styles.errorMsg}>{emailError}</span>}
           </div>
 
-          <div className="input-group">
-            <label className="label-3d">Referral Code <span style={{ color: "#94a3b8", textTransform: "none" }}>(Optional)</span></label>
+          <div className={styles.inputGroup}>
+            <label className={styles.labelCompact}>
+              Referral Code <span className={styles.optionalText}>(Optional)</span>
+            </label>
             <input
-              className={`input-3d ${refCodeError ? 'input-error' : ''}`}
+              className={`${styles.inputCore} ${refCodeError ? styles.inputError : ''}`}
               value={refCode}
               onChange={(e) => setRefCode(e.target.value.toUpperCase())}
-              placeholder="e.g. AIDLA-123456"
+              placeholder="AIDLA-XXXXXX"
             />
-            {refCodeError && <span className="error-text">{refCodeError}</span>}
+            {refCodeError && <span className={styles.errorMsg}>{refCodeError}</span>}
           </div>
 
-          <div className="input-group">
-            <label className="label-3d">Password</label>
-            <div className="input-wrapper">
+          <div className={styles.inputGroup}>
+            <label className={styles.labelCompact}>Password</label>
+            <div className={styles.inputWrapper}>
               <input
-                className="input-3d"
+                className={styles.inputCore}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? "text" : "password"}
                 required
-                placeholder="Create a strong password"
-                style={{ paddingRight: "45px" }}
+                placeholder="Create password"
+                style={{ paddingRight: "40px" }}
               />
-              <button type="button" className="eye-btn" onClick={() => setShowPassword(!showPassword)} tabIndex={-1}>
+              <button type="button" className={styles.eyeBtn} onClick={() => setShowPassword(!showPassword)} tabIndex={-1}>
                 {showPassword ? (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
                 ) : (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 )}
               </button>
             </div>
             {password.length > 0 && (
-              <div className="strength-meter">
+              <div className={styles.strengthContainer}>
                 {[1, 2, 3, 4].map((level) => (
-                  <div key={level} className={`strength-bar ${passwordStrength >= level ? `strength-${passwordStrength}` : ''}`} />
+                  <div key={level} className={`${styles.strengthSegment} ${passwordStrength >= level ? styles[`strength${passwordStrength}`] : ''}`} />
                 ))}
               </div>
             )}
           </div>
 
-          <div className="input-group">
-            <label className="label-3d">Confirm Password</label>
+          <div className={styles.inputGroup}>
+            <label className={styles.labelCompact}>Confirm Password</label>
             <input
-              className={`input-3d ${passwordMismatch ? 'input-error' : ''}`}
+              className={`${styles.inputCore} ${passwordMismatch ? styles.inputError : ''}`}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               type={showPassword ? "text" : "password"}
               required
-              placeholder="Confirm your password"
+              placeholder="Confirm password"
             />
-            {passwordMismatch && <span className="error-text">Passwords do not match</span>}
+            {passwordMismatch && <span className={styles.errorMsg}>Passwords do not match</span>}
           </div>
 
-          <button disabled={loading || !!nameError || !!emailFormatError || !!emailError || !!refCodeError || passwordMismatch || !fullName.trim() || !email.trim()} className="btn-2060">
-            {loading ? "INITIALIZING..." : "SECURE ACCOUNT"}
+          <button disabled={loading || !!nameError || !!emailFormatError || !!emailError || !!refCodeError || passwordMismatch || !fullName.trim() || !email.trim() || password.length < 6} className={styles.submitBtn}>
+            {loading ? "INITIALIZING..." : "CREATE ACCOUNT"}
           </button>
 
-          <Link href="/login" className="login-link">
-            Already have an account? <span>Login</span>
+          <Link href="/login" className={styles.switchLink}>
+            Already have an account? <span>Sign in</span>
           </Link>
-
-          {msg && (
-            <div
-              className="msg-box"
-              style={{
-                color: msg.includes("successful") ? "#047857" : "#b91c1c",
-                background: msg.includes("successful") ? "#d1fae5" : "#fee2e2",
-                boxShadow: msg.includes("successful") ? "inset 0 0 0 2px #34d399" : "inset 0 0 0 2px #f87171"
-              }}
-            >
-              {msg}
-            </div>
-          )}
         </form>
       </div>
-    </div>
-  );
-}
 
-// Wrapping the main component in Suspense handles Next.js de-opt warnings for `useSearchParams()`
-export default function Signup() {
-  return (
-    <Suspense fallback={<div style={{ width: '100vw', height: '100vh', background: '#f0f4f8' }}></div>}>
-      <SignupForm />
-    </Suspense>
+      {showSuccessModal && (
+        <div className={styles.modalBackdrop}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalIcon}>
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className={styles.modalTitle}>Check Your Email</h2>
+            <p className={styles.modalDesc}>
+              We sent a verification link to <br/><strong>{email}</strong>.
+            </p>
+
+            <button onClick={handleOpenGmail} className={styles.gmailBtn}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 6C2 4.89543 2.89543 4 4 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H4C2.89543 20 2 19.1046 2 18V6Z" fill="currentColor"/>
+                <path d="M2.5 7L11.2929 13.5964C11.7071 13.9071 12.2929 13.9071 12.7071 13.5964L21.5 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Open Gmail
+            </button>
+
+            <button onClick={() => router.push("/login")} className={styles.loginBtnSecondary}>
+              Continue to Login
+            </button>
+
+            <p className={styles.timerText}>
+              Redirecting automatically in {countdown}s...
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -384,7 +384,7 @@ export default function AdminPool() {
                 <tbody>
                   {transactions.map((tx) => {
                     // Use txn_type to determine action display
-                    const isSend = typeof tx.txn_type === "string" && tx.txn_type.toUpperCase().includes("SEND");
+                    const isSend = tx.direction === "OUT" || (typeof tx.txn_type === "string" && tx.txn_type.toUpperCase().includes("SEND"));
 
                     return (
                       <tr key={tx.id}>

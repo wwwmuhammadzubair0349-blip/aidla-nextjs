@@ -274,6 +274,22 @@ export default function Mining() {
     const { data, error } = await supabase.rpc("mining_claim",{ p_session_id:session.id });
     setClaiming(false);
     if (error||!data?.ok) { showMsg_(error?.message||data?.error||"Claim failed","err"); return; }
+    
+    // Send session completed email
+    try {
+      await supabase.functions.invoke("mining-notify", {
+        body: {
+          type: "mining_session_completed",
+          user_email: profile?.email,
+          user_name: profile?.full_name || "there",
+          coins_earned: Number(data.coins_claimed || 0).toFixed(2),
+          session_id: session.id,
+        }
+      });
+    } catch (e) {
+      console.log("Email error:", e);
+    }
+
     await loadAll();
     setModalData({ type:"claim", amount:data.coins_claimed });
   };

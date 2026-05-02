@@ -133,7 +133,7 @@ const USER_CSS = `
   .orb-1{width:500px;height:500px;background:rgba(30,58,138,.10);top:-150px;left:-150px}
   .orb-2{width:400px;height:400px;background:rgba(59,130,246,.10);bottom:-100px;right:-100px;animation-duration:25s}
   @keyframes floatOrb{0%{transform:translate(0,0) scale(1)}100%{transform:translate(50px,50px) scale(1.1)}}
-  .ul-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.90);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(226,232,240,.8);box-shadow:0 1px 0 rgba(255,255,255,.9),0 4px 20px rgba(15,23,42,.05)}
+  .ul-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.98);border-bottom:1px solid rgba(226,232,240,.8);box-shadow:0 1px 0 rgba(255,255,255,.9),0 4px 20px rgba(15,23,42,.05)}
   .ul-inner{max-width:1200px;margin:0 auto;padding:12px 24px;display:flex;flex-direction:column;gap:10px}
   .ul-top{display:flex;align-items:center;gap:12px}
   .ul-brand{font-size:1.9rem;font-weight:900;letter-spacing:-1.5px;line-height:1;flex-shrink:0;background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
@@ -156,7 +156,7 @@ const USER_CSS = `
   .ul-tab:focus-visible{outline:2px solid #2563eb;outline-offset:-2px;border-radius:9px}
   .ul-tab-icon{font-size:.95rem;line-height:1}
   .ul-main{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:28px 20px}
-  .ul-outlet{background:rgba(255,255,255,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.95);border-radius:22px;padding:28px;box-shadow:0 0 0 1px rgba(255,255,255,.5) inset,0 20px 40px rgba(15,23,42,.05),0 1px 0 rgba(255,255,255,.8);animation:popIn .4s cubic-bezier(.16,1,.3,1) forwards}
+  .ul-outlet{background:#ffffff;border:1px solid rgba(226,232,240,0.5);border-radius:22px;padding:28px;box-shadow:0 1px 3px rgba(15,23,42,.04),0 8px 32px rgba(15,23,42,.05);animation:popIn .4s cubic-bezier(.16,1,.3,1) forwards}
   @keyframes popIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
   .auth-loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#f0f4ff 0%,#fffbf0 60%,#e8f4fd 100%);z-index:9999;flex-direction:column;gap:14px}
   .auth-spinner{width:40px;height:40px;border-radius:50%;border:3px solid rgba(26,58,143,0.12);border-top-color:#1a3a8f;animation:spin .65s linear infinite}

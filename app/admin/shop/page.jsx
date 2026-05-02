@@ -20,43 +20,38 @@ function statusBadge(s) {
   return <span style={{ background: d.bg, color: d.col, padding: "3px 10px", borderRadius: 12, fontSize: 12, fontWeight: 700 }}>{d.label}</span>;
 }
 
-const TABS = ["orders", "products", "categories", "fees", "coupons"];
+const TABS = ["orders", "cashbacks", "products", "categories", "fees", "coupons"];
 
 export default function AdminShop() {
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [tab, setTab] = useState("orders");
-  const [data, setData] = useState({ orders: [], products: [], categories: [], fees: [], coupons: [] });
-  const [msg, setMsg] = useState({ text: "", ok: true });
+  const [loading, setLoading]         = useState(true);
+  const [isAdmin, setIsAdmin]         = useState(false);
+  const [tab, setTab]                 = useState("orders");
+  const [data, setData]               = useState({ orders: [], cashbacks: [], products: [], categories: [], fees: [], coupons: [] });
+  const [msg, setMsg]                 = useState({ text: "", ok: true });
+  const [emailLog, setEmailLog]       = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [noteInputs, setNoteInputs] = useState({});
-  const [actionMsg, setActionMsg] = useState({ id: null, text: "", ok: true });
-  const [emailLog, setEmailLog] = useState("");
+  const [noteInputs, setNoteInputs]   = useState({});
+  const [actionMsg, setActionMsg]     = useState({ id: null, text: "", ok: true });
+  const [cbNoteInputs, setCbNoteInputs] = useState({});
+  const [cbActionMsg, setCbActionMsg] = useState({ id: null, text: "", ok: true });
 
   const [showProductForm, setShowProductForm] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
   const [productForm, setProductForm] = useState(emptyProduct());
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading]     = useState(false);
   const [savingProduct, setSavingProduct] = useState(false);
 
-  const [newFee, setNewFee] = useState({ name: "", percentage: "" });
-  const [newCoupon, setNewCoupon] = useState({ code: "", discount_pct: "", max_uses: "", expires_at: "" });
+  const [newFee, setNewFee]           = useState({ name: "", percentage: "" });
+  const [newCoupon, setNewCoupon]     = useState({ code: "", discount_pct: "", max_uses: "", expires_at: "" });
   const [restockInputs, setRestockInputs] = useState({});
 
   function emptyProduct() {
-    return {
-      name: "", description: "", type: "physical", category_id: "",
-      price_coins: "", stock: "", unlimited_stock: false, images: [],
-      is_active: true, is_featured: false, discount_pct: "", sale_ends_at: "",
-      cashback_pct: "", low_stock_threshold: 5,
-    };
+    return { name: "", description: "", type: "physical", category_id: "", price_coins: "", stock: "", unlimited_stock: false, images: [], is_active: true, is_featured: false, discount_pct: "", sale_ends_at: "", cashback_pct: "", low_stock_threshold: 5 };
   }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session || session.user.email !== ADMIN_EMAIL) {
-        alert("Access Denied"); window.location.href = "/"; return;
-      }
+      if (!session || session.user.email !== ADMIN_EMAIL) { alert("Access Denied"); window.location.href = "/"; return; }
       setIsAdmin(true);
       loadAll();
     });
@@ -66,11 +61,12 @@ export default function AdminShop() {
     const { data: d, error } = await supabase.rpc("shop_admin_load");
     if (error) { setMsg({ text: error.message, ok: false }); setLoading(false); return; }
     setData({
-      orders: d.orders || [],
-      products: d.products || [],
+      orders:     d.orders     || [],
+      cashbacks:  d.cashbacks  || [],
+      products:   d.products   || [],
       categories: d.categories || [],
-      fees: d.fees || [],
-      coupons: d.coupons || [],
+      fees:       d.fees       || [],
+      coupons:    d.coupons    || [],
     });
     setLoading(false);
   }, []);
@@ -81,65 +77,39 @@ export default function AdminShop() {
     for (const file of files) {
       const path = `${Date.now()}-${file.name}`;
       const { error } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true });
-      if (!error) {
-        const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
-        urls.push(pub.publicUrl);
-      }
+      if (!error) { const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path); urls.push(pub.publicUrl); }
     }
     setProductForm(f => ({ ...f, images: [...f.images, ...urls] }));
     setUploading(false);
   };
 
   const handleSaveProduct = async () => {
-    setSavingProduct(true);
-    setEmailLog("");
+    setSavingProduct(true); setEmailLog("");
     const { data: d, error } = await supabase.rpc("shop_admin_save_product", {
-      p_id:                  editProduct?.id || null,
-      p_name:                productForm.name,
-      p_description:         productForm.description,
-      p_type:                productForm.type,
-      p_category_id:         productForm.category_id ? parseInt(productForm.category_id) : null,
-      p_price_coins:         parseFloat(productForm.price_coins) || 0,
-      p_stock:               parseInt(productForm.stock) || 0,
-      p_unlimited_stock:     productForm.unlimited_stock,
-      p_images:              productForm.images,
-      p_is_active:           productForm.is_active,
-      p_is_featured:         productForm.is_featured,
-      p_discount_pct:        parseFloat(productForm.discount_pct) || 0,
-      p_sale_ends_at:        productForm.sale_ends_at || null,
-      p_cashback_pct:        parseFloat(productForm.cashback_pct) || 0,
-      p_low_stock_threshold: parseInt(productForm.low_stock_threshold) || 5,
+      p_id: editProduct?.id || null, p_name: productForm.name, p_description: productForm.description,
+      p_type: productForm.type, p_category_id: productForm.category_id ? parseInt(productForm.category_id) : null,
+      p_price_coins: parseFloat(productForm.price_coins)||0, p_stock: parseInt(productForm.stock)||0,
+      p_unlimited_stock: productForm.unlimited_stock, p_images: productForm.images,
+      p_is_active: productForm.is_active, p_is_featured: productForm.is_featured,
+      p_discount_pct: parseFloat(productForm.discount_pct)||0, p_sale_ends_at: productForm.sale_ends_at||null,
+      p_cashback_pct: parseFloat(productForm.cashback_pct)||0, p_low_stock_threshold: parseInt(productForm.low_stock_threshold)||5,
     });
     setSavingProduct(false);
-    if (error || !d?.ok) {
-      setMsg({ text: `❌ Save failed: ${error?.message || JSON.stringify(d)}`, ok: false });
-      return;
-    }
+    if (error || !d?.ok) { setMsg({ text: `❌ ${error?.message || JSON.stringify(d)}`, ok: false }); return; }
     setMsg({ text: editProduct ? "✅ Product updated!" : "✅ Product added!", ok: true });
 
     if (!editProduct) {
-      console.log("Full RPC result:", d);
-const productId = d?.id || null;
-      setEmailLog("📧 Sending new product emails...");
+      setEmailLog("📧 Sending emails...");
       try {
         const { data: fnData, error: fnError } = await supabase.functions.invoke("shop-notify", {
-          body: { type: "new_product", product_name: productForm.name, product_id: productId }
+          body: { type: "new_product", product_name: productForm.name, product_id: d?.id || null }
         });
-        if (fnError) {
-          setEmailLog(`❌ Function error: ${fnError.message || JSON.stringify(fnError)}`);
-        } else if (fnData?.error) {
-          setEmailLog(`❌ Email error: ${fnData.error}`);
-        } else {
-          setEmailLog(`✅ Emails sent to ${fnData?.sent ?? 0} users!`);
-        }
-      } catch (e) {
-        setEmailLog(`❌ Exception: ${e?.message || String(e)}`);
-      }
+        if (fnError) setEmailLog(`❌ Function error: ${fnError.message}`);
+        else if (fnData?.error) setEmailLog(`❌ Email error: ${fnData.error}`);
+        else setEmailLog(`✅ Emails sent to ${fnData?.sent ?? 0} users!`);
+      } catch (e) { setEmailLog(`❌ Exception: ${e?.message}`); }
     }
-
-    setShowProductForm(false);
-    setEditProduct(null);
-    setProductForm(emptyProduct());
+    setShowProductForm(false); setEditProduct(null); setProductForm(emptyProduct());
     await loadAll();
   };
 
@@ -147,15 +117,17 @@ const productId = d?.id || null;
     const note = noteInputs[order.id] || "";
     const { data: d, error } = await supabase.rpc("shop_admin_approve_order", { p_order_id: order.id, p_admin_note: note });
     if (error || !d?.ok) { setActionMsg({ id: order.id, text: `❌ ${error?.message || "Failed"}`, ok: false }); return; }
+
+    let emailMsg = "✅ Approved!";
     try {
       const { error: fnError } = await supabase.functions.invoke("shop-notify", {
-        body: { type: "order_approved", user_email: order.user_email, txn_no: order.txn_no, product_name: order.product_name, admin_note: note }
+        body: { type: "order_approved", user_email: order.user_email, txn_no: order.txn_no, product_name: order.product_name, admin_note: note, cashback_coins: order.cashback_coins }
       });
-      if (fnError) setActionMsg({ id: order.id, text: `✅ Approved! (Email error: ${fnError.message})`, ok: true });
-      else setActionMsg({ id: order.id, text: "✅ Approved & email sent!", ok: true });
-    } catch (e) {
-      setActionMsg({ id: order.id, text: `✅ Approved! (Email exception: ${e?.message})`, ok: true });
-    }
+      if (fnError) emailMsg = `✅ Approved! (Email error: ${fnError.message})`;
+      else emailMsg = d.cashback_pending ? "✅ Approved! Cashback request created. Email sent." : "✅ Approved! Email sent.";
+    } catch (e) { emailMsg = `✅ Approved! (Email exception: ${e?.message})`; }
+
+    setActionMsg({ id: order.id, text: emailMsg, ok: true });
     await loadAll();
   };
 
@@ -165,49 +137,55 @@ const productId = d?.id || null;
     const { data: d, error } = await supabase.rpc("shop_admin_reject_order", { p_order_id: order.id, p_admin_note: note });
     if (error || !d?.ok) { setActionMsg({ id: order.id, text: `❌ ${error?.message || "Failed"}`, ok: false }); return; }
     try {
-      const { error: fnError } = await supabase.functions.invoke("shop-notify", {
+      await supabase.functions.invoke("shop-notify", {
         body: { type: "order_rejected", user_email: order.user_email, txn_no: order.txn_no, product_name: order.product_name, admin_note: note }
       });
-      if (fnError) setActionMsg({ id: order.id, text: `❌ Rejected! (Email error: ${fnError.message})`, ok: true });
-      else setActionMsg({ id: order.id, text: "❌ Rejected & coins refunded & email sent!", ok: true });
-    } catch (e) {
-      setActionMsg({ id: order.id, text: `❌ Rejected! (Email exception: ${e?.message})`, ok: true });
-    }
+    } catch (_) {}
+    setActionMsg({ id: order.id, text: "❌ Rejected, refunded & email sent.", ok: true });
+    await loadAll();
+  };
+
+  const handleApproveCashback = async (cb) => {
+    const note = cbNoteInputs[cb.id] || "";
+    const { data: d, error } = await supabase.rpc("shop_admin_approve_cashback", { p_cashback_id: cb.id, p_admin_note: note });
+    if (error || !d?.ok) { setCbActionMsg({ id: cb.id, text: `❌ ${error?.message || "Failed"}`, ok: false }); return; }
+    try {
+      await supabase.functions.invoke("shop-notify", {
+        body: { type: "cashback_approved", user_email: cb.user_email, txn_no: cb.txn_no, product_name: cb.product_name, coins_amount: cb.coins_amount }
+      });
+    } catch (_) {}
+    setCbActionMsg({ id: cb.id, text: `✅ Cashback of ${fmt(cb.coins_amount,0)} coins sent!`, ok: true });
+    await loadAll();
+  };
+
+  const handleRejectCashback = async (cb) => {
+    const note = cbNoteInputs[cb.id] || "";
+    if (!note) { setCbActionMsg({ id: cb.id, text: "Note required.", ok: false }); return; }
+    const { data: d, error } = await supabase.rpc("shop_admin_reject_cashback", { p_cashback_id: cb.id, p_admin_note: note });
+    if (error || !d?.ok) { setCbActionMsg({ id: cb.id, text: `❌ ${error?.message || "Failed"}`, ok: false }); return; }
+    try {
+      await supabase.functions.invoke("shop-notify", {
+        body: { type: "cashback_rejected", user_email: cb.user_email, product_name: cb.product_name, coins_amount: cb.coins_amount, admin_note: note }
+      });
+    } catch (_) {}
+    setCbActionMsg({ id: cb.id, text: "❌ Cashback rejected.", ok: true });
     await loadAll();
   };
 
   const handleRestock = async (productId) => {
-    const qty = parseInt(restockInputs[productId] || 0);
-    if (!qty || qty <= 0) return;
+    const qty = parseInt(restockInputs[productId]||0);
+    if (!qty||qty<=0) return;
     await supabase.rpc("shop_admin_restock", { p_product_id: productId, p_quantity: qty });
     setRestockInputs(r => ({ ...r, [productId]: "" }));
     await loadAll();
   };
 
-  const handleAddFee = async () => {
-    if (!newFee.name || !newFee.percentage) return;
-    await supabase.rpc("shop_admin_manage_fee", { p_action: "add", p_name: newFee.name, p_percentage: parseFloat(newFee.percentage) });
-    setNewFee({ name: "", percentage: "" });
-    await loadAll();
-  };
+  if (loading||!isAdmin) return <div style={{ padding: 40, color: "#64748b" }}>Loading…</div>;
 
-  const handleAddCoupon = async () => {
-    if (!newCoupon.code || !newCoupon.discount_pct) return;
-    await supabase.rpc("shop_admin_manage_coupon", {
-      p_action: "add", p_code: newCoupon.code,
-      p_discount_pct: parseFloat(newCoupon.discount_pct),
-      p_max_uses: newCoupon.max_uses ? parseInt(newCoupon.max_uses) : null,
-      p_expires_at: newCoupon.expires_at || null,
-    });
-    setNewCoupon({ code: "", discount_pct: "", max_uses: "", expires_at: "" });
-    await loadAll();
-  };
-
-  if (loading || !isAdmin) return <div style={{ padding: 40, color: "#64748b" }}>Loading…</div>;
-
-  const filteredOrders = data.orders.filter(o => filterStatus === "all" || o.status === filterStatus);
-  const pendingCount = data.orders.filter(o => o.status === "pending").length;
-  const lowStock = data.products.filter(p => !p.unlimited_stock && p.stock <= p.low_stock_threshold);
+  const filteredOrders = data.orders.filter(o => filterStatus==="all" || o.status===filterStatus);
+  const pendingCount   = data.orders.filter(o => o.status==="pending").length;
+  const pendingCb      = data.cashbacks.filter(c => c.status==="pending").length;
+  const lowStock       = data.products.filter(p => !p.unlimited_stock && p.stock<=p.low_stock_threshold);
 
   return (
     <>
@@ -216,44 +194,41 @@ const productId = d?.id || null;
         <div style={S.header}>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900 }}>
             🛍️ Shop Management
-            {pendingCount > 0 && <span style={S.badge}>{pendingCount} pending</span>}
+            {pendingCount > 0 && <span style={S.badge}>{pendingCount} orders</span>}
+            {pendingCb > 0 && <span style={{ ...S.badge, background: "#7c3aed" }}>🎁 {pendingCb} cashbacks</span>}
             {lowStock.length > 0 && <span style={{ ...S.badge, background: "#ef4444" }}>⚠️ {lowStock.length} low stock</span>}
           </h1>
         </div>
 
         <div style={S.tabs}>
           {TABS.map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{ ...S.tab, ...(tab === t ? S.tabActive : {}) }}>
-              {t === "orders" ? "📋 Orders" : t === "products" ? "📦 Products" : t === "categories" ? "🗂️ Categories" : t === "fees" ? "💰 Fees" : "🎟️ Coupons"}
+            <button key={t} onClick={() => setTab(t)} style={{ ...S.tab, ...(tab===t ? S.tabActive : {}) }}>
+              {t==="orders" ? "📋 Orders" : t==="cashbacks" ? "🎁 Cashbacks" : t==="products" ? "📦 Products" : t==="categories" ? "🗂️ Categories" : t==="fees" ? "💰 Fees" : "🎟️ Coupons"}
+              {t==="cashbacks" && pendingCb > 0 && <span style={{ marginLeft: 6, background: "#7c3aed", color: "#fff", borderRadius: 10, padding: "1px 7px", fontSize: 11 }}>{pendingCb}</span>}
             </button>
           ))}
         </div>
 
         {msg.text && <div style={{ ...S.msgBox, background: msg.ok ? "#dcfce7" : "#fee2e2", color: msg.ok ? "#166534" : "#b91c1c", marginBottom: 12 }}>{msg.text}</div>}
+        {emailLog && <div style={{ ...S.msgBox, background: emailLog.startsWith("✅") ? "#dcfce7" : emailLog.startsWith("📧") ? "#eff6ff" : "#fee2e2", color: emailLog.startsWith("✅") ? "#166534" : emailLog.startsWith("📧") ? "#1e3a8a" : "#b91c1c", marginBottom: 12, fontFamily: "monospace", fontSize: 12, wordBreak: "break-all" }}>{emailLog}</div>}
 
-        {emailLog && (
-          <div style={{ ...S.msgBox, background: emailLog.startsWith("✅") ? "#dcfce7" : emailLog.startsWith("📧") ? "#eff6ff" : "#fee2e2", color: emailLog.startsWith("✅") ? "#166534" : emailLog.startsWith("📧") ? "#1e3a8a" : "#b91c1c", marginBottom: 12, fontFamily: "monospace", fontSize: 12, wordBreak: "break-all" }}>
-            {emailLog}
-          </div>
-        )}
-
-        {tab === "orders" && (
+        {/* ── ORDERS ── */}
+        {tab==="orders" && (
           <div style={S.card}>
             <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-              {["all", "pending", "approved", "rejected", "delivered"].map(s => (
-                <button key={s} onClick={() => setFilterStatus(s)} style={{ ...S.filterBtn, ...(filterStatus === s ? S.filterActive : {}) }}>
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
+              {["all","pending","approved","rejected","delivered"].map(s => (
+                <button key={s} onClick={() => setFilterStatus(s)} style={{ ...S.filterBtn, ...(filterStatus===s ? S.filterActive : {}) }}>
+                  {s.charAt(0).toUpperCase()+s.slice(1)}
                 </button>
               ))}
               <span style={{ alignSelf: "center", fontSize: 13, color: "#64748b" }}>{filteredOrders.length} records</span>
             </div>
-            {filteredOrders.length === 0 ? (
-              <div style={{ textAlign: "center", padding: 32, color: "#94a3b8" }}>No orders found.</div>
-            ) : filteredOrders.map(order => (
-              <div key={order.id} style={{ border: "1px solid #e2e8f0", borderRadius: 12, padding: 16, marginBottom: 12, borderLeft: `4px solid ${order.status === "pending" ? "#f59e0b" : order.status === "approved" ? "#22c55e" : order.status === "rejected" ? "#ef4444" : "#0ea5e9"}`, background: "#fafafa" }}>
+            {filteredOrders.length===0 ? <div style={{ textAlign: "center", padding: 32, color: "#94a3b8" }}>No orders found.</div>
+            : filteredOrders.map(order => (
+              <div key={order.id} style={{ border: "1px solid #e2e8f0", borderRadius: 12, padding: 16, marginBottom: 12, borderLeft: `4px solid ${order.status==="pending"?"#f59e0b":order.status==="approved"?"#22c55e":order.status==="rejected"?"#ef4444":"#0ea5e9"}`, background: "#fafafa" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
                   <div>
-                    <div style={{ fontWeight: 800, fontSize: 14 }}>{order.product_name} {order.variant_value ? `(${order.variant_value})` : ""}</div>
+                    <div style={{ fontWeight: 800, fontSize: 14 }}>{order.product_name} {order.variant_value?`(${order.variant_value})`:""}</div>
                     <div style={{ fontSize: 12, color: "#64748b" }}>{order.txn_no}</div>
                     <div style={{ fontSize: 12, color: "#64748b" }}>{order.user_email} · {new Date(order.created_at).toLocaleString()}</div>
                     <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{order.buyer_name} · {order.whatsapp} · {order.city}, {order.country}</div>
@@ -262,35 +237,65 @@ const productId = d?.id || null;
                   </div>
                   <div style={{ textAlign: "right" }}>
                     {statusBadge(order.status)}
-                    <div style={{ fontWeight: 900, fontSize: 18, color: "#1e3a8a", marginTop: 4 }}>{fmt(order.total_coins, 0)} coins</div>
+                    <div style={{ fontWeight: 900, fontSize: 18, color: "#1e3a8a", marginTop: 4 }}>{fmt(order.total_coins,0)} coins</div>
                     <div style={{ fontSize: 12, color: "#64748b" }}>Qty: {order.quantity}</div>
-                    {order.cashback_coins > 0 && <div style={{ fontSize: 12, color: "#16a34a" }}>Cashback: {fmt(order.cashback_coins, 0)} coins</div>}
+                    {order.cashback_coins > 0 && <div style={{ fontSize: 12, color: "#7c3aed" }}>🎁 {fmt(order.cashback_coins,0)} cashback</div>}
                   </div>
                 </div>
-                {order.status === "pending" && (
+                {order.status==="pending" && (
                   <div style={{ marginTop: 12 }}>
-                    <textarea style={{ ...S.input, minHeight: 50, resize: "vertical", fontSize: 12 }}
-                      placeholder="Admin note (required for rejection)"
-                      value={noteInputs[order.id] || ""}
-                      onChange={e => setNoteInputs(n => ({ ...n, [order.id]: e.target.value }))} />
+                    <textarea style={{ ...S.input, minHeight: 50, resize: "vertical", fontSize: 12 }} placeholder="Admin note (required for rejection)" value={noteInputs[order.id]||""} onChange={e => setNoteInputs(n => ({ ...n, [order.id]: e.target.value }))} />
                     <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
                       <button style={{ ...S.btn, background: "linear-gradient(135deg,#166534,#22c55e)", flex: 1 }} onClick={() => handleApprove(order)}>✅ Approve</button>
                       <button style={{ ...S.btn, background: "linear-gradient(135deg,#991b1b,#ef4444)", flex: 1 }} onClick={() => handleReject(order)}>❌ Reject</button>
                     </div>
-                    {actionMsg.id === order.id && (
-                      <div style={{ ...S.msgBox, background: actionMsg.ok ? "#dcfce7" : "#fee2e2", color: actionMsg.ok ? "#166534" : "#b91c1c", marginTop: 8, fontSize: 12, wordBreak: "break-all" }}>{actionMsg.text}</div>
-                    )}
+                    {actionMsg.id===order.id && <div style={{ ...S.msgBox, background: actionMsg.ok?"#dcfce7":"#fee2e2", color: actionMsg.ok?"#166534":"#b91c1c", marginTop: 8, fontSize: 12, wordBreak: "break-all" }}>{actionMsg.text}</div>}
                   </div>
                 )}
-                {order.admin_note && order.status !== "pending" && (
-                  <div style={{ marginTop: 8, fontSize: 12, color: "#92400e", background: "#fffbeb", padding: "6px 10px", borderRadius: 6 }}>Note: {order.admin_note}</div>
+                {order.admin_note && order.status!=="pending" && <div style={{ marginTop: 8, fontSize: 12, color: "#92400e", background: "#fffbeb", padding: "6px 10px", borderRadius: 6 }}>Note: {order.admin_note}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── CASHBACKS ── */}
+        {tab==="cashbacks" && (
+          <div style={S.card}>
+            <div style={S.cardTitle}>🎁 Cashback Requests ({data.cashbacks.length})</div>
+            {data.cashbacks.length===0 ? <div style={{ textAlign: "center", padding: 32, color: "#94a3b8" }}>No cashback requests.</div>
+            : data.cashbacks.map(cb => (
+              <div key={cb.id} style={{ border: "1px solid #e2e8f0", borderRadius: 12, padding: 16, marginBottom: 12, borderLeft: `4px solid ${cb.status==="pending"?"#7c3aed":cb.status==="approved"?"#22c55e":"#ef4444"}`, background: "#fafafa" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 14 }}>{cb.product_name}</div>
+                    <div style={{ fontSize: 12, color: "#64748b" }}>{cb.txn_no}</div>
+                    <div style={{ fontSize: 12, color: "#64748b" }}>{cb.user_email} · {new Date(cb.created_at).toLocaleString()}</div>
+                    {cb.admin_note && <div style={{ fontSize: 12, color: "#92400e", marginTop: 4 }}>Note: {cb.admin_note}</div>}
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <span style={{ background: cb.status==="pending"?"#ede9fe":cb.status==="approved"?"#dcfce7":"#fee2e2", color: cb.status==="pending"?"#6d28d9":cb.status==="approved"?"#166534":"#b91c1c", padding: "3px 10px", borderRadius: 12, fontSize: 12, fontWeight: 700 }}>
+                      {cb.status==="pending"?"⏳ Pending":cb.status==="approved"?"✅ Approved":"❌ Rejected"}
+                    </span>
+                    <div style={{ fontWeight: 900, fontSize: 18, color: "#7c3aed", marginTop: 4 }}>🎁 {fmt(cb.coins_amount,0)} coins</div>
+                  </div>
+                </div>
+                {cb.status==="pending" && (
+                  <div style={{ marginTop: 12 }}>
+                    <textarea style={{ ...S.input, minHeight: 50, resize: "vertical", fontSize: 12 }} placeholder="Admin note (required for rejection)" value={cbNoteInputs[cb.id]||""} onChange={e => setCbNoteInputs(n => ({ ...n, [cb.id]: e.target.value }))} />
+                    <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                      <button style={{ ...S.btn, background: "linear-gradient(135deg,#6d28d9,#7c3aed)", flex: 1 }} onClick={() => handleApproveCashback(cb)}>🎁 Approve Cashback</button>
+                      <button style={{ ...S.btn, background: "linear-gradient(135deg,#991b1b,#ef4444)", flex: 1 }} onClick={() => handleRejectCashback(cb)}>❌ Reject</button>
+                    </div>
+                    {cbActionMsg.id===cb.id && <div style={{ ...S.msgBox, background: cbActionMsg.ok?"#dcfce7":"#fee2e2", color: cbActionMsg.ok?"#166534":"#b91c1c", marginTop: 8, fontSize: 12 }}>{cbActionMsg.text}</div>}
+                  </div>
                 )}
               </div>
             ))}
           </div>
         )}
 
-        {tab === "products" && (
+        {/* ── PRODUCTS ── */}
+        {tab==="products" && (
           <div style={S.card}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <div style={S.cardTitle}>Products ({data.products.length})</div>
@@ -298,11 +303,11 @@ const productId = d?.id || null;
             </div>
             {showProductForm && (
               <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 12, padding: 16, marginBottom: 16 }}>
-                <div style={{ fontWeight: 800, marginBottom: 12 }}>{editProduct ? "Edit Product" : "New Product"}</div>
+                <div style={{ fontWeight: 800, marginBottom: 12 }}>{editProduct?"Edit Product":"New Product"}</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                   <div><Label text="Name" /><input style={S.input} value={productForm.name} onChange={e => setProductForm(f => ({ ...f, name: e.target.value }))} /></div>
-                  <div><Label text="Type" /><select style={S.input} value={productForm.type} onChange={e => setProductForm(f => ({ ...f, type: e.target.value }))}>{["physical","digital","service","recharge"].map(t => <option key={t} value={t}>{t}</option>)}</select></div>
-                  <div><Label text="Category" /><select style={S.input} value={productForm.category_id} onChange={e => setProductForm(f => ({ ...f, category_id: e.target.value }))}><option value="">-- Select --</option>{data.categories.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}</select></div>
+                  <div><Label text="Type" /><select style={S.input} value={productForm.type} onChange={e => setProductForm(f => ({ ...f, type: e.target.value }))}>{["physical","digital","service","recharge"].map(t=><option key={t} value={t}>{t}</option>)}</select></div>
+                  <div><Label text="Category" /><select style={S.input} value={productForm.category_id} onChange={e => setProductForm(f => ({ ...f, category_id: e.target.value }))}><option value="">-- Select --</option>{data.categories.map(c=><option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}</select></div>
                   <div><Label text="Price (coins)" /><input style={S.input} type="number" value={productForm.price_coins} onChange={e => setProductForm(f => ({ ...f, price_coins: e.target.value }))} /></div>
                   <div><Label text="Stock" /><input style={S.input} type="number" value={productForm.stock} onChange={e => setProductForm(f => ({ ...f, stock: e.target.value }))} /></div>
                   <div><Label text="Discount %" /><input style={S.input} type="number" value={productForm.discount_pct} onChange={e => setProductForm(f => ({ ...f, discount_pct: e.target.value }))} /></div>
@@ -321,38 +326,38 @@ const productId = d?.id || null;
                   <input type="file" multiple accept="image/*" onChange={e => handleImageUpload(Array.from(e.target.files))} />
                   {uploading && <span style={{ fontSize: 12, color: "#64748b" }}> Uploading…</span>}
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-                    {productForm.images.map((img, i) => (
+                    {productForm.images.map((img,i) => (
                       <div key={i} style={{ position: "relative" }}>
                         <img src={img} alt="" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8 }} />
-                        <button onClick={() => setProductForm(f => ({ ...f, images: f.images.filter((_, j) => j !== i) }))} style={{ position: "absolute", top: -6, right: -6, background: "#ef4444", color: "#fff", border: "none", borderRadius: "50%", width: 18, height: 18, fontSize: 10, cursor: "pointer", fontWeight: 900 }}>×</button>
+                        <button onClick={() => setProductForm(f => ({ ...f, images: f.images.filter((_,j)=>j!==i) }))} style={{ position: "absolute", top: -6, right: -6, background: "#ef4444", color: "#fff", border: "none", borderRadius: "50%", width: 18, height: 18, fontSize: 10, cursor: "pointer", fontWeight: 900 }}>×</button>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
-                  <button style={S.btn} disabled={savingProduct} onClick={handleSaveProduct}>{savingProduct ? "Saving…" : "Save Product"}</button>
+                  <button style={S.btn} disabled={savingProduct} onClick={handleSaveProduct}>{savingProduct?"Saving…":"Save Product"}</button>
                   <button style={{ ...S.btn, background: "#94a3b8" }} onClick={() => { setShowProductForm(false); setEditProduct(null); }}>Cancel</button>
                 </div>
               </div>
             )}
-            {lowStock.length > 0 && <div style={{ background: "#fef3c7", border: "1px solid #fde047", borderRadius: 10, padding: "10px 14px", marginBottom: 14, fontSize: 13 }}>⚠️ <strong>Low Stock:</strong> {lowStock.map(p => p.name).join(", ")}</div>}
+            {lowStock.length>0 && <div style={{ background: "#fef3c7", border: "1px solid #fde047", borderRadius: 10, padding: "10px 14px", marginBottom: 14, fontSize: 13 }}>⚠️ <strong>Low Stock:</strong> {lowStock.map(p=>p.name).join(", ")}</div>}
             <div style={{ overflowX: "auto" }}>
               <table style={S.table}>
-                <thead><tr style={{ background: "#f8fafc" }}>{["Product","Type","Price","Stock","Orders","Rating","Status","Actions"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                <thead><tr style={{ background: "#f8fafc" }}>{["Product","Type","Price","Stock","Orders","Rating","Status","Actions"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
                 <tbody>
                   {data.products.map(p => (
                     <tr key={p.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                      <td style={S.td}><div style={{ fontWeight: 700 }}>{p.name}</div>{p.is_featured && <span style={{ fontSize: 10, background: "#fef3c7", color: "#92400e", padding: "2px 6px", borderRadius: 6, fontWeight: 700 }}>⭐ Featured</span>}{p.discount_pct > 0 && <span style={{ fontSize: 10, background: "#dcfce7", color: "#166534", padding: "2px 6px", borderRadius: 6, fontWeight: 700, marginLeft: 4 }}>{p.discount_pct}% OFF</span>}</td>
+                      <td style={S.td}><div style={{ fontWeight: 700 }}>{p.name}</div>{p.is_featured&&<span style={{ fontSize:10,background:"#fef3c7",color:"#92400e",padding:"2px 6px",borderRadius:6,fontWeight:700 }}>⭐</span>}{p.discount_pct>0&&<span style={{ fontSize:10,background:"#dcfce7",color:"#166534",padding:"2px 6px",borderRadius:6,fontWeight:700,marginLeft:4 }}>{p.discount_pct}% OFF</span>}{p.cashback_pct>0&&<span style={{ fontSize:10,background:"#ede9fe",color:"#6d28d9",padding:"2px 6px",borderRadius:6,fontWeight:700,marginLeft:4 }}>🎁{p.cashback_pct}%</span>}</td>
                       <td style={S.td}>{p.type}</td>
-                      <td style={S.td}>{fmt(p.price_coins, 0)} coins</td>
+                      <td style={S.td}>{fmt(p.price_coins,0)} coins</td>
                       <td style={S.td}>
-                        {p.unlimited_stock ? "∞" : <span style={{ color: p.stock <= p.low_stock_threshold ? "#ef4444" : "inherit", fontWeight: p.stock <= p.low_stock_threshold ? 800 : 400 }}>{p.stock}</span>}
-                        {!p.unlimited_stock && <div style={{ display: "flex", gap: 4, marginTop: 4 }}><input type="number" placeholder="+" style={{ ...S.input, width: 50, padding: "2px 6px", fontSize: 11 }} value={restockInputs[p.id] || ""} onChange={e => setRestockInputs(r => ({ ...r, [p.id]: e.target.value }))} /><button style={{ ...S.btn, padding: "2px 8px", fontSize: 11 }} onClick={() => handleRestock(p.id)}>+</button></div>}
+                        {p.unlimited_stock?"∞":<span style={{ color:p.stock<=p.low_stock_threshold?"#ef4444":"inherit",fontWeight:p.stock<=p.low_stock_threshold?800:400 }}>{p.stock}</span>}
+                        {!p.unlimited_stock&&<div style={{ display:"flex",gap:4,marginTop:4 }}><input type="number" placeholder="+" style={{ ...S.input,width:50,padding:"2px 6px",fontSize:11 }} value={restockInputs[p.id]||""} onChange={e=>setRestockInputs(r=>({...r,[p.id]:e.target.value}))} /><button style={{ ...S.btn,padding:"2px 8px",fontSize:11 }} onClick={()=>handleRestock(p.id)}>+</button></div>}
                       </td>
                       <td style={S.td}>{p.order_count}</td>
                       <td style={S.td}>⭐ {p.avg_rating}</td>
-                      <td style={S.td}><span style={{ color: p.is_active ? "#166534" : "#b91c1c", fontWeight: 700, fontSize: 12 }}>{p.is_active ? "Active" : "Inactive"}</span></td>
-                      <td style={S.td}><button style={S.smallBtn} onClick={() => { setEditProduct(p); setProductForm({ ...p, sale_ends_at: p.sale_ends_at ? p.sale_ends_at.slice(0, 16) : "" }); setShowProductForm(true); }}>Edit</button></td>
+                      <td style={S.td}><span style={{ color:p.is_active?"#166534":"#b91c1c",fontWeight:700,fontSize:12 }}>{p.is_active?"Active":"Inactive"}</span></td>
+                      <td style={S.td}><button style={S.smallBtn} onClick={()=>{ setEditProduct(p); setProductForm({...p,sale_ends_at:p.sale_ends_at?p.sale_ends_at.slice(0,16):""}); setShowProductForm(true); }}>Edit</button></td>
                     </tr>
                   ))}
                 </tbody>
@@ -361,47 +366,47 @@ const productId = d?.id || null;
           </div>
         )}
 
-        {tab === "categories" && (
+        {tab==="categories" && (
           <div style={S.card}>
             <div style={S.cardTitle}>Categories</div>
             <table style={S.table}>
-              <thead><tr style={{ background: "#f8fafc" }}>{["Icon","Name","Slug","Status"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
-              <tbody>{data.categories.map(c => <tr key={c.id} style={{ borderBottom: "1px solid #f1f5f9" }}><td style={S.td}>{c.icon}</td><td style={S.td}><strong>{c.name}</strong></td><td style={S.td}><span style={{ fontFamily: "monospace", fontSize: 12 }}>{c.slug}</span></td><td style={S.td}><span style={{ color: c.is_active ? "#166534" : "#b91c1c", fontWeight: 700, fontSize: 12 }}>{c.is_active ? "Active" : "Inactive"}</span></td></tr>)}</tbody>
+              <thead><tr style={{ background: "#f8fafc" }}>{["Icon","Name","Slug","Status"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
+              <tbody>{data.categories.map(c=><tr key={c.id} style={{ borderBottom:"1px solid #f1f5f9" }}><td style={S.td}>{c.icon}</td><td style={S.td}><strong>{c.name}</strong></td><td style={S.td}><span style={{ fontFamily:"monospace",fontSize:12 }}>{c.slug}</span></td><td style={S.td}><span style={{ color:c.is_active?"#166534":"#b91c1c",fontWeight:700,fontSize:12 }}>{c.is_active?"Active":"Inactive"}</span></td></tr>)}</tbody>
             </table>
           </div>
         )}
 
-        {tab === "fees" && (
+        {tab==="fees" && (
           <div style={S.card}>
             <div style={S.cardTitle}>Shop Fees</div>
-            <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap", background: "#f8fafc", padding: 14, borderRadius: 10 }}>
-              <input style={{ ...S.input, flex: 2, minWidth: 140 }} placeholder="Fee name" value={newFee.name} onChange={e => setNewFee(f => ({ ...f, name: e.target.value }))} />
-              <input style={{ ...S.input, flex: 1, minWidth: 100 }} type="number" placeholder="% e.g. 2.5" value={newFee.percentage} onChange={e => setNewFee(f => ({ ...f, percentage: e.target.value }))} />
-              <button style={S.btn} onClick={handleAddFee}>+ Add Fee</button>
+            <div style={{ display:"flex",gap:10,marginBottom:16,flexWrap:"wrap",background:"#f8fafc",padding:14,borderRadius:10 }}>
+              <input style={{ ...S.input,flex:2,minWidth:140 }} placeholder="Fee name" value={newFee.name} onChange={e=>setNewFee(f=>({...f,name:e.target.value}))} />
+              <input style={{ ...S.input,flex:1,minWidth:100 }} type="number" placeholder="% e.g. 2.5" value={newFee.percentage} onChange={e=>setNewFee(f=>({...f,percentage:e.target.value}))} />
+              <button style={S.btn} onClick={async()=>{ if(!newFee.name||!newFee.percentage)return; await supabase.rpc("shop_admin_manage_fee",{p_action:"add",p_name:newFee.name,p_percentage:parseFloat(newFee.percentage)}); setNewFee({name:"",percentage:""}); loadAll(); }}>+ Add Fee</button>
             </div>
             <table style={S.table}>
-              <thead><tr style={{ background: "#f8fafc" }}>{["Name","Percentage","Status","Actions"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
-              <tbody>{data.fees.map(f => <tr key={f.id} style={{ borderBottom: "1px solid #f1f5f9" }}><td style={S.td}><strong>{f.name}</strong></td><td style={S.td}>{f.percentage}%</td><td style={S.td}><button onClick={async () => { await supabase.rpc("shop_admin_manage_fee", { p_action: "toggle", p_fee_id: f.id }); loadAll(); }} style={{ padding: "3px 10px", borderRadius: 10, border: "none", cursor: "pointer", fontWeight: 700, fontSize: 12, background: f.is_active ? "#dcfce7" : "#f1f5f9", color: f.is_active ? "#166534" : "#64748b" }}>{f.is_active ? "Active" : "Inactive"}</button></td><td style={S.td}><button onClick={async () => { await supabase.rpc("shop_admin_manage_fee", { p_action: "delete", p_fee_id: f.id }); loadAll(); }} style={{ background: "#fee2e2", color: "#b91c1c", border: "none", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Delete</button></td></tr>)}</tbody>
+              <thead><tr style={{ background:"#f8fafc" }}>{["Name","Percentage","Status","Actions"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
+              <tbody>{data.fees.map(f=><tr key={f.id} style={{ borderBottom:"1px solid #f1f5f9" }}><td style={S.td}><strong>{f.name}</strong></td><td style={S.td}>{f.percentage}%</td><td style={S.td}><button onClick={async()=>{ await supabase.rpc("shop_admin_manage_fee",{p_action:"toggle",p_fee_id:f.id}); loadAll(); }} style={{ padding:"3px 10px",borderRadius:10,border:"none",cursor:"pointer",fontWeight:700,fontSize:12,background:f.is_active?"#dcfce7":"#f1f5f9",color:f.is_active?"#166534":"#64748b" }}>{f.is_active?"Active":"Inactive"}</button></td><td style={S.td}><button onClick={async()=>{ await supabase.rpc("shop_admin_manage_fee",{p_action:"delete",p_fee_id:f.id}); loadAll(); }} style={{ background:"#fee2e2",color:"#b91c1c",border:"none",padding:"4px 10px",borderRadius:6,fontSize:12,fontWeight:700,cursor:"pointer" }}>Delete</button></td></tr>)}</tbody>
             </table>
-            <div style={{ marginTop: 14, padding: "10px 14px", background: "#eff6ff", borderRadius: 8, fontSize: 13, color: "#1e3a8a" }}>
-              <strong>Total active fees:</strong> {data.fees.filter(f => f.is_active).reduce((s, f) => s + Number(f.percentage), 0).toFixed(2)}%
+            <div style={{ marginTop:14,padding:"10px 14px",background:"#eff6ff",borderRadius:8,fontSize:13,color:"#1e3a8a" }}>
+              <strong>Total active fees:</strong> {data.fees.filter(f=>f.is_active).reduce((s,f)=>s+Number(f.percentage),0).toFixed(2)}%
             </div>
           </div>
         )}
 
-        {tab === "coupons" && (
+        {tab==="coupons" && (
           <div style={S.card}>
             <div style={S.cardTitle}>Coupon Codes</div>
-            <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap", background: "#f8fafc", padding: 14, borderRadius: 10 }}>
-              <input style={{ ...S.input, flex: 1, minWidth: 100 }} placeholder="Code e.g. SAVE20" value={newCoupon.code} onChange={e => setNewCoupon(c => ({ ...c, code: e.target.value }))} />
-              <input style={{ ...S.input, flex: 1, minWidth: 80 }} type="number" placeholder="Discount %" value={newCoupon.discount_pct} onChange={e => setNewCoupon(c => ({ ...c, discount_pct: e.target.value }))} />
-              <input style={{ ...S.input, flex: 1, minWidth: 80 }} type="number" placeholder="Max uses" value={newCoupon.max_uses} onChange={e => setNewCoupon(c => ({ ...c, max_uses: e.target.value }))} />
-              <input style={{ ...S.input, flex: 1, minWidth: 140 }} type="datetime-local" value={newCoupon.expires_at} onChange={e => setNewCoupon(c => ({ ...c, expires_at: e.target.value }))} />
-              <button style={S.btn} onClick={handleAddCoupon}>+ Add Coupon</button>
+            <div style={{ display:"flex",gap:10,marginBottom:16,flexWrap:"wrap",background:"#f8fafc",padding:14,borderRadius:10 }}>
+              <input style={{ ...S.input,flex:1,minWidth:100 }} placeholder="Code e.g. SAVE20" value={newCoupon.code} onChange={e=>setNewCoupon(c=>({...c,code:e.target.value}))} />
+              <input style={{ ...S.input,flex:1,minWidth:80 }} type="number" placeholder="Discount %" value={newCoupon.discount_pct} onChange={e=>setNewCoupon(c=>({...c,discount_pct:e.target.value}))} />
+              <input style={{ ...S.input,flex:1,minWidth:80 }} type="number" placeholder="Max uses" value={newCoupon.max_uses} onChange={e=>setNewCoupon(c=>({...c,max_uses:e.target.value}))} />
+              <input style={{ ...S.input,flex:1,minWidth:140 }} type="datetime-local" value={newCoupon.expires_at} onChange={e=>setNewCoupon(c=>({...c,expires_at:e.target.value}))} />
+              <button style={S.btn} onClick={async()=>{ if(!newCoupon.code||!newCoupon.discount_pct)return; await supabase.rpc("shop_admin_manage_coupon",{p_action:"add",p_code:newCoupon.code,p_discount_pct:parseFloat(newCoupon.discount_pct),p_max_uses:newCoupon.max_uses?parseInt(newCoupon.max_uses):null,p_expires_at:newCoupon.expires_at||null}); setNewCoupon({code:"",discount_pct:"",max_uses:"",expires_at:""}); loadAll(); }}>+ Add Coupon</button>
             </div>
             <table style={S.table}>
-              <thead><tr style={{ background: "#f8fafc" }}>{["Code","Discount","Used","Max Uses","Expires","Status","Actions"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
-              <tbody>{data.coupons.map(c => <tr key={c.id} style={{ borderBottom: "1px solid #f1f5f9" }}><td style={S.td}><strong style={{ fontFamily: "monospace" }}>{c.code}</strong></td><td style={S.td}>{c.discount_pct}%</td><td style={S.td}>{c.used_count}</td><td style={S.td}>{c.max_uses || "∞"}</td><td style={S.td}>{c.expires_at ? new Date(c.expires_at).toLocaleDateString() : "Never"}</td><td style={S.td}><button onClick={async () => { await supabase.rpc("shop_admin_manage_coupon", { p_action: "toggle", p_coupon_id: c.id }); loadAll(); }} style={{ padding: "3px 10px", borderRadius: 10, border: "none", cursor: "pointer", fontWeight: 700, fontSize: 12, background: c.is_active ? "#dcfce7" : "#f1f5f9", color: c.is_active ? "#166534" : "#64748b" }}>{c.is_active ? "Active" : "Inactive"}</button></td><td style={S.td}><button onClick={async () => { await supabase.rpc("shop_admin_manage_coupon", { p_action: "delete", p_coupon_id: c.id }); loadAll(); }} style={{ background: "#fee2e2", color: "#b91c1c", border: "none", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: "pointer" }}>Delete</button></td></tr>)}</tbody>
+              <thead><tr style={{ background:"#f8fafc" }}>{["Code","Discount","Used","Max Uses","Expires","Status","Actions"].map(h=><th key={h} style={S.th}>{h}</th>)}</tr></thead>
+              <tbody>{data.coupons.map(c=><tr key={c.id} style={{ borderBottom:"1px solid #f1f5f9" }}><td style={S.td}><strong style={{ fontFamily:"monospace" }}>{c.code}</strong></td><td style={S.td}>{c.discount_pct}%</td><td style={S.td}>{c.used_count}</td><td style={S.td}>{c.max_uses||"∞"}</td><td style={S.td}>{c.expires_at?new Date(c.expires_at).toLocaleDateString():"Never"}</td><td style={S.td}><button onClick={async()=>{ await supabase.rpc("shop_admin_manage_coupon",{p_action:"toggle",p_coupon_id:c.id}); loadAll(); }} style={{ padding:"3px 10px",borderRadius:10,border:"none",cursor:"pointer",fontWeight:700,fontSize:12,background:c.is_active?"#dcfce7":"#f1f5f9",color:c.is_active?"#166534":"#64748b" }}>{c.is_active?"Active":"Inactive"}</button></td><td style={S.td}><button onClick={async()=>{ await supabase.rpc("shop_admin_manage_coupon",{p_action:"delete",p_coupon_id:c.id}); loadAll(); }} style={{ background:"#fee2e2",color:"#b91c1c",border:"none",padding:"4px 10px",borderRadius:6,fontSize:12,fontWeight:700,cursor:"pointer" }}>Delete</button></td></tr>)}</tbody>
             </table>
           </div>
         )}

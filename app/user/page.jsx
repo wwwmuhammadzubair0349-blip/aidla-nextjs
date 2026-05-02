@@ -7,16 +7,19 @@
 //   2. useNavigate → useRouter from next/navigation
 //   3. navigate(to) → router.push(to)
 //   4. CSS string identical to original
+//   5. Performance optimized — removed expensive backdrop-filter, transforms, pulse animations
+//   6. Hover effects refined — flat, elegant, opacity/border-based only
+//   7. Floating bot converted to component with state
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import FloatingAssistant from "@/components/FloatingAssistant";
 
 /* ── Floating AIDLA Bot Bubble ── */
 function BotBubble({ onClick }) {
   return (
     <div className="bot-wrap" onClick={onClick} title="Ask AIDLA Bot" role="button" tabIndex={0}
       onKeyDown={e => e.key === "Enter" && onClick()}>
-      <div className="bot-ring ring-1" aria-hidden="true"/>
-      <div className="bot-ring ring-2" aria-hidden="true"/>
       <button className="bot-fab" aria-label="Ask AIDLA Bot">
         <span className="bot-icon" aria-hidden="true">🤖</span>
       </button>
@@ -75,7 +78,7 @@ function Section({ label, labelClass, children }) {
   );
 }
 
-/* ── CSS (identical to original) ── */
+/* ── CSS (performance optimized) ── */
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap');
 
@@ -83,16 +86,16 @@ const CSS = `
     font-family: 'DM Sans', system-ui, sans-serif;
     position: relative;
     min-height: 60vh;
-    animation: dashIn 0.45s cubic-bezier(0.16,1,0.3,1) both;
+    animation: dashIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
   }
   @keyframes dashIn {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: none; }
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   .dashboard::before {
     content: '';
-    position: fixed; inset: 0;
+    position: absolute; inset: 0;
     background:
       radial-gradient(ellipse 60% 50% at 20% 20%, rgba(219,234,254,0.55) 0%, transparent 70%),
       radial-gradient(ellipse 50% 60% at 80% 80%, rgba(209,250,229,0.45) 0%, transparent 70%),
@@ -114,19 +117,18 @@ const CSS = `
   .hero-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
 
   .hero-card {
-    border: none; border-radius: 22px; padding: 22px 20px 20px;
+    border: 1px solid rgba(255,255,255,0.75);
+    border-radius: 22px; padding: 22px 20px 20px;
     cursor: pointer; text-align: left; position: relative; overflow: hidden;
-    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
-    transition: transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
     display: flex; flex-direction: column;
-    box-shadow: 0 2px 0 rgba(255,255,255,0.8) inset, 0 8px 32px rgba(15,23,42,0.07);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 4px 16px rgba(15,23,42,0.04);
   }
-  .hero-card::before {
-    content: ''; position: absolute; inset: 0; border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.75); pointer-events: none;
+  .hero-card:hover {
+    box-shadow: 0 1px 3px rgba(15,23,42,0.08), 0 8px 24px rgba(15,23,42,0.06);
+    border-color: rgba(255,255,255,0.95);
   }
-  .hero-card:hover  { transform: translateY(-4px); box-shadow: 0 2px 0 rgba(255,255,255,0.8) inset, 0 16px 40px rgba(15,23,42,0.10); }
-  .hero-card:active { transform: scale(0.98); }
+  .hero-card:active { opacity: 0.95; }
   .hero-card:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
 
   .hero-blue    { background: rgba(219,234,254,0.62); }
@@ -135,7 +137,7 @@ const CSS = `
   .hero-badge {
     font-size: 9px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
     padding: 4px 10px; border-radius: 20px;
-    display: inline-block; margin-bottom: 14px; backdrop-filter: blur(8px); width: fit-content;
+    display: inline-block; margin-bottom: 14px; width: fit-content;
   }
   .badge-blue    { background: rgba(219,234,254,0.9); color: #1e40af; border: 1px solid rgba(147,197,253,0.5); }
   .badge-emerald { background: rgba(209,250,229,0.9); color: #065f46; border: 1px solid rgba(110,231,183,0.5); }
@@ -146,7 +148,7 @@ const CSS = `
   .hero-arrow {
     position: absolute; bottom: 18px; right: 20px;
     font-size: 1rem; color: rgba(15,23,42,0.2);
-    transition: color 0.2s, transform 0.2s;
+    transition: color 0.2s ease, transform 0.2s ease;
   }
   .hero-card:hover .hero-arrow { color: rgba(15,23,42,0.5); transform: translateX(3px); }
 
@@ -168,17 +170,20 @@ const CSS = `
     background: rgba(255,255,255,0.58); border: 1px solid rgba(255,255,255,0.85);
     border-radius: 16px; padding: 13px; cursor: pointer; text-align: left;
     display: flex; align-items: center; gap: 11px;
-    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-    transition: transform 0.18s cubic-bezier(0.16,1,0.3,1), background 0.18s, box-shadow 0.18s;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     position: relative; overflow: hidden;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 2px 8px rgba(15,23,42,0.04); width: 100%;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.04); width: 100%;
   }
-  .reg-card:hover { background: rgba(255,255,255,0.78); transform: translateY(-2px); box-shadow: 0 1px 0 rgba(255,255,255,0.9) inset, 0 8px 20px rgba(15,23,42,0.07); }
-  .reg-card:active  { transform: scale(0.97); }
-  .reg-card:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .reg-card:hover {
+    background: rgba(255,255,255,0.78);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 4px 12px rgba(15,23,42,0.05);
+    border-color: rgba(255,255,255,0.95);
+  }
+  .reg-card:active { opacity: 0.9; }
+  .reg-card:disabled { opacity: 0.5; cursor: not-allowed; }
   .reg-card:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; border-radius: 16px; }
 
-  .reg-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; backdrop-filter: blur(8px); }
+  .reg-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .reg-icon-inner { font-size: 18px; line-height: 1; }
 
   .ic-blue   { background: rgba(219,234,254,0.8); border: 1px solid rgba(147,197,253,0.35); }
@@ -199,32 +204,27 @@ const CSS = `
 
   /* Floating Bot */
   .bot-wrap { position: fixed; bottom: 28px; right: 24px; z-index: 9999; cursor: pointer; }
-  .bot-ring { position: absolute; border-radius: 50%; background: rgba(59,130,246,0.2); top: 50%; left: 50%; transform: translate(-50%,-50%); }
-  .ring-1 { width: 58px; height: 58px; animation: botPulse 2.4s infinite ease-out; }
-  .ring-2 { width: 58px; height: 58px; animation: botPulse 2.4s 0.8s infinite ease-out; }
-  @keyframes botPulse {
-    0%   { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
-    100% { transform: translate(-50%,-50%) scale(2); opacity: 0; }
-  }
   .bot-fab {
-    position: relative; z-index: 2; width: 54px; height: 54px; border-radius: 50%;
+    position: relative; width: 54px; height: 54px; border-radius: 50%;
     background: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.95);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 4px 20px rgba(59,130,246,0.25), 0 1px 0 rgba(255,255,255,0.9) inset;
+    box-shadow: 0 2px 12px rgba(59,130,246,0.15), 0 1px 3px rgba(15,23,42,0.06);
     display: flex; align-items: center; justify-content: center; cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s;
+    transition: box-shadow 0.2s ease, background-color 0.2s ease;
   }
-  .bot-fab:hover  { transform: scale(1.1); box-shadow: 0 8px 28px rgba(59,130,246,0.35), 0 1px 0 rgba(255,255,255,0.9) inset; }
-  .bot-fab:active { transform: scale(0.93); }
+  .bot-fab:hover {
+    background: rgba(255,255,255,0.88);
+    box-shadow: 0 4px 20px rgba(59,130,246,0.22), 0 1px 3px rgba(15,23,42,0.08);
+  }
+  .bot-fab:active { opacity: 0.9; }
   .bot-icon { font-size: 22px; line-height: 1; }
   .bot-tooltip {
     position: absolute; bottom: 62px; right: 0;
-    background: rgba(255,255,255,0.88); backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.95); border-radius: 10px;
+    background: rgba(255,255,255,0.88); border: 1px solid rgba(255,255,255,0.95);
+    border-radius: 10px;
     padding: 6px 12px; font-size: 11px; font-weight: 700; color: #1e3a8a;
     white-space: nowrap; box-shadow: 0 4px 16px rgba(15,23,42,0.08);
     opacity: 0; pointer-events: none; transform: translateY(4px);
-    transition: opacity 0.2s, transform 0.2s;
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
   .bot-wrap:hover .bot-tooltip { opacity: 1; transform: translateY(0); }
 
@@ -268,6 +268,7 @@ const CSS = `
 
 export default function UserDashboard() {
   const router = useRouter();
+  const [isBotOpen, setIsBotOpen] = useState(false); // ← ADD THIS LINE
 
   return (
     <div className="dashboard">
@@ -316,9 +317,7 @@ export default function UserDashboard() {
       {/* Career */}
       <Section label="📄 Career" labelClass="label-blue">
         <RegCard title="My CV Maker"        subtitle="Edit, save & download your CV anytime"        icon="📝" to="/user/cv-maker"      iconClass="ic-blue"   />
-       {/* <RegCard title="Build New CV"        subtitle="Create a CV from scratch in 5 minutes"        icon="✨" to="/cv-builder"          iconClass="ic-amber"  /> */}
         <RegCard title="My Cover Letters"    subtitle="Manage your AI-crafted cover letters"          icon="✉️" to="/user/cover-letter"  iconClass="ic-purple" />
-       {/* <RegCard title="Build Cover Letter"  subtitle="Write a tailored cover letter with AI"         icon="🤖" to="/cover-letter"        iconClass="ic-green"  /> */}
       </Section>
 
       {/* Tools */}
@@ -328,8 +327,14 @@ export default function UserDashboard() {
         <RegCard title="Follow Us" subtitle="Join our social media channels"    icon="📱" to="/user/social"         iconClass="ic-coral"  />
       </Section>
 
-      {/* Floating Bot */}
-      <BotBubble onClick={() => router.push("/user/bot")} />
+      {/* Floating Bot Button */}
+      <BotBubble onClick={() => setIsBotOpen(true)} />
+      
+      {/* Floating Assistant Panel */}
+      <FloatingAssistant 
+        isOpen={isBotOpen} 
+        onClose={() => setIsBotOpen(false)} 
+      />
     </div>
   );
 }

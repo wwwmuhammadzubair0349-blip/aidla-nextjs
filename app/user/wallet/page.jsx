@@ -1,26 +1,106 @@
 "use client";
-// app/user/wallet/page.jsx  (WalletOverview)
-// Converted from React Router WalletOverview.jsx
+// app/user/wallet/page.jsx — Premium Wallet Overview
 //
-// Changes:
-//   1. "use client" directive
-//   2. supabase import: ../../../lib/supabase → @/lib/supabase
-//   3. <a href="/user/wallet/transactions"> → <Link href="..."> (next/link)
-//   4. Everything else identical
+// Enhancements:
+//   - Mobile-first responsive design (320px–ultrawide)
+//   - Clean flat card design — no 3D transforms, no heavy shadows
+//   - Copy TXN numbers to clipboard
+//   - Colored amount indicators with arrows
+//   - Refined transaction cards with icon indicators
+//   - Safe area support for notched devices
+//   - Static-friendly — no SSR, no server components
+//   - FIXED: Transaction card overflow on all devices
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
+// ── Transaction Type Config ────────────────────────────────────────────────
+const TXN_TYPE_CONFIG = {
+  deposit:   { label: "Deposit",   icon: "📥", bg: "rgba(22,163,74,0.08)",  color: "#15803d", border: "rgba(22,163,74,0.15)" },
+  withdraw:  { label: "Withdraw",  icon: "📤", bg: "rgba(220,38,38,0.08)",  color: "#b91c1c", border: "rgba(220,38,38,0.15)" },
+  referral:  { label: "Referral",  icon: "🎁", bg: "rgba(217,119,6,0.08)",  color: "#92400e", border: "rgba(217,119,6,0.15)" },
+  mining:    { label: "Mining",    icon: "⛏️", bg: "rgba(37,99,235,0.08)",  color: "#1e40af", border: "rgba(37,99,235,0.15)" },
+  purchase:  { label: "Purchase",  icon: "🛍️", bg: "rgba(147,51,234,0.08)", color: "#7c3aed", border: "rgba(147,51,234,0.15)" },
+  reward:    { label: "Reward",    icon: "🏆", bg: "rgba(245,158,11,0.08)", color: "#d97706", border: "rgba(245,158,11,0.15)" },
+  transfer:  { label: "Transfer",  icon: "💸", bg: "rgba(71,85,105,0.08)",  color: "#475569", border: "rgba(71,85,105,0.15)" },
+};
+
+function getTxnConfig(type) {
+  const key = type?.toLowerCase();
+  return TXN_TYPE_CONFIG[key] || { label: type || "Unknown", icon: "📌", bg: "rgba(100,116,139,0.06)", color: "#64748b", border: "rgba(100,116,139,0.12)" };
+}
+
+// ── Transaction Card ───────────────────────────────────────────────────────
+function TransactionCard({ txn }) {
+  const [copied, setCopied] = useState(false);
+  const config = getTxnConfig(txn.txn_type);
+  const isIncoming = txn.direction?.toLowerCase() === "in";
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(txn.txn_no).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="wo-txn-card" role="listitem">
+      {/* Top row: Icon + Type + TXN number + Amount */}
+      <div className="wo-txn-top">
+        <div className="wo-txn-icon" style={{ background: config.bg, color: config.color }}>
+          {config.icon}
+        </div>
+        <div className="wo-txn-info">
+          <div className="wo-txn-type" style={{ color: config.color }}>{config.label}</div>
+          <button className="wo-txn-number" onClick={handleCopy} title="Click to copy TXN number">
+            {copied ? "✓ Copied!" : txn.txn_no}
+          </button>
+        </div>
+        <div className={`wo-txn-amount ${isIncoming ? "wo-amount-in" : "wo-amount-out"}`}>
+          <span className="wo-amount-arrow">{isIncoming ? "+" : "−"}</span>
+          <span className="wo-amount-value">{Number(txn.amount).toLocaleString()}</span>
+        </div>
+      </div>
+
+      {/* Bottom row: Details */}
+      <div className="wo-txn-bottom">
+        <div className="wo-txn-detail">
+          <span className="wo-txn-label">Direction</span>
+          <span className={`wo-txn-badge ${isIncoming ? "wo-badge-in" : "wo-badge-out"}`}>
+            {isIncoming ? "In" : "Out"}
+          </span>
+        </div>
+        {txn.note && (
+          <div className="wo-txn-detail">
+            <span className="wo-txn-label">Note</span>
+            <span className="wo-txn-note" title={txn.note}>{txn.note}</span>
+          </div>
+        )}
+        <div className="wo-txn-detail">
+          <span className="wo-txn-label">Balance</span>
+          <span className="wo-txn-balance">{Number(txn.balance_after).toLocaleString()}</span>
+        </div>
+        <div className="wo-txn-date">
+          {new Date(txn.created_at).toLocaleString(undefined, {
+            month: "short", day: "numeric", year: "numeric",
+            hour: "2-digit", minute: "2-digit",
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Wallet Overview ───────────────────────────────────────────────────
 export default function WalletOverview() {
-  const [loading,              setLoading]              = useState(true);
-  const [txnLoading,           setTxnLoading]           = useState(true);
-  const [coins,                setCoins]                = useState(null);
-  const [transactions,         setTransactions]         = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [txnLoading, setTxnLoading] = useState(true);
+  const [coins, setCoins] = useState(null);
+  const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
-  const [msg,                  setMsg]                  = useState("");
-  const [searchQuery,          setSearchQuery]          = useState("");
-  const [filterType,           setFilterType]           = useState("all");
+  const [msg, setMsg] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
 
   useEffect(() => {
     (async () => {
@@ -80,119 +160,89 @@ export default function WalletOverview() {
 
   const txnTypes = [...new Set(transactions.map(t => t.txn_type).filter(Boolean))];
 
-  const css = `
-    .overview-container{display:flex;flex-direction:column;gap:25px}
-    .balance-card{background:linear-gradient(135deg,#1e3a8a 0%,#3b82f6 100%);color:white;padding:30px;border-radius:20px;box-shadow:0 10px 30px rgba(30,58,138,.2)}
-    .balance-label{font-size:.9rem;font-weight:700;opacity:.9;text-transform:uppercase;letter-spacing:.5px}
-    .balance-amount{font-size:2.8rem;font-weight:900;margin-top:10px;text-shadow:2px 2px 4px rgba(0,0,0,.2)}
-    .transactions-section{display:flex;flex-direction:column;gap:15px}
-    .section-title{font-size:1.4rem;font-weight:800;color:#1e3a8a;margin:0;display:flex;justify-content:space-between;align-items:center}
-    .see-all-link{font-size:.9rem;color:#3b82f6;text-decoration:none;font-weight:700;transition:color .2s}
-    .see-all-link:hover{color:#1e3a8a;text-decoration:underline}
-    .search-filter-container{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:15px}
-    .search-input{flex:1;min-width:200px;padding:10px 16px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafc;font-size:.95rem;font-weight:600;transition:all .2s;font-family:inherit}
-    .search-input:focus{outline:none;border-color:#3b82f6;background:#fff;box-shadow:0 0 0 4px rgba(59,130,246,.1)}
-    .filter-select{padding:10px 14px;border-radius:12px;border:2px solid #e2e8f0;background:#f8fafc;font-size:.95rem;font-weight:600;color:#334155;cursor:pointer;transition:all .2s;font-family:inherit}
-    .filter-select:focus{outline:none;border-color:#3b82f6;background:#fff}
-    .transactions-grid{width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px;border-radius:16px}
-    .txn-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(15,23,42,.05);transition:all .2s ease;display:flex;flex-direction:column;gap:12px}
-    .txn-card:hover{box-shadow:0 6px 16px rgba(15,23,42,.1);transform:translateY(-2px)}
-    .txn-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-    .txn-card-title{font-size:.9rem;font-weight:800;color:#1e3a8a;word-break:break-all}
-    .txn-card-body{display:flex;flex-direction:column;gap:10px}
-    .txn-card-row{display:flex;justify-content:space-between;align-items:center;font-size:.85rem}
-    .txn-card-label{color:#64748b;font-weight:600}
-    .txn-card-value{color:#1e3a8a;font-weight:700}
-    .txn-card-amount{font-size:1.1rem;font-weight:800;margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0}
-    .txn-card-date{font-size:.75rem;color:#94a3b8;font-weight:600;text-align:right}
-    .txn-type-badge{display:inline-block;padding:4px 10px;border-radius:8px;font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
-    .txn-type-deposit{background:#dcfce7;color:#15803d}
-    .txn-type-withdraw{background:#fee2e2;color:#b91c1c}
-    .txn-type-referral{background:#fef3c7;color:#92400e}
-    .txn-type-mining{background:#dbeafe;color:#0c4a6e}
-    .amount-positive{color:#15803d;font-weight:800}
-    .amount-negative{color:#b91c1c;font-weight:800}
-    .empty-state{text-align:center;padding:30px;color:#64748b;font-weight:600}
-    .loading-state{text-align:center;padding:30px;color:#64748b;font-weight:600}
-    @media(max-width:900px){.transactions-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}.txn-card{padding:14px}}
-    @media(max-width:768px){.overview-container{gap:20px}.balance-card{padding:20px;border-radius:16px}.balance-amount{font-size:2rem}.section-title{font-size:1.2rem;flex-direction:column;align-items:flex-start;gap:8px}.search-filter-container{flex-direction:column;gap:10px;margin-bottom:12px}.search-input{min-width:100%;border-radius:10px}.filter-select{width:100%;border-radius:10px}}
-    @media(max-width:600px){.overview-container{gap:15px}.balance-card{padding:16px;border-radius:14px}.balance-amount{font-size:1.8rem;margin-top:8px}.transactions-grid{grid-template-columns:1fr;gap:10px}.txn-card{padding:12px}.txn-card-title{font-size:.8rem}.txn-card-row{font-size:.75rem}.txn-card-amount{font-size:.95rem}}
-  `;
-
   return (
-    <div className="overview-container">
-      <style>{css}</style>
+    <div className="wo-root">
+      <style>{CSS}</style>
 
       {/* Balance Card */}
-      <div className="balance-card" role="region" aria-label="Wallet balance">
-        <div className="balance-label">Your Total Balance</div>
-        <div className="balance-amount" aria-live="polite">
-          {loading ? "Loading…" : `${Number(coins || 0).toLocaleString()} AIDLA`}
+      <div className="wo-balance-card" role="region" aria-label="Wallet balance">
+        <div className="wo-balance-inner">
+          <div className="wo-balance-top">
+            <span className="wo-balance-icon" aria-hidden="true">💎</span>
+            <span className="wo-balance-label">Total Balance</span>
+          </div>
+          <div className="wo-balance-amount" aria-live="polite">
+            {loading ? (
+              <span className="wo-balance-loading">Loading…</span>
+            ) : (
+              <>
+                <span className="wo-balance-value">{Number(coins || 0).toLocaleString()}</span>
+                <span className="wo-balance-currency">AIDLA</span>
+              </>
+            )}
+          </div>
+          {msg && (
+            <div className="wo-balance-error" role="alert">{msg}</div>
+          )}
         </div>
-        {msg && <div style={{ color:"#fca5a5", marginTop:12 }} role="alert">{msg}</div>}
       </div>
 
       {/* Transactions Section */}
-      <div className="transactions-section">
-        <h2 className="section-title">
-          Latest Transactions
-          {/* ← Link replaces <a href> */}
-          <Link href="/user/wallet/transactions" className="see-all-link">See All →</Link>
-        </h2>
+      <div className="wo-section">
+        <div className="wo-section-header">
+          <h2 className="wo-section-title">Latest Transactions</h2>
+          <Link href="/user/wallet/transactions" className="wo-see-all">
+            See All →
+          </Link>
+        </div>
 
         {/* Search & Filter */}
-        <div className="search-filter-container">
-          <label htmlFor="txn-search" style={{ position:"absolute", width:1, height:1, overflow:"hidden", clip:"rect(0,0,0,0)" }}>Search transactions</label>
-          <input
-            id="txn-search"
-            type="search"
-            className="search-input"
-            placeholder="Search transaction no, type, note…"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-          <label htmlFor="txn-filter" style={{ position:"absolute", width:1, height:1, overflow:"hidden", clip:"rect(0,0,0,0)" }}>Filter by type</label>
+        <div className="wo-filters">
+          <div className="wo-search-wrap">
+            <span className="wo-search-icon" aria-hidden="true">🔍</span>
+            <label htmlFor="txn-search" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+              Search transactions
+            </label>
+            <input
+              id="txn-search"
+              type="search"
+              className="wo-search-input"
+              placeholder="Search by TXN number, type, or note…"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <label htmlFor="txn-filter" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+            Filter by type
+          </label>
           <select
             id="txn-filter"
-            className="filter-select"
+            className="wo-filter-select"
             value={filterType}
             onChange={e => setFilterType(e.target.value)}
           >
             <option value="all">All Types</option>
-            {txnTypes.map(type => <option key={type} value={type}>{type}</option>)}
+            {txnTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
           </select>
         </div>
 
         {/* Transactions Grid */}
         {txnLoading ? (
-          <div className="loading-state" aria-live="polite">Loading transactions…</div>
+          <div className="wo-loading" aria-live="polite">
+            <div className="wo-spinner" aria-hidden="true" />
+            <span>Loading transactions…</span>
+          </div>
         ) : filteredTransactions.length === 0 ? (
-          <div className="empty-state">No transactions found</div>
+          <div className="wo-empty">
+            <div className="wo-empty-icon" aria-hidden="true">📭</div>
+            <p>{searchQuery || filterType !== "all" ? "No matching transactions" : "No transactions yet"}</p>
+          </div>
         ) : (
-          <div className="transactions-grid" role="list">
+          <div className="wo-txn-grid" role="list" aria-label="Transaction list">
             {filteredTransactions.slice(0, 4).map(txn => (
-              <div key={txn.txn_no} className="txn-card" role="listitem">
-                <div className="txn-card-header">
-                  <div className="txn-card-title">{txn.txn_no}</div>
-                  <span className={`txn-type-badge txn-type-${txn.txn_type?.toLowerCase()}`}>
-                    {txn.txn_type}
-                  </span>
-                </div>
-                <div className="txn-card-body">
-                  <div className="txn-card-row">
-                    <span className="txn-card-label">Direction:</span>
-                    <span className="txn-card-value">{txn.direction}</span>
-                  </div>
-                  <div className="txn-card-row">
-                    <span className="txn-card-label">Balance After:</span>
-                    <span className="txn-card-value">{Number(txn.balance_after).toLocaleString()}</span>
-                  </div>
-                  <div className={`txn-card-amount ${txn.direction?.toLowerCase() === "in" ? "amount-positive" : "amount-negative"}`}>
-                    {txn.direction?.toLowerCase() === "in" ? "+" : "-"}{Number(txn.amount).toLocaleString()} AIDLA
-                  </div>
-                  <div className="txn-card-date">{new Date(txn.created_at).toLocaleString()}</div>
-                </div>
-              </div>
+              <TransactionCard key={txn.txn_no} txn={txn} />
             ))}
           </div>
         )}
@@ -200,3 +250,415 @@ export default function WalletOverview() {
     </div>
   );
 }
+
+// ── CSS (performance optimized, mobile-first, overflow fixed) ──────────────
+const CSS = `
+  .wo-root {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-family: 'DM Sans', 'Inter', system-ui, -apple-system, sans-serif;
+    color: #0f172a;
+    min-width: 0;
+  }
+
+  /* ── Balance Card ── */
+  .wo-balance-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(30,58,138,0.12), 0 1px 3px rgba(15,23,42,0.06);
+  }
+  .wo-balance-inner {
+    padding: clamp(20px, 5vw, 28px);
+  }
+  .wo-balance-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .wo-balance-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  .wo-balance-label {
+    font-size: clamp(0.72rem, 2vw, 0.8rem);
+    font-weight: 700;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .wo-balance-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .wo-balance-value {
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  .wo-balance-currency {
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    font-weight: 700;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .wo-balance-loading {
+    font-size: 1.4rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 600;
+  }
+  .wo-balance-error {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(239,68,68,0.2);
+    color: #fecaca;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* ── Section ── */
+  .wo-section {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+  }
+  .wo-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .wo-section-title {
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.2px;
+  }
+  .wo-see-all {
+    font-size: clamp(0.78rem, 1.5vw, 0.84rem);
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 700;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .wo-see-all:hover {
+    opacity: 0.75;
+  }
+
+  /* ── Filters ── */
+  .wo-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+  .wo-search-wrap {
+    flex: 1;
+    min-width: 150px;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .wo-search-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .wo-search-input {
+    width: 100%;
+    padding: 9px 14px 9px 36px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(15,23,42,0.1);
+    background: #f8fafc;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #0f172a;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    outline: none;
+    box-sizing: border-box;
+  }
+  .wo-search-input:focus {
+    border-color: rgba(59,130,246,0.35);
+    background: #ffffff;
+  }
+  .wo-filter-select {
+    padding: 9px 14px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(15,23,42,0.1);
+    background: #f8fafc;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    outline: none;
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+  .wo-filter-select:focus {
+    border-color: rgba(59,130,246,0.35);
+    background: #ffffff;
+  }
+
+  /* ── Transaction Grid ── */
+  .wo-txn-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  /* ── Transaction Card ── */
+  .wo-txn-card {
+    background: #ffffff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 1px 3px rgba(15,23,42,0.03);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .wo-txn-card:hover {
+    border-color: rgba(59,130,246,0.15);
+    box-shadow: 0 2px 8px rgba(15,23,42,0.05);
+  }
+
+  /* Top row */
+  .wo-txn-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+  }
+  .wo-txn-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .wo-txn-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .wo-txn-type {
+    font-weight: 700;
+    font-size: 0.84rem;
+    margin-bottom: 2px;
+  }
+  .wo-txn-number {
+    font-size: 0.68rem;
+    color: #94a3b8;
+    font-weight: 500;
+    font-family: 'Courier New', Consolas, monospace;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    transition: color 0.15s ease;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .wo-txn-number:hover {
+    color: #3b82f6;
+  }
+  .wo-txn-amount {
+    font-size: 0.95rem;
+    font-weight: 700;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .wo-amount-in {
+    color: #15803d;
+  }
+  .wo-amount-out {
+    color: #b91c1c;
+  }
+  .wo-amount-arrow {
+    font-size: 0.75rem;
+  }
+  .wo-amount-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+  }
+
+  /* Bottom row */
+  .wo-txn-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(15,23,42,0.05);
+    min-width: 0;
+  }
+  .wo-txn-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .wo-txn-label {
+    font-size: 0.74rem;
+    color: #94a3b8;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .wo-txn-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .wo-badge-in {
+    background: rgba(22,163,74,0.08);
+    color: #15803d;
+  }
+  .wo-badge-out {
+    background: rgba(220,38,38,0.08);
+    color: #b91c1c;
+  }
+  .wo-txn-note {
+    font-size: 0.78rem;
+    color: #475569;
+    font-weight: 500;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 65%;
+  }
+  .wo-txn-balance {
+    font-size: 0.78rem;
+    color: #0f172a;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .wo-txn-date {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 500;
+    text-align: right;
+    margin-top: 2px;
+  }
+
+  /* ── Loading / Empty ── */
+  .wo-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    padding: 24px;
+    color: #64748b;
+    font-size: 0.84rem;
+    font-weight: 600;
+  }
+  .wo-spinner {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(59,130,246,0.12);
+    border-top-color: #3b82f6;
+    animation: woSpin 0.7s linear infinite;
+  }
+  @keyframes woSpin {
+    to { transform: rotate(360deg); }
+  }
+  .wo-empty {
+    text-align: center;
+    padding: 28px 16px;
+    color: #94a3b8;
+    font-size: 0.84rem;
+    font-weight: 600;
+  }
+  .wo-empty-icon {
+    font-size: 34px;
+    margin-bottom: 6px;
+  }
+
+  /* ── Mobile-first responsive breakpoints ── */
+  @media (min-width: 480px) {
+    .wo-txn-card {
+      padding: 16px;
+    }
+  }
+  @media (min-width: 640px) {
+    .wo-root {
+      gap: 24px;
+    }
+    .wo-txn-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .wo-filters {
+      flex-wrap: nowrap;
+    }
+    .wo-txn-number {
+      font-size: 0.7rem;
+    }
+  }
+  @media (min-width: 900px) {
+    .wo-txn-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .wo-balance-card {
+      border-radius: 20px;
+    }
+  }
+  @media (min-width: 1100px) {
+    .wo-txn-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 480px) {
+    .wo-filters {
+      flex-direction: column;
+    }
+    .wo-filter-select {
+      width: 100%;
+    }
+    .wo-txn-amount {
+      font-size: 0.85rem;
+    }
+  }
+
+  /* Safe area */
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .wo-root {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  }
+`;

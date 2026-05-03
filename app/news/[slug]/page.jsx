@@ -1,4 +1,4 @@
-// app/news/[slug]/page.jsx
+﻿// app/news/[slug]/page.jsx
 import { notFound }        from "next/navigation";
 import { supabase }        from "@/lib/supabase";
 import NewsPageClient      from "./NewsPageClient";
@@ -178,11 +178,11 @@ export default async function NewsArticlePage({ params }) {
   return (
     <>
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <NewsPageClient post={post} related={related} />

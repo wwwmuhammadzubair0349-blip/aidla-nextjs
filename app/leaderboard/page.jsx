@@ -1,4 +1,4 @@
-import LeaderboardClient from "./LeaderboardClient";
+﻿import LeaderboardClient from "./LeaderboardClient";
 
 const SITE_URL = "https://www.aidla.online";
 
@@ -49,7 +49,7 @@ const schema = {
 export default function LeaderboardPage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <LeaderboardClient />
     </>
   );

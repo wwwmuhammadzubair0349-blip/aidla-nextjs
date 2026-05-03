@@ -59,20 +59,6 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=86400" },
         ],
       },
-      // Next.js static chunks — immutable (correct wildcard pattern)
-      {
-        source: "/_next/static/",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
-      // Next.js image optimisation endpoint
-      {
-        source: "/_next/image",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
-      },
       // API — no cache
       {
         source: "/api/",

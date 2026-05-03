@@ -882,6 +882,7 @@
   box-shadow: 0 2px 8px rgba(11,20,55,0.07);
   background: linear-gradient(135deg, var(--amber), var(--amber-light));
   contain: layout;
+  position: relative;
 }
 
 .news-img-wrap img {

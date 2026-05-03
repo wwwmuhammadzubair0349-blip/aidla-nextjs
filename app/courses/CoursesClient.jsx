@@ -271,7 +271,7 @@ function CourseCard({ course, delay = 0 }) {
     <article className="pc-card pc-fade" style={{ animationDelay: `${delay}ms` }}>
       <div className="pc-card-thumb">
         <img
-          src={course.cover_image_url || FALLBACK_THUMB}
+          src={course.thumbnail_url || FALLBACK_THUMB}
           alt={`${course.title} course thumbnail`}
           onError={e => { e.currentTarget.src = FALLBACK_THUMB; }}
           loading="lazy"
@@ -487,7 +487,7 @@ export default function CoursesClient({ initialCourses =[], initialLevel = "all"
             })}
 
             <label htmlFor="sort-select" className="sr-only">Sort courses</label>
-            <select id="sort-select" className="pc-sort" value={sort} onChange={e => handleSort(e.target.value)} aria-label="Sort courses">
+            <select id="sort-select" className="pc-sort" value={sort} onChange={e => handleSort(e.target.value)} aria-label="Sort courses" suppressHydrationWarning>
               <option value="newest">Newest First</option>
               <option value="az">A → Z</option>
               <option value="price-asc">Price: Low → High</option>

@@ -1,4 +1,4 @@
-// app/courses/page.jsx
+﻿// app/courses/page.jsx
 import { Suspense } from "react";
 import { serverFetch } from "@/lib/supabaseServer";
 import CoursesClient from "./CoursesClient";
@@ -6,6 +6,10 @@ import CoursesClient from "./CoursesClient";
 export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
+
+function toSlug(title = "") {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
 
 /* ─────────────────────────────────────────────
    Static metadata (crawled by every bot)
@@ -101,7 +105,7 @@ export default async function CoursesPage({ searchParams }) {
         "@type": "Course",
         name: c.title,
         description: c.description || "",
-        url: `${SITE_URL}/courses/${c.slug}`,
+        url: `${SITE_URL}/courses/${toSlug(c.title)}`,
         provider: { "@type": "Organization", name: "AIDLA", url: SITE_URL },
       },
     })),
@@ -116,10 +120,20 @@ export default async function CoursesPage({ searchParams }) {
     description: "Pakistan's #1 educational rewards platform. Learn, earn coins and win real prizes.",
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home",    item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Courses", item: `${SITE_URL}/courses` },
+    ],
+  };
+
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <Suspense fallback={<CoursesPageSkeleton />}>
         <CoursesClient 

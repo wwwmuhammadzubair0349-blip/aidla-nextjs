@@ -1,4 +1,4 @@
-// app/resources/[slug]/page.jsx
+﻿// app/resources/[slug]/page.jsx
 
 import { serverFetch } from "@/lib/supabaseServer";
 import ResourceDetailClient from "./ResourceDetailClient";
@@ -73,7 +73,7 @@ export default async function ResourceDetailPage({ params }) {
 
   return (
     <>
-      {schema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />}
+      {schema && <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />}
       <ResourceDetailClient slug={slug} />
     </>
   );

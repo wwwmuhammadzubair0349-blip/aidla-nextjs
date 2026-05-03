@@ -344,7 +344,7 @@ export default function FeedAdmin() {
         <div className="fa-header-left">
           <div className="fa-header-icon">🛡️</div>
           <div>
-            <h1 className="fa-title">Feed Admin Panel</h1>
+            <h1 className="fa-title">Forum Admin Panel</h1>
             <div className="fa-subtitle">AIDLA_Official <BlueTick /> · Logged in as {userEmail}</div>
           </div>
         </div>

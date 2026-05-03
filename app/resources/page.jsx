@@ -1,4 +1,4 @@
-// app/resources/page.jsx
+﻿// app/resources/page.jsx
 import { serverRpc } from "@/lib/supabaseServer";
 import ResourcesClient from "./ResourcesClient";
 
@@ -83,9 +83,19 @@ export default async function ResourcesPage({ searchParams }) {
     inLanguage: "en",
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home",      item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Resources", item: `${SITE_URL}/resources` },
+    ],
+  };
+
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <ResourcesClient 
         initialMaterials={initialMaterials} 
         initialTotal={initialTotal} 

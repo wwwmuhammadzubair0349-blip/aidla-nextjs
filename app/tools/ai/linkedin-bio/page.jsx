@@ -1,4 +1,4 @@
-// app/tools/ai/linkedin-bio/page.jsx
+﻿// app/tools/ai/linkedin-bio/page.jsx
 import { Suspense } from "react";
 import LinkedInBioClient from "./LinkedInBioClient";
 
@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 function JsonLd() {
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+  return <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify({
     "@context":"https://schema.org","@type":"WebApplication",
     name:"AI LinkedIn Bio Generator by AIDLA","url":"https://www.aidla.online/tools/ai/linkedin-bio",
     description:"Free AI LinkedIn bio and About section generator.",

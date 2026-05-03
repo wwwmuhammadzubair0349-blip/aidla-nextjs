@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import styles from "./about.module.css";
 
 const SITE_URL = "https://www.aidla.online";
@@ -159,15 +159,15 @@ export default function About() {
     <div className={styles.root}>
       {/* JSON-LD scripts */}
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 

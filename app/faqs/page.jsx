@@ -1,4 +1,4 @@
-// app/faqs/page.jsx
+﻿// app/faqs/page.jsx
 import { serverFetch } from "@/lib/supabaseServer";
 import FaqsClient      from "./FaqsClient";
 
@@ -86,11 +86,11 @@ export default async function FAQsPage({ searchParams }) {
   return (
     <>
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <FaqsClient

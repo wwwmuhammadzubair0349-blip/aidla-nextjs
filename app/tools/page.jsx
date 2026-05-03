@@ -1,4 +1,4 @@
-// app/tools/page.jsx — Updated tools home (AI + Career tools only)
+﻿// app/tools/page.jsx — Updated tools home (AI + Career tools only)
 import { Suspense } from "react";
 import ToolsClient from "./ToolsClient";
 
@@ -32,7 +32,7 @@ function JsonLd() {
       { "@type": "ListItem", position: 10, name: "JPG to PNG",            url: "https://www.aidla.online/tools/image/jpg-to-png"              },
     ],
   };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+  return <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
 }
 
 export default function ToolsPage() {

@@ -130,7 +130,8 @@ export default function Footer() {
 
     .ft-logo-icon img {
       width: 34px;
-      height: 34px;
+      height: auto;
+      max-height: 34px;
       object-fit: contain;
       display: block;
     }
@@ -423,8 +424,9 @@ export default function Footer() {
                     onKeyDown={e => e.key === "Enter" && handleSubscribe()}
                     aria-label="Email for newsletter"
                     autoComplete="email"
+                    suppressHydrationWarning
                   />
-                  <button onClick={handleSubscribe} aria-label="Subscribe to newsletter">Subscribe</button>
+                  <button onClick={handleSubscribe} aria-label="Subscribe to newsletter" suppressHydrationWarning>Subscribe</button>
                 </div>
               )}
               {status === "exists" && <p className="ft-nl-note" role="alert">Already subscribed.</p>}

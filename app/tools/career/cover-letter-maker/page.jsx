@@ -1,4 +1,4 @@
-// app/tools/career/cover-letter-maker/page.jsx
+﻿// app/tools/career/cover-letter-maker/page.jsx
 // Next.js 15 App Router — AI Cover Letter Maker
 // ✅ SSR metadata  ✅ SoftwareApplication + FAQPage + BreadcrumbList JSON-LD
 // ✅ Canonical     ✅ Zero layout shift  ✅ Lighthouse 100
@@ -109,9 +109,9 @@ function CoverLetterJsonLd() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema)        }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema)        }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema)        }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema)        }} />
     </>
   );
 }

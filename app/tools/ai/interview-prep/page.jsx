@@ -1,4 +1,4 @@
-// app/tools/ai/interview-prep/page.jsx
+﻿// app/tools/ai/interview-prep/page.jsx
 import { Suspense } from "react";
 import InterviewPrepClient from "./InterviewPrepClient";
 
@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 function JsonLd() {
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+  return <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify({
     "@context":"https://schema.org","@type":"WebApplication",
     name:"AI Interview Prep by AIDLA","url":"https://www.aidla.online/tools/ai/interview-prep",
     description:"Free AI interview preparation — questions and model answers for any job.",

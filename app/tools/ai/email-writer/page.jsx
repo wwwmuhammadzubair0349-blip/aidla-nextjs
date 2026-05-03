@@ -1,4 +1,4 @@
-// app/tools/ai/email-writer/page.jsx
+﻿// app/tools/ai/email-writer/page.jsx
 import { Suspense } from "react";
 import EmailWriterClient from "./EmailWriterClient";
 
@@ -22,7 +22,7 @@ export const metadata = {
 
 function JsonLd() {
   return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+    <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify({
       "@context": "https://schema.org", "@type": "WebApplication",
       name: "AI Email Writer by AIDLA", url: "https://www.aidla.online/tools/ai/email-writer",
       description: "AI-powered email writer. Generate professional, business, personal and academic emails instantly.",

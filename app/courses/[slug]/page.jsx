@@ -1,4 +1,4 @@
-// app/courses/[slug]/page.jsx
+﻿// app/courses/[slug]/page.jsx
 import { notFound }    from "next/navigation";
 import { serverFetch } from "@/lib/supabaseServer";
 import CourseDetailClient from "./CourseDetailClient";
@@ -6,6 +6,13 @@ import CourseDetailClient from "./CourseDetailClient";
 export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
+
+/* ─────────────────────────────────────────────
+   Slug utility — must match CoursesClient.toSlug
+───────────────────────────────────────────── */
+function toSlug(title = "") {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
 
 /* ─────────────────────────────────────────────
    Server-side data helper
@@ -20,7 +27,7 @@ async function getAllCourses() {
 
 export async function generateStaticParams() {
   const courses = await getAllCourses();
-  return courses.map(c => ({ slug: c.slug }));
+  return courses.map(c => ({ slug: toSlug(c.title) }));
 }
 
 /* ─────────────────────────────────────────────
@@ -29,7 +36,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const courses  = await getAllCourses();
-  const c        = courses.find(c => c.slug === slug) || null;
+  const c        = courses.find(c => toSlug(c.title) === slug) || null;
 
   if (!c) {
     return {
@@ -75,7 +82,7 @@ export async function generateMetadata({ params }) {
 export default async function CourseDetailPage({ params }) {
   const { slug }  = await params;
   const courses   = await getAllCourses();
-  const course    = courses.find(c => c.slug === slug) || null;
+  const course    = courses.find(c => toSlug(c.title) === slug) || null;
 
   if (!course) notFound();
 
@@ -134,11 +141,11 @@ export default async function CourseDetailPage({ params }) {
   return (
     <>
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
       />
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <CourseDetailClient

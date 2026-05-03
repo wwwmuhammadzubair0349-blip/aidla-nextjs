@@ -1,4 +1,4 @@
-// app/tools/career/cv-maker/page.jsx
+﻿// app/tools/career/cv-maker/page.jsx
 // Next.js 15 App Router — AI CV Maker
 // ✅ SSR metadata  ✅ JSON-LD SoftwareApplication  ✅ BreadcrumbList
 // ✅ Canonical     ✅ Zero layout shift             ✅ Lighthouse 100
@@ -111,9 +111,9 @@ function CvMakerJsonLd() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema)        }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema)        }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema)        }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema)        }} />
     </>
   );
 }

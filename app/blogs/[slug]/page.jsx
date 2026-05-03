@@ -1,4 +1,4 @@
-// ════════════════════════════════════════════════════════
+﻿// ════════════════════════════════════════════════════════
 //  app/blogs/[slug]/page.jsx
 //  ISR — revalidates every 60 s
 //  Top 50 slugs pre-built at deploy time (mirrors news/[slug]/page.jsx)
@@ -163,11 +163,11 @@ export default async function BlogPostPage({ params }) {
   return (
     <>
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <BlogPostClient

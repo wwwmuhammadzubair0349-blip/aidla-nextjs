@@ -1,4 +1,4 @@
-// app/verify/[certId]/page.jsx
+﻿// app/verify/[certId]/page.jsx
 // Pure server component — fetches certificate data server-side
 // No useEffect, no useState, no client JS needed
 
@@ -131,7 +131,7 @@ export default async function VerifyPage({ params }) {
     <>
       {jsonLd && (
         <script
-          type="application/ld+json"
+          type="application/ld+json" suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}

@@ -1,4 +1,4 @@
-// app/news/page.jsx
+﻿// app/news/page.jsx
 import { serverFetch } from "@/lib/supabaseServer";
 import NewsClient from "./NewsClient";
 
@@ -49,7 +49,14 @@ export default async function NewsPage() {
         isPartOf:    { "@type": "WebSite", name: "AIDLA", url: "https://www.aidla.online" },
         publisher:   { "@type": "Organization", name: "AIDLA", url: "https://www.aidla.online" },
       },
-      ...posts.slice(0, 15).map(post => ({
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://www.aidla.online" },
+          { "@type": "ListItem", position: 2, name: "News", item: CANONICAL_URL },
+        ],
+      },
+      ...(posts || []).slice(0, 15).map(post => ({
         "@type":       "NewsArticle",
         headline:      post.title,
         description:   post.excerpt || "",
@@ -66,7 +73,7 @@ export default async function NewsPage() {
   return (
     <>
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <NewsClient initialPosts={posts} fetchError={fetchError} />

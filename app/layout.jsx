@@ -385,9 +385,9 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
         />
 
-        {/* Google Fonts — preload + stylesheet. font-display=swap in the URL
-            means text renders immediately in fallback font, swaps when loaded.
-            No onLoad/JS needed — preload primes the cache, stylesheet uses it. */}
+        {/* Google Fonts — React 19 requires `precedence` on stylesheet links so it
+            can deduplicate and hoist them correctly during hydration. The preload
+            hint is kept separately (not managed by React) for early fetch. */}
         <link
           rel="preload"
           as="style"
@@ -396,6 +396,7 @@ export default function RootLayout({ children }) {
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap"
+          precedence="default"
         />
 
         {/* ── PWA / App Manifest ── */}
@@ -435,11 +436,13 @@ export default function RootLayout({ children }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(GLOBAL_SCHEMA) }}
+          suppressHydrationWarning
         />
 
         {/* ── Speculation Rules API — instant navigation (Chrome 109+) ── */}
         <script
           type="speculationrules"
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               prerender: [

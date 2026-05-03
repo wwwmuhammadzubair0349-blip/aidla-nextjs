@@ -227,7 +227,7 @@ export default function AdminLayout({ children }) {
             <Tab to="/admin/homepage"             label="Post Generator"    />
             <Tab to="/admin/AdminHome"            label="AdminHome"         />
             <Tab to="/admin/adminfaqs"            label="FAQs"              />
-            <Tab to="/admin/FeedAdmin"            label="Feed Admin"        />
+            <Tab to="/admin/FeedAdmin"            label="Forum Admin"       />
             <Tab to="/admin/AdminStudyMaterials"  label="Study Materials"   />
             <Tab to="/admin/AutoBlogTab"          label="Auto Blog"         />
             <Tab to="/admin/AutoNewsTab"          label="Auto News"         />

@@ -1,4 +1,4 @@
-// ════════════════════════════════════════════════════════
+﻿// ════════════════════════════════════════════════════════
 //  app/blogs/page.jsx
 //  ISR — revalidates every 60 s
 //  Static paths pre-built at deploy time (mirrors news/page.jsx)
@@ -90,6 +90,13 @@ export default async function BlogsPage({ searchParams }) {
         isPartOf:      { "@type": "WebSite", name: "AIDLA", url: SITE_URL },
         publisher:     { "@type": "Organization", name: "AIDLA", url: SITE_URL },
       },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home",     item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Insights", item: CANONICAL_URL },
+        ],
+      },
       ...filteredPosts.slice(0, 15).map(post => ({
         "@type":       "BlogPosting",
         headline:      post.title,
@@ -107,7 +114,7 @@ export default async function BlogsPage({ searchParams }) {
   return (
     <>
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <BlogsClient initialPosts={filteredPosts} fetchError={fetchError} />

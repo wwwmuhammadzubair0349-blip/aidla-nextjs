@@ -1,17 +1,5 @@
 "use client";
-// app/user/UserResources/page.jsx
-// Converted from React Router UserResources.jsx
-//
-// Changes:
-//   1. "use client" directive
-//   2. import { useNavigate, Link } from "react-router-dom"
-//      → import { useRouter } from "next/navigation"; import Link from "next/link"
-//   3. const navigate = useNavigate() → const router = useRouter()
-//   4. navigate(path) → router.push(path)
-//   5. supabase import: ../../lib/supabase → @/lib/supabase
-//   6. useSEO hook: document.title → useEffect with document.title (same approach, kept identical)
-//   7. <Link to="..."> → <Link href="..."> (next/link)
-//   8. All logic, CSS, sub-components 100% identical
+// app/user/resources/page.jsx
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
@@ -96,7 +84,6 @@ function MaterialRow({ item, onDownload, downloading }) {
           <div style={{ position:"absolute", bottom:-2, right:-2, width:14, height:14, borderRadius:"50%", background:accentColor, border:"2px solid #fff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:7 }}>{cat?.icon}</div>
         </div>
         <div style={{ flex:1, minWidth:160 }}>
-          {/* ← Link href replaces Link to */}
           <Link href={`/resources/${item.slug}`}
             style={{ fontSize:14, fontWeight:700, color:"#0f172a", textDecoration:"none", lineHeight:1.3, display:"block", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"100%" }}>
             {item.title}
@@ -125,7 +112,7 @@ function MaterialRow({ item, onDownload, downloading }) {
 }
 
 export default function UserResources() {
-  const router = useRouter(); // ← replaces useNavigate
+  const router = useRouter();
 
   const [user,         setUser]         = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -147,7 +134,7 @@ export default function UserResources() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data?.user) {
-        router.replace("/login?redirect=/user/UserResources"); // ← router.replace
+        router.replace("/login?redirect=/user/resources");
         return;
       }
       setUser(data.user);
@@ -209,7 +196,7 @@ export default function UserResources() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push("/login"); // ← router.push
+    router.push("/login");
   };
 
   const totalPages = Math.ceil(total / LIMIT);
@@ -250,7 +237,6 @@ export default function UserResources() {
                 <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)" }}>{userEmail}</div>
               </div>
               <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
-                {/* ← Link href replaces Link to */}
                 <Link href="/resources"
                   style={{ padding:"8px 16px", background:"rgba(255,255,255,0.12)", color:"rgba(255,255,255,0.9)", borderRadius:8, textDecoration:"none", fontSize:13, fontWeight:600, border:"1px solid rgba(255,255,255,0.2)" }}>
                   📚 Browse Resources
@@ -267,13 +253,13 @@ export default function UserResources() {
               {[
                 { icon:"📚", label:"Total Materials", value:stats.total },
                 { icon:"🌐", label:"Free Access",     value:stats.free },
-                { icon:"🔓", label:"Now Unlocked",    value:stats.protected, note:"(login required — you&apos;re in!)" },
+                { icon:"🔓", label:"Now Unlocked",    value:stats.protected, note:"(login required — you're in!)" },
               ].map(s=>(
                 <div key={s.label} style={{ background:"rgba(255,255,255,0.1)", border:"1px solid rgba(255,255,255,0.15)", borderRadius:12, padding:"14px 16px" }}>
                   <div style={{ fontSize:22, marginBottom:4 }}>{s.icon}</div>
                   <div style={{ fontSize:22, fontWeight:900, color:"#fff" }}>{s.value}</div>
                   <div style={{ fontSize:11, color:"rgba(255,255,255,0.6)", marginTop:2 }}>{s.label}</div>
-                  {s.note && <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", marginTop:2 }} dangerouslySetInnerHTML={{ __html:s.note }}/>}
+                  {s.note && <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)", marginTop:2 }}>{s.note}</div>}
                 </div>
               ))}
             </div>

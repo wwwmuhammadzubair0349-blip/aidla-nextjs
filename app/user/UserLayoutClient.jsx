@@ -100,7 +100,7 @@ function CatPet({ mood }) {
 
 const TABS = [
   { to: "/user",         label: "Dashboard", icon: "⚡" },
-  { to: "/user/feed",    label: "Feed",       icon: "📡" },
+  { to: "/user/forum",   label: "Forum",      icon: "💬" },
   { to: "/user/wallet",  label: "Wallet",     icon: "💎" },
   { to: "/user/profile", label: "Profile",    icon: "👤" },
 ];

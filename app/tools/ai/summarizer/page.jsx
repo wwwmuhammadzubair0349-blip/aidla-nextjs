@@ -1,4 +1,4 @@
-// app/tools/ai/summarizer/page.jsx
+﻿// app/tools/ai/summarizer/page.jsx
 import { Suspense } from "react";
 import SummarizerClient from "./SummarizerClient";
 
@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 function JsonLd() {
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+  return <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify({
     "@context": "https://schema.org", "@type": "WebApplication",
     name: "AIDLA AI Text Summarizer", url: "https://www.aidla.online/tools/ai/summarizer",
     applicationCategory: "WritingApplication", operatingSystem: "Web",

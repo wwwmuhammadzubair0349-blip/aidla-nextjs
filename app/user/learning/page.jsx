@@ -586,7 +586,7 @@ Give step-by-step guidance on how to use them. Be helpful like a platform guide.
 
 ## AIDLA User Features (logged-in users at /user/*)
 - **Dashboard** (/user) — Overview of activity, stats, earnings, quick links
-- **Feed** (/user/feed) — Social feed, posts, community updates
+- **Forum** (/user/forum) — Community discussion forum, ask questions, share knowledge
 - **Learning** (/user/learning) — AI Career Workspace (this chat) with 12 career modes
 - **Courses** (/user/courses) — Enrolled courses and learning progress. Browse at /courses
 - **Wallet** (/user/wallet) — Balance, deposit, withdraw, transactions. Sub-pages: /wallet/transactions, /wallet/deposit, /wallet/withdraw
@@ -597,7 +597,7 @@ Give step-by-step guidance on how to use them. Be helpful like a platform guide.
 - **Shop** (/user/shop) — Redeem tokens for real rewards
 - **Bot** (/user/bot) — AIDLA general purpose AI chatbot
 - **Social** (/user/social) — Social networking and community
-- **Resources** (/user/UserResources) — Study materials and career resources
+- **Resources** (/user/resources) — Study materials and career resources
 - **Invite** — Refer friends and earn bonus tokens
 
 ## AIDLA Public Tools (/tools)

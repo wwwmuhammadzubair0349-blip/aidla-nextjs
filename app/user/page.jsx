@@ -303,7 +303,7 @@ export default function UserDashboard() {
       {/* Learn */}
       <Section label="📘 Learn" labelClass="label-blue">
         <RegCard title="Test"      subtitle="Testing & assessments"          icon="✅" to="/user/test"         iconClass="ic-blue" />
-        <RegCard title="Resources" subtitle="Study materials & past papers"   icon="📚" to="/user/UserResources" iconClass="ic-blue" />
+        <RegCard title="Resources" subtitle="Study materials & past papers"   icon="📚" to="/user/resources" iconClass="ic-blue" />
         <RegCard title="Mining"    subtitle="Start mining AIDLA coins"        icon="💎" to="/user/mining"        iconClass="ic-blue" />
       </Section>
 

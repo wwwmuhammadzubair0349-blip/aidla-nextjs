@@ -1,4 +1,4 @@
-// app/contact/page.jsx — Server component for SEO
+﻿// app/contact/page.jsx — Server component for SEO
 import ContactClient from "./ContactClient";
 
 const SITE_URL = "https://www.aidla.online";
@@ -46,7 +46,7 @@ export default function ContactPage() {
   return (
     <>
       <script
-        type="application/ld+json"
+        type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
       <ContactClient />

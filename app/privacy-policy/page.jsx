@@ -1,4 +1,4 @@
-import PrivacyPolicyClient from "./PrivacyPolicyClient";
+﻿import PrivacyPolicyClient from "./PrivacyPolicyClient";
 
 const SITE_URL = "https://www.aidla.online";
 
@@ -47,7 +47,7 @@ const schema = {
 export default function PrivacyPolicy() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <PrivacyPolicyClient />
     </>
   );

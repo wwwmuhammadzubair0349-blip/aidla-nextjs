@@ -359,13 +359,13 @@ const NAV_CSS = `
   .nav2-auth { display: flex; }
   .nav2-burger { display: none; }
   .nav2-mobile-menu { display: none !important; }
-  .nav2-logo-img { height: 40px; }
+  .nav2-logo-img { height: 40px; width: auto; }
 }
 
 @media (min-width: 768px) {
   .nav2-inner { height: 66px; padding: 0 24px; }
   .nav2-link { font-size: 0.9rem; }
-  .nav2-logo-img { height: 42px; }
+  .nav2-logo-img { height: 42px; width: auto; }
   .nav2-logo-name { font-size: 1.4rem; }
 }
 
@@ -373,7 +373,7 @@ const NAV_CSS = `
   .nav2-inner { height: 70px; padding: 0 32px; }
   .nav2-desktop { gap: 4px; }
   .nav2-link { padding: 0 16px; font-size: 0.92rem; }
-  .nav2-logo-img { height: 44px; }
+  .nav2-logo-img { height: 44px; width: auto; }
   .nav2-logo-name { font-size: 1.5rem; }
 }
 
@@ -384,7 +384,7 @@ const NAV_CSS = `
 @media (min-width: 1536px) {
   .nav2-inner { max-width: 1440px; height: 74px; }
   .nav2-link { padding: 0 18px; font-size: 0.95rem; }
-  .nav2-logo-img { height: 48px; }
+  .nav2-logo-img { height: 48px; width: auto; }
   .nav2-logo-name { font-size: 1.6rem; }
 }
 
@@ -412,18 +412,19 @@ export default function Navbar() {
   // Close on route change
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
-  // ── KEY ACCESSIBILITY FIX ──
-  // Use the `inert` attribute instead of `aria-hidden` to properly remove
-  // the mobile menu from tab order AND assistive technology when closed.
-  // `inert` = no focus, no AT, no pointer events. Clean solution.
+  // ── ACCESSIBILITY: manage focus and inert ──
+  // We use setAttribute/removeAttribute (not JSX props) to avoid React warnings.
+  // suppressHydrationWarning on the div handles the SSR/CSR mismatch.
   useEffect(() => {
-    if (!menuRef.current) return;
+    const el = menuRef.current;
+    if (!el) return;
     if (menuOpen) {
-      menuRef.current.removeAttribute("inert");
-      // Focus first link when menu opens
-      setTimeout(() => firstLinkRef.current?.focus(), 50);
+      el.removeAttribute("inert");
+      // Delay focus so CSS transition has started
+      const t = setTimeout(() => firstLinkRef.current?.focus(), 50);
+      return () => clearTimeout(t);
     } else {
-      menuRef.current.setAttribute("inert", "");
+      el.setAttribute("inert", "");
     }
   }, [menuOpen]);
 
@@ -538,8 +539,7 @@ export default function Navbar() {
           role="dialog"
           aria-label="Navigation menu"
           aria-modal="false"
-          // `inert` is set/removed via useEffect — starts inert (closed)
-          inert=""
+          suppressHydrationWarning
         >
           {/* Mobile auth */}
           <div className="nav2-mob-auth" role="group" aria-label="Account actions">

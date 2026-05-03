@@ -411,7 +411,9 @@ export default function RootLayout({ children }) {
           crossOrigin="anonymous"
         />
 
-        {/* Non-blocking Google Fonts load with font-display=swap */}
+        {/* Google Fonts — preload + stylesheet. font-display=swap in the URL
+            means text renders immediately in fallback font, swaps when loaded.
+            No onLoad/JS needed — preload primes the cache, stylesheet uses it. */}
         <link
           rel="preload"
           as="style"
@@ -420,16 +422,7 @@ export default function RootLayout({ children }) {
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
-          media="print"
-          // @ts-ignore — onload trick for async font loading (progressive enhancement)
-          onLoad="this.media='all'"
         />
-        <noscript>
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
-          />
-        </noscript>
 
         {/* ── PWA / App Manifest ── */}
         <link rel="manifest" href="/manifest.json" />

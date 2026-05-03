@@ -1058,8 +1058,9 @@ export default async function Home() {
                   required
                   autoComplete="email"
                   aria-required="true"
+                  suppressHydrationWarning
                 />
-                <button type="submit" className={styles.nlBtn}>
+                <button type="submit" className={styles.nlBtn} suppressHydrationWarning>
                   Subscribe 🚀
                 </button>
               </form>
@@ -1342,6 +1343,7 @@ export default async function Home() {
                     required
                     autoComplete="name"
                     aria-required="true"
+                    suppressHydrationWarning
                   />
                 </div>
                 <div>
@@ -1357,6 +1359,7 @@ export default async function Home() {
                     required
                     autoComplete="email"
                     aria-required="true"
+                    suppressHydrationWarning
                   />
                 </div>
               </div>
@@ -1370,6 +1373,7 @@ export default async function Home() {
                   className={styles.rvInput}
                   required
                   aria-required="true"
+                  suppressHydrationWarning
                 >
                   <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
                   <option value="4">⭐⭐⭐⭐ Very Good</option>
@@ -1396,7 +1400,7 @@ export default async function Home() {
               <p id="rv-text-hint" className={styles.srOnly}>
                 Minimum 20 characters, maximum 500 characters
               </p>
-              <button type="submit" className={styles.rvSubmit}>
+              <button type="submit" className={styles.rvSubmit} suppressHydrationWarning>
                 Submit Review
               </button>
             </form>

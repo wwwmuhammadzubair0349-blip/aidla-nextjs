@@ -852,7 +852,7 @@ export default function NewsPageClient({ post, related }) {
     const key = `np_viewed_${post.id}`;
     if (!sessionStorage.getItem(key)) {
       sessionStorage.setItem(key, "1");
-      supabase.rpc("news_increment_view", { p_post_id: post.id }).catch(() => {});
+      Promise.resolve(supabase.rpc("news_increment_view", { p_post_id: post.id })).catch(() => {});
     }
     
     setIsMounted(true);

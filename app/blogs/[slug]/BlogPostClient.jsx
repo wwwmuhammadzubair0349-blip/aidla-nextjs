@@ -820,7 +820,7 @@ export default function BlogPostClient({ initialPost, relatedPosts, slug }) {
     const key = `bp_viewed_${post.id}`;
     if (!sessionStorage.getItem(key)) {
       sessionStorage.setItem(key, "1");
-      supabase.rpc("blogs_increment_view", { p_post_id: post.id }).catch(() => {});
+      Promise.resolve(supabase.rpc("blogs_increment_view", { p_post_id: post.id })).catch(() => {});
     }
   }, [post?.id]);
 

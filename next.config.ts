@@ -61,7 +61,7 @@ const nextConfig: NextConfig = {
       },
       // Next.js static chunks — immutable (correct wildcard pattern)
       {
-        source: "/_next/static/:path*",
+        source: "/_next/static/",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
@@ -75,7 +75,7 @@ const nextConfig: NextConfig = {
       },
       // API — no cache
       {
-        source: "/api/:path*",
+        source: "/api/",
         headers: [{ key: "Cache-Control", value: "no-store, no-cache" }],
       },
       // Security headers on ALL routes (was wrongly limited to "/" only)

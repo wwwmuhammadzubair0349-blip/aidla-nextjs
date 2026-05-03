@@ -106,17 +106,6 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "aidla.online" }],
-        destination: "https://www.aidla.online/:path*",
-        permanent: true,
-      },
-    ];
-  },
-
   compress: true,
   poweredByHeader: false,
 };

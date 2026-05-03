@@ -40,15 +40,17 @@ export async function generateMetadata({ params }) {
   return {
     title:       `${faq.question} — AIDLA FAQ`,
     description: desc,
+    robots:      { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1 } },
     alternates:  { canonical },
     openGraph: {
       title:        `${faq.question} — AIDLA FAQ`,
       description:  desc,
       url:          canonical,
       siteName:     "AIDLA",
+      locale:       "en_PK",
       type:         "article",
       modifiedTime: faq.updated_at || faq.created_at,
-      images:       [{ url: `${SITE_URL}/og-home.jpg` }],
+      images:       [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: faq.question }],
     },
     twitter: {
       card:        "summary_large_image",

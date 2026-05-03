@@ -9,7 +9,7 @@ export const metadata = {
     description: "Sign in to your AIDLA account to continue learning, earning coins, and experiencing the future of AI.",
     url: "https://www.aidla.online/login",
     siteName: "AIDLA",
-    locale: "en_US",
+    locale: "en_PK",
     type: "website",
   },
   twitter: {

@@ -48,10 +48,10 @@ export default function Footer() {
   ];
 
   const featureLinks =[
-    { label: "Tests",       href: "/user/test" },
-    { label: "Lucky Draw",  href: "/user/lucky-draw" },
-    { label: "Lucky Wheel", href: "/user/lucky-wheel" },
-    { label: "Mining",      href: "/user/mining" },
+    { label: "Courses",      href: "/courses" },
+    { label: "Leaderboard",  href: "/leaderboard" },
+    { label: "Free Tools",   href: "/tools" },
+    { label: "Resources",    href: "/resources" },
   ];
 
   const supportLinks =[
@@ -386,11 +386,6 @@ export default function Footer() {
     <>
       <style>{css}</style>
       
-      {/* Non-blocking Font Loading for 100% Performance */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap" />
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap" />
 
       <footer className="ft-root">
         <div className="ft-accent" aria-hidden="true" />

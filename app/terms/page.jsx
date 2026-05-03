@@ -14,6 +14,7 @@ export const metadata = {
     type: "website",
     url: `${SITE_URL}/terms`,
     siteName: "AIDLA",
+    locale: "en_PK",
     images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA Terms and Conditions" }],
   },
   twitter: {

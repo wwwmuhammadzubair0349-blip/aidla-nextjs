@@ -59,7 +59,7 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=86400" },
         ],
       },
-      // Next.js static chunks
+      // Next.js static chunks — immutable (correct wildcard pattern)
       {
         source: "/_next/static/:path*",
         headers: [
@@ -73,25 +73,14 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
         ],
       },
-      // Public static files — one rule per extension (no capturing groups allowed)
-      { source: "/:path*.png",  headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.jpg",  headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.jpeg", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.gif",  headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.webp", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.avif", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.svg",  headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.ico",  headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.woff", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
-      { source: "/:path*.woff2",headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
       // API — no cache
       {
         source: "/api/:path*",
         headers: [{ key: "Cache-Control", value: "no-store, no-cache" }],
       },
-      // Security headers on everything
+      // Security headers on ALL routes (was wrongly limited to "/" only)
       {
-        source: "/:path*",
+        source: "/(.*)",
         headers: [
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },

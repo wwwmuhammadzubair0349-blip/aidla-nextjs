@@ -323,7 +323,6 @@ export default function UserDashboard() {
       {/* Tools */}
       <Section label="🛠️ Tools" labelClass="label-purple">
         <RegCard title="Campaign"  subtitle="Share & Earn rewards" icon="💸" to="/user/campaign" iconClass="ic-purple" />
-        <RegCard title="AutoTube"  subtitle="Full YouTube automation assistant" icon="🎬" to="/user/AutoTubeStudio" iconClass="ic-purple" />
         <RegCard title="Follow Us" subtitle="Join our social media channels"    icon="📱" to="/user/social"         iconClass="ic-coral"  />
       </Section>
 

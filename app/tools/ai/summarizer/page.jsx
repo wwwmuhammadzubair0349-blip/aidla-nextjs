@@ -8,8 +8,8 @@ export const metadata = {
   keywords: "AI summarizer free, text summarizer online, article summarizer, summarize text AI, automatic summarization, essay summarizer Pakistan",
   robots: { index: true, follow: true },
   alternates: { canonical: "https://www.aidla.online/tools/ai/summarizer" },
-  openGraph: { title: "Free AI Text Summarizer | AIDLA", description: "Summarize any text in seconds.", type: "website", url: "https://www.aidla.online/tools/ai/summarizer", images: [{ url: "https://www.aidla.online/og-summarizer.jpg" }], siteName: "AIDLA" },
-  twitter: { card: "summary_large_image", title: "Free AI Text Summarizer | AIDLA", images: ["https://www.aidla.online/og-summarizer.jpg"] },
+  openGraph: { title: "Free AI Text Summarizer | AIDLA", description: "Summarize any text in seconds. Paste any article, essay or document and get a concise summary — free.", type: "website", url: "https://www.aidla.online/tools/ai/summarizer", siteName: "AIDLA", locale: "en_PK", images: [{ url: "https://www.aidla.online/og-summarizer.jpg", width: 1200, height: 630, alt: "AIDLA Free AI Text Summarizer" }] },
+  twitter: { card: "summary_large_image", title: "Free AI Text Summarizer | AIDLA", description: "Summarize any article, essay or document in seconds. Free, no login.", images: ["https://www.aidla.online/og-summarizer.jpg"] },
 };
 
 function JsonLd() {
@@ -17,7 +17,7 @@ function JsonLd() {
     "@context": "https://schema.org", "@type": "WebApplication",
     name: "AIDLA AI Text Summarizer", url: "https://www.aidla.online/tools/ai/summarizer",
     applicationCategory: "WritingApplication", operatingSystem: "Web",
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    offers: { "@type": "Offer", price: "0", priceCurrency: "PKR" },
     publisher: { "@type": "Organization", name: "AIDLA", url: "https://www.aidla.online" },
     isAccessibleForFree: true,
   })}} />;

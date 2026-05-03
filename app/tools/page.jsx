@@ -8,7 +8,7 @@ export const metadata = {
   keywords: "AI email writer, AI summarizer, AI paraphraser, LinkedIn bio generator, interview prep, CV maker, cover letter maker, free AI tools, AIDLA",
   robots: { index: true, follow: true },
   alternates: { canonical: "https://www.aidla.online/tools" },
-  openGraph: { title: "Free AI & Career Tools | AIDLA", description: "AI Email Writer, CV Maker, Cover Letter, Summarizer and more. All free.", type: "website", url: "https://www.aidla.online/tools", images: [{ url: "https://www.aidla.online/og-home.jpg", width: 1200, height: 630 }], siteName: "AIDLA" },
+  openGraph: { title: "Free AI & Career Tools | AIDLA", description: "AI Email Writer, CV Maker, Cover Letter, Summarizer and more. All free.", type: "website", url: "https://www.aidla.online/tools", siteName: "AIDLA", locale: "en_PK", images: [{ url: "https://www.aidla.online/og-home.jpg", width: 1200, height: 630, alt: "AIDLA Free AI and Career Tools" }] },
   twitter: { card: "summary_large_image", title: "Free AI & Career Tools | AIDLA", images: ["https://www.aidla.online/og-home.jpg"] },
 };
 

@@ -8,7 +8,7 @@ export const metadata = {
   keywords: "LinkedIn bio generator, AI LinkedIn profile, LinkedIn About section, LinkedIn summary generator, professional bio writer, AIDLA AI LinkedIn",
   robots: { index: true, follow: true },
   alternates: { canonical: "https://www.aidla.online/tools/ai/linkedin-bio" },
-  openGraph: { title: "AI LinkedIn Bio Generator | AIDLA", description: "Generate a powerful LinkedIn About section in seconds with AIDLA AI.", type: "website", url: "https://www.aidla.online/tools/ai/linkedin-bio", images: [{ url: "https://www.aidla.online/og-home.jpg" }], siteName: "AIDLA" },
+  openGraph: { title: "AI LinkedIn Bio Generator | AIDLA", description: "Generate a powerful LinkedIn About section in seconds with AIDLA AI.", type: "website", url: "https://www.aidla.online/tools/ai/linkedin-bio", siteName: "AIDLA", locale: "en_PK", images: [{ url: "https://www.aidla.online/og-home.jpg", width: 1200, height: 630, alt: "AIDLA AI LinkedIn Bio Generator" }] },
   twitter: { card: "summary_large_image", title: "AI LinkedIn Bio Generator | AIDLA", images: ["https://www.aidla.online/og-home.jpg"] },
 };
 
@@ -18,7 +18,7 @@ function JsonLd() {
     name:"AI LinkedIn Bio Generator by AIDLA","url":"https://www.aidla.online/tools/ai/linkedin-bio",
     description:"Free AI LinkedIn bio and About section generator.",
     applicationCategory:"ProductivityApplication","operatingSystem":"Web",
-    offers:{"@type":"Offer","price":"0","priceCurrency":"USD"},
+    offers:{"@type":"Offer","price":"0","priceCurrency":"PKR"},
     publisher:{"@type":"Organization","name":"AIDLA","url":"https://www.aidla.online"},
   })}} />;
 }

@@ -7,10 +7,6 @@ export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
 
-function toSlug(title = "") {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
-
 /* ─────────────────────────────────────────────
    Server-side data helper
 ───────────────────────────────────────────── */
@@ -22,13 +18,18 @@ async function getAllCourses() {
   return data || [];
 }
 
+export async function generateStaticParams() {
+  const courses = await getAllCourses();
+  return courses.map(c => ({ slug: c.slug }));
+}
+
 /* ─────────────────────────────────────────────
    Dynamic metadata — unique per course
 ───────────────────────────────────────────── */
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const courses  = await getAllCourses();
-  const c        = courses.find(c => toSlug(c.title) === slug) || null;
+  const c        = courses.find(c => c.slug === slug) || null;
 
   if (!c) {
     return {
@@ -74,7 +75,7 @@ export async function generateMetadata({ params }) {
 export default async function CourseDetailPage({ params }) {
   const { slug }  = await params;
   const courses   = await getAllCourses();
-  const course    = courses.find(c => toSlug(c.title) === slug) || null;
+  const course    = courses.find(c => c.slug === slug) || null;
 
   if (!course) notFound();
 
@@ -96,16 +97,23 @@ export default async function CourseDetailPage({ params }) {
     courseLevel: course.level || "beginner",
     provider: {
       "@type": "EducationalOrganization",
+      "@id":   `${SITE_URL}/#organization`,
       name:    "AIDLA",
       url:     SITE_URL,
     },
     offers: {
       "@type":        "Offer",
       price:          course.price || 0,
-      priceCurrency:  "USD",
+      priceCurrency:  "PKR",
       availability:   "https://schema.org/InStock",
       url:            `${SITE_URL}/signup`,
       category:       isFree ? "Free" : "Paid",
+    },
+    hasCourseInstance: {
+      "@type":       "CourseInstance",
+      courseMode:    "online",
+      inLanguage:    "en",
+      ...(course.duration_estimate && { courseWorkload: course.duration_estimate }),
     },
     ...(course.duration_estimate && { timeRequired: course.duration_estimate }),
     ...(course.category && { educationalLevel: course.category }),

@@ -51,7 +51,6 @@ export const metadata = {
     canonical: `${SITE_URL}/`,
     languages: {
       "en-PK": `${SITE_URL}/`,
-      "ur-PK": `${SITE_URL}/ur/`,
       "en-US": `${SITE_URL}/`,
       "x-default": `${SITE_URL}/`,
     },
@@ -98,7 +97,7 @@ export const metadata = {
   },
   // ── Verification tokens ──
   verification: {
-    google: "YOUR_GOOGLE_SEARCH_CONSOLE_TOKEN",
+    google: "j4kq2LCJC89N6mrn45InACrIPLowwr3JyLkp1HNusbk",
     // bing: "YOUR_BING_TOKEN",
   },
   // ── Additional Meta ──
@@ -107,28 +106,10 @@ export const metadata = {
     "color-scheme": "light",
     "mobile-web-app-capable": "yes",
     "msapplication-TileColor": "#0b1437",
-    "msapplication-config": `${SITE_URL}/browserconfig.xml`,
     // GEO / Local SEO signals
     "geo.region": "PK",
     "geo.country": "Pakistan",
     "geo.placename": "Pakistan",
-    // DCMI / Dublin Core — for AEO / LLMO
-    "DC.language": "en",
-    "DC.coverage": "Pakistan",
-    "DC.subject": "Education, Online Learning, Quizzes, Rewards",
-    "DC.type": "InteractiveResource",
-    // EEAT signals
-    "article:author": "AIDLA Editorial Team",
-    // Revisit
-    revisit: "7 days",
-    // Rating
-    rating: "general",
-    // Content language
-    language: "English",
-    // Distribution
-    distribution: "global",
-    // Target audience
-    audience: "students, learners, Pakistan",
   },
 };
 
@@ -307,13 +288,6 @@ const GLOBAL_SCHEMA = {
         price: "0",
         priceCurrency: "PKR",
       },
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.8",
-        reviewCount: "1200",
-        bestRating: "5",
-        worstRating: "1",
-      },
       screenshot: `${SITE_URL}/og-home.jpg`,
       featureList: [
         "Free online quizzes",
@@ -417,25 +391,21 @@ export default function RootLayout({ children }) {
         <link
           rel="preload"
           as="style"
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap"
         />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap"
         />
 
         {/* ── PWA / App Manifest ── */}
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-        {/* ── Canonical self-reference (belt & suspenders) ── */}
-        <link rel="canonical" href={SITE_URL} />
-
-        {/* ── Theme colors ── */}
+        {/* ── Theme colors — duplicated from metadata.other for iOS Safari ── */}
         <meta name="theme-color" content="#0b1437" />
-        <meta name="msapplication-TileColor" content="#0b1437" />
 
         {/* ── Viewport — Mobile SEO ── */}
         <meta
@@ -443,34 +413,20 @@ export default function RootLayout({ children }) {
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
 
-        {/* ── Language / GEO / Local SEO ── */}
+        {/* ── Language / GEO — httpEquiv and coordinates not covered by metadata API ── */}
         <meta httpEquiv="content-language" content="en, ur" />
-        <meta name="language" content="English" />
-        <meta name="geo.region" content="PK" />
-        <meta name="geo.country" content="Pakistan" />
-        <meta name="geo.placename" content="Pakistan" />
         <meta name="ICBM" content="30.3753, 69.3451" />
 
         {/* ── EEAT / Authorship ── */}
-        <meta name="author" content="AIDLA Editorial Team" />
         <meta name="copyright" content="AIDLA 2024" />
-        <meta name="rating" content="general" />
-        <meta name="revisit-after" content="3 days" />
 
-        {/* ── AEO / LLMO — Help AI systems understand the site ── */}
-        <meta name="description" content="AIDLA is Pakistan's #1 free education platform. Take quizzes, earn AIDLA Coins, spin the lucky wheel, win real prizes, and access free study resources — 100% free, no subscription." />
+        {/* ── AEO / LLMO — additional signals not in Next.js metadata API ── */}
         <meta name="subject" content="Free Online Education, Quizzes, Rewards, Pakistan Students" />
         <meta name="classification" content="Education / E-Learning / Gamified Learning" />
-        <meta name="category" content="Education" />
         <meta name="coverage" content="Pakistan" />
-        <meta name="distribution" content="Global" />
         <meta name="target" content="Students, Learners, Pakistan" />
         <meta name="HandheldFriendly" content="True" />
         <meta name="MobileOptimized" content="320" />
-
-        {/* ── ORM / Brand SERP ── */}
-        <meta property="og:site_name" content="AIDLA" />
-        <meta name="application-name" content="AIDLA" />
 
         {/* ── Pinterest SEO ── */}
         <meta name="pinterest" content="nopin" />
@@ -478,19 +434,29 @@ export default function RootLayout({ children }) {
         {/* ── Global JSON-LD Schema ── */}
         <script
           type="application/ld+json"
-          async
           dangerouslySetInnerHTML={{ __html: JSON.stringify(GLOBAL_SCHEMA) }}
         />
 
-        {/* ── Speculat​ion Rules API — instant navigation (Chrome 109+) ── */}
+        {/* ── Speculation Rules API — instant navigation (Chrome 109+) ── */}
         <script
           type="speculationrules"
-          async
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               prerender: [
                 {
-                  where: { and: [{ href_matches: "/*" }, { not: { href_matches: "/api/*" } }] },
+                  where: {
+                    and: [
+                      { href_matches: "/*" },
+                      { not: { href_matches: "/api/*" } },
+                      { not: { href_matches: "/user/*" } },
+                      { not: { href_matches: "/admin/*" } },
+                      { not: { href_matches: "/login" } },
+                      { not: { href_matches: "/signup" } },
+                      { not: { href_matches: "/forgot-password" } },
+                      { not: { href_matches: "/reset-password" } },
+                      { not: { href_matches: "/email-confirmed" } },
+                    ],
+                  },
                   eagerness: "moderate",
                 },
               ],

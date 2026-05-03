@@ -598,7 +598,6 @@ Give step-by-step guidance on how to use them. Be helpful like a platform guide.
 - **Bot** (/user/bot) — AIDLA general purpose AI chatbot
 - **Social** (/user/social) — Social networking and community
 - **Resources** (/user/UserResources) — Study materials and career resources
-- **AutoTube Studio** (/user/autotubestudio) — AI-powered video content creation tool
 - **Invite** — Refer friends and earn bonus tokens
 
 ## AIDLA Public Tools (/tools)

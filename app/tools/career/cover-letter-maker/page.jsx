@@ -24,6 +24,7 @@ export const metadata = {
     url:         "https://www.aidla.online/tools/career/cover-letter-maker",
     images:      [{ url: "https://www.aidla.online/og-home.jpg", width: 1200, height: 630, alt: "AIDLA Free Cover Letter Maker" }],
     siteName:    "AIDLA",
+    locale:      "en_PK",
   },
   twitter: {
     card:        "summary_large_image",
@@ -48,7 +49,7 @@ function CoverLetterJsonLd() {
     offers: {
       "@type":        "Offer",
       price:          "0",
-      priceCurrency:  "USD",
+      priceCurrency:  "PKR",
       availability:   "https://schema.org/InStock",
     },
     featureList: [

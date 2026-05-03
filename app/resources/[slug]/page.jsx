@@ -3,7 +3,19 @@
 import { serverFetch } from "@/lib/supabaseServer";
 import ResourceDetailClient from "./ResourceDetailClient";
 
+export const revalidate = 3600;
+
 const SITE_URL = "https://www.aidla.online";
+
+export async function generateStaticParams() {
+  const { data } = await serverFetch("study_materials", {
+    select: "slug",
+    "status": "eq.published",
+    order: "created_at.desc",
+    limit: "100",
+  });
+  return (data || []).map(m => ({ slug: m.slug }));
+}
 
 async function getMaterial(slug) {
   const { data } = await serverFetch("study_materials", {
@@ -28,7 +40,7 @@ export async function generateMetadata({ params }) {
     description: desc,
     robots: { index: true, follow: true, "max-image-preview": "large" },
     alternates: { canonical: url },
-    openGraph: { title, description: desc, type: "article", url, siteName: "AIDLA", locale: "en_US", images: [img] },
+    openGraph: { title, description: desc, type: "article", url, siteName: "AIDLA", locale: "en_PK", images: [img] },
     twitter:    { card: "summary_large_image", title, description: desc, images: [`${SITE_URL}/og-home.jpg`] },
   };
 }
@@ -39,7 +51,7 @@ export default async function ResourceDetailPage({ params }) {
 
   const schema = m ? {
     "@context": "https://schema.org",
-    "@type": "CreativeWork",
+    "@type": "LearningResource",
     "@id": `${SITE_URL}/resources/${slug}`,
     name: m.title,
     description: m.description || `Free ${m.file_type || "study material"} on AIDLA.`,

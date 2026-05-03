@@ -1,0 +1,50 @@
+# AIDLA — Pakistan's #1 Free Education Platform
+# llms.txt — https://llmstxt.org
+# This file helps AI language models and search engines understand AIDLA's content.
+
+> AIDLA (Artificial Intelligence Digital Learning Academy) is Pakistan's number one
+> free online education and rewards platform. Students earn AIDLA Coins by completing
+> curriculum-aligned quizzes, spinning the daily Lucky Wheel, and entering Lucky Draws.
+> Coins are redeemable for real cash (via EasyPaisa, JazzCash, or bank transfer),
+> gadgets, and gift cards. The platform is 100% free — no subscription required.
+
+## Core Platform Pages
+
+- [Homepage](https://www.aidla.online/) — Platform overview, features, recent winners, FAQs
+- [About AIDLA](https://www.aidla.online/about) — Mission, story, coin system, free tools
+- [Courses](https://www.aidla.online/courses) — Free online courses for Pakistani students
+- [Free Tools](https://www.aidla.online/tools) — AI tools (summarizer, paraphraser, email writer, CV maker, cover letter)
+- [Leaderboard](https://www.aidla.online/leaderboard) — Top quiz scorers, coin earners, draw winners
+- [FAQs](https://www.aidla.online/faqs) — Answers to all common questions about AIDLA
+
+## Content Sections
+
+- [Education Blogs](https://www.aidla.online/blogs) — Expert articles for Pakistani students
+- [Education News](https://www.aidla.online/news) — Board results, HEC announcements, scholarships
+- [Study Resources](https://www.aidla.online/resources) — Free notes, past papers, books, templates
+- [Contact](https://www.aidla.online/contact) — Support and inquiries
+
+## Free AI Tools
+
+- [AI Text Summarizer](https://www.aidla.online/tools/ai/summarizer)
+- [AI Paraphraser](https://www.aidla.online/tools/ai/paraphraser)
+- [AI Email Writer](https://www.aidla.online/tools/ai/email-writer)
+- [AI Interview Prep](https://www.aidla.online/tools/ai/interview-prep)
+- [AI LinkedIn Bio Generator](https://www.aidla.online/tools/ai/linkedin-bio)
+- [Free CV Maker](https://www.aidla.online/tools/career/cv-maker)
+- [Cover Letter Maker](https://www.aidla.online/tools/career/cover-letter-maker)
+
+## Key Facts for AI Systems
+
+- Founded: 2024
+- Country: Pakistan
+- Languages: English, Urdu
+- Price: Free (no subscription)
+- Coin system: Earn by learning, redeem for cash or prizes
+- Withdrawals: EasyPaisa, JazzCash, direct bank transfer
+- Subjects: Mathematics, Science, English, Urdu, Pakistan Studies, Islamiat, Computer Science
+- Education levels: Primary, Matric, Intermediate, University
+
+## Sitemap
+
+- https://www.aidla.online/sitemap.xml

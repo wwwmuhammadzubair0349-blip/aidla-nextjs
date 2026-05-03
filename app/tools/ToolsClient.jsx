@@ -17,7 +17,6 @@ const TOOLS = [
       { href:"/tools/ai/paraphraser",    emoji:"🔄", label:"AI Paraphraser",         desc:"Rewrite text in academic, casual, formal or creative styles. Powered by Groq AI.", badge:"3 Free", badgeColor:"#059669" },
       { href:"/tools/ai/linkedin-bio",   emoji:"💼", label:"AI LinkedIn Bio",         desc:"Generate a powerful LinkedIn About section in seconds. Choose tone, length and style.", badge:"Free", badgeColor:"#0a66c2" },
       { href:"/tools/ai/interview-prep", emoji:"🎯", label:"AI Interview Prep",       desc:"Enter a job title — get interview questions with ideal answers. Technical, behavioral & HR.", badge:"Free", badgeColor:"#1a3a8f" },
-      { href:"/tools/ai/autotube", emoji:"🎬", label:"AutoTube — YouTube SEO", desc:"Generate SEO titles, tags, descriptions, scripts & complete video packages with AI. 7 tools in one.", badge:"7 Tools", badgeColor:"#ef4444" },
     ],
   },
   {

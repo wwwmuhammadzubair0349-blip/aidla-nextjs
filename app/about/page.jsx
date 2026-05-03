@@ -14,9 +14,9 @@ const FAQ_TEASER = [
 const FREE_TOOLS = [
   { icon:"📄", title:"Free CV Maker",          desc:"Build a professional, ATS-friendly CV in minutes — no design skills needed. Pick a template, fill in your details, and download a polished PDF resume instantly. Completely free.",                              badge:"Live",  color:"#dbeafe", link:"/tools/career/cv-maker" },
   { icon:"✉️", title:"Cover Letter Maker",     desc:"Generate a tailored, professional cover letter for any job in seconds. Our AI-assisted builder helps you write compelling cover letters that hiring managers actually read.",                              badge:"Live",  color:"#d1fae5", link:"/tools/career/cover-letter-maker" },
-  { icon:"🖼️", title:"Image to PDF",           desc:"Convert JPG, PNG, or any image file into a clean, shareable PDF document instantly. No account required, no watermarks — completely free every time.",                                                  badge:"Live",  color:"#fef3c7", link:"/tools/pdf/image-to-pdf" },
-  { icon:"📝", title:"Word to PDF",            desc:"Upload your .docx Word document and convert it to a perfectly formatted PDF file in one click. Fast, free, and fully secure — your files are never stored.",                                             badge:"Live",  color:"#ede9fe", link:"/tools/pdf/word-to-pdf" },
-  { icon:"🎨", title:"JPG to PNG Converter",   desc:"Convert JPG images to transparent-background PNG files instantly. Perfect for logos, profile pictures, and any design work. Free, fast, and requires no account.",                                      badge:"Live",  color:"#fce7f3", link:"/tools/image/jpg-to-png" },
+  { icon:"🖼️", title:"Image to PDF",           desc:"Convert JPG, PNG, or any image file into a clean, shareable PDF document instantly. No account required, no watermarks — completely free every time.",                                                  badge:"Soon",  color:"#fef3c7", link:"/tools/pdf/image-to-pdf" },
+  { icon:"📝", title:"Word to PDF",            desc:"Upload your .docx Word document and convert it to a perfectly formatted PDF file in one click. Fast, free, and fully secure — your files are never stored.",                                             badge:"Soon",  color:"#ede9fe", link:"/tools/pdf/word-to-pdf" },
+  { icon:"🎨", title:"JPG to PNG Converter",   desc:"Convert JPG images to transparent-background PNG files instantly. Perfect for logos, profile pictures, and any design work. Free, fast, and requires no account.",                                      badge:"Soon",  color:"#fce7f3", link:"/tools/image/jpg-to-png" },
   { icon:"🔧", title:"More Tools Coming Soon", desc:"We're constantly building new free tools — PDF compressor, background remover, QR code generator, image resizer, text to PDF, and much more. Follow AIDLA to be first to know when they launch.", badge:"Soon",  color:"#f1f5f9", link:"/tools" },
 ];
 
@@ -81,13 +81,26 @@ function FAQItem({ q, a }) {
 // JSON-LD structured data
 const organizationSchema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
+  "@type": ["Organization", "EducationalOrganization"],
+  "@id": `${SITE_URL}/#organization`,
   "name": "AIDLA",
   "url": SITE_URL,
-  "logo": `${SITE_URL}/logo.png`,
+  "logo": {
+    "@type": "ImageObject",
+    "url": `${SITE_URL}/logo.png`,
+    "width": 200,
+    "height": 60,
+  },
   "foundingDate": "2024",
-  "areaServed": "PK",
-  "sameAs": ["https://facebook.com/aidla", "https://instagram.com/aidla", "https://youtube.com/aidla"]
+  "areaServed": { "@type": "Country", "name": "Pakistan" },
+  "sameAs": [
+    "https://www.facebook.com/aidlaonline",
+    "https://www.instagram.com/aidlaonline",
+    "https://www.youtube.com/@aidlaonline",
+    "https://twitter.com/AIDLA_online",
+    "https://www.linkedin.com/company/aidla",
+    "https://www.tiktok.com/@aidlaonline",
+  ],
 };
 
 const breadcrumbSchema = {
@@ -116,7 +129,11 @@ export const metadata = {
   keywords:
     "AIDLA, free CV maker Pakistan, cover letter maker free, image to PDF online, word to PDF free, JPG to PNG converter, AI learning Pakistan, online quizzes Pakistan, lucky draw Pakistan, AIDLA coins, free AI chatbot Pakistan, education rewards Pakistan",
   authors: [{ name: "AIDLA" }],
-  robots: "index, follow, max-snippet:-1, max-image-preview:large",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
   alternates: { canonical: `${SITE_URL}/about` },
   openGraph: {
     type: "website",

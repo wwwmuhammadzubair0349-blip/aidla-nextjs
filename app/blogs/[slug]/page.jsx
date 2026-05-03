@@ -119,11 +119,18 @@ export default async function BlogPostPage({ params }) {
     url:           canonical,
     datePublished: post.published_at,
     dateModified:  post.updated_at || post.published_at,
-    image:         post.cover_image_url || OG_IMAGE,
+    image: post.cover_image_url
+      ? { "@type": "ImageObject", url: post.cover_image_url, width: 1200, height: 630 }
+      : { "@type": "ImageObject", url: OG_IMAGE, width: 1200, height: 630 },
     keywords:      (post.tags || []).join(", "),
     inLanguage:    "en",
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", ".article-lead", "article h2:first-of-type"],
+    },
     publisher: {
       "@type": "Organization",
+      "@id":   `${SITE_URL}/#organization`,
       name:    "AIDLA",
       url:     SITE_URL,
       logo: {

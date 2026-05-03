@@ -15,8 +15,9 @@ export const metadata = {
     url: `${SITE_URL}/contact`,
     title: "Contact AIDLA — Support, Help & Inquiries",
     description: "Reach out to AIDLA for any questions or support. We are here to assist you.",
-    images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630 }],
+    images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "Contact AIDLA" }],
     siteName: "AIDLA",
+    locale: "en_PK",
   },
   twitter: {
     card: "summary_large_image",

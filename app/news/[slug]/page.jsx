@@ -73,10 +73,11 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title,
       description,
-      url:      canonical,
-      siteName: "AIDLA",
-      type:     "article",
+      url:          canonical,
+      siteName:     "AIDLA",
+      type:         "article",
       publishedTime: post.published_at,
+      modifiedTime:  post.updated_at || post.published_at,
       images: [{ url: image, alt: post.title }],
     },
     twitter: {

@@ -11,13 +11,15 @@ export const metadata = {
   title:       "Frequently Asked Questions — AIDLA Pakistan Education Platform",
   description: "Find answers to the most common questions about AIDLA — earn coins, tests, lucky draw, withdrawals, and Pakistan education system.",
   keywords:    ["AIDLA FAQ", "AIDLA questions", "Pakistan education FAQ", "AIDLA coins help"],
+  robots:      { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1 } },
   alternates:  { canonical: `${SITE_URL}/faqs` },
   openGraph: {
     title:       "FAQs — AIDLA",
     description: "Find answers to the most common questions about AIDLA.",
     url:         `${SITE_URL}/faqs`,
     siteName:    "AIDLA",
-    images:      [{ url: `${SITE_URL}/og-home.jpg` }],
+    locale:      "en_PK",
+    images:      [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA FAQs" }],
     type:        "website",
   },
   twitter: {

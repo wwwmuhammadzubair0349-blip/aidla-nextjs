@@ -13,8 +13,9 @@ export const metadata = {
     description: "AI writes professional emails in seconds. 24 types, 6 tones, 11 languages. Opens directly in Gmail or Outlook. Free.",
     type: "website",
     url: "https://www.aidla.online/tools/ai/email-writer",
-    images: [{ url: "https://www.aidla.online/og-email-writer.jpg", width: 1200, height: 630 }],
     siteName: "AIDLA",
+    locale: "en_PK",
+    images: [{ url: "https://www.aidla.online/og-email-writer.jpg", width: 1200, height: 630, alt: "AIDLA AI Email Writer" }],
   },
   twitter: { card: "summary_large_image", title: "AI Email Writer — AIDLA", description: "AI writes professional emails in seconds. Opens directly in Gmail, Outlook or Mail app.", images: ["https://www.aidla.online/og-email-writer.jpg"] },
 };
@@ -26,7 +27,7 @@ function JsonLd() {
       name: "AI Email Writer by AIDLA", url: "https://www.aidla.online/tools/ai/email-writer",
       description: "AI-powered email writer. Generate professional, business, personal and academic emails instantly.",
       applicationCategory: "ProductivityApplication", operatingSystem: "Web",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+      offers: { "@type": "Offer", price: "0", priceCurrency: "PKR" },
       publisher: { "@type": "Organization", name: "AIDLA", url: "https://www.aidla.online" },
     })}} />
   );

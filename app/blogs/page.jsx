@@ -35,10 +35,20 @@ export const metadata = {
 };
 
 export default async function BlogsPage({ searchParams }) {
-  const params = await searchParams;
-  const tag = params?.tag || "all";
-  const cat = params?.cat || "all";
-  const q = params?.q || "";
+  // ✅ FIXED: Safely handle searchParams — can be undefined when accessed directly
+  let tag = "all";
+  let cat = "all";
+  let q = "";
+  
+  try {
+    const params = searchParams ? await searchParams : {};
+    tag = params?.tag || "all";
+    cat = params?.cat || "all";
+    q = params?.q || "";
+  } catch (e) {
+    // If searchParams fails, use defaults — don't block the page
+    console.warn("Failed to parse searchParams:", e);
+  }
 
   const { data: posts, error } = await serverFetch("blogs_posts", {
     select:       "id,title,slug,excerpt,cover_image_url,published_at,tags,view_count",
@@ -104,5 +114,3 @@ export default async function BlogsPage({ searchParams }) {
     </>
   );
 }
-
-

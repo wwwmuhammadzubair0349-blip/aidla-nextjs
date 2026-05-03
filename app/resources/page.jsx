@@ -1,3 +1,4 @@
+// app/resources/page.jsx
 import { serverRpc } from "@/lib/supabaseServer";
 import ResourcesClient from "./ResourcesClient";
 
@@ -33,15 +34,28 @@ export const metadata = {
 };
 
 export default async function ResourcesPage({ searchParams }) {
-  // 1. Await searchParams for Next.js 15 compatibility & read values
-  const params = await searchParams;
-  const q = params?.q || "";
-  const category = params?.category || "";
-  const subject = params?.subject || "";
-  const university = params?.university || "";
-  const class_level = params?.class || "";
-  const year = params?.year || "";
-  const page = parseInt(params?.page) || 1;
+  // ✅ FIXED: Safely handle searchParams — can be undefined when bots hit /resources directly
+  let q = "";
+  let category = "";
+  let subject = "";
+  let university = "";
+  let class_level = "";
+  let year = "";
+  let page = 1;
+  
+  try {
+    const params = searchParams ? await searchParams : {};
+    q = params?.q || "";
+    category = params?.category || "";
+    subject = params?.subject || "";
+    university = params?.university || "";
+    class_level = params?.class || "";
+    year = params?.year || "";
+    page = parseInt(params?.page) || 1;
+  } catch (e) {
+    // If searchParams fails, use defaults — don't block the page
+    console.warn("Failed to parse searchParams:", e);
+  }
 
   // 2. Fetch Data ON THE SERVER for 100% AI Readability
   const [{ data: materialsData }, { data: optionsData }] = await Promise.all([

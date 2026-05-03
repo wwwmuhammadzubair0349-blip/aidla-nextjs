@@ -142,7 +142,7 @@ export default async function BlogPostPage({ params }) {
     },
     author: {
       "@type": "Person",
-      name:    post.author_name || "AIDLA Team",
+      name:    post.author_name || "Engr-Muhammad Zubair",
     },
     mainEntityOfPage: {
       "@type": "WebPage",

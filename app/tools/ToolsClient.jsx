@@ -19,7 +19,7 @@ const TOOLS = [
       { href:"/tools/ai/interview-prep", emoji:"🎯", label:"AI Interview Prep",       desc:"Enter a job title — get interview questions with ideal answers. Technical, behavioral & HR.", badge:"Free", badgeColor:"#1a3a8f" },
     ],
   },
-  {
+    {
     category: "Career Tools",
     categoryIcon: "💼",
     categoryColor: "#d97706",
@@ -30,6 +30,28 @@ const TOOLS = [
       { href:"/tools/career/cover-letter-maker", emoji:"✉️",  label:"Cover Letter Maker", desc:"AI writes any field. 6 templates, live A4 preview, print to PDF. No sign-up needed.",       badge:"6 Templates", badgeColor:"#d97706" },
     ],
   },
+  {
+    category: "PDF Tools",
+    categoryIcon: "📄",
+    categoryColor: "#059669",
+    categoryBg: "rgba(5,150,105,0.06)",
+    categoryBorder: "rgba(5,150,105,0.18)",
+    items: [
+      { href:"/tools/pdf/image-to-pdf", emoji:"🖼️", label:"Image to PDF", desc:"Convert images to high-quality PDFs instantly. No sign-up needed.", badge:"Free", badgeColor:"#059669" },
+      { href:"/tools/pdf/word-to-pdf",  emoji:"📄", label:"Word to PDF",  desc:"Convert Word documents to PDF with one click. Preserve formatting and layout.", badge:"Free", badgeColor:"#059669" },
+    ],
+  },
+  {
+    category: "Image Tools",
+    categoryIcon: "🖼️",
+    categoryColor: "#d946ef",
+    categoryBg: "rgba(217,119,6,0.06)",
+    categoryBorder: "rgba(217,119,6,0.18)",
+    items: [
+      { href:"/tools/image/jpg-to-png", emoji:"🖼️", label:"JPG to PNG", desc:"Convert JPG images to high-quality PNGs instantly. No sign-up needed.", badge:"Free", badgeColor:"#d946ef" },
+    ],
+  },
+
 ];
 
 const CSS = `
@@ -139,7 +161,7 @@ export default function ToolsClient() {
 
           {/* Hero */}
           <header style={{ textAlign:"center", marginBottom:40 }}>
-            <p className="tools-badge fade-1">7 Free Tools</p>
+            <p className="tools-badge fade-1">10+ Free Tools</p>
             <h1 className="tools-title fade-2">
               Free <span className="tools-title-accent">AI &amp; Career</span> Tools
             </h1>
@@ -166,7 +188,7 @@ export default function ToolsClient() {
 
           {/* Stats */}
           <div className="tools-stats fade-3" aria-label="Tool statistics">
-            {[["7+","Free Tools"],["0","Sign-up Needed"],["2","Categories"],["100%","Free"]].map(([v,l],i,arr) => (
+            {[["10+","Free Tools"],["0","Sign-up Needed"],["4","Categories"],["100%","Free"]].map(([v,l],i,arr) => (
               <div key={v} style={{ display:"contents" }}>
                 <div className="tools-stat">
                   <div className="tools-stat-val">{v}</div>

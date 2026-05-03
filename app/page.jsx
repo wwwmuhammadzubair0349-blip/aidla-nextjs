@@ -104,6 +104,7 @@ const JSON_LD = {
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
         name: "Engr-Muhammad Zubair",
+        url: SITE_URL,
       },
       // Featured Snippet / Zero-Click optimization
       speakable: {

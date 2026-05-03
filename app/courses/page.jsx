@@ -1,3 +1,4 @@
+// app/courses/page.jsx
 import { Suspense } from "react";
 import { serverFetch } from "@/lib/supabaseServer";
 import CoursesClient from "./CoursesClient";
@@ -39,19 +40,29 @@ export const metadata = {
    Page
 ───────────────────────────────────────────── */
 export default async function CoursesPage({ searchParams }) {
-  const params = await searchParams;
-  const level = params?.level || "all";
-  const sort = params?.sort || "newest";
-  const q = params?.q || "";
+  // ✅ FIXED: Safely handle searchParams — can be undefined when bots hit /courses directly
+  let level = "all";
+  let sort = "newest";
+  let q = "";
+  
+  try {
+    const params = searchParams ? await searchParams : {};
+    level = params?.level || "all";
+    sort = params?.sort || "newest";
+    q = params?.q || "";
+  } catch (e) {
+    // If searchParams fails, use defaults — don't block the page
+    console.warn("Failed to parse searchParams:", e);
+  }
 
-  // FIX: Using select: "*" ensures we don't accidentally query missing columns and crash Supabase
   const { data: coursesData } = await serverFetch("course_courses", {
     select: "*",
     "status": "eq.published",
     order: "created_at.desc",
   });
 
-  const courses = coursesData ||[];
+  const courses = coursesData || [];
+  
   // Filter courses on server for SEO
   let filteredCourses = courses;
   if (level !== "all") {
@@ -65,6 +76,7 @@ export default async function CoursesPage({ searchParams }) {
       c.subject?.toLowerCase().includes(query)
     );
   }
+  
   // Sort
   if (sort === "newest") {
     filteredCourses.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -73,6 +85,7 @@ export default async function CoursesPage({ searchParams }) {
   } else if (sort === "title") {
     filteredCourses.sort((a, b) => a.title.localeCompare(b.title));
   }
+  
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -80,6 +93,7 @@ export default async function CoursesPage({ searchParams }) {
     description: "Free and paid online courses on AIDLA — Pakistan's #1 educational rewards platform.",
     url: `${SITE_URL}/courses${level !== "all" ? `?level=${level}` : ""}`,
     itemListElement: filteredCourses
+      .slice(0, 15) // Limit to 15 for schema
       .map((c, i) => ({
       "@type": "ListItem",
       position: i + 1,

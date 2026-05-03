@@ -18,7 +18,7 @@ function JsonLd() {
     "@type": "ItemList",
     name: "AIDLA Free AI & Career Tools",
     url: "https://www.aidla.online/tools",
-    numberOfItems: 7,
+    numberOfItems: 10,
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "AI Email Writer",        url: "https://www.aidla.online/tools/ai/email-writer"               },
       { "@type": "ListItem", position: 2, name: "AI Text Summarizer",     url: "https://www.aidla.online/tools/ai/summarizer"                 },
@@ -27,6 +27,9 @@ function JsonLd() {
       { "@type": "ListItem", position: 5, name: "AI Interview Prep",      url: "https://www.aidla.online/tools/ai/interview-prep"             },
       { "@type": "ListItem", position: 6, name: "CV Maker",               url: "https://www.aidla.online/tools/career/cv-maker"               },
       { "@type": "ListItem", position: 7, name: "Cover Letter Maker",     url: "https://www.aidla.online/tools/career/cover-letter-maker"     },
+      { "@type": "ListItem", position: 8, name: "Image to PDF",           url: "https://www.aidla.online/tools/pdf/image-to-pdf"              },
+      { "@type": "ListItem", position: 9, name: "Word to PDF",            url: "https://www.aidla.online/tools/pdf/word-to-pdf"               },
+      { "@type": "ListItem", position: 10, name: "JPG to PNG",            url: "https://www.aidla.online/tools/image/jpg-to-png"              },
     ],
   };
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;

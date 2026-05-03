@@ -31,8 +31,17 @@ export const metadata = {
 };
 
 export default async function FAQsPage({ searchParams }) {
-  const params     = await searchParams;
-  const initialCat = params?.cat || "all";
+  // ✅ FIXED: Safely handle searchParams — can be undefined when bots hit /faqs directly
+  let initialCat = "all";
+  
+  try {
+    const params = searchParams ? await searchParams : {};
+    initialCat = params?.cat || "all";
+  } catch (e) {
+    // If searchParams fails, use default — don't block the page
+    console.warn("Failed to parse searchParams:", e);
+    initialCat = "all";
+  }
 
   const { data: faqs, error } = await serverFetch("faqs", {
     select:        "*",
@@ -50,14 +59,13 @@ export default async function FAQsPage({ searchParams }) {
     filteredFaqs = safeFaqs.filter(f => f.category === initialCat);
   }
 
-  /* ── JSON-LD: FAQPage — answer HTML stripped for clean schema text (fixed) ── */
+  /* ── JSON-LD: FAQPage — answer HTML stripped for clean schema text ── */
   const structuredData = {
     "@context":   "https://schema.org",
     "@type":      "FAQPage",
     mainEntity:   safeFaqs.map(f => ({
       "@type": "Question",
       name:    f.question,
-      // Strip HTML tags so schema text is clean plain text (was missing in original)
       acceptedAnswer: {
         "@type": "Answer",
         text:    f.answer.replace(/<[^>]+>/g, "").trim(),

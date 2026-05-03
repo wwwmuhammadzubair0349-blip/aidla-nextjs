@@ -51,21 +51,28 @@ function readTime(html = "") {
   return Math.max(1, Math.round(words / 200));
 }
 
-/* Extract headings from HTML string for TOC */
+/* Extract headings from HTML string for TOC — WITH SAFETY */
 function extractHeadings(html) {
-  const parser   = typeof DOMParser !== "undefined" ? new DOMParser() : null;
-  if (!parser) return [];
-  const doc      = parser.parseFromString(html, "text/html");
-  const elements = doc.querySelectorAll("h2, h3, h4");
-  return Array.from(elements).map((el, i) => ({
-    id:    el.id || `heading-${i}`,
-    text:  el.textContent,
-    level: parseInt(el.tagName[1]),
-  }));
+  if (!html || typeof DOMParser === "undefined") return [];
+  
+  try {
+    const parser   = new DOMParser();
+    const doc      = parser.parseFromString(html, "text/html");
+    const elements = doc.querySelectorAll("h2, h3, h4");
+    return Array.from(elements).map((el, i) => ({
+      id:    el.id || `heading-${i}`,
+      text:  el.textContent,
+      level: parseInt(el.tagName[1]),
+    }));
+  } catch (e) {
+    console.warn("Failed to extract headings:", e);
+    return [];
+  }
 }
 
 /* Inject IDs into heading elements in raw HTML */
 function injectHeadingIds(html) {
+  if (!html) return "";
   let i = 0;
   return html.replace(/<(h[234])([^>]*)>/gi, (match, tag, attrs) => {
     if (/id=/i.test(attrs)) return match;
@@ -75,7 +82,7 @@ function injectHeadingIds(html) {
 
 /* Fingerprint for votes — same pattern used throughout site */
 function getFingerprint() {
-  if (typeof window === "undefined") return "ssr-fp"; // ← add this line
+  if (typeof window === "undefined") return "ssr-fp";
   const KEY = "aidla_fp";
   let fp = localStorage.getItem(KEY);
   if (!fp) {
@@ -84,7 +91,6 @@ function getFingerprint() {
   }
   return fp;
 }
-
 
 /* ══════════════════════════════════════════════
    TOAST — ephemeral notification
@@ -122,16 +128,18 @@ function ConfirmDialog({ title, sub, onConfirm, onCancel }) {
 }
 
 /* ══════════════════════════════════════════════
-   READING PROGRESS BAR
+   READING PROGRESS BAR — FIXED
 ══════════════════════════════════════════════ */
 function ProgressBar() {
   const [pct, setPct] = useState(0);
 
   useEffect(() => {
     const onScroll = () => {
-      const el     = document.documentElement;
+      const el = document.documentElement;
+      if (!el) return;
+      
       const total  = el.scrollHeight - el.clientHeight;
-      const scroll = el.scrollTop || document.body.scrollTop;
+      const scroll = el.scrollTop || document.body?.scrollTop || 0;
       setPct(total > 0 ? Math.min(100, (scroll / total) * 100) : 0);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -157,7 +165,7 @@ function ProgressBar() {
 function TOC({ headings }) {
   const [open, setOpen] = useState(true);
 
-  if (!headings.length) return null;
+  if (!headings?.length) return null;
 
   return (
     <nav className="np-toc" aria-label="Table of contents">
@@ -190,7 +198,13 @@ function TOC({ headings }) {
                 key={h.id}
                 className={`np-toc-item${h.level === 3 ? " h3" : h.level === 4 ? " h4" : ""}`}
               >
-                <a href={`#${h.id}`}>{h.text}</a>
+                <a
+                  href={`#${h.id}`}
+                  onClick={e => {
+                    e.preventDefault();
+                    document.getElementById(h.id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                >{h.text}</a>
               </li>
             ))}
           </motion.ol>
@@ -322,7 +336,7 @@ function CommentForm({ postId, onPosted }) {
   const [body,   setBody]   = useState("");
   const [state,  setState]  = useState("idle"); // idle | loading | ok | err
   const [msg,    setMsg]    = useState("");
-  const fp = getFingerprint();
+  const fp = useRef(getFingerprint());
 
   const submit = async () => {
     if (!name.trim() || !email.trim() || !body.trim()) {
@@ -340,7 +354,7 @@ function CommentForm({ postId, onPosted }) {
       author_name: name.trim(),
       author_email: email.trim().toLowerCase(),
       body:        body.trim(),
-      fingerprint: fp,
+      fingerprint: fp.current,
       parent_id:   null,
       is_approved: true,
     });
@@ -422,7 +436,7 @@ function ReplyForm({ postId, parentId, parentAuthor, onPosted, onCancel }) {
   const [email, setEmail] = useState("");
   const [body,  setBody]  = useState("");
   const [state, setState] = useState("idle");
-  const fp = getFingerprint();
+  const fp = useRef(getFingerprint());
 
   const submit = async () => {
     if (!name.trim() || !email.trim() || !body.trim()) return;
@@ -432,7 +446,7 @@ function ReplyForm({ postId, parentId, parentAuthor, onPosted, onCancel }) {
       author_name:  name.trim(),
       author_email: email.trim().toLowerCase(),
       body:         body.trim(),
-      fingerprint:  fp,
+      fingerprint:  fp.current,
       parent_id:    parentId,
       is_approved:  true,
     });
@@ -667,7 +681,11 @@ function CommentItem({ comment, postId, myFp, onRefresh, showToast, depth = 0 })
 function CommentsSection({ postId }) {
   const [comments,  setComments]  = useState(null); // null = loading
   const [toast,     setToast]     = useState(null);
-  const myFp = useRef(getFingerprint());
+  const myFp = useRef(null);
+
+  useEffect(() => {
+    myFp.current = getFingerprint();
+  }, []);
 
   const loadComments = useCallback(async () => {
     const { data } = await supabase
@@ -822,39 +840,77 @@ function CoverDownloadBtn({ src, title }) {
 }
 
 /* ══════════════════════════════════════════════
-   MAIN CLIENT COMPONENT
+   MAIN CLIENT COMPONENT — FIXED
    Props: post (full row), related (array)
 ══════════════════════════════════════════════ */
 export default function NewsPageClient({ post, related }) {
+  const [isMounted, setIsMounted] = useState(false);
+  
   /* Track view once per session */
   useEffect(() => {
+    if (!post?.id) return;
     const key = `np_viewed_${post.id}`;
     if (!sessionStorage.getItem(key)) {
       sessionStorage.setItem(key, "1");
       supabase.rpc("news_increment_view", { p_post_id: post.id }).catch(() => {});
     }
-  }, [post.id]);
+    
+    setIsMounted(true);
+  }, [post?.id]);
 
   /* Derived */
-  const rt       = readTime(post.content || post.excerpt || "");
-  const postTags = post.tags || [];
+  const rt       = readTime(post?.content || post?.excerpt || "");
+  const postTags = post?.tags || [];
   const pCat     = postTags.find(t => KNOWN_CATS.includes(t));
   const isBreaking = postTags.includes("breaking");
   const displayTags = postTags.filter(t => !KNOWN_CATS.includes(t) && t !== "breaking");
 
-  /* TOC — client side only (needs DOM parser) */
+  /* TOC — client side only (needs DOM parser) — FIXED */
   const [headings,      setHeadings]      = useState([]);
-  const [processedHtml, setProcessedHtml] = useState(post.content || "");
+  const [processedHtml, setProcessedHtml] = useState(post?.content || "");
+  const [contentReady,  setContentReady]  = useState(false);
 
   useEffect(() => {
-    if (!post.content) return;
-    const withIds = injectHeadingIds(post.content);
-    setProcessedHtml(withIds);
-    setHeadings(extractHeadings(withIds));
-  }, [post.content]);
+    if (!post?.content || !isMounted) return;
+    
+    // Process on next tick to ensure DOM is ready
+    const timer = setTimeout(() => {
+      try {
+        const withIds = injectHeadingIds(post.content);
+        setProcessedHtml(withIds);
+        setHeadings(extractHeadings(withIds));
+      } catch (e) {
+        console.warn("Content processing failed:", e);
+        setProcessedHtml(post.content);
+        setHeadings([]);
+      }
+      setContentReady(true);
+    }, 0);
+    
+    return () => clearTimeout(timer);
+  }, [post?.content, isMounted]);
 
   /* Urdu/Arabic detection */
-  const isRTL = /[\u0600-\u06FF\u0750-\u077F]/.test(post.title);
+  const isRTL = /[\u0600-\u06FF\u0750-\u077F]/.test(post?.title || "");
+
+  // Show loading state during content processing
+  if (!contentReady && isMounted) {
+    return (
+      <div className="np-root">
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "center", 
+          alignItems: "center", 
+          minHeight: "400px",
+          flexDirection: "column",
+          gap: "16px"
+        }} aria-busy="true">
+          <div className="skel-bg" style={{ width: "40px", height: "40px", borderRadius: "50%" }} />
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>Loading article...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -51,18 +51,25 @@ function formatDate(d) {
 
 // Pure-function heading extractor (mirrors News — no reliance on hooks)
 function extractHeadings(html) {
-  if (typeof DOMParser === "undefined") return [];
-  const doc      = new DOMParser().parseFromString(html, "text/html");
-  const elements = doc.querySelectorAll("h2, h3, h4");
-  return Array.from(elements).map((el, i) => ({
-    id:    el.id || `bp-h-${i}`,
-    text:  el.textContent,
-    level: parseInt(el.tagName[1]),
-  }));
+  if (!html || typeof DOMParser === "undefined") return [];
+  
+  try {
+    const doc      = new DOMParser().parseFromString(html, "text/html");
+    const elements = doc.querySelectorAll("h2, h3, h4");
+    return Array.from(elements).map((el, i) => ({
+      id:    el.id || `bp-h-${i}`,
+      text:  el.textContent,
+      level: parseInt(el.tagName[1]),
+    }));
+  } catch (e) {
+    console.warn("Failed to extract headings:", e);
+    return [];
+  }
 }
 
 // Inject IDs into raw HTML string (mirrors News)
 function injectHeadingIds(html) {
+  if (!html) return "";
   let i = 0;
   return html.replace(/<(h[234])([^>]*)>/gi, (match, tag, attrs) => {
     if (/id=/i.test(attrs)) return match;
@@ -72,6 +79,8 @@ function injectHeadingIds(html) {
 
 // Sanitise links in a DOM node (unchanged from original)
 function sanitiseLinks(container) {
+  if (!container || !container.querySelectorAll) return;
+  
   container.querySelectorAll("a").forEach(a => {
     a.setAttribute("target", "_blank");
     a.setAttribute("rel", "noopener noreferrer");
@@ -82,6 +91,34 @@ function sanitiseLinks(container) {
       a.setAttribute("href", `https://${href}`);
     }
   });
+}
+
+// Safe HTML processing with error boundary
+function processContent(html) {
+  if (!html) return { headings: [], processedHtml: "" };
+  
+  try {
+    const withIds = injectHeadingIds(html);
+    
+    // Use try-catch for DOM operations
+    let processedHtml = withIds;
+    try {
+      const tmp = document.createElement("div");
+      tmp.innerHTML = withIds;
+      sanitiseLinks(tmp);
+      processedHtml = tmp.innerHTML;
+    } catch (e) {
+      console.warn("DOM processing failed, using raw HTML:", e);
+      processedHtml = withIds;
+    }
+    
+    const headings = extractHeadings(processedHtml);
+    
+    return { headings, processedHtml };
+  } catch (e) {
+    console.error("Content processing failed:", e);
+    return { headings: [], processedHtml: html };
+  }
 }
 
 function buildTree(flat) {
@@ -113,16 +150,21 @@ function Toast({ message, onDone }) {
 ══════════════════════════════════════════════ */
 function ProgressBar() {
   const [pct, setPct] = useState(0);
+  
   useEffect(() => {
     const onScroll = () => {
-      const el    = document.documentElement;
+      const el = document.documentElement;
+      if (!el) return;
+      
       const total = el.scrollHeight - el.clientHeight;
-      const scroll = el.scrollTop || document.body.scrollTop;
+      const scroll = el.scrollTop || document.body?.scrollTop || 0;
       setPct(total > 0 ? Math.min(100, (scroll / total) * 100) : 0);
     };
+    
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+  
   return (
     <div
       className="bp-progress-bar"
@@ -141,7 +183,8 @@ function ProgressBar() {
 ══════════════════════════════════════════════ */
 function TOC({ headings }) {
   const [open, setOpen] = useState(true);
-  if (!headings.length) return null;
+  if (!headings?.length) return null;
+  
   return (
     <nav className="bp-toc" aria-label="Table of contents">
       <div
@@ -764,41 +807,61 @@ export default function BlogPostClient({ initialPost, relatedPosts, slug }) {
 
   // SSR-safe fingerprint (mirrors News)
   const [fp, setFp] = useState("");
-  useEffect(() => { setFp(getFingerprint()); }, []);
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => { 
+    setFp(getFingerprint()); 
+    setIsMounted(true);
+  }, []);
 
   // View tracking — sessionStorage dedup (mirrors News, more robust than useRef)
   useEffect(() => {
+    if (!post?.id) return;
     const key = `bp_viewed_${post.id}`;
     if (!sessionStorage.getItem(key)) {
       sessionStorage.setItem(key, "1");
       supabase.rpc("blogs_increment_view", { p_post_id: post.id }).catch(() => {});
     }
-  }, [post.id]);
+  }, [post?.id]);
 
   // TOC + processed HTML — pure functions, no DOM (mirrors News)
-  const rawHtml = post.content_html || (
-    post.content
+  const rawHtml = post?.content_html || (
+    post?.content
       ? post.content.split("\n").filter(l => l.trim()).map(l => `<p>${l}</p>`).join("")
       : ""
   );
 
-  const [headings,      setHeadings]      = useState([]);
-  const [processedHtml, setProcessedHtml] = useState(rawHtml); // Start with raw — no flash
+  const [headings, setHeadings] = useState([]);
+  const [processedHtml, setProcessedHtml] = useState(rawHtml);
+  const [contentReady, setContentReady] = useState(false);
 
   useEffect(() => {
-    if (!rawHtml) return;
-    const withIds = injectHeadingIds(rawHtml);
+    if (!rawHtml || !isMounted) return;
+    
+    // Process on next tick to ensure DOM is ready
+    const timer = setTimeout(() => {
+      const { headings: h, processedHtml: ph } = processContent(rawHtml);
+      setHeadings(h);
+      setProcessedHtml(ph);
+      setContentReady(true);
+    }, 0);
+    
+    return () => clearTimeout(timer);
+  }, [rawHtml, isMounted]);
 
-    // Sanitise links via DOM
-    const tmp = document.createElement("div");
-    tmp.innerHTML = withIds;
-    sanitiseLinks(tmp);
+  const urduTitle = isUrdu(post?.title || "");
 
-    setHeadings(extractHeadings(tmp.innerHTML));
-    setProcessedHtml(tmp.innerHTML);
-  }, [post.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const urduTitle = isUrdu(post.title);
+  // Show loading state during content processing
+  if (!contentReady && isMounted) {
+    return (
+      <main className="blogpost-root">
+        <div className="bp-loading" aria-busy="true">
+          <div className="bp-spinner" />
+          <p>Loading article...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <>

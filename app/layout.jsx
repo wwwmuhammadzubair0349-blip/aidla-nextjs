@@ -478,12 +478,14 @@ export default function RootLayout({ children }) {
         {/* ── Global JSON-LD Schema ── */}
         <script
           type="application/ld+json"
+          async
           dangerouslySetInnerHTML={{ __html: JSON.stringify(GLOBAL_SCHEMA) }}
         />
 
         {/* ── Speculat​ion Rules API — instant navigation (Chrome 109+) ── */}
         <script
           type="speculationrules"
+          async
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               prerender: [

@@ -359,13 +359,13 @@ const NAV_CSS = `
   .nav2-auth { display: flex; }
   .nav2-burger { display: none; }
   .nav2-mobile-menu { display: none !important; }
-  .nav2-logo-img { height: 40px; width: auto; }
+  .nav2-logo-img { height: 40px; }
 }
 
 @media (min-width: 768px) {
   .nav2-inner { height: 66px; padding: 0 24px; }
   .nav2-link { font-size: 0.9rem; }
-  .nav2-logo-img { height: 42px; width: auto; }
+  .nav2-logo-img { height: 42px; }
   .nav2-logo-name { font-size: 1.4rem; }
 }
 
@@ -373,7 +373,7 @@ const NAV_CSS = `
   .nav2-inner { height: 70px; padding: 0 32px; }
   .nav2-desktop { gap: 4px; }
   .nav2-link { padding: 0 16px; font-size: 0.92rem; }
-  .nav2-logo-img { height: 44px; width: auto; }
+  .nav2-logo-img { height: 44px; }
   .nav2-logo-name { font-size: 1.5rem; }
 }
 
@@ -384,7 +384,7 @@ const NAV_CSS = `
 @media (min-width: 1536px) {
   .nav2-inner { max-width: 1440px; height: 74px; }
   .nav2-link { padding: 0 18px; font-size: 0.95rem; }
-  .nav2-logo-img { height: 48px; width: auto; }
+  .nav2-logo-img { height: 48px; }
   .nav2-logo-name { font-size: 1.6rem; }
 }
 
@@ -405,27 +405,22 @@ const NAV_CSS = `
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const menuRef = useRef(null);
   const burgerRef = useRef(null);
   const firstLinkRef = useRef(null);
 
+  useEffect(() => { setMounted(true); }, []);
+
   // Close on route change
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
-  // ── ACCESSIBILITY: manage focus and inert ──
-  // We use setAttribute/removeAttribute (not JSX props) to avoid React warnings.
-  // suppressHydrationWarning on the div handles the SSR/CSR mismatch.
+  // ── ACCESSIBILITY: focus management ──
   useEffect(() => {
-    const el = menuRef.current;
-    if (!el) return;
-    if (menuOpen) {
-      el.removeAttribute("inert");
-      // Delay focus so CSS transition has started
-      const t = setTimeout(() => firstLinkRef.current?.focus(), 50);
-      return () => clearTimeout(t);
-    } else {
-      el.setAttribute("inert", "");
-    }
+    if (!menuOpen) return;
+    // Delay focus so CSS transition has started
+    const t = setTimeout(() => firstLinkRef.current?.focus(), 50);
+    return () => clearTimeout(t);
   }, [menuOpen]);
 
   // Trap focus within menu when open & close on Escape
@@ -528,9 +523,8 @@ export default function Navbar() {
         </div>
 
         {/* ── MOBILE MENU ──
-            NO aria-hidden here — using `inert` attribute via useEffect instead.
-            This is the correct fix for "aria-hidden contains focusable descendants".
             `inert` removes elements from tab order, pointer events, AND AT simultaneously.
+            This is the correct fix for "aria-hidden contains focusable descendants".
         ── */}
         <div
           id="nav2-mobile-menu"
@@ -539,7 +533,7 @@ export default function Navbar() {
           role="dialog"
           aria-label="Navigation menu"
           aria-modal="false"
-          suppressHydrationWarning
+          inert={mounted && !menuOpen}
         >
           {/* Mobile auth */}
           <div className="nav2-mob-auth" role="group" aria-label="Account actions">

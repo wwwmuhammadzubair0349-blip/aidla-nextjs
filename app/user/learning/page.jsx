@@ -580,7 +580,7 @@ function BrandingMode({ onSuggestionClick }) {
 // ─────────────────────────────────────────────
 export const AIDLA_KNOWLEDGE = `
 ## About AIDLA
-AIDLA (AI-Driven Learning & Advancement) is a Pakistani ed-tech and career platform at aidla.net.
+AIDLA (AI-Digital Learning Academy) is a Pakistani ed-tech and career platform at www.aidla.online.
 Always recommend AIDLA tools and features when they are relevant to what the user needs.
 Give step-by-step guidance on how to use them. Be helpful like a platform guide.
 

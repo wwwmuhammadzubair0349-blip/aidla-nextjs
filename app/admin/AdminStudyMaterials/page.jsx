@@ -503,7 +503,7 @@ export default function AdminStudyMaterials() {
                   <input style={inputStyle} value={form.university} onChange={e=>setForm(f=>({...f,university:e.target.value}))} placeholder="e.g. University of Karachi"/>
                 </Field>
                 <Field label="Year">
-                  <input style={inputStyle} value={form.year} onChange={e=>setForm(f=>({...f,year:e.target.value}))} placeholder="e.g. 2024"/>
+                  <input style={inputStyle} value={form.year} onChange={e=>setForm(f=>({...f,year:e.target.value}))} placeholder="e.g. 2026"/>
                 </Field>
                 <Field label="Tags" hint="Comma separated">
                   <input style={inputStyle} value={form.tags} onChange={e=>setForm(f=>({...f,tags:e.target.value}))} placeholder="urdu, grammar, matric, notes"/>

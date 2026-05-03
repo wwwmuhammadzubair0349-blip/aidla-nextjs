@@ -127,7 +127,7 @@ const GLOBAL_SCHEMA = {
       "@id": `${SITE_URL}/#organization`,
       name: "AIDLA",
       alternateName: [
-        "AI-Driven Learning Academy",
+        "AI-Digital Learning Academy",
         "Artificial Intelligence Digital Learning Academy",
         "AIDLA Pakistan",
         "AIDLA Online",
@@ -147,7 +147,7 @@ const GLOBAL_SCHEMA = {
       description:
         "AIDLA is Pakistan's number one free education and rewards platform. Students take curriculum-aligned quizzes, earn AIDLA Coins, spin the lucky wheel, win real cash prizes and gadgets, and access thousands of free study materials — entirely free, no subscription required.",
       slogan: "Learn. Earn Coins. Redeem Rewards.",
-      foundingDate: "2024",
+      foundingDate: "2026",
       numberOfEmployees: { "@type": "QuantitativeValue", value: 10 },
       inLanguage: ["en", "ur"],
       // ── Local SEO / GEO ──
@@ -253,7 +253,7 @@ const GLOBAL_SCHEMA = {
         "Pakistan's free education and rewards platform. Complete quizzes, earn coins, win prizes.",
       publisher: { "@id": `${SITE_URL}/#organization` },
       inLanguage: ["en", "ur"],
-      copyrightYear: 2024,
+      copyrightYear: 2026,
       copyrightHolder: { "@id": `${SITE_URL}/#organization` },
       // ── Voice Search / Sitelinks SearchBox ──
       potentialAction: [
@@ -418,7 +418,7 @@ export default function RootLayout({ children }) {
         <meta name="ICBM" content="30.3753, 69.3451" />
 
         {/* ── EEAT / Authorship ── */}
-        <meta name="copyright" content="AIDLA 2024" />
+        <meta name="copyright" content="AIDLA 2026" />
 
         {/* ── AEO / LLMO — additional signals not in Next.js metadata API ── */}
         <meta name="subject" content="Free Online Education, Quizzes, Rewards, Pakistan Students" />

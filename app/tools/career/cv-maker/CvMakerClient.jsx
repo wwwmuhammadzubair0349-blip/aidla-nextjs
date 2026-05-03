@@ -1320,7 +1320,7 @@ Rules:
                               </Field>
                               <Field label="Tech / Year" id={`${bid}-tech`}>
                                 <input id={`${bid}-tech`} className="cv-inp" value={L.tech}
-                                  placeholder="React, Python · 2024" onChange={e => upd("tech", e.target.value)} />
+                                  placeholder="React, Python · 2026" onChange={e => upd("tech", e.target.value)} />
                               </Field>
                               <Field label="URL" id={`${bid}-url`}>
                                 <input id={`${bid}-url`} className="cv-inp" value={L.url}
@@ -1374,7 +1374,7 @@ Rules:
                               </Field>
                               <Field label="Year" id={`${bid}-year`}>
                                 <input id={`${bid}-year`} className="cv-inp" value={L.year}
-                                  placeholder="2024" onChange={e => upd("year", e.target.value)} />
+                                  placeholder="2026" onChange={e => upd("year", e.target.value)} />
                               </Field>
                               <Field label="Expiry" id={`${bid}-expiry`}>
                                 <input id={`${bid}-expiry`} className="cv-inp" value={L.expiry}
@@ -1493,7 +1493,7 @@ Rules:
                               </Field>
                               <Field label="Year" id={`${bid}-year`}>
                                 <input id={`${bid}-year`} className="cv-inp" value={L.year}
-                                  placeholder="2024" onChange={e => upd("year", e.target.value)} />
+                                  placeholder="2026" onChange={e => upd("year", e.target.value)} />
                               </Field>
                             </div>
                             <div className="cv-field" style={{ marginTop: 8 }}>

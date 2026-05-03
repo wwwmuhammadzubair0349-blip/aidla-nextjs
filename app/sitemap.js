@@ -158,19 +158,19 @@ export default async function sitemap() {
       url: `${base}/contact`,
       priority: 0.6,
       changefreq: "monthly",
-      lastModified: new Date("2024-01-01"),
+      lastModified: new Date("2026-01-01"),
     },
     {
       url: `${base}/privacy-policy`,
       priority: 0.3,
       changefreq: "yearly",
-      lastModified: new Date("2024-01-01"),
+      lastModified: new Date("2026-01-01"),
     },
     {
       url: `${base}/terms`,
       priority: 0.3,
       changefreq: "yearly",
-      lastModified: new Date("2024-01-01"),
+      lastModified: new Date("2026-01-01"),
     },
   ];
 

@@ -91,7 +91,7 @@ const organizationSchema = {
     "width": 200,
     "height": 60,
   },
-  "foundingDate": "2024",
+  "foundingDate": "2026",
   "areaServed": { "@type": "Country", "name": "Pakistan" },
   "sameAs": [
     "https://www.facebook.com/aidlaonline",

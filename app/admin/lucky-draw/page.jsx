@@ -678,7 +678,7 @@ export default function AdminLuckyDraw() {
                       }}
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      placeholder="e.g., Summer Grand Draw 2024"
+                      placeholder="e.g., Summer Grand Draw 2026"
                     />
                     {validationErrors.title && (
                       <p style={{ color: "#ef4444", fontSize: "0.85rem", marginTop: 5 }}>{validationErrors.title}</p>

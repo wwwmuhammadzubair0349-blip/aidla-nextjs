@@ -293,10 +293,10 @@ export default function AutoBlogTab({ onEditPost }) {
       supabase.from("auto_blog_settings").select("*").eq("id", 1).maybeSingle(),
       supabase.from("blogs_posts")
         .select("id,title,slug,status,cover_image_url,published_at,scheduled_at,created_at,word_count,reading_time,topic_cluster")
-        .eq("author_name", "AIDLA Editorial Team").is("deleted_at", null)
+        .eq("author_name", "Engr-Muhammad Zubair").is("deleted_at", null)
         .order("created_at", { ascending: false }).limit(10),
       supabase.from("blogs_posts").select("*", { count: "exact", head: true })
-        .eq("author_name", "AIDLA Editorial Team").is("deleted_at", null),
+        .eq("author_name", "Engr-Muhammad Zubair").is("deleted_at", null),
     ]);
     if (sd) setSettings(sd);
     if (pd) setRecentPosts(pd);
@@ -353,7 +353,7 @@ export default function AutoBlogTab({ onEditPost }) {
       try {
         const { count } = await supabase.from("blogs_posts")
           .select("*", { count: "exact", head: true })
-          .eq("author_name", "AIDLA Editorial Team")
+          .eq("author_name", "Engr-Muhammad Zubair")
           .is("deleted_at", null);
 
         if ((count || 0) > pollStartCount.current) {
@@ -417,7 +417,7 @@ export default function AutoBlogTab({ onEditPost }) {
     // Snapshot current post count so polling knows when a new one appears
     const { count: currentCount } = await supabase.from("blogs_posts")
       .select("*", { count: "exact", head: true })
-      .eq("author_name", "AIDLA Editorial Team").is("deleted_at", null);
+      .eq("author_name", "Engr-Muhammad Zubair").is("deleted_at", null);
 
     try {
       const res  = await fetch(FUNCTION_URL, {
@@ -503,7 +503,7 @@ export default function AutoBlogTab({ onEditPost }) {
         <StatCard icon="📝" label="Total AI Posts" value={totalAutoPosts}  color="#1a3a8f" />
         <StatCard icon="🕐" label="Scheduled"      value={scheduledCount}  color="#d97706" />
         <StatCard icon="✅" label="Published"      value={publishedCount}  color="#059669" />
-        <StatCard icon="📊" label="Avg Words"      value={avgWords > 0 ? `${(avgWords / 1000).toFixed(1)}k` : "—"} sub="target: 1.8k+" color="#7c3aed" />
+        <StatCard icon="📊" label="Avg Words"      value={avgWords > 0 ? `${(avgWords / 1000).toFixed(1)}k` : "—"} sub="target: 2.5k+" color="#7c3aed" />
       </div>
 
       {/* Manual Generate */}

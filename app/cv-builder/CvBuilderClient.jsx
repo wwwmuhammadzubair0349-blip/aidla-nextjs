@@ -548,7 +548,7 @@ function CertShell({ item, onUpdate, onRemove }) {
             onChange={e => upd("issuer", e.target.value)} />
         </div>
         <div className="wzr-field">
-          <input className="wzr-inp" value={L.year} placeholder="Year (e.g. 2024)"
+          <input className="wzr-inp" value={L.year} placeholder="Year (e.g. 2026)"
             onChange={e => upd("year", e.target.value)} />
         </div>
       </div>

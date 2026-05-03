@@ -25,7 +25,7 @@ export const metadata = {
     "student prizes", "study online Pakistan", "AIDLA coins", "free education app",
     "gamified learning", "Pakistan curriculum quizzes",
   ],
-  authors: [{ name: "AIDLA Editorial Team", url: SITE_URL }],
+  authors: [{ name: "Engr-Muhammad Zubair", url: SITE_URL }],
   creator: "AIDLA",
   publisher: "AIDLA",
   robots: {
@@ -98,12 +98,12 @@ const JSON_LD = {
       publisher: { "@id": `${SITE_URL}/#organization` },
       inLanguage: "en",
       dateModified: LAST_MODIFIED,
-      datePublished: "2024-01-01",
+      datePublished: "2026-04-01",
       // EEAT: author/reviewer
       author: {
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
-        name: "AIDLA Editorial Team",
+        name: "Engr-Muhammad Zubair",
       },
       // Featured Snippet / Zero-Click optimization
       speakable: {

@@ -1064,7 +1064,7 @@ export default function CoverLetterClient() {
                 </div>
                 <div style={{ marginTop:10 }}>
                   <AIField label="Reference / Subject" fieldKey="reference" value={data.reference}
-                    onChange={v=>update({reference:v})} placeholder="e.g. Application for Senior Developer – REF-2024"
+                    onChange={v=>update({reference:v})} placeholder="e.g. Application for Senior Developer – REF-2026"
                     fieldAI={fieldAI} onAIWrite={handleFieldAI} onRevert={handleFieldRevert}
                     isTextarea={false} maxLength={100} />
                 </div>

@@ -34,7 +34,7 @@ export const metadata = {
 };
 
 export default async function ResourcesPage({ searchParams }) {
-  // ✅ FIXED: Safely handle searchParams — can be undefined when bots hit /resources directly
+  // Safely handle searchParams
   let q = "";
   let category = "";
   let subject = "";
@@ -43,8 +43,8 @@ export default async function ResourcesPage({ searchParams }) {
   let year = "";
   let page = 1;
   
-  try {
-    const params = searchParams ? await searchParams : {};
+  if (searchParams) {
+    const params = await searchParams;
     q = params?.q || "";
     category = params?.category || "";
     subject = params?.subject || "";
@@ -52,12 +52,8 @@ export default async function ResourcesPage({ searchParams }) {
     class_level = params?.class || "";
     year = params?.year || "";
     page = parseInt(params?.page) || 1;
-  } catch (e) {
-    // If searchParams fails, use defaults — don't block the page
-    console.warn("Failed to parse searchParams:", e);
   }
 
-  // 2. Fetch Data ON THE SERVER for 100% AI Readability
   const [{ data: materialsData }, { data: optionsData }] = await Promise.all([
     serverRpc("study_materials_public_list", {
       p_search: q || null,
@@ -76,7 +72,6 @@ export default async function ResourcesPage({ searchParams }) {
   const initialTotal = materialsData?.[0]?.total_count || 0;
   const initialOptions = optionsData || { subjects: [], universities:[], classes: [], years:[] };
 
-  // 3. Dynamic Schema for SEO/Bots based on current category
   const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",

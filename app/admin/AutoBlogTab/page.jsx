@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
 const FUNCTION_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/auto-blog`;
-const CRON_SECRET  = process.env.NEXT_PUBLIC_AUTO_BLOG_SECRET || "change_me_secret";
+const CRON_SECRET  = process.env.NEXT_PUBLIC_AUTO_BLOG_SECRET || "aidla_auto_blog_2025";
 
 function formatRelativeTime(iso) {
   if (!iso) return "Never";

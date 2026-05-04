@@ -814,7 +814,7 @@ const suggestCoverImage = async (forceRefresh = false) => {
   setSuggestedImages([]);
   try {
     const FUNCTION_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/auto-blog`;
-    const CRON_SECRET  = process.env.NEXT_PUBLIC_AUTO_BLOG_SECRET || "change_me_secret";
+    const CRON_SECRET  = process.env.NEXT_PUBLIC_AUTO_BLOG_SECRET || "aidla_auto_blog_2025";
 
     // Add a cache-busting timestamp to force fresh API calls
     const response = await fetch(FUNCTION_URL, {

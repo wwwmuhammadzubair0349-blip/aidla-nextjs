@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { supabase } from "@/lib/supabase";
+import GoogleSearchHero from "@/components/GoogleSearchHero";
+import QuotesCarousel from "@/components/QuotesCarousel";
+import ContentCarousel from "@/components/ContentCarousel";
 import styles from "./home.module.css";
 
 const SITE_URL = "https://www.aidla.online";
@@ -75,270 +78,6 @@ export const metadata = {
   },
 };
 
-// ──────────────────────────────────────────────────────────────────────
-// COMPREHENSIVE PAGE-LEVEL JSON-LD
-// Covers: Schema Markup, Featured Snippets, Zero-Click, AEO,
-//         Voice Search (VSO), Knowledge Graph, Topical Authority,
-//         Entity SEO, Local SEO, EEAT, HowTo, FAQPage, Review
-// ──────────────────────────────────────────────────────────────────────
-const JSON_LD = {
-  "@context": "https://schema.org",
-  "@graph": [
-    // ── WebPage ──
-    {
-      "@type": "WebPage",
-      "@id": `${SITE_URL}/#webpage`,
-      url: SITE_URL,
-      name: "AIDLA — Free Learning, Earn Coins & Win Prizes | Pakistan's #1 Education Platform",
-      headline: "AIDLA — Pakistan's #1 Free Education Platform",
-      description:
-        "AIDLA is Pakistan's number one free education platform. Take quizzes, earn AIDLA Coins, spin the lucky wheel, win real prizes, and access free learning resources.",
-      isPartOf: { "@id": `${SITE_URL}/#website` },
-      about: { "@id": `${SITE_URL}/#organization` },
-      publisher: { "@id": `${SITE_URL}/#organization` },
-      inLanguage: "en",
-      dateModified: LAST_MODIFIED,
-      datePublished: "2026-04-01",
-      // EEAT: author/reviewer
-      author: {
-        "@type": "Organization",
-        "@id": `${SITE_URL}/#organization`,
-        name: "Engr-Muhammad Zubair",
-        url: SITE_URL,
-      },
-      // Featured Snippet / Zero-Click optimization
-      speakable: {
-        "@type": "SpeakableSpecification",
-        xpath: [
-          "/html/head/title",
-          "/html/head/meta[@name='description']/@content",
-        ],
-      },
-      breadcrumb: {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        ],
-      },
-      // Sitelinks / VSO
-      potentialAction: {
-        "@type": "ReadAction",
-        target: [SITE_URL],
-      },
-      // Core Web Vitals hint
-      mainContentOfPage: {
-        "@type": "WebPageElement",
-        cssSelector: "#main-content",
-      },
-    },
-
-    // ── HowTo — "How to Earn on AIDLA" (Featured Snippet target) ──
-    {
-      "@type": "HowTo",
-      "@id": `${SITE_URL}/#howto`,
-      name: "How to Earn Coins and Win Prizes on AIDLA",
-      description:
-        "Four simple steps to start learning and earning real rewards on AIDLA, Pakistan's number one free education platform.",
-      totalTime: "PT2M",
-      estimatedCost: {
-        "@type": "MonetaryAmount",
-        currency: "PKR",
-        value: "0",
-      },
-      supply: [
-        {
-          "@type": "HowToSupply",
-          name: "Email address",
-        },
-      ],
-      tool: [
-        {
-          "@type": "HowToTool",
-          name: "AIDLA website or app",
-        },
-      ],
-      step: [
-        {
-          "@type": "HowToStep",
-          position: 1,
-          name: "Sign Up Free",
-          text: "Create your AIDLA account in under 30 seconds — no payment required, no subscription needed.",
-          url: `${SITE_URL}/signup`,
-          image: `${SITE_URL}/og-home.jpg`,
-        },
-        {
-          "@type": "HowToStep",
-          position: 2,
-          name: "Learn and Play",
-          text: "Take curriculum-aligned quizzes, enter lucky draws, and spin the lucky wheel daily.",
-          url: `${SITE_URL}/courses`,
-        },
-        {
-          "@type": "HowToStep",
-          position: 3,
-          name: "Earn AIDLA Coins",
-          text: "Collect AIDLA Coins for every quiz completed, draw entered, and achievement unlocked.",
-          url: `${SITE_URL}/leaderboard`,
-        },
-        {
-          "@type": "HowToStep",
-          position: 4,
-          name: "Cash Out or Redeem",
-          text: "Redeem your coins for gadgets and gift cards in the Rewards Shop, or withdraw directly to your bank account.",
-          url: `${SITE_URL}/signup`,
-        },
-      ],
-    },
-
-    // ── FAQPage — Covers AEO + Voice Search + Zero-Click ──
-    {
-      "@type": "FAQPage",
-      "@id": `${SITE_URL}/#faqpage`,
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: "Is AIDLA free to use?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. AIDLA is completely free — no subscription, no hidden fees, no payment required. Sign up and start learning instantly.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How do I earn coins on AIDLA?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "You earn AIDLA Coins by completing quizzes, entering lucky draws, spinning the lucky wheel daily, and referring friends to the platform.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Can I withdraw my AIDLA coins as cash?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. AIDLA Coins can be redeemed for prizes in the Rewards Shop or withdrawn directly to your bank account once you reach the minimum withdrawal threshold.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "What subjects does AIDLA cover?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "AIDLA covers Pakistan curriculum subjects including Mathematics, English, Urdu, Pakistan Studies, Science, and more for Matric and Intermediate students.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "How does the lucky draw work on AIDLA?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "You use AIDLA Coins to enter lucky draw competitions. Winners are selected fairly and announced publicly. Prizes include cash, gadgets, and gift cards.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Is AIDLA available in Urdu?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. AIDLA supports both English and Urdu languages to serve all students across Pakistan.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "What is AIDLA?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "AIDLA stands for Artificial Intelligence Digital Learning Academy. It is Pakistan's number one free online education and rewards platform where students earn coins by learning and can win real prizes.",
-          },
-        },
-      ],
-    },
-
-    // ── ItemList — Features (Topical Authority + Entity SEO) ──
-    {
-      "@type": "ItemList",
-      "@id": `${SITE_URL}/#features`,
-      name: "AIDLA Platform Features",
-      description: "Complete list of features available on AIDLA, Pakistan's free education and rewards platform",
-      numberOfItems: 7,
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Smart Quizzes",
-          description: "Curriculum-aligned tests designed to maximise learning outcomes for Pakistan students",
-          url: `${SITE_URL}/courses`,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: "Lucky Draws",
-          description: "Enter exclusive prize draws with AIDLA coins and win weekly prizes",
-          url: `${SITE_URL}/signup`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: "Lucky Wheel",
-          description: "Spin the lucky wheel daily for bonus coins, gifts, and extra draw entries",
-          url: `${SITE_URL}/signup`,
-        },
-        {
-          "@type": "ListItem",
-          position: 4,
-          name: "Rewards Shop",
-          description: "Redeem AIDLA coins for gadgets, gift cards and vouchers",
-          url: `${SITE_URL}/signup`,
-        },
-        {
-          "@type": "ListItem",
-          position: 5,
-          name: "Cash Withdrawals",
-          description: "Transfer your AIDLA coin balance directly to your bank account",
-          url: `${SITE_URL}/signup`,
-        },
-        {
-          "@type": "ListItem",
-          position: 6,
-          name: "Leaderboards",
-          description: "Compete with thousands of students and climb the global rankings",
-          url: `${SITE_URL}/leaderboard`,
-        },
-        {
-          "@type": "ListItem",
-          position: 7,
-          name: "Education News",
-          description: "Stay updated with the latest Pakistan education news and announcements daily",
-          url: `${SITE_URL}/news`,
-        },
-      ],
-    },
-
-    // ── Event / Promotion (CRO + SERP rich results) ──
-    {
-      "@type": "Event",
-      "@id": `${SITE_URL}/#lucky-draw`,
-      name: "AIDLA Weekly Lucky Draw",
-      description: "Weekly lucky draw for AIDLA members. Enter using coins and win real cash and prizes.",
-      eventStatus: "https://schema.org/EventScheduled",
-      eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
-      organizer: { "@id": `${SITE_URL}/#organization` },
-      location: {
-        "@type": "VirtualLocation",
-        url: SITE_URL,
-      },
-      isAccessibleForFree: true,
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "PKR",
-        availability: "https://schema.org/InStock",
-        url: `${SITE_URL}/signup`,
-      },
-    },
-  ],
-};
-
 // ── Utility functions ──
 function formatDate(iso) {
   if (!iso) return "—";
@@ -353,56 +92,6 @@ function maskName(name) {
   if (!name) return "A";
   return name.trim().split(" ")[0];
 }
-
-const QUOTES = [
-  {
-    text: "طَلَبُ الْعِلْمِ فَرِيضَةٌ عَلَى كُلِّ مُسْلِمٍ",
-    translation: "Seeking knowledge is an obligation upon every Muslim.",
-    source: "Prophet Muhammad ﷺ (Ibn Majah)",
-    lang: "ar",
-    theme: styles.quoteTheme1,
-  },
-  {
-    text: "خِيرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ",
-    translation: "The best of people are those most beneficial to others.",
-    source: "Prophet Muhammad ﷺ",
-    lang: "ar",
-    theme: styles.quoteTheme2,
-  },
-  {
-    text: "Education is the most powerful weapon which you can use to change the world.",
-    source: "Nelson Mandela",
-    lang: "en",
-    theme: styles.quoteTheme3,
-  },
-  {
-    text: "علم کی شمع جلاؤ، جہالت کا اندھیرا مٹاؤ",
-    translation: "Light the candle of knowledge, erase the darkness of ignorance.",
-    source: "Allama Iqbal",
-    lang: "ur",
-    theme: styles.quoteTheme4,
-  },
-  {
-    text: "خود کو کر بلند اتنا کہ ہر تقدیر سے پہلے\nخدا بندے سے خود پوچھے — بتا تیری رضا کیا ہے",
-    translation: "Raise yourself so high that before every decree, God Himself asks: what is your desire?",
-    source: "Allama Iqbal",
-    lang: "ur",
-    theme: styles.quoteTheme5,
-  },
-  {
-    text: "The ink of the scholar is more sacred than the blood of the martyr.",
-    source: "Prophet Muhammad ﷺ",
-    lang: "en",
-    theme: styles.quoteTheme6,
-  },
-  {
-    text: "وَمَن يُؤْتَ الْحِكْمَةَ فَقَدْ أُوتِيَ خَيْرًا كَثِيرًا",
-    translation: "Whoever is given wisdom has been given much good.",
-    source: "Quran 2:269",
-    lang: "ar",
-    theme: styles.quoteTheme7,
-  },
-];
 
 const STATUS_META = {
   voting:   { cls: styles.sbVoting,   label: "Voting Open" },
@@ -458,6 +147,121 @@ export default async function Home() {
   const wheel = wheelRaw?.map(w => ({ ...w, user_name: userMap[w.user_id] || "Anonymous" })) || [];
   const maxVotes = Math.max(...(announcements?.map(i => i.vote_count || 0) || [1]), 1);
 
+  // ── Dynamic JSON-LD (built from live Supabase data) ──
+  const JSON_LD = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${SITE_URL}/#webpage`,
+        url: SITE_URL,
+        name: "AIDLA — Free Learning, Earn Coins & Win Prizes | Pakistan's #1 Education Platform",
+        headline: "AIDLA — Pakistan's #1 Free Education Platform",
+        description:
+          "AIDLA is Pakistan's number one free education platform. Take quizzes, earn AIDLA Coins, spin the lucky wheel, win real prizes, and access free learning resources.",
+        isPartOf: { "@id": `${SITE_URL}/#website` },
+        about: { "@id": `${SITE_URL}/#organization` },
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        inLanguage: "en",
+        dateModified: LAST_MODIFIED,
+        datePublished: "2026-04-01",
+        author: {
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          name: "Engr-Muhammad Zubair",
+          url: SITE_URL,
+        },
+        speakable: {
+          "@type": "SpeakableSpecification",
+          xpath: [
+            "/html/head/title",
+            "/html/head/meta[@name='description']/@content",
+          ],
+        },
+        breadcrumb: {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          ],
+        },
+        potentialAction: { "@type": "ReadAction", target: [SITE_URL] },
+        mainContentOfPage: { "@type": "WebPageElement", cssSelector: "#main-content" },
+      },
+      {
+        "@type": "HowTo",
+        "@id": `${SITE_URL}/#howto`,
+        name: "How to Earn Coins and Win Prizes on AIDLA",
+        description:
+          "Four simple steps to start learning and earning real rewards on AIDLA, Pakistan's number one free education platform.",
+        totalTime: "PT2M",
+        estimatedCost: { "@type": "MonetaryAmount", currency: "PKR", value: "0" },
+        supply: [{ "@type": "HowToSupply", name: "Email address" }],
+        tool: [{ "@type": "HowToTool", name: "AIDLA website or app" }],
+        step: [
+          { "@type": "HowToStep", position: 1, name: "Sign Up Free",
+            text: "Create your AIDLA account in under 30 seconds — no payment required, no subscription needed.",
+            url: `${SITE_URL}/signup`, image: `${SITE_URL}/og-home.jpg` },
+          { "@type": "HowToStep", position: 2, name: "Learn and Play",
+            text: "Take curriculum-aligned quizzes, enter lucky draws, and spin the lucky wheel daily.",
+            url: `${SITE_URL}/courses` },
+          { "@type": "HowToStep", position: 3, name: "Earn AIDLA Coins",
+            text: "Collect AIDLA Coins for every quiz completed, draw entered, and achievement unlocked.",
+            url: `${SITE_URL}/leaderboard` },
+          { "@type": "HowToStep", position: 4, name: "Cash Out or Redeem",
+            text: "Redeem your coins for gadgets and gift cards in the Rewards Shop, or withdraw directly to your bank account.",
+            url: `${SITE_URL}/signup` },
+        ],
+      },
+      // FAQPage — built from live Supabase data for AEO, featured snippets, Voice Search
+      ...(faqs && faqs.length > 0 ? [{
+        "@type": "FAQPage",
+        "@id": `${SITE_URL}/#faqpage`,
+        mainEntity: faqs.map(f => ({
+          "@type": "Question",
+          name: f.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: (f.answer || "").replace(/<[^>]*>/g, "").trim(),
+          },
+        })),
+      }] : []),
+      {
+        "@type": "ItemList",
+        "@id": `${SITE_URL}/#features`,
+        name: "AIDLA Platform Features",
+        description: "Complete list of features available on AIDLA, Pakistan's free education and rewards platform",
+        numberOfItems: 7,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Smart Quizzes", url: `${SITE_URL}/courses` },
+          { "@type": "ListItem", position: 2, name: "Lucky Draws",   url: `${SITE_URL}/signup` },
+          { "@type": "ListItem", position: 3, name: "Lucky Wheel",   url: `${SITE_URL}/signup` },
+          { "@type": "ListItem", position: 4, name: "Rewards Shop",  url: `${SITE_URL}/signup` },
+          { "@type": "ListItem", position: 5, name: "Cash Withdrawals", url: `${SITE_URL}/signup` },
+          { "@type": "ListItem", position: 6, name: "Leaderboards", url: `${SITE_URL}/leaderboard` },
+          { "@type": "ListItem", position: 7, name: "Education News", url: `${SITE_URL}/news` },
+        ],
+      },
+      {
+        "@type": "Event",
+        "@id": `${SITE_URL}/#lucky-draw`,
+        name: "AIDLA Weekly Lucky Draw",
+        description: "Weekly lucky draw for AIDLA members. Enter using coins and win real cash and prizes.",
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OnlineEventAttendanceMode",
+        organizer: { "@id": `${SITE_URL}/#organization` },
+        location: { "@type": "VirtualLocation", url: SITE_URL },
+        isAccessibleForFree: true,
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "PKR",
+          availability: "https://schema.org/InStock",
+          url: `${SITE_URL}/signup`,
+        },
+      },
+    ],
+  };
+
   // Server Actions
   async function submitVote(formData) {
     "use server";
@@ -489,9 +293,9 @@ export default async function Home() {
   async function submitReview(formData) {
     "use server";
     if (formData.get("honey")) return;
-    const full_name = formData.get("name")?.toString().trim();
-    const email = formData.get("email")?.toString().trim().toLowerCase();
-    const rating = parseInt(formData.get("rating")?.toString() || "5", 10);
+    const full_name  = formData.get("name")?.toString().trim();
+    const email      = formData.get("email")?.toString().trim().toLowerCase();
+    const rating     = parseInt(formData.get("rating")?.toString() || "5", 10);
     const review_text = formData.get("review")?.toString().trim();
     if (full_name && email && review_text) {
       await supabase.from("user_reviews").insert({ full_name, email, rating, review_text, is_approved: false });
@@ -502,7 +306,7 @@ export default async function Home() {
 
   return (
     <div className={styles.pageRoot}>
-      {/* ── Page-level JSON-LD ── */}
+      {/* ── Page-level JSON-LD (dynamic — uses live Supabase FAQ data) ── */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
@@ -525,7 +329,6 @@ export default async function Home() {
 
           <div className={styles.heroInner}>
             <div className={styles.heroText}>
-              {/* Badge */}
               <span
                 className={styles.coinBadge}
                 aria-label="AIDLA Coins — earn by learning and win real prizes"
@@ -533,7 +336,6 @@ export default async function Home() {
                 🪙 AIDLA Coins — Learn &amp; Earn
               </span>
 
-              {/* H1 — Primary keyword target */}
               <div className={styles.heroH1Wrap}>
                 <h1 id="hero-heading" className={styles.heroH1}>
                   Learn.{" "}
@@ -542,7 +344,6 @@ export default async function Home() {
                 </h1>
               </div>
 
-              {/* Hero paragraph — semantic density for AEO */}
               <p className={styles.heroPara}>
                 Pakistan&apos;s number one free education platform.
                 Complete quizzes, spin the lucky wheel, and win real prizes.
@@ -550,17 +351,14 @@ export default async function Home() {
               </p>
 
               <div className={styles.heroBtns}>
-                {/* ✅ CRO: Primary CTA */}
                 <Link href="/signup" className={styles.btnPrimary}>
                   🚀 Start Free — No Sign-up Fee
                 </Link>
-                {/* ✅ SEO FIX: Descriptive link text (was "Learn More" — flagged by Lighthouse) */}
                 <Link href="/about" className={styles.btnSecondary}>
                   Learn More About AIDLA
                 </Link>
               </div>
 
-              {/* Trust strip — EEAT signals */}
               <div className={styles.trustStrip} aria-label="Trust indicators">
                 <span>✅ Free to Join</span>
                 <span>🏆 Daily Prizes</span>
@@ -568,28 +366,13 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Stats grid — social proof for CRO */}
+            {/* Google Search Hero Animation — demonstrates AIDLA ranking #1 */}
             <div
               className={styles.heroVisual}
-              aria-label="AIDLA platform statistics"
-              role="group"
+              aria-label="AIDLA Google search results demonstration"
+              role="img"
             >
-              <div className={styles.heroStatCard} aria-label="50,000 plus active learners">
-                <div className={styles.heroStatVal} aria-hidden="true">50K+</div>
-                <div className={styles.heroStatLbl}>Active Learners</div>
-              </div>
-              <div className={`${styles.heroStatCard} ${styles.heroStatCardGold}`} aria-label="2 million plus coins earned">
-                <div className={styles.heroStatVal} aria-hidden="true">₨2M+</div>
-                <div className={styles.heroStatLbl}>Coins Earned</div>
-              </div>
-              <div className={styles.heroStatCard} aria-label="1,200 plus prizes claimed">
-                <div className={styles.heroStatVal} aria-hidden="true">1,200+</div>
-                <div className={styles.heroStatLbl}>Prizes Claimed</div>
-              </div>
-              <div className={`${styles.heroStatCard} ${styles.heroStatCardSky}`} aria-label="500 plus daily quizzes">
-                <div className={styles.heroStatVal} aria-hidden="true">500+</div>
-                <div className={styles.heroStatLbl}>Daily Quizzes</div>
-              </div>
+              <GoogleSearchHero />
             </div>
           </div>
         </section>
@@ -619,64 +402,16 @@ export default async function Home() {
           className={styles.sectionWrap}
           aria-labelledby="quotes-heading"
         >
-          <h2 className={styles.sectionHeading} id="quotes-heading">Words of Wisdom</h2>
+          <h2 className={styles.sectionHeading} id="quotes-heading">
+            Words of Wisdom
+          </h2>
           <p className={styles.sectionSub}>
             Inspired by the Quran, Hadith, and great thinkers across languages
           </p>
-
-          <div
-            className={styles.qsOuter}
-            role="region"
-            aria-label="Inspirational quotes carousel — scroll to see more"
-          >
-            <div
-              className={styles.nativeScrollContainer}
-              role="list"
-            >
-              {QUOTES.map((q, i) => (
-                <article
-                  key={i}
-                  className={`${styles.qsSlide} ${q.theme} ${styles.scrollItem}`}
-                  role="listitem"
-                  aria-label={`Quote ${i + 1} of ${QUOTES.length}: ${q.source}`}
-                  itemScope
-                  itemType="https://schema.org/Quotation"
-                >
-                  <div className={styles.qsDeco} aria-hidden="true">
-                    <div className={`${styles.qsDecoCircle} ${styles.qsDecoCircle1}`} />
-                    <div className={`${styles.qsDecoCircle} ${styles.qsDecoCircle2}`} />
-                    <div className={styles.qsDecoLine} />
-                  </div>
-                  <div className={styles.qsContent}>
-                    <blockquote
-                      className={`${styles.qsText} ${
-                        q.lang === "en" ? styles.qsTextEn : styles.qsTextArUr
-                      }`}
-                      lang={q.lang}
-                      itemProp="text"
-                    >
-                      {q.text}
-                    </blockquote>
-                    {q.translation && (
-                      <p className={styles.qsTranslation} lang="en">
-                        {q.translation}
-                      </p>
-                    )}
-                    <cite
-                      className={styles.qsSource}
-                      itemProp="spokenByCharacter"
-                    >
-                      {q.source}
-                    </cite>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
+          <QuotesCarousel />
         </section>
 
         {/* ════════════════ HOW IT WORKS ════════════════ */}
-        {/* This section is targeted for HowTo rich results + Voice Search */}
         <section
           className={styles.sectionWrap}
           aria-labelledby="how-heading"
@@ -693,31 +428,12 @@ export default async function Home() {
           <p className={styles.sectionSub} itemProp="description">
             Four simple steps from sign-up to cash in hand
           </p>
-          <ol
-            className={styles.stepsRow}
-            aria-label="Steps to earn on AIDLA"
-          >
+          <ol className={styles.stepsRow} aria-label="Steps to earn on AIDLA">
             {[
-              {
-                icon: "📝",
-                title: "Sign Up Free",
-                desc: "Create your account in under 30 seconds — no payment needed.",
-              },
-              {
-                icon: "📚",
-                title: "Learn & Play",
-                desc: "Take quizzes, enter draws, spin the lucky wheel.",
-              },
-              {
-                icon: "🪙",
-                title: "Earn Coins",
-                desc: "Collect AIDLA Coins for every quiz, draw, and achievement.",
-              },
-              {
-                icon: "💵",
-                title: "Cash Out",
-                desc: "Redeem rewards or withdraw directly to your bank.",
-              },
+              { icon: "📝", title: "Sign Up Free",  desc: "Create your account in under 30 seconds — no payment needed." },
+              { icon: "📚", title: "Learn & Play",  desc: "Take quizzes, enter draws, spin the lucky wheel." },
+              { icon: "🪙", title: "Earn Coins",    desc: "Collect AIDLA Coins for every quiz, draw, and achievement." },
+              { icon: "💵", title: "Cash Out",      desc: "Redeem rewards or withdraw directly to your bank." },
             ].map((step, i) => (
               <li
                 key={i}
@@ -726,15 +442,9 @@ export default async function Home() {
                 itemType="https://schema.org/HowToStep"
                 itemProp="step"
               >
-                <div className={styles.stepCircle} aria-hidden="true">
-                  {step.icon}
-                </div>
-                <strong className={styles.stepTitle} itemProp="name">
-                  {step.title}
-                </strong>
-                <p className={styles.stepDesc} itemProp="text">
-                  {step.desc}
-                </p>
+                <div className={styles.stepCircle} aria-hidden="true">{step.icon}</div>
+                <strong className={styles.stepTitle} itemProp="name">{step.title}</strong>
+                <p className={styles.stepDesc} itemProp="text">{step.desc}</p>
               </li>
             ))}
           </ol>
@@ -753,55 +463,13 @@ export default async function Home() {
           </p>
           <div className={styles.featuresGrid} role="list">
             {[
-              {
-                icon: "📚",
-                color: styles.featBlue,
-                label: "Smart Quizzes",
-                desc: "Curriculum-aligned tests designed to maximise learning outcomes.",
-                href: "/courses",
-              },
-              {
-                icon: "🎲",
-                color: styles.featAmber,
-                label: "Lucky Draws",
-                desc: "Enter exclusive prize draws with your coins and win weekly.",
-                href: "/",
-              },
-              {
-                icon: "🎡",
-                color: styles.featGreen,
-                label: "Lucky Wheel",
-                desc: "Spin daily for bonus coins, gifts, and extra draw chances.",
-                href: "/",
-              },
-              {
-                icon: "🛍️",
-                color: styles.featPurple,
-                label: "Rewards Shop",
-                desc: "Redeem coins for gadgets, gift cards and vouchers.",
-                href: "/",
-              },
-              {
-                icon: "💵",
-                color: styles.featRed,
-                label: "Cash Withdrawals",
-                desc: "Transfer your coin balance directly to your bank account.",
-                href: "/",
-              },
-              {
-                icon: "📊",
-                color: styles.featSky,
-                label: "Leaderboards",
-                desc: "Compete with thousands and climb the global rankings.",
-                href: "/leaderboard",
-              },
-              {
-                icon: "📰",
-                color: styles.featPink,
-                label: "Education News",
-                desc: "Stay updated with latest Pakistan education news daily.",
-                href: "/news",
-              },
+              { icon: "📚", color: styles.featBlue,   label: "Smart Quizzes",    desc: "Curriculum-aligned tests designed to maximise learning outcomes.", href: "/courses" },
+              { icon: "🎲", color: styles.featAmber,  label: "Lucky Draws",      desc: "Enter exclusive prize draws with your coins and win weekly.", href: "/" },
+              { icon: "🎡", color: styles.featGreen,  label: "Lucky Wheel",      desc: "Spin daily for bonus coins, gifts, and extra draw chances.", href: "/" },
+              { icon: "🛍️", color: styles.featPurple, label: "Rewards Shop",     desc: "Redeem coins for gadgets, gift cards and vouchers.", href: "/" },
+              { icon: "💵", color: styles.featRed,    label: "Cash Withdrawals", desc: "Transfer your coin balance directly to your bank account.", href: "/" },
+              { icon: "📊", color: styles.featSky,    label: "Leaderboards",     desc: "Compete with thousands and climb the global rankings.", href: "/leaderboard" },
+              { icon: "📰", color: styles.featPink,   label: "Education News",   desc: "Stay updated with latest Pakistan education news daily.", href: "/news" },
             ].map((f, i) => (
               <article
                 key={i}
@@ -824,55 +492,19 @@ export default async function Home() {
           aria-labelledby="blogs-heading"
         >
           <h2 className={styles.sectionHeading} id="blogs-heading">
-            📝 Latest Blogs
+            <span className={styles.headingIcon} aria-hidden="true">📝</span>
+            Latest Blogs
           </h2>
           <p className={styles.sectionSub}>
             Expert education insights, study tips, and guides for Pakistani students
           </p>
 
-          <div className={styles.csWrap}>
-            <div className={styles.nativeScrollContainer} role="list">
-              {blogs?.map((item) => (
-                <div key={item.id} className={styles.scrollItem} role="listitem">
-                  <Link
-                    href={`/blogs/${item.slug}`}
-                    className={`${styles.ccCard} ${styles.ccCardBlog}`}
-                    aria-label={`Read blog: ${item.title}`}
-                  >
-                    <div className={styles.ccAccent} aria-hidden="true" />
-                    <div className={styles.ccBody}>
-                      <div className={styles.ccMetaTop}>
-                        <span className={`${styles.ccPill} ${styles.ccPillBlog}`}>Blog</span>
-                        <time
-                          className={styles.ccDate}
-                          dateTime={item.published_at}
-                        >
-                          {formatDate(item.published_at)}
-                        </time>
-                      </div>
-                      <h3 className={styles.ccTitle}>{item.title}</h3>
-                      {item.excerpt && (
-                        <p className={styles.ccExcerpt}>{item.excerpt}</p>
-                      )}
-                      <div className={styles.ccFooter}>
-                        <span className={styles.ccViews} aria-label={`${(item.view_count || 0).toLocaleString()} views`}>
-                          👁 {(item.view_count || 0).toLocaleString()}
-                        </span>
-                        <span className={`${styles.ccRead} ${styles.ccReadBlog}`} aria-hidden="true">
-                          Read →
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-            <div className={styles.csViewAll}>
-              <Link href="/blogs" className={styles.viewAllBtn}>
-                View All Education Blogs →
-              </Link>
-            </div>
-          </div>
+          <ContentCarousel
+            items={blogs}
+            type="blog"
+            viewAllHref="/blogs"
+            viewAllLabel="View All Education Blogs"
+          />
         </section>
 
         {/* ════════════════ NEWS ════════════════ */}
@@ -881,55 +513,19 @@ export default async function Home() {
           aria-labelledby="news-heading"
         >
           <h2 className={styles.sectionHeading} id="news-heading">
-            📰 Latest Education News
+            <span className={styles.headingIcon} aria-hidden="true">📰</span>
+            Latest Education News
           </h2>
           <p className={styles.sectionSub}>
             Stay updated with Pakistan&apos;s education sector — board results, policy changes, and more
           </p>
 
-          <div className={styles.csWrap}>
-            <div className={styles.nativeScrollContainer} role="list">
-              {news?.map((item) => (
-                <div key={item.id} className={styles.scrollItem} role="listitem">
-                  <Link
-                    href={`/news/${item.slug}`}
-                    className={`${styles.ccCard} ${styles.ccCardNews}`}
-                    aria-label={`Read news: ${item.title}`}
-                  >
-                    <div className={styles.ccAccent} aria-hidden="true" />
-                    <div className={styles.ccBody}>
-                      <div className={styles.ccMetaTop}>
-                        <span className={`${styles.ccPill} ${styles.ccPillNews}`}>News</span>
-                        <time
-                          className={styles.ccDate}
-                          dateTime={item.published_at}
-                        >
-                          {formatDate(item.published_at)}
-                        </time>
-                      </div>
-                      <h3 className={styles.ccTitle}>{item.title}</h3>
-                      {item.excerpt && (
-                        <p className={styles.ccExcerpt}>{item.excerpt}</p>
-                      )}
-                      <div className={styles.ccFooter}>
-                        <span className={styles.ccViews} aria-label={`${(item.view_count || 0).toLocaleString()} views`}>
-                          👁 {(item.view_count || 0).toLocaleString()}
-                        </span>
-                        <span className={`${styles.ccRead} ${styles.ccReadNews}`} aria-hidden="true">
-                          Read →
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-            <div className={styles.csViewAll}>
-              <Link href="/news" className={styles.viewAllBtn}>
-                View All Education News →
-              </Link>
-            </div>
-          </div>
+          <ContentCarousel
+            items={news}
+            type="news"
+            viewAllHref="/news"
+            viewAllLabel="View All Education News"
+          />
         </section>
 
         {/* ════════════════ UPCOMING FEATURES / VOTING ════════════════ */}
@@ -960,9 +556,7 @@ export default async function Home() {
                         <h3 className={styles.fvTitle}>{f.title}</h3>
                         <div className={styles.fvBadges}>
                           <span className={`${styles.statusBadge} ${s.cls}`}>{s.label}</span>
-                          {f.launch_date && (
-                            <span className={styles.fvDate}>{f.launch_date}</span>
-                          )}
+                          {f.launch_date && <span className={styles.fvDate}>{f.launch_date}</span>}
                         </div>
                       </div>
                     </div>
@@ -984,9 +578,7 @@ export default async function Home() {
                       </form>
                     )}
                   </div>
-                  {f.description && (
-                    <p className={styles.fvDesc}>{f.description}</p>
-                  )}
+                  {f.description && <p className={styles.fvDesc}>{f.description}</p>}
                   <div className={styles.fvBarWrap}>
                     <div
                       className={styles.fvBar}
@@ -1015,7 +607,6 @@ export default async function Home() {
         </section>
 
         {/* ════════════════ NEWSLETTER ════════════════ */}
-        {/* SMO + CRO: email capture */}
         <section className={styles.sectionWrap} aria-labelledby="nl-heading">
           <div className={styles.nlSection}>
             <div className={styles.nlBg} aria-hidden="true" />
@@ -1026,23 +617,11 @@ export default async function Home() {
               <p className={styles.nlSub}>
                 Get daily education news, prize alerts, and new feature announcements — free.
               </p>
-
               <form action={submitNewsletter} className={styles.nlForm} noValidate>
-                {/* Honeypot — spam prevention */}
-                <div
-                  style={{ position: "absolute", left: "-9999px" }}
-                  aria-hidden="true"
-                >
-                  <input
-                    type="text"
-                    name="honey"
-                    tabIndex={-1}
-                    autoComplete="off"
-                  />
+                <div style={{ position: "absolute", left: "-9999px" }} aria-hidden="true">
+                  <input type="text" name="honey" tabIndex={-1} autoComplete="off" />
                 </div>
-                <label htmlFor="nl-email" className={styles.srOnly}>
-                  Your email address
-                </label>
+                <label htmlFor="nl-email" className={styles.srOnly}>Your email address</label>
                 <input
                   id="nl-email"
                   name="email"
@@ -1058,9 +637,7 @@ export default async function Home() {
                   Subscribe 🚀
                 </button>
               </form>
-              <p className={styles.nlPrivacy}>
-                No spam, ever. Unsubscribe with one click, anytime.
-              </p>
+              <p className={styles.nlPrivacy}>No spam, ever. Unsubscribe with one click, anytime.</p>
             </div>
           </div>
         </section>
@@ -1073,23 +650,21 @@ export default async function Home() {
           itemType="https://schema.org/ItemList"
         >
           <h2 className={styles.sectionHeading} id="winners-heading">
-            🏆 Recent Winners
+            <span className={styles.headingIcon} aria-hidden="true">🏆</span>
+            Recent Winners
           </h2>
           <p className={styles.sectionSub}>
             Real people. Real rewards. Updated live — proving AIDLA pays out.
           </p>
 
           <div className={styles.winnersGrid}>
-            {/* Lucky Draw Winners */}
             <article className={styles.winnerCard}>
               <div className={styles.winnerCardHd}>
                 <span aria-hidden="true">🎲</span>
                 <h3>Lucky Draw Winners</h3>
               </div>
               <table className={styles.winnerTable}>
-                <caption className={styles.srOnly}>
-                  Recent AIDLA lucky draw winners
-                </caption>
+                <caption className={styles.srOnly}>Recent AIDLA lucky draw winners</caption>
                 <thead>
                   <tr>
                     <th scope="col">Winner</th>
@@ -1100,33 +675,22 @@ export default async function Home() {
                 <tbody>
                   {draws?.map((row) => (
                     <tr key={row.id}>
-                      <td>
-                        <strong>{row.winner_name}</strong>
-                        <br />
-                        <small>{row.draw_title}</small>
-                      </td>
+                      <td><strong>{row.winner_name}</strong><br /><small>{row.draw_title}</small></td>
                       <td className={styles.tdPrize}>{row.prize_text}</td>
-                      <td className={styles.tdDate}>
-                        <time dateTime={row.announced_at}>
-                          {formatDate(row.announced_at)}
-                        </time>
-                      </td>
+                      <td className={styles.tdDate}><time dateTime={row.announced_at}>{formatDate(row.announced_at)}</time></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </article>
 
-            {/* Wheel Winners */}
             <article className={styles.winnerCard}>
               <div className={styles.winnerCardHd}>
                 <span aria-hidden="true">🎡</span>
                 <h3>Lucky Wheel Winners</h3>
               </div>
               <table className={styles.winnerTable}>
-                <caption className={styles.srOnly}>
-                  Recent AIDLA lucky wheel winners
-                </caption>
+                <caption className={styles.srOnly}>Recent AIDLA lucky wheel winners</caption>
                 <thead>
                   <tr>
                     <th scope="col">User</th>
@@ -1139,37 +703,24 @@ export default async function Home() {
                     <tr key={row.id}>
                       <td><strong>{row.user_name}</strong></td>
                       <td>
-                        <span
-                          className={`${styles.wb} ${
-                            row.result_type === "coins" ? styles.wbCoins : styles.wbGift
-                          }`}
-                        >
-                          {row.result_type === "coins"
-                            ? `🪙 ${row.coins_won} Coins`
-                            : "🎁 Gift"}
+                        <span className={`${styles.wb} ${row.result_type === "coins" ? styles.wbCoins : styles.wbGift}`}>
+                          {row.result_type === "coins" ? `🪙 ${row.coins_won} Coins` : "🎁 Gift"}
                         </span>
                       </td>
-                      <td className={styles.tdDate}>
-                        <time dateTime={row.created_at}>
-                          {formatDate(row.created_at)}
-                        </time>
-                      </td>
+                      <td className={styles.tdDate}><time dateTime={row.created_at}>{formatDate(row.created_at)}</time></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </article>
 
-            {/* Test Toppers */}
             <article className={styles.winnerCard}>
               <div className={styles.winnerCardHd}>
                 <span aria-hidden="true">📝</span>
                 <h3>Quiz Toppers</h3>
               </div>
               <table className={styles.winnerTable}>
-                <caption className={styles.srOnly}>
-                  Recent AIDLA quiz top performers
-                </caption>
+                <caption className={styles.srOnly}>Recent AIDLA quiz top performers</caption>
                 <thead>
                   <tr>
                     <th scope="col">Rank</th>
@@ -1196,11 +747,7 @@ export default async function Home() {
                       </td>
                       <td><strong>{row.user_name}</strong></td>
                       <td>{row.test_tests?.title || "Untitled"}</td>
-                      <td className={styles.tdDate}>
-                        <time dateTime={row.approved_at}>
-                          {formatDate(row.approved_at)}
-                        </time>
-                      </td>
+                      <td className={styles.tdDate}><time dateTime={row.approved_at}>{formatDate(row.approved_at)}</time></td>
                     </tr>
                   ))}
                 </tbody>
@@ -1210,7 +757,6 @@ export default async function Home() {
         </section>
 
         {/* ════════════════ REVIEWS ════════════════ */}
-        {/* Schema: Review + AggregateRating for rich results */}
         <section
           className={styles.sectionWrap}
           aria-labelledby="reviews-heading"
@@ -1221,7 +767,8 @@ export default async function Home() {
           <meta itemProp="brand" content="AIDLA" />
 
           <h2 className={styles.sectionHeading} id="reviews-heading">
-            ⭐ What Our Learners Say
+            <span className={styles.headingIcon} aria-hidden="true">⭐</span>
+            What Our Learners Say
           </h2>
           <p className={styles.sectionSub}>
             Real reviews from verified Pakistani students — approved by our team
@@ -1234,14 +781,7 @@ export default async function Home() {
               itemType="https://schema.org/AggregateRating"
               className={styles.srOnly}
             >
-              <meta
-                itemProp="ratingValue"
-                content={String(
-                  (
-                    reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
-                  ).toFixed(1)
-                )}
-              />
+              <meta itemProp="ratingValue" content={String((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1))} />
               <meta itemProp="reviewCount" content={String(reviews.length)} />
               <meta itemProp="bestRating" content="5" />
               <meta itemProp="worstRating" content="1" />
@@ -1270,9 +810,7 @@ export default async function Home() {
                     <meta itemProp="ratingValue" content={String(r.rating)} />
                     <meta itemProp="bestRating" content="5" />
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} aria-hidden="true">
-                        {i < r.rating ? "★" : "☆"}
-                      </span>
+                      <span key={i} aria-hidden="true">{i < r.rating ? "★" : "☆"}</span>
                     ))}
                   </div>
                   <blockquote className={styles.rvText} itemProp="reviewBody">
@@ -1282,19 +820,9 @@ export default async function Home() {
                     <div className={styles.rvAvatar} aria-hidden="true">
                       {(r.full_name?.[0] || "A").toUpperCase()}
                     </div>
-                    <div
-                      itemProp="author"
-                      itemScope
-                      itemType="https://schema.org/Person"
-                    >
-                      <div className={styles.rvName} itemProp="name">
-                        {maskName(r.full_name)}
-                      </div>
-                      <time
-                        className={styles.rvWhen}
-                        dateTime={r.created_at}
-                        itemProp="datePublished"
-                      >
+                    <div itemProp="author" itemScope itemType="https://schema.org/Person">
+                      <div className={styles.rvName} itemProp="name">{maskName(r.full_name)}</div>
+                      <time className={styles.rvWhen} dateTime={r.created_at} itemProp="datePublished">
                         {formatDate(r.created_at)}
                       </time>
                     </div>
@@ -1306,69 +834,25 @@ export default async function Home() {
 
           {/* Review form */}
           <div className={styles.rvFormBox} aria-labelledby="rv-form-heading">
-            <h3 id="rv-form-heading" className={styles.rvFormTitle}>
-              ✍️ Share Your Experience
-            </h3>
-            <p className={styles.rvFormSub}>
-              No login needed. Reviews appear after approval within 24 hours.
-            </p>
+            <h3 id="rv-form-heading" className={styles.rvFormTitle}>✍️ Share Your Experience</h3>
+            <p className={styles.rvFormSub}>No login needed. Reviews appear after approval within 24 hours.</p>
             <form action={submitReview} noValidate>
-              <div
-                style={{ position: "absolute", left: "-9999px" }}
-                aria-hidden="true"
-              >
-                <input
-                  type="text"
-                  name="honey"
-                  tabIndex={-1}
-                  autoComplete="off"
-                />
+              <div style={{ position: "absolute", left: "-9999px" }} aria-hidden="true">
+                <input type="text" name="honey" tabIndex={-1} autoComplete="off" />
               </div>
               <div className={styles.rvRow2}>
                 <div>
-                  <label className={styles.rvLabel} htmlFor="rv-name">
-                    Your Name <span aria-hidden="true">*</span>
-                  </label>
-                  <input
-                    id="rv-name"
-                    name="name"
-                    className={styles.rvInput}
-                    placeholder="Your name"
-                    required
-                    autoComplete="name"
-                    aria-required="true"
-                    suppressHydrationWarning
-                  />
+                  <label className={styles.rvLabel} htmlFor="rv-name">Your Name <span aria-hidden="true">*</span></label>
+                  <input id="rv-name" name="name" className={styles.rvInput} placeholder="Your name" required autoComplete="name" aria-required="true" suppressHydrationWarning />
                 </div>
                 <div>
-                  <label className={styles.rvLabel} htmlFor="rv-email">
-                    Email <span aria-hidden="true">*</span>
-                  </label>
-                  <input
-                    id="rv-email"
-                    name="email"
-                    type="email"
-                    className={styles.rvInput}
-                    placeholder="you@email.com"
-                    required
-                    autoComplete="email"
-                    aria-required="true"
-                    suppressHydrationWarning
-                  />
+                  <label className={styles.rvLabel} htmlFor="rv-email">Email <span aria-hidden="true">*</span></label>
+                  <input id="rv-email" name="email" type="email" className={styles.rvInput} placeholder="you@email.com" required autoComplete="email" aria-required="true" suppressHydrationWarning />
                 </div>
               </div>
               <div style={{ marginBottom: "14px" }}>
-                <label className={styles.rvLabel} htmlFor="rv-rating">
-                  Rating
-                </label>
-                <select
-                  id="rv-rating"
-                  name="rating"
-                  className={styles.rvInput}
-                  required
-                  aria-required="true"
-                  suppressHydrationWarning
-                >
+                <label className={styles.rvLabel} htmlFor="rv-rating">Rating</label>
+                <select id="rv-rating" name="rating" className={styles.rvInput} required aria-required="true" suppressHydrationWarning>
                   <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
                   <option value="4">⭐⭐⭐⭐ Very Good</option>
                   <option value="3">⭐⭐⭐ Good</option>
@@ -1376,9 +860,7 @@ export default async function Home() {
                   <option value="1">⭐ Poor</option>
                 </select>
               </div>
-              <label className={styles.rvLabel} htmlFor="rv-text">
-                Your Review <span aria-hidden="true">*</span>
-              </label>
+              <label className={styles.rvLabel} htmlFor="rv-text">Your Review <span aria-hidden="true">*</span></label>
               <textarea
                 id="rv-text"
                 name="review"
@@ -1391,18 +873,14 @@ export default async function Home() {
                 aria-required="true"
                 aria-describedby="rv-text-hint"
               />
-              <p id="rv-text-hint" className={styles.srOnly}>
-                Minimum 20 characters, maximum 500 characters
-              </p>
-              <button type="submit" className={styles.rvSubmit} suppressHydrationWarning>
-                Submit Review
-              </button>
+              <p id="rv-text-hint" className={styles.srOnly}>Minimum 20 characters, maximum 500 characters</p>
+              <button type="submit" className={styles.rvSubmit} suppressHydrationWarning>Submit Review</button>
             </form>
           </div>
         </section>
 
         {/* ════════════════ FAQ ════════════════ */}
-        {/* Targets: FAQPage rich results, Featured Snippets, Zero-Click, AEO, VSO */}
+        {/* AEO-optimized: featured snippets, zero-click, voice search */}
         <section
           className={styles.sectionWrap}
           aria-labelledby="faq-heading"
@@ -1413,45 +891,52 @@ export default async function Home() {
           <p className={styles.sectionSub}>
             Quick answers to what students ask most about AIDLA
           </p>
-          <div
-            className={styles.faqList}
-            itemScope
-            itemType="https://schema.org/FAQPage"
-          >
-            {faqs?.map((f) => (
-              <details
-                key={f.id}
-                className={styles.faqItem}
-                itemScope
-                itemType="https://schema.org/Question"
-                itemProp="mainEntity"
-              >
-                <summary className={styles.faqQ}>
-                  <span itemProp="name">{f.question}</span>
-                  <span className={styles.faqChevron} aria-hidden="true">▼</span>
-                </summary>
-                <div
-                  className={styles.faqA}
+
+          <div className={styles.faqList} itemScope itemType="https://schema.org/FAQPage">
+            {faqs && faqs.length > 0 ? (
+              faqs.map((f) => (
+                <details
+                  key={f.id}
+                  className={styles.faqItem}
                   itemScope
-                  itemType="https://schema.org/Answer"
-                  itemProp="acceptedAnswer"
+                  itemType="https://schema.org/Question"
+                  itemProp="mainEntity"
                 >
+                  <summary className={styles.faqQ}>
+                    <span itemProp="name">{f.question}</span>
+                    <span className={styles.faqChevron} aria-hidden="true">▼</span>
+                  </summary>
                   <div
-                    className={styles.faqAInner}
-                    itemProp="text"
-                    dangerouslySetInnerHTML={{ __html: f.answer }}
-                  />
-                  <Link
-                    href={`/faqs/${f.slug}`}
-                    className={styles.faqFullLink}
-                    aria-label={`Read full answer to: ${f.question}`}
+                    className={styles.faqA}
+                    itemScope
+                    itemType="https://schema.org/Answer"
+                    itemProp="acceptedAnswer"
                   >
-                    Read full answer →
-                  </Link>
-                </div>
-              </details>
-            ))}
+                    <div
+                      className={styles.faqAInner}
+                      itemProp="text"
+                      dangerouslySetInnerHTML={{ __html: f.answer }}
+                    />
+                    <Link
+                      href={`/faqs/${f.slug}`}
+                      className={styles.faqFullLink}
+                      aria-label={`Read full answer to: ${f.question}`}
+                    >
+                      Read full answer →
+                    </Link>
+                  </div>
+                </details>
+              ))
+            ) : (
+              <p className={styles.faqEmpty}>
+                Frequently asked questions are loading.{" "}
+                <Link href="/faqs" className={styles.faqFullLink}>
+                  Browse all FAQs →
+                </Link>
+              </p>
+            )}
           </div>
+
           <div className={styles.faqSeeAll}>
             <Link href="/faqs" className={styles.viewAllBtn}>
               Browse All Frequently Asked Questions →
@@ -1460,7 +945,6 @@ export default async function Home() {
         </section>
 
         {/* ════════════════ CTA ════════════════ */}
-        {/* CRO: Final conversion section */}
         <section
           className={styles.ctaSection}
           aria-labelledby="cta-heading"
@@ -1470,9 +954,7 @@ export default async function Home() {
             <div className={`${styles.ctaBlob} ${styles.ctaBlob2}`} />
           </div>
           <div className={styles.ctaInner}>
-            <span className={styles.ctaBadge}>
-              🌟 Join 50,000+ Learners Today
-            </span>
+            <span className={styles.ctaBadge}>🌟 Join Learners Across Pakistan</span>
             <h2 id="cta-heading" className={styles.ctaTitle}>
               Your Knowledge is Your Greatest Asset
             </h2>

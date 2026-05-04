@@ -1,0 +1,181 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif}
+.wrap{padding:2rem 1rem;display:flex;flex-direction:column;align-items:center;gap:1.5rem;min-height:420px;background:transparent}
+.gbar{width:100%;max-width:580px;border:1.5px solid #dfe1e5;border-radius:24px;padding:10px 16px 10px 48px;font-size:16px;color:#202124;background:#fff;position:relative;display:flex;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.12);min-height:46px}
+.gbar-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%)}
+.gbar-icon svg{width:18px;height:18px;display:block}
+.cursor{display:inline-block;width:2px;height:18px;background:#202124;margin-left:2px;animation:blink 1s step-end infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.gresults{width:100%;max-width:580px;display:flex;flex-direction:column;gap:4px}
+.gresult{padding:8px 0;opacity:0;transform:translateY(6px);transition:opacity 0.35s ease,transform 0.35s ease}
+.gresult.show{opacity:1;transform:translateY(0)}
+.gurl{font-size:12px;color:#202124;margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.gfavicon{width:16px;height:16px;border-radius:50%;background:#1a73e8;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.gfavicon span{color:#fff;font-size:8px;font-weight:700;font-family:Arial,sans-serif}
+.gsite{color:#202124;font-size:12px}
+.gpath{color:#202124;font-size:12px}
+.gtitle{color:#1a0dab;font-size:18px;font-weight:400;line-height:1.3;cursor:pointer;margin-bottom:3px}
+.gtitle:hover{text-decoration:underline}
+.gsnip{color:#4d5156;font-size:13px;line-height:1.58}
+.gbold{font-weight:700;color:#202124}
+.gad-label{font-size:11px;color:#188038;border:1px solid #188038;border-radius:3px;padding:1px 4px;margin-right:4px;font-weight:400}
+.gsep{height:1px;background:#ebebeb;margin:8px 0}
+.other-result .gtitle{font-size:15px;color:#1a0dab}
+.other-result .gsnip{font-size:12px}
+.rank-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;color:#188038;font-weight:700;margin-left:6px}
+.featured-box{border:1px solid #dfe1e5;border-radius:8px;padding:12px;margin-bottom:4px;background:#fff}
+</style>
+
+<div class="wrap">
+  <div style="display:flex;align-items:center;gap:10px;width:100%;max-width:580px">
+    <svg width="74" height="24" viewBox="0 0 272 92" style="flex-shrink:0"><path d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#EA4335"/><path d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#FBBC05"/><path d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.67-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.26zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z" fill="#4285F4"/><path d="M225 3v65h-9.5V3h9.5z" fill="#34A853"/><path d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z" fill="#EA4335"/><path d="M35.29 41.41V32h31.tattoo..." fill="#4285F4"/><path d="M35.29 32v9.41h30.45c-.93 4.96-3.61 9.16-7.64 12.02l12.35 9.58C77.16 55.3 80 46.77 80 36.58c0-2.77-.25-5.46-.71-8.07L35.29 32z" fill="#4285F4"/><path d="M15.96 52.74l-2.87 2.2L2.18 62.73C8.49 75.3 21.58 84 36.5 84c9.66 0 17.78-3.19 23.7-8.65L47.85 65.77c-3.19 2.18-7.31 3.44-11.35 3.44-8.74 0-16.16-5.88-18.82-13.86l-.02-.09-.02-.09c-.5-1.67-.8-3.44-.8-5.27 0-1.83.3-3.61.8-5.28z" fill="#FBBC05"/><path d="M36.5 8c5.46 0 10.33 1.93 14.2 5.04l10.58-10.58C54.95 1.93 46.16 0 36.5 0 21.58 0 8.49 8.7 2.18 21.27l11.06 8.57C15.84 21.88 23.26 8 36.5 8z" fill="#EA4335"/></svg>
+  </div>
+
+  <div class="gbar" id="gbar">
+    <div class="gbar-icon">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9aa0a6" stroke-width="2"/><path d="M20 20l-3-3" stroke="#9aa0a6" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <span id="typed-text"></span><span class="cursor" id="cursor"></span>
+  </div>
+
+  <div class="gresults" id="gresults" style="display:none">
+    <div class="gresult" id="r0">
+      <div class="featured-box">
+        <div class="gurl">
+          <div class="gfavicon"><span>A</span></div>
+          <span class="gsite">www.aidla.online</span>
+          <span style="color:#5f6368;font-size:12px">›</span>
+        </div>
+        <div class="gtitle" id="main-title">AIDLA — Free Learning, Earn Coins &amp; Win Prizes | Pakistan's #1 Education Platform</div>
+        <div class="gsnip" id="main-snip"><span class="gbold">AIDLA</span> is Pakistan's number one free education platform. Take quizzes, earn <span class="gbold">AIDLA Coins</span>, spin the lucky wheel, win real prizes. 100% free.</div>
+        <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap">
+          <a style="color:#1a0dab;font-size:13px;text-decoration:none" href="#">Sign Up Free</a>
+          <a style="color:#1a0dab;font-size:13px;text-decoration:none" href="#">Quizzes</a>
+          <a style="color:#1a0dab;font-size:13px;text-decoration:none" href="#">Lucky Draw</a>
+          <a style="color:#1a0dab;font-size:13px;text-decoration:none" href="#">Leaderboard</a>
+        </div>
+      </div>
+    </div>
+    <div class="gsep"></div>
+    <div class="gresult other-result" id="r1">
+      <div class="gurl"><div class="gfavicon" style="background:#34a853"><span>A</span></div><span class="gsite">aidla.online</span><span style="color:#5f6368;font-size:12px">›</span><span class="gpath">blogs</span></div>
+      <div class="gtitle">AIDLA Blogs — Education News, Career Tips &amp; Study Guides</div>
+      <div class="gsnip">Expert articles on Pakistan education, scholarships, and career development — updated daily, completely free.</div>
+    </div>
+    <div class="gresult other-result" id="r2">
+      <div class="gurl"><div class="gfavicon" style="background:#fbbc05"><span>A</span></div><span class="gsite">aidla.online</span><span style="color:#5f6368;font-size:12px">›</span><span class="gpath">faqs</span></div>
+      <div class="gtitle">AIDLA FAQs — How to Earn Coins, Lucky Draw &amp; Withdrawals</div>
+      <div class="gsnip">Get answers about earning <span class="gbold">AIDLA Coins</span>, entering lucky draws, cash withdrawals, and more. No sign-up needed to browse.</div>
+    </div>
+    <div class="gresult other-result" id="r3">
+      <div class="gurl"><div class="gfavicon" style="background:#ea4335"><span>A</span></div><span class="gsite">aidla.online</span><span style="color:#5f6368;font-size:12px">›</span><span class="gpath">leaderboard</span></div>
+      <div class="gtitle">AIDLA Leaderboard — Top Students in Pakistan</div>
+      <div class="gsnip">See who's topping the charts. Compete with <span class="gbold">50,000+ learners</span> and climb the national rankings.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const queries = [
+  {
+    q: "Pakistan's #1 free education platform",
+    title: "AIDLA — Free Learning, Earn Coins & Win Prizes | Pakistan's #1 Education Platform",
+    snip: "<span class='gbold'>AIDLA</span> is Pakistan's number one free education platform. Take quizzes, earn <span class='gbold'>AIDLA Coins</span>, spin the lucky wheel, win real prizes. 100% free."
+  },
+  {
+    q: "how to earn coins online Pakistan",
+    title: "Earn AIDLA Coins — Complete Quizzes & Win Real Prizes | AIDLA",
+    snip: "Earn <span class='gbold'>AIDLA Coins</span> by completing quizzes, entering lucky draws, and spinning the wheel daily. Redeem for cash or prizes — completely free."
+  },
+  {
+    q: "free online quizzes Pakistan students",
+    title: "AIDLA Smart Quizzes — Pakistan Curriculum Aligned | Free",
+    snip: "Take <span class='gbold'>500+ daily quizzes</span> aligned with the Pakistan curriculum. Earn coins for every correct answer. No subscription needed."
+  },
+  {
+    q: "lucky draw win prizes Pakistan",
+    title: "AIDLA Lucky Draw — Win Real Cash & Prizes Every Week",
+    snip: "Enter weekly lucky draws using <span class='gbold'>AIDLA Coins</span>. Winners announced publicly. Real cash, gadgets, and gift cards up for grabs."
+  },
+  {
+    q: "earn money studying online Pakistan",
+    title: "AIDLA — Learn, Earn AIDLA Coins & Withdraw to Bank Account",
+    snip: "Study online, earn <span class='gbold'>AIDLA Coins</span>, and withdraw directly to your bank. Pakistan's first gamified free education and rewards platform."
+  },
+  {
+    q: "how to create CV Pakistan students",
+    title: "AIDLA Blogs — How to Create a Professional CV in Pakistan",
+    snip: "Step-by-step guide on building a winning CV for Pakistani students. Access for free on <span class='gbold'>AIDLA.online</span> — Pakistan's #1 education platform."
+  },
+  {
+    q: "Pakistan education news today",
+    title: "AIDLA News — Latest Pakistan Education News & Updates",
+    snip: "Board results, HEC announcements, scholarship alerts — all in one place. Updated daily on <span class='gbold'>AIDLA.online</span>."
+  },
+  {
+    q: "online study platform earn rewards Pakistan",
+    title: "AIDLA — Study, Earn & Win | Pakistan's Free Rewards Platform",
+    snip: "<span class='gbold'>1,200+ prizes claimed</span>. Join 50,000+ learners earning real rewards by studying on AIDLA — Pakistan's only gamified free education platform."
+  }
+];
+
+let qi = 0;
+let charIdx = 0;
+let phase = 'type';
+let timer = null;
+const typedEl = document.getElementById('typed-text');
+const cursorEl = document.getElementById('cursor');
+const resultsEl = document.getElementById('gresults');
+const mainTitle = document.getElementById('main-title');
+const mainSnip = document.getElementById('main-snip');
+const rows = [document.getElementById('r0'),document.getElementById('r1'),document.getElementById('r2'),document.getElementById('r3')];
+
+function showResults() {
+  resultsEl.style.display = 'flex';
+  mainTitle.textContent = queries[qi].title;
+  mainSnip.innerHTML = queries[qi].snip;
+  rows.forEach((r,i) => {
+    setTimeout(() => r.classList.add('show'), i * 90);
+  });
+}
+
+function hideResults(cb) {
+  rows.forEach(r => r.classList.remove('show'));
+  setTimeout(() => { resultsEl.style.display = 'none'; cb && cb(); }, 380);
+}
+
+function typeNext() {
+  const q = queries[qi].q;
+  if (charIdx <= q.length) {
+    typedEl.textContent = q.slice(0, charIdx);
+    charIdx++;
+    timer = setTimeout(typeNext, charIdx < 4 ? 60 : 45 + Math.random() * 40);
+  } else {
+    phase = 'show';
+    timer = setTimeout(() => { showResults(); timer = setTimeout(startErase, 2800); }, 400);
+  }
+}
+
+function startErase() {
+  hideResults(() => {
+    phase = 'erase';
+    eraseNext();
+  });
+}
+
+function eraseNext() {
+  if (charIdx > 0) {
+    charIdx--;
+    typedEl.textContent = queries[qi].q.slice(0, charIdx);
+    timer = setTimeout(eraseNext, 28);
+  } else {
+    qi = (qi + 1) % queries.length;
+    phase = 'type';
+    timer = setTimeout(typeNext, 400);
+  }
+}
+
+timer = setTimeout(typeNext, 800);
+</script>

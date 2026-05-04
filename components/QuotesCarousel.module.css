@@ -1,0 +1,199 @@
+/* QuotesCarousel — auto-rotating quotes with smooth CSS transitions */
+
+.carouselWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Outer container ── */
+.qsOuter {
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  min-height: 240px;
+  box-shadow: 0 8px 32px rgba(11, 20, 55, 0.13);
+}
+
+/* ── Single quote slide ── */
+.qsSlide {
+  position: relative;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: opacity 0.38s ease, transform 0.38s ease;
+  will-change: opacity, transform;
+}
+
+.qsVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.qsHidden {
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+/* ── Background themes ── */
+.quoteTheme1 { background: linear-gradient(145deg, #0b1437 0%, #1a3a8f 60%, #1e5abf 100%); }
+.quoteTheme2 { background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); }
+.quoteTheme3 { background: linear-gradient(130deg, #0b1437 0%, #0f6e56 60%, #1d9e75 100%); }
+.quoteTheme4 { background: linear-gradient(150deg, #2d1b69 0%, #1a3a8f 50%, #0b1437 100%); }
+.quoteTheme5 { background: linear-gradient(135deg, #1a1a2e 0%, #533483 50%, #2d1b69 100%); }
+.quoteTheme6 { background: linear-gradient(140deg, #0b1437 0%, #854f0b 50%, #ba7517 100%); }
+.quoteTheme7 { background: linear-gradient(155deg, #0b1437 0%, #0c447c 55%, #185fa5 100%); }
+
+/* ── Decorative elements ── */
+.qsDeco {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@keyframes decorDrift1 {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.55; }
+  33%       { transform: translate3d(40px, -30px, 0); opacity: 0.45; }
+  66%       { transform: translate3d(-20px, 20px, 0); opacity: 0.6; }
+}
+@keyframes decorDrift2 {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.55; }
+  33%       { transform: translate3d(-50px, 30px, 0); opacity: 0.4; }
+  66%       { transform: translate3d(30px, -20px, 0); opacity: 0.65; }
+}
+
+.qsDecoCircle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  will-change: transform;
+}
+
+.qsDecoCircle1 {
+  width: 260px;
+  height: 260px;
+  top: -100px;
+  right: -60px;
+  animation: decorDrift1 12s ease-in-out infinite;
+}
+
+.qsDecoCircle2 {
+  width: 160px;
+  height: 160px;
+  bottom: -60px;
+  left: 10%;
+  animation: decorDrift2 16s ease-in-out infinite;
+}
+
+.qsDecoLine {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 40px,
+    rgba(255, 255, 255, 0.015) 40px,
+    rgba(255, 255, 255, 0.015) 41px
+  );
+}
+
+/* ── Content ── */
+.qsContent {
+  position: relative;
+  z-index: 2;
+  padding: clamp(20px, 4vw, 36px);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.62) 40%, transparent 100%);
+}
+
+.qsText {
+  color: #fff;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.qsTextArUr {
+  font-family: 'Noto Nastaliq Urdu', serif;
+  direction: rtl;
+  text-align: right;
+  font-size: clamp(0.95rem, 2.5vw, 1.5rem);
+}
+
+.qsTextEn {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(0.9rem, 2vw, 1.25rem);
+}
+
+.qsTranslation {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.875rem;
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.qsSource {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.92);
+  color: #fff;
+  padding: 3px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* ── Navigation dots ── */
+.qsDots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+
+.qsDot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(11, 20, 55, 0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.22s ease, transform 0.22s ease;
+  /* Expand click target via pseudo-element without affecting layout */
+}
+
+.qsDot::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
+
+.qsDot:focus-visible {
+  outline: 2px solid #1a3a8f;
+  outline-offset: 3px;
+  border-radius: 50%;
+}
+
+.qsDotActive {
+  background: #1a3a8f;
+  transform: scale(1.4);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .qsDecoCircle {
+    animation: none !important;
+  }
+  .qsSlide {
+    transition: opacity 0.01ms !important;
+    transform: none !important;
+  }
+  .qsDot {
+    transition: none !important;
+  }
+}

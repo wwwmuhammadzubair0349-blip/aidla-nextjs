@@ -1,9 +1,7 @@
 "use client";
 // app/tools/career/cv-maker/CvMakerClient.jsx
-// Main orchestrator — all state, AI calls, ATS score, layout logic.
-// Converted from React Router (import.meta.env) → Next.js (process.env)
-// Sub-components: Templates, Preview, Print (in ./cv/)
-// cvRenderer.js is pure JS — zero changes needed there.
+// Main orchestrator — state, AI calls, ATS score, layout logic
+// v5.0 - Apex Design System Upgrade
 
 import {
   useState, useEffect, useRef, useCallback, useMemo,
@@ -14,11 +12,8 @@ import Preview   from "./cv/Preview";
 import Print     from "./cv/Print";
 import { buildCvHtml, PREMIUM_TEMPLATES, PREMIUM_CATS } from "./cv/cvRenderer";
 
-/* ================================================================
-   GLOBAL CSS  (identical to original APP_CSS)
-================================================================ */
 const APP_CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Sora:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Sora:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
 
 :root {
   --navy:   #0b1437;
@@ -63,7 +58,6 @@ input,textarea,select,button { font-family: inherit; font-size: inherit; color: 
 button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 img    { display: block; max-width: 100%; }
 
-/* Background */
 .cv-bg {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: linear-gradient(160deg,#eef2fb 0%,#fefdf7 55%,#edf7f4 100%);
@@ -82,7 +76,6 @@ img    { display: block; max-width: 100%; }
   overflow-x: hidden;
 }
 
-/* Wrap */
 .cv-wrap {
   width: 100%; max-width: 100vw; margin: 0 auto;
   padding: 12px 12px 24px;
@@ -91,7 +84,6 @@ img    { display: block; max-width: 100%; }
 @media (min-width: 640px) { .cv-wrap { padding: 16px 16px 24px; } }
 @media (min-width: 960px) { .cv-wrap { max-width: 1320px; padding: 24px 20px 28px; } }
 
-/* Toasts */
 .cv-toasts {
   position: fixed; top: 10px; right: 10px; z-index: 9999;
   display: flex; flex-direction: column; gap: 6px;
@@ -117,7 +109,6 @@ img    { display: block; max-width: 100%; }
 .t-inf { background:#eff6ff; border:1px solid #93c5fd; color:#1e3a8a; }
 @keyframes toastIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
 
-/* Hero */
 .cv-hero {
   display: flex; align-items: flex-start;
   justify-content: space-between; gap: 10px;
@@ -155,7 +146,6 @@ img    { display: block; max-width: 100%; }
   font-size: .58rem; font-weight: 700; color: #1e3a8a;
 }
 
-/* ATS Ring */
 .cv-ats-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .cv-ats-ring {
   width: 72px; height: 72px; border-radius: 50%;
@@ -183,18 +173,16 @@ img    { display: block; max-width: 100%; }
   border-radius: 10px; padding: 10px;
 }
 .cv-ats-panel.open { display: grid; }
-.cv-ck { display:flex; align-items:center; gap:6px; padding:5px 8px; border-radius:7px; font-size:.68rem; font-weight:600; }
+.cv-ck { display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:7px;font-size:.68rem;font-weight:600; }
 .cv-ck.ok   { background:rgba(4,120,87,.08); color:#064e3b; }
 .cv-ck.fail { background:rgba(185,28,28,.07); color:#7f1d1d; }
 
-/* Toolbar */
 .cv-toolbar {
   display: flex; align-items: center; justify-content: space-between;
   gap: 8px; margin-bottom: 10px; flex-wrap: wrap; width: 100%;
 }
 .cv-tbr { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
-/* Mobile 3-tab nav */
 .cv-main-tabs {
   display: flex; gap: 0;
   border-radius: var(--r); overflow: hidden;
@@ -221,11 +209,9 @@ img    { display: block; max-width: 100%; }
   box-shadow: inset 0 -2px 0 rgba(0,0,0,.1);
 }
 
-/* Panels */
 .cv-panel { display: none; width: 100%; }
 .cv-panel.on { display: block; }
 
-/* Form sub-tabs */
 .cv-ftabs {
   display: flex; gap: 2px; overflow-x: auto;
   -webkit-overflow-scrolling: touch; scrollbar-width: none;
@@ -248,7 +234,6 @@ img    { display: block; max-width: 100%; }
 .cv-tpanel { display: none; }
 .cv-tpanel.on { display: block; }
 
-/* Cards */
 .cv-card {
   background: rgba(255,255,255,.94);
   border-radius: var(--r); border: 1px solid var(--border);
@@ -256,141 +241,133 @@ img    { display: block; max-width: 100%; }
   width: 100%; overflow: hidden; word-break: break-word;
 }
 @media (min-width: 640px) { .cv-card { padding: 16px; } }
-.cv-card-h { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px; flex-wrap:wrap; }
-.cv-card-t { font-family:'Sora',sans-serif; font-size:clamp(.8rem,2.8vw,.88rem); font-weight:700; color:var(--navy); margin:0; }
+.cv-card-h { display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap; }
+.cv-card-t { font-family:'Sora',sans-serif;font-size:clamp(.8rem,2.8vw,.88rem);font-weight:700;color:var(--navy);margin:0; }
 
-/* Form grid */
-.cv-g2 { display:grid; grid-template-columns:1fr; gap:8px; }
+.cv-g2 { display:grid;grid-template-columns:1fr;gap:8px; }
 @media (min-width:380px) { .cv-g2 { grid-template-columns:repeat(2,1fr); } }
 .cv-span2 { grid-column:1/-1; }
 
-/* Fields */
-.cv-field { display:flex; flex-direction:column; gap:4px; min-width:0; }
-.cv-lbl { font-size:.58rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; color:#374151; }
+.cv-field { display:flex;flex-direction:column;gap:4px;min-width:0; }
+.cv-lbl { font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#374151; }
 .cv-inp {
-  width:100%; min-width:0;
-  padding:0 11px; height:var(--touch);
+  width:100%;min-width:0;
+  padding:0 11px;height:var(--touch);
   border-radius:var(--r-sm);
   border:1.5px solid rgba(37,99,235,.2);
-  background:#fff; font-size:.85rem; font-weight:500;
-  outline:none; transition:border-color .15s,box-shadow .15s; color:var(--navy);
-  -webkit-appearance:none; appearance:none; max-width:100%;
+  background:#fff;font-size:.85rem;font-weight:500;
+  outline:none;transition:border-color .15s,box-shadow .15s;color:var(--navy);
+  -webkit-appearance:none;appearance:none;max-width:100%;
 }
-.cv-inp:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(217,119,6,.15); }
-.cv-inp:focus-visible,button:focus-visible,[tabindex]:focus-visible { outline:3px solid var(--gold); outline-offset:2px; }
+.cv-inp:focus { border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,119,6,.15); }
+.cv-inp:focus-visible,button:focus-visible,[tabindex]:focus-visible { outline:3px solid var(--gold);outline-offset:2px; }
 select.cv-inp {
   cursor:pointer;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234b5563' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat; background-position:right 10px center; padding-right:28px;
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
 }
-textarea.cv-inp { height:auto; min-height:80px; padding:10px 11px; resize:vertical; line-height:1.6; }
+textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;line-height:1.6; }
 
-/* Phone */
-.cv-phone-row { display:grid; grid-template-columns:95px 1fr; gap:6px; }
+.cv-phone-row { display:grid;grid-template-columns:95px 1fr;gap:6px; }
 
-/* Photo */
 .cv-photo-row {
-  display:flex; align-items:center; gap:11px; margin-top:10px; padding:11px;
-  background:#f8fafc; border-radius:10px; border:1px solid var(--border); flex-wrap:wrap;
+  display:flex;align-items:center;gap:11px;margin-top:10px;padding:11px;
+  background:#f8fafc;border-radius:10px;border:1px solid var(--border);flex-wrap:wrap;
 }
 .cv-photo-thumb {
-  width:52px; height:52px; border-radius:50%; border:2px solid var(--border);
-  overflow:hidden; background:#f1f5f9;
-  display:flex; align-items:center; justify-content:center;
-  font-size:1.3rem; flex-shrink:0;
+  width:52px;height:52px;border-radius:50%;border:2px solid var(--border);
+  overflow:hidden;background:#f1f5f9;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;flex-shrink:0;
 }
-.cv-photo-thumb img { width:100%; height:100%; object-fit:cover; object-position:top center; }
-.cv-photo-btns { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.cv-photo-thumb img { width:100%;height:100%;object-fit:cover;object-position:top center; }
+.cv-photo-btns { display:flex;flex-wrap:wrap;gap:6px;align-items:center; }
 
-/* Skill chips */
-.cv-chips { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+.cv-chips { display:flex;flex-wrap:wrap;gap:4px;margin-top:8px; }
 .cv-chip {
-  padding:2px 8px; border-radius:99px;
-  background:rgba(37,99,235,.07); border:1px solid rgba(37,99,235,.16);
-  font-size:.62rem; font-weight:700; color:#1e3a8a;
+  padding:2px 8px;border-radius:99px;
+  background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.16);
+  font-size:.62rem;font-weight:700;color:#1e3a8a;
 }
 
-/* Shells */
 .cv-shell {
-  margin-top:8px; padding:12px;
-  background:#f8fafc; border-radius:10px; border:1px solid var(--border);
-  transition:box-shadow .15s; width:100%; overflow:hidden; word-break:break-word;
+  margin-top:8px;padding:12px;
+  background:#f8fafc;border-radius:10px;border:1px solid var(--border);
+  transition:box-shadow .15s;width:100%;overflow:hidden;word-break:break-word;
 }
 .cv-shell:focus-within { box-shadow:0 0 0 2px rgba(217,119,6,.2); }
-.cv-shell-h { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px; }
-.cv-shell-t { font-size:.72rem; font-weight:700; color:var(--slate); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+.cv-shell-h { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px; }
+.cv-shell-t { font-size:.72rem;font-weight:700;color:var(--slate);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0; }
 .cv-empty {
-  display:flex; align-items:center; gap:8px; padding:13px; color:var(--slate);
-  font-size:.76rem; font-weight:600; border-radius:10px; background:#f8fafc;
+  display:flex;align-items:center;gap:8px;padding:13px;color:var(--slate);
+  font-size:.76rem;font-weight:600;border-radius:10px;background:#f8fafc;
   border:1.5px dashed rgba(37,99,235,.18);
 }
 
-/* Buttons */
 .cv-btn {
-  display:inline-flex; align-items:center; justify-content:center; gap:5px;
-  min-height:var(--touch); padding:0 16px;
-  border-radius:99px; border:none; font-size:.8rem; font-weight:800;
-  cursor:pointer; transition:transform .12s,box-shadow .12s,background .1s;
-  white-space:nowrap; -webkit-tap-highlight-color:transparent; text-decoration:none;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  min-height:var(--touch);padding:0 16px;
+  border-radius:99px;border:none;font-size:.8rem;font-weight:800;
+  cursor:pointer;transition:transform .12s,box-shadow .12s,background .1s;
+  white-space:nowrap;-webkit-tap-highlight-color:transparent;text-decoration:none;
 }
-.cv-btn:disabled { opacity:.4; cursor:not-allowed; transform:none!important; }
+.cv-btn:disabled { opacity:.4;cursor:not-allowed;transform:none!important; }
 .cv-btn-primary {
   background:linear-gradient(135deg,var(--gold),var(--gold-l));
-  color:#1c1917; box-shadow:0 3px 12px rgba(217,119,6,.3);
+  color:#1c1917;box-shadow:0 3px 12px rgba(217,119,6,.3);
 }
-.cv-btn-primary:hover:not(:disabled) { transform:scale(1.03); box-shadow:0 5px 16px rgba(217,119,6,.4); }
+.cv-btn-primary:hover:not(:disabled) { transform:scale(1.03);box-shadow:0 5px 16px rgba(217,119,6,.4); }
 .cv-btn-ghost {
-  background:rgba(255,255,255,.92); border:1.5px solid var(--border); color:#1e3a8a;
+  background:rgba(255,255,255,.92);border:1.5px solid var(--border);color:#1e3a8a;
 }
 .cv-btn-ghost:hover:not(:disabled) { background:rgba(37,99,235,.06); }
 .cv-btn-danger {
-  background:rgba(185,28,28,.07); border:1px solid rgba(185,28,28,.22); color:#7f1d1d;
-  font-size:.72rem; padding:0 11px; min-height:36px;
+  background:rgba(185,28,28,.07);border:1px solid rgba(185,28,28,.22);color:#7f1d1d;
+  font-size:.72rem;padding:0 11px;min-height:36px;
 }
-.cv-btn-sm { font-size:.75rem; padding:0 12px; min-height:36px; }
+.cv-btn-sm { font-size:.75rem;padding:0 12px;min-height:36px; }
 .cv-btn-add {
-  display:inline-flex; align-items:center; gap:4px;
-  min-height:36px; padding:0 12px; border-radius:99px; border:none;
+  display:inline-flex;align-items:center;gap:4px;
+  min-height:36px;padding:0 12px;border-radius:99px;border:none;
   background:linear-gradient(135deg,var(--gold),var(--gold-l));
-  color:#1c1917; font-size:.68rem; font-weight:800;
-  cursor:pointer; box-shadow:0 2px 7px rgba(217,119,6,.22);
-  transition:transform .12s; -webkit-tap-highlight-color:transparent;
+  color:#1c1917;font-size:.68rem;font-weight:800;
+  cursor:pointer;box-shadow:0 2px 7px rgba(217,119,6,.22);
+  transition:transform .12s;-webkit-tap-highlight-color:transparent;
 }
 .cv-btn-add:hover { transform:scale(1.04); }
 .cv-btn-rm {
-  display:inline-flex; align-items:center; justify-content:center;
-  min-height:32px; min-width:32px; padding:0 7px;
-  background:#fff; border:1px solid rgba(185,28,28,.25); color:#7f1d1d;
-  border-radius:7px; font-size:.67rem; font-weight:700;
-  cursor:pointer; flex-shrink:0; transition:background .1s;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:32px;min-width:32px;padding:0 7px;
+  background:#fff;border:1px solid rgba(185,28,28,.25);color:#7f1d1d;
+  border-radius:7px;font-size:.67rem;font-weight:700;
+  cursor:pointer;flex-shrink:0;transition:background .1s;
   -webkit-tap-highlight-color:transparent;
 }
 .cv-btn-rm:hover { background:rgba(185,28,28,.07); }
 .cv-ai-btn {
-  display:inline-flex; align-items:center; gap:4px;
-  min-height:32px; padding:0 10px; border-radius:99px;
+  display:inline-flex;align-items:center;gap:4px;
+  min-height:32px;padding:0 10px;border-radius:99px;
   border:1.5px solid rgba(217,119,6,.35);
-  background:rgba(217,119,6,.07); color:#78350f;
-  font-size:.68rem; font-weight:700; cursor:pointer; transition:background .12s;
-  white-space:nowrap; -webkit-tap-highlight-color:transparent;
+  background:rgba(217,119,6,.07);color:#78350f;
+  font-size:.68rem;font-weight:700;cursor:pointer;transition:background .12s;
+  white-space:nowrap;-webkit-tap-highlight-color:transparent;
 }
 .cv-ai-btn:hover:not(:disabled) { background:rgba(217,119,6,.14); }
-.cv-ai-btn:disabled { opacity:.4; cursor:not-allowed; }
+.cv-ai-btn:disabled { opacity:.4;cursor:not-allowed; }
 .cv-file-btn { cursor:pointer; }
 .cv-file-btn input[type="file"] { display:none; }
 .cv-spinner {
-  width:11px; height:11px;
-  border:2px solid currentColor; border-top-color:transparent;
-  border-radius:50%; animation:spin .6s linear infinite;
-  display:inline-block; flex-shrink:0;
+  width:11px;height:11px;
+  border:2px solid currentColor;border-top-color:transparent;
+  border-radius:50%;animation:spin .6s linear infinite;
+  display:inline-block;flex-shrink:0;
 }
 @keyframes spin { to{transform:rotate(360deg)} }
 
-/* Desktop layout */
 @media (min-width:960px) {
   .cv-main-tabs { display:none; }
   .cv-panel { display:block!important; }
-  .cv-grid { display:grid; grid-template-columns:440px 1fr; gap:14px; align-items:start; }
+  .cv-grid { display:grid;grid-template-columns:440px 1fr;gap:14px;align-items:start; }
   .cv-col-prev { min-width: 500px; }
   .cv-desktop-only { display:block!important; }
 }
@@ -399,36 +376,35 @@ textarea.cv-inp { height:auto; min-height:80px; padding:10px 11px; resize:vertic
   .cv-desktop-only { display:none!important; }
 }
 
-/* Print modal */
 .cv-modal-backdrop {
-  position:fixed; inset:0; z-index:999;
+  position:fixed;inset:0;z-index:999;
   background:rgba(0,0,0,.48);
-  display:flex; align-items:flex-end; padding:0;
+  display:flex;align-items:flex-end;padding:0;
 }
-@media (min-width:560px) { .cv-modal-backdrop { align-items:center; padding:20px; } }
+@media (min-width:560px) { .cv-modal-backdrop { align-items:center;padding:20px; } }
 .cv-modal {
-  background:#fff; border-radius:16px 16px 0 0;
-  padding:20px 16px; width:100%;
+  background:#fff;border-radius:16px 16px 0 0;
+  padding:20px 16px;width:100%;
   animation:slideUp .22s ease;
   box-shadow:0 -6px 28px rgba(0,0,0,.18);
 }
-@media (min-width:560px) { .cv-modal { border-radius:16px; max-width:420px; margin:0 auto; animation:fadeScl .18s ease; } }
+@media (min-width:560px) { .cv-modal { border-radius:16px;max-width:420px;margin:0 auto;animation:fadeScl .18s ease; } }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:none} }
 @keyframes fadeScl { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
 `;
 
-/* ================================================================
-   CONSTANTS
-================================================================ */
-const STORAGE_KEY = "cvmk_v11";
+const STORAGE_KEY = "cvmk_v12_apex";
 
 const FONTS = [
-  { id: "outfit",   l: "Outfit",   s: "'Outfit',sans-serif" },
-  { id: "sora",     l: "Sora",     s: "'Sora',sans-serif" },
-  { id: "jakarta",  l: "Jakarta",  s: "'Plus Jakarta Sans',sans-serif" },
-  { id: "lora",     l: "Lora",     s: "'Lora','Georgia',serif" },
-  { id: "garamond", l: "Garamond", s: "'Cormorant Garamond','Georgia',serif" },
-  { id: "playfair", l: "Playfair", s: "'Playfair Display','Georgia',serif" },
+  { id: "outfit",    l: "Outfit",    s: "'Outfit',sans-serif" },
+  { id: "sora",      l: "Sora",      s: "'Sora',sans-serif" },
+  { id: "jakarta",   l: "Jakarta",   s: "'Plus Jakarta Sans',sans-serif" },
+  { id: "dmsans",    l: "DM Sans",   s: "'DM Sans','Inter',sans-serif" },
+  { id: "inter",     l: "Inter",     s: "'Inter','Outfit',sans-serif" },
+  { id: "lora",      l: "Lora",      s: "'Lora','Georgia',serif" },
+  { id: "garamond",  l: "Garamond",  s: "'Cormorant Garamond','Georgia',serif" },
+  { id: "playfair",  l: "Playfair",  s: "'Playfair Display','Georgia',serif" },
+  { id: "sourceserif", l: "Source Serif", s: "'Source Serif 4','Georgia',serif" },
 ];
 
 const FSIZES = { small: "10.5px", medium: "12px", large: "13.5px" };
@@ -488,9 +464,6 @@ const GENDERS        = ["","Male","Female","Non-binary","Other","Prefer not to s
 const NOTICE_PERIODS = ["","Immediately Available","1 Week","2 Weeks","1 Month","2 Months","3 Months","6 Months"];
 const DRIVING_LIC    = ["","UAE Light Vehicle","UAE Heavy Vehicle","Saudi Arabia","Kuwait","Qatar","Bahrain","Oman","UK Full","US Driver's License","European","International","Class A","Class B","Class C"];
 
-/* ================================================================
-   UTILS
-================================================================ */
 const uid   = () => Math.random().toString(36).slice(2, 9);
 const lines = v  => String(v || "").split("\n").map(s => s.trim()).filter(Boolean);
 
@@ -498,14 +471,14 @@ const INIT_DATA = () => ({
   fullName:"", title:"", email:"", phoneCode:"+971", phoneNum:"",
   location:"", linkedin:"", github:"", website:"",
   nationality:"", dob:"", drivingLicense:"", marital:"", gender:"", notice:"",
-  summary:"", skills:"", hobbies:"", photoDataUrl:"",
+  summary:"", skills:"", hobbies:"", photoDataUrl:"", qrDataUrl:"",
+  compass:"",
+  kpis:[],
+  caseStudies:[],
   experience:[], education:[], projects:[], certifications:[],
   languages:[], awards:[], publications:[], volunteer:[], references:[],
 });
 
-/* ================================================================
-   TOASTS
-================================================================ */
 function Toasts({ toasts, onDismiss }) {
   return (
     <div className="cv-toasts" role="status" aria-live="polite" aria-atomic="false">
@@ -519,9 +492,6 @@ function Toasts({ toasts, onDismiss }) {
   );
 }
 
-/* ================================================================
-   FIELD
-================================================================ */
 function Field({ label, id, children, span2 }) {
   return (
     <div className={`cv-field${span2 ? " cv-span2" : ""}`}>
@@ -531,9 +501,6 @@ function Field({ label, id, children, span2 }) {
   );
 }
 
-/* ================================================================
-   EXPERIENCE ITEM
-================================================================ */
 function ExpItem({ item, onUpdate, onRemove }) {
   const [L, setL] = useState({ ...item });
   const upd = (k, v) => { const n = { ...L, [k]: v }; setL(n); onUpdate(n); };
@@ -605,9 +572,6 @@ function ExpItem({ item, onUpdate, onRemove }) {
   );
 }
 
-/* ================================================================
-   EDUCATION ITEM
-================================================================ */
 function EduItem({ item, onUpdate, onRemove, onAiNotes }) {
   const [L, setL] = useState({ ...item });
   const upd = (k, v) => { const n = { ...L, [k]: v }; setL(n); onUpdate(n); };
@@ -666,9 +630,6 @@ function EduItem({ item, onUpdate, onRemove, onAiNotes }) {
   );
 }
 
-/* ================================================================
-   GENERIC SECTION ITEM
-================================================================ */
 function SItem({ item, onUpdate, onRemove, onAiDesc, onAiNotes, children }) {
   const [L, setL] = useState({ ...item });
   const upd = (k, v) => { const n = { ...L, [k]: v }; setL(n); onUpdate(n); };
@@ -676,13 +637,11 @@ function SItem({ item, onUpdate, onRemove, onAiDesc, onAiNotes, children }) {
   return children(L, upd, onRemove, onAiDesc, onAiNotes);
 }
 
-/* ================================================================
-   MAIN CLIENT COMPONENT
-================================================================ */
-export default function CvMakerClient() {
-  /* UI state */
+export default function CvMakerClient({
+  answerBlocks, trustStats, templates, features, audiences, regions, helpfulContent
+}) {
   const [data,      setData]      = useState(INIT_DATA);
-  const [tmpl,      setTmpl]      = useState("executive-pro");
+  const [tmpl,      setTmpl]      = useState("modern-stack");
   const [accent,    setAccent]    = useState("#1e3a8a");
   const [fontId,    setFontId]    = useState("outfit");
   const [fontSize,  setFontSize]  = useState("medium");
@@ -699,7 +658,6 @@ export default function CvMakerClient() {
   const paperRef      = useRef(null);
   const saveTimer     = useRef(null);
 
-  /* Toast */
   const toast = useCallback((msg, type = "inf", dur = 3200) => {
     const id = uid();
     setToasts(t => [...t, { id, msg, type }]);
@@ -707,7 +665,6 @@ export default function CvMakerClient() {
   }, []);
   const dismissToast = id => setToasts(t => t.filter(x => x.id !== id));
 
-  /* Persist / load */
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -729,7 +686,6 @@ export default function CvMakerClient() {
     }, 400);
   }, [data, tmpl, accent, fontId, fontSize, paper]);
 
-  /* Zoom */
   const fitZoom = useCallback(() => {
     if (!prevScrollRef.current) return;
     const cw = prevScrollRef.current.clientWidth - 20;
@@ -763,13 +719,11 @@ export default function CvMakerClient() {
 
   useEffect(() => { if (mainTab === "preview") setTimeout(fitZoom, 50); }, [mainTab, fitZoom]);
 
-  /* Data helpers */
   const sf         = (k, v) => setData(d => ({ ...d, [k]: v }));
   const addItem    = (sec, tpl) => setData(d => ({ ...d, [sec]: [...(d[sec] || []), { id: uid(), ...tpl }] }));
   const removeItem = (sec, id)  => setData(d => ({ ...d, [sec]: d[sec].filter(x => x.id !== id) }));
   const updateItem = (sec, upd) => setData(d => ({ ...d, [sec]: d[sec].map(x => x.id === upd.id ? upd : x) }));
 
-  /* Photo upload */
   const uploadPhoto = e => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -780,7 +734,16 @@ export default function CvMakerClient() {
     r.readAsDataURL(f);
   };
 
-  /* JSON export / import */
+  const uploadQR = e => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) return toast("Pick an image file", "err");
+    if (f.size > 2e6)                  return toast("Max 2MB", "err");
+    const r = new FileReader();
+    r.onload = ev => { sf("qrDataUrl", ev.target.result); toast("QR code uploaded ✅", "ok"); };
+    r.readAsDataURL(f);
+  };
+
   const exportJSON = () => {
     const b = new Blob([JSON.stringify({ data, tmpl, accent, fontId, fontSize, paper }, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
@@ -810,12 +773,11 @@ export default function CvMakerClient() {
     e.target.value = "";
   };
 
-  /* Reset */
   const resetAll = () => {
     if (!window.confirm("Reset all CV data?")) return;
     localStorage.removeItem(STORAGE_KEY);
     setData(INIT_DATA());
-    setTmpl("executive-pro");
+    setTmpl("modern-stack");
     setAccent("#1e3a8a");
     setFontId("outfit");
     setFontSize("medium");
@@ -823,11 +785,6 @@ export default function CvMakerClient() {
     toast("Reset complete ✅", "ok");
   };
 
-  /* ================================================================
-     AI FUNCTIONS
-     ⚠️  import.meta.env → process.env  (Next.js convention)
-         VITE_SUPABASE_URL → NEXT_PUBLIC_SUPABASE_URL
-  ================================================================ */
   const callClaude = async (prompt) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/cv-ai`,
@@ -841,7 +798,7 @@ export default function CvMakerClient() {
     setAiLoading(l => ({ ...l, summary: true }));
     toast("AI writing summary…", "inf", 8000);
     try {
-      const sk      = lines(data.skills).slice(0, 6).join(", ") || "various skills";
+      const sk = lines(data.skills).slice(0, 6).join(", ") || "various skills";
       const expLine = (data.experience || []).slice(0, 2).map(e => `${e.role} at ${e.company}`).join("; ");
       const existing = data.summary?.trim();
       const text = await callClaude(
@@ -860,6 +817,28 @@ Rules:
       if (text) { sf("summary", text); toast("Summary written ✅", "ok"); }
     } catch { toast("AI error — check console", "err"); }
     finally   { setAiLoading(l => ({ ...l, summary: false })); }
+  };
+
+  const aiCompass = async () => {
+    setAiLoading(l => ({ ...l, compass: true }));
+    toast("AI writing professional compass…", "inf", 8000);
+    try {
+      const text = await callClaude(
+        `Write a powerful 2-3 sentence "Professional Compass" for this person:
+Name: ${data.fullName || "Professional"}
+Job Title: ${data.title || "Professional"}
+Current Summary: ${data.summary || "Not specified"}
+Experience: ${(data.experience || []).slice(0, 3).map(e => `${e.role} at ${e.company}`).join("; ") || "Not specified"}
+Rules:
+- Future-focused career narrative
+- States where they're heading professionally
+- Mentions years of experience and core expertise
+- Inspiring but realistic
+- Output only the compass text, no labels`
+      );
+      if (text) { sf("compass", text); toast("Professional compass written ✅", "ok"); }
+    } catch { toast("AI error", "err"); }
+    finally { setAiLoading(l => ({ ...l, compass: false })); }
   };
 
   const aiSkills = async () => {
@@ -951,9 +930,6 @@ Rules:
     if (t) aiBullets(t);
   }, [data.experience]);
 
-  /* ================================================================
-     ATS SCORE
-  ================================================================ */
   const { score: atsScore, checks: atsChecks } = useMemo(() => {
     const d = data;
     let sc = 0;
@@ -964,7 +940,7 @@ Rules:
     ck(d.email?.trim(),                                                               "Email address",                     8);
     ck(d.phoneNum?.trim(),                                                            "Phone number",                      5);
     ck(d.location?.trim(),                                                            "Location present",                  5);
-    ck((d.summary || "").length > 60,                                                 "Professional summary (60+ chars)",  15);
+    ck((d.summary || d.compass || "").length > 60,                                     "Professional summary (60+ chars)",  15);
     const sk = lines(d.skills).length;
     ck(sk >= 6,                                                                       `${sk} skills listed (aim 6+)`,     12);
     const ex = (d.experience || []).filter(x => (x.role || x.company || "").trim()).length;
@@ -979,15 +955,11 @@ Rules:
 
   const atsColor = atsScore >= 80 ? "#047857" : atsScore >= 50 ? "#d97706" : "#b91c1c";
 
-  /* CV HTML (memoised) */
   const cvHtml = useMemo(
     () => buildCvHtml(data, tmpl, accent, fontId, fontSize, paper, FONTS, FSIZES, PAPERS),
     [data, tmpl, accent, fontId, fontSize, paper]
   );
 
-  /* ================================================================
-     RENDER
-  ================================================================ */
   return (
     <>
       <style>{APP_CSS}</style>
@@ -998,10 +970,8 @@ Rules:
       <div className="cvapp">
         <div className="cv-wrap">
 
-          {/* HERO */}
           <header className="cv-hero">
             <div className="cv-hero-l">
-              {/* Breadcrumb — semantic, crawlable */}
               <nav aria-label="Breadcrumb" style={{ fontSize: ".65rem", color: "#94a3b8", marginBottom: 6, display: "flex", gap: 4, alignItems: "center" }}>
                 <Link href="/" style={{ color: "#1a3a8f", textDecoration: "none", fontWeight: 600 }}>Home</Link>
                 <span aria-hidden="true">›</span>
@@ -1023,7 +993,6 @@ Rules:
               </ul>
             </div>
 
-            {/* ATS Ring */}
             <div className="cv-ats-wrap">
               <div
                 className="cv-ats-ring"
@@ -1046,7 +1015,6 @@ Rules:
             </div>
           </header>
 
-          {/* ATS Panel */}
           <div
             id="ats-panel"
             className={`cv-ats-panel${atsOpen ? " open" : ""}`}
@@ -1062,7 +1030,6 @@ Rules:
             ))}
           </div>
 
-          {/* TOOLBAR */}
           <nav className="cv-toolbar" aria-label="CV file actions">
             <div className="cv-tbr">
               <label className="cv-btn cv-btn-ghost cv-btn-sm cv-file-btn" title="Load saved CV">
@@ -1075,7 +1042,6 @@ Rules:
             </div>
           </nav>
 
-          {/* MOBILE 3-TAB NAV */}
           <nav className="cv-main-tabs" role="tablist" aria-label="CV editor sections">
             {[
               { id: "edit",      ico: "✍️", lbl: "Edit"      },
@@ -1095,22 +1061,19 @@ Rules:
             ))}
           </nav>
 
-          {/* MAIN GRID */}
           <div className="cv-grid">
 
-            {/* EDIT PANEL */}
             <section
               className={`cv-col-form cv-panel${mainTab === "edit" ? " on" : ""}`}
               id="panel-edit"
               role="tabpanel"
               aria-label="Edit CV content"
             >
-              {/* Sub-tabs */}
               <nav className="cv-ftabs" role="tablist" aria-label="CV form sections">
                 {[
                   ["personal",   "👤", "Personal"],
                   ["experience", "💼", "Work"],
-                  ["education",  "🎓", "Education"],
+                  ["education",  "🎓", "Edu"],
                   ["skills",     "🛠",  "Skills"],
                   ["extras",     "⭐", "Extras"],
                 ].map(([tab, ico, lbl]) => (
@@ -1127,7 +1090,7 @@ Rules:
                 ))}
               </nav>
 
-              {/* PERSONAL */}
+              {/* PERSONAL TAB */}
               <div className={`cv-tpanel${activeTab === "personal" ? " on" : ""}`} role="tabpanel">
                 <div className="cv-card">
                   <h2 className="cv-card-t" style={{ marginBottom: 12 }}>👤 Personal Details</h2>
@@ -1208,7 +1171,6 @@ Rules:
                       </select>
                     </Field>
                   </div>
-                  {/* Photo */}
                   <div className="cv-photo-row">
                     <div className="cv-photo-thumb" aria-hidden="true">
                       {data.photoDataUrl ? <img src={data.photoDataUrl} alt="Profile preview" /> : "👤"}
@@ -1241,9 +1203,76 @@ Rules:
                     placeholder="Results-driven engineer with 8+ years delivering complex projects on time and under budget…"
                     value={data.summary || ""} onChange={e => sf("summary", e.target.value)} />
                 </div>
+
+                <div className="cv-card">
+                  <div className="cv-card-h">
+                    <h2 className="cv-card-t">🧭 Professional Compass</h2>
+                    <button className="cv-ai-btn" disabled={!!aiLoading.compass} onClick={aiCompass}
+                      aria-label="Generate compass with AI">
+                      {aiLoading.compass ? <><span className="cv-spinner" />…</> : "✨ AI Write"}
+                    </button>
+                  </div>
+                  <p style={{ fontSize: ".7rem", color: "#4b5563", marginBottom: 6 }}>
+                    A future-focused career narrative. Used in Apex Pro and executive templates.
+                  </p>
+                  <label className="cv-lbl" htmlFor="p-compass" style={{ marginBottom: 4 }}>Career direction statement</label>
+                  <textarea id="p-compass" className="cv-inp" rows={3}
+                    placeholder="A data-driven transformation leader with a 14-year compass pointing from engineering deep dives to C-suite strategy…"
+                    value={data.compass || ""} onChange={e => sf("compass", e.target.value)} />
+                </div>
+
+                <div className="cv-card">
+                  <h2 className="cv-card-t" style={{ marginBottom: 10 }}>📊 KPI Highlights</h2>
+                  <p style={{ fontSize: ".7rem", color: "#4b5563", marginBottom: 8 }}>
+                    Add 2-4 key metrics that showcase your impact at a glance.
+                  </p>
+                  {(data.kpis || []).map(item => (
+                    <SItem key={item.id} item={item}
+                      onUpdate={u => updateItem("kpis", u)}
+                      onRemove={() => removeItem("kpis", item.id)}>
+                      {(L, upd, rm) => (
+                        <div className="cv-shell" style={{ padding: "10px 11px", marginTop: 6 }}>
+                          <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
+                            <input className="cv-inp" value={L.value} placeholder="e.g. $2.4M"
+                              style={{ flex: 1 }} aria-label="KPI value"
+                              onChange={e => upd("value", e.target.value)} />
+                            <input className="cv-inp" value={L.label} placeholder="e.g. Revenue Generated"
+                              style={{ flex: 2 }} aria-label="KPI label"
+                              onChange={e => upd("label", e.target.value)} />
+                            <button className="cv-btn-rm" onClick={rm} aria-label="Remove KPI">✕</button>
+                          </div>
+                        </div>
+                      )}
+                    </SItem>
+                  ))}
+                  <button className="cv-btn-add" style={{ marginTop: 9 }}
+                    onClick={() => addItem("kpis", { value: "", label: "" })}>
+                    + Add KPI
+                  </button>
+                </div>
+
+                <div className="cv-card">
+                  <h2 className="cv-card-t" style={{ marginBottom: 10 }}>🔲 QR Code (Portfolio Link)</h2>
+                  <div className="cv-photo-row">
+                    <div className="cv-photo-thumb" aria-hidden="true" style={{ borderRadius: 8 }}>
+                      {data.qrDataUrl ? <img src={data.qrDataUrl} alt="QR preview" /> : "🔲"}
+                    </div>
+                    <div className="cv-photo-btns">
+                      <label className="cv-btn cv-btn-ghost cv-btn-sm cv-file-btn">
+                        <span aria-hidden="true">📱</span> Upload QR
+                        <input type="file" accept="image/*" onChange={uploadQR} aria-label="Upload QR code" />
+                      </label>
+                      {data.qrDataUrl && (
+                        <button className="cv-btn cv-btn-danger" onClick={() => sf("qrDataUrl", "")}>
+                          ✕ Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* EXPERIENCE */}
+              {/* EXPERIENCE TAB */}
               <div className={`cv-tpanel${activeTab === "experience" ? " on" : ""}`} role="tabpanel">
                 <div className="cv-card">
                   <div className="cv-card-h">
@@ -1262,9 +1291,66 @@ Rules:
                       onRemove={() => removeItem("experience", item.id)} />
                   ))}
                 </div>
+
+                <div className="cv-card">
+                  <div className="cv-card-h">
+                    <h2 className="cv-card-t">📋 Case Studies</h2>
+                    <button className="cv-btn-add" aria-label="Add case study" onClick={() => addItem("caseStudies", {
+                      name:"", challenge:"", approach:"", result:"", outcome:"",
+                    })}>+ Add</button>
+                  </div>
+                  {!(data.caseStudies || []).length && (
+                    <div className="cv-empty" role="status">📋 No case studies yet. Used in Apex Pro template.</div>
+                  )}
+                  {(data.caseStudies || []).map(item => (
+                    <SItem key={item.id} item={item}
+                      onUpdate={u => updateItem("caseStudies", u)}
+                      onRemove={() => removeItem("caseStudies", item.id)}>
+                      {(L, upd, rm) => {
+                        const bid = `cs-${L.id}`;
+                        return (
+                          <div className="cv-shell">
+                            <div className="cv-shell-h">
+                              <span className="cv-shell-t">{L.name || "New Case Study"}</span>
+                              <button className="cv-btn-rm" onClick={rm} aria-label="Remove case study">✕</button>
+                            </div>
+                            <div className="cv-g2">
+                              <Field label="Project Name *" id={`${bid}-name`} span2>
+                                <input id={`${bid}-name`} className="cv-inp" value={L.name}
+                                  placeholder="Digital Transformation Project" onChange={e => upd("name", e.target.value)} />
+                              </Field>
+                              <Field label="Outcome Summary" id={`${bid}-outcome`} span2>
+                                <input id={`${bid}-outcome`} className="cv-inp" value={L.outcome}
+                                  placeholder="Saved $2M annually" onChange={e => upd("outcome", e.target.value)} />
+                              </Field>
+                            </div>
+                            <div className="cv-field" style={{ marginTop: 8 }}>
+                              <label className="cv-lbl" htmlFor={`${bid}-challenge`}>Challenge</label>
+                              <textarea id={`${bid}-challenge`} className="cv-inp" rows={2}
+                                value={L.challenge} placeholder="What problem were you solving?"
+                                onChange={e => upd("challenge", e.target.value)} />
+                            </div>
+                            <div className="cv-field" style={{ marginTop: 8 }}>
+                              <label className="cv-lbl" htmlFor={`${bid}-approach`}>Approach</label>
+                              <textarea id={`${bid}-approach`} className="cv-inp" rows={2}
+                                value={L.approach} placeholder="How did you solve it?"
+                                onChange={e => upd("approach", e.target.value)} />
+                            </div>
+                            <div className="cv-field" style={{ marginTop: 8 }}>
+                              <label className="cv-lbl" htmlFor={`${bid}-result`}>Result</label>
+                              <textarea id={`${bid}-result`} className="cv-inp" rows={2}
+                                value={L.result} placeholder="What was the measurable impact?"
+                                onChange={e => upd("result", e.target.value)} />
+                            </div>
+                          </div>
+                        );
+                      }}
+                    </SItem>
+                  ))}
+                </div>
               </div>
 
-              {/* EDUCATION */}
+              {/* EDUCATION TAB */}
               <div className={`cv-tpanel${activeTab === "education" ? " on" : ""}`} role="tabpanel">
                 <div className="cv-card">
                   <div className="cv-card-h">
@@ -1285,7 +1371,6 @@ Rules:
                   ))}
                 </div>
 
-                {/* Projects */}
                 <div className="cv-card">
                   <div className="cv-card-h">
                     <h2 className="cv-card-t">🛠 Projects</h2>
@@ -1342,7 +1427,6 @@ Rules:
                   ))}
                 </div>
 
-                {/* Certifications */}
                 <div className="cv-card">
                   <div className="cv-card-h">
                     <h2 className="cv-card-t">✅ Certifications</h2>
@@ -1393,7 +1477,7 @@ Rules:
                 </div>
               </div>
 
-              {/* SKILLS */}
+              {/* SKILLS TAB */}
               <div className={`cv-tpanel${activeTab === "skills" ? " on" : ""}`} role="tabpanel">
                 <div className="cv-card">
                   <div className="cv-card-h">
@@ -1415,7 +1499,6 @@ Rules:
                   </div>
                 </div>
 
-                {/* Languages */}
                 <div className="cv-card">
                   <h2 className="cv-card-t" style={{ marginBottom: 10 }}>🌐 Languages</h2>
                   {!(data.languages || []).length && <div className="cv-empty" role="status">🌐 No languages added.</div>}
@@ -1449,7 +1532,6 @@ Rules:
                   </button>
                 </div>
 
-                {/* Hobbies */}
                 <div className="cv-card">
                   <h2 className="cv-card-t" style={{ marginBottom: 8 }}>🎯 Hobbies &amp; Interests</h2>
                   <p style={{ fontSize: ".7rem", color: "#4b5563", marginBottom: 6 }}>One per line or comma-separated</p>
@@ -1460,9 +1542,8 @@ Rules:
                 </div>
               </div>
 
-              {/* EXTRAS */}
+              {/* EXTRAS TAB */}
               <div className={`cv-tpanel${activeTab === "extras" ? " on" : ""}`} role="tabpanel">
-                {/* Awards */}
                 <div className="cv-card">
                   <div className="cv-card-h">
                     <h2 className="cv-card-t">🏆 Awards</h2>
@@ -1508,7 +1589,6 @@ Rules:
                   ))}
                 </div>
 
-                {/* References */}
                 <div className="cv-card">
                   <div className="cv-card-h">
                     <h2 className="cv-card-t">📋 References</h2>
@@ -1572,7 +1652,6 @@ Rules:
               </div>
             </section>
 
-            {/* RIGHT PANEL: Templates + Preview */}
             <section
               className={`cv-col-prev cv-panel${mainTab === "templates" || mainTab === "preview" ? " on" : ""}`}
               id="panel-right"
@@ -1620,9 +1699,9 @@ Rules:
               </div>
             </section>
 
-          </div>{/* /cv-grid */}
-        </div>{/* /cv-wrap */}
-      </div>{/* /cvapp */}
+          </div>
+        </div>
+      </div>
     </>
   );
 }

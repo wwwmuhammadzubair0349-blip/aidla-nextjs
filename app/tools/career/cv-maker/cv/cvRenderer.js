@@ -1,16 +1,6 @@
-/* career/cv/cvRenderer.js
-   ----------------------------------------------------------------
-   UNIVERSAL PREMIUM CV RENDERER (VIP EDITION)
-   - 17 Templates: 7 original + 10 new Enhancv-inspired ATS designs
-   - Data-driven Zone Layout Engine
-   - Thumbnail lives inside template object
-   - Add template once here -> shows automatically in Templates tab
-   - Perfect Object-Fit Clipping for Photos (Circles/Squares)
-   - ALL user fields rendered
-   ---------------------------------------------------------------- */
+/* career/cv/cvRenderer.js - UNIVERSAL PREMIUM CV RENDERER v5.0 */
 
 const THUMBS = {
-  /* ── Original 7 ── */
   modernStack: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="0" y="0" width="62" height="4" fill="${c}"/>
@@ -89,9 +79,6 @@ const THUMBS = {
     <rect x="30" y="35" width="18" height="1.5" rx="0.5" fill="#e2e8f0"/>
   `,
 
-  /* ── 10 New Templates ── */
-
-  // 1. Diamond — centered, single column
   diamond: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="0" y="0" width="62" height="2" fill="${c}"/>
@@ -106,8 +93,6 @@ const THUMBS = {
     <rect x="8" y="67" width="14" height="2" rx="1" fill="#0f172a"/>
     <rect x="8" y="72" width="46" height="1.5" rx="0.75" fill="#e2e8f0"/>
   `,
-
-  // 2. Ivy League — classic two-col academic
   ivyLeague: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="8" y="8" width="30" height="4" rx="1" fill="#0f172a"/>
@@ -123,8 +108,6 @@ const THUMBS = {
     <rect x="38" y="50" width="16" height="2" rx="1" fill="${c}"/>
     <rect x="38" y="55" width="16" height="1.5" rx="0.75" fill="#e2e8f0"/>
   `,
-
-  // 3. Double Column — balanced modern
   doubleCol: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="0" y="0" width="62" height="20" fill="${c}"/>
@@ -142,8 +125,6 @@ const THUMBS = {
     <rect x="35" y="45" width="19" height="2" rx="1" fill="${c}" opacity="0.8"/>
     <rect x="35" y="50" width="14" height="1.5" rx="0.75" fill="#e2e8f0"/>
   `,
-
-  // 4. Navy Executive — left navy bar
   navyExec: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="0" y="0" width="5" height="82" fill="#0b1437"/>
@@ -158,8 +139,6 @@ const THUMBS = {
     <rect x="10" y="60" width="44" height="1.5" rx="0.75" fill="#e2e8f0"/>
     <rect x="10" y="64" width="30" height="1.5" rx="0.75" fill="#e2e8f0"/>
   `,
-
-  // 5. Timeline Pro — timeline dots
   timelinePro: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="8" y="8" width="30" height="4" rx="1" fill="#0f172a"/>
@@ -177,8 +156,6 @@ const THUMBS = {
     <rect x="20" y="61" width="22" height="1.5" rx="0.75" fill="#0f172a"/>
     <rect x="20" y="65" width="26" height="1" rx="0.5" fill="#e2e8f0"/>
   `,
-
-  // 6. Coral Modern — warm accent top bar + single col
   coralModern: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="0" y="0" width="62" height="22" fill="${c}" opacity="0.12"/>
@@ -195,8 +172,6 @@ const THUMBS = {
     <rect x="8" y="72" width="22" height="3" rx="1.5" fill="${c}" opacity="0.15"/>
     <rect x="32" y="72" width="14" height="3" rx="1.5" fill="${c}" opacity="0.15"/>
   `,
-
-  // 7. Slate Pro — dark full header band
   slatePro: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="0" y="0" width="62" height="28" fill="#1e293b"/>
@@ -211,8 +186,6 @@ const THUMBS = {
     <rect x="8" y="61" width="46" height="1.5" rx="0.75" fill="#e2e8f0"/>
     <rect x="8" y="65" width="28" height="1.5" rx="0.75" fill="#e2e8f0"/>
   `,
-
-  // 8. Compact ATS — ultra clean single col
   compactAts: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="8" y="8" width="34" height="5" rx="1" fill="#0f172a"/>
@@ -229,8 +202,6 @@ const THUMBS = {
     <rect x="8" y="65" width="20" height="2" rx="1" fill="${c}" opacity="0.15"/>
     <rect x="30" y="65" width="14" height="2" rx="1" fill="${c}" opacity="0.15"/>
   `,
-
-  // 9. Bold Header — huge name, minimal body
   boldHeader: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="0" y="0" width="62" height="32" fill="#f8fafc"/>
@@ -246,8 +217,6 @@ const THUMBS = {
     <rect x="10" y="63" width="44" height="1.5" rx="0.75" fill="#e2e8f0"/>
     <rect x="10" y="67" width="32" height="1.5" rx="0.75" fill="#e2e8f0"/>
   `,
-
-  // 10. Dubai Pro — Gulf two-col right sidebar skills
   dubaiPro: (c) => `
     <rect width="62" height="82" rx="4" fill="#fff"/>
     <rect x="0" y="0" width="62" height="5" fill="${c}"/>
@@ -268,38 +237,46 @@ const THUMBS = {
     <rect x="44" y="47" width="14" height="2" rx="1" fill="${c}" opacity="0.4"/>
     <rect x="44" y="52" width="14" height="2" rx="1" fill="#e2e8f0"/>
   `,
+  apexPro: (c) => `
+    <rect width="62" height="82" rx="4" fill="#fff"/>
+    <rect x="0" y="0" width="62" height="3" fill="#0f172a"/>
+    <rect x="8" y="10" width="30" height="4" rx="1" fill="#0f172a"/>
+    <rect x="8" y="17" width="16" height="1.5" rx="0.75" fill="${c}"/>
+    <rect x="46" y="8" width="10" height="10" rx="2" fill="${c}" opacity="0.1"/>
+    <rect x="8" y="28" width="46" height="0.5" fill="#e2e8f0"/>
+    <rect x="8" y="34" width="14" height="2" rx="1" fill="#0f172a"/>
+    <rect x="8" y="39" width="46" height="1.5" rx="0.75" fill="#e2e8f0"/>
+    <rect x="8" y="44" width="38" height="1.5" rx="0.75" fill="#e2e8f0"/>
+    <rect x="8" y="54" width="14" height="2" rx="1" fill="${c}"/>
+    <rect x="8" y="59" width="46" height="1.5" rx="0.75" fill="#e2e8f0"/>
+    <rect x="8" y="63" width="30" height="1.5" rx="0.75" fill="#e2e8f0"/>
+  `,
 };
 
 export const PREMIUM_TEMPLATES = [
-  /* ── Original 7 ── */
-  { id: 'modern-stack', l: 'Modern Stack',       cat: 'Corporate',  thumb: THUMBS.modernStack  },
-  { id: 'pure-white',   l: 'Pure White',          cat: 'Minimal',    thumb: THUMBS.pureWhite    },
-  { id: 'swiss-clean',  l: 'Swiss Clean',         cat: 'Corporate',  thumb: THUMBS.swissClean   },
-  { id: 'ink-line',     l: 'Ink Line',            cat: 'Minimal',    thumb: THUMBS.inkLine      },
-  { id: 'sidebar-dark', l: 'Sidebar Dark',        cat: 'Executive',  thumb: THUMBS.sidebarDark  },
-  { id: 'gulf-premium', l: 'Gulf Premium',        cat: 'Premium',    thumb: THUMBS.gulfPremium  },
-  { id: 'infographic',  l: 'Infographic Split',   cat: 'Creative',   thumb: THUMBS.infographic  },
-
-  /* ── 10 New Enhancv-inspired ── */
-  { id: 'diamond',      l: 'Diamond',             cat: 'Minimal',    thumb: THUMBS.diamond      },
-  { id: 'ivy-league',   l: 'Ivy League',          cat: 'Academic',   thumb: THUMBS.ivyLeague    },
-  { id: 'double-col',   l: 'Double Column',       cat: 'Corporate',  thumb: THUMBS.doubleCol    },
-  { id: 'navy-exec',    l: 'Navy Executive',      cat: 'Executive',  thumb: THUMBS.navyExec     },
-  { id: 'timeline-pro', l: 'Timeline Pro',        cat: 'Corporate',  thumb: THUMBS.timelinePro  },
-  { id: 'coral-modern', l: 'Coral Modern',        cat: 'Creative',   thumb: THUMBS.coralModern  },
-  { id: 'slate-pro',    l: 'Slate Pro',           cat: 'Executive',  thumb: THUMBS.slatePro     },
-  { id: 'compact-ats',  l: 'Compact ATS',         cat: 'Minimal',    thumb: THUMBS.compactAts   },
-  { id: 'bold-header',  l: 'Bold Header',         cat: 'Premium',    thumb: THUMBS.boldHeader   },
-  { id: 'dubai-pro',    l: 'Dubai Pro',           cat: 'Premium',    thumb: THUMBS.dubaiPro     },
+  { id: 'modern-stack', l: 'Modern Stack', cat: 'Corporate', thumb: THUMBS.modernStack },
+  { id: 'pure-white', l: 'Pure White', cat: 'Minimal', thumb: THUMBS.pureWhite },
+  { id: 'swiss-clean', l: 'Swiss Clean', cat: 'Corporate', thumb: THUMBS.swissClean },
+  { id: 'ink-line', l: 'Ink Line', cat: 'Minimal', thumb: THUMBS.inkLine },
+  { id: 'sidebar-dark', l: 'Sidebar Dark', cat: 'Executive', thumb: THUMBS.sidebarDark },
+  { id: 'gulf-premium', l: 'Gulf Premium', cat: 'Premium', thumb: THUMBS.gulfPremium },
+  { id: 'infographic', l: 'Infographic Split', cat: 'Creative', thumb: THUMBS.infographic },
+  { id: 'diamond', l: 'Diamond', cat: 'Minimal', thumb: THUMBS.diamond },
+  { id: 'ivy-league', l: 'Ivy League', cat: 'Academic', thumb: THUMBS.ivyLeague },
+  { id: 'double-col', l: 'Double Column', cat: 'Corporate', thumb: THUMBS.doubleCol },
+  { id: 'navy-exec', l: 'Navy Executive', cat: 'Executive', thumb: THUMBS.navyExec },
+  { id: 'timeline-pro', l: 'Timeline Pro', cat: 'Corporate', thumb: THUMBS.timelinePro },
+  { id: 'coral-modern', l: 'Coral Modern', cat: 'Creative', thumb: THUMBS.coralModern },
+  { id: 'slate-pro', l: 'Slate Pro', cat: 'Executive', thumb: THUMBS.slatePro },
+  { id: 'compact-ats', l: 'Compact ATS', cat: 'Minimal', thumb: THUMBS.compactAts },
+  { id: 'bold-header', l: 'Bold Header', cat: 'Premium', thumb: THUMBS.boldHeader },
+  { id: 'dubai-pro', l: 'Dubai Pro', cat: 'Premium', thumb: THUMBS.dubaiPro },
+  { id: 'apex-pro', l: 'Apex Pro', cat: 'Executive', thumb: THUMBS.apexPro },
 ];
 
 export const PREMIUM_CATS = ['All', ...new Set(PREMIUM_TEMPLATES.map(t => t.cat))];
 
-/* ================================================================
-   BUILT-IN LAYOUT CONFIGURATIONS
-================================================================ */
 const BUILT_IN_LAYOUTS = {
-  /* Original 7 */
   'modern-stack': {
     header: ['profile', 'photo'],
     main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'refs', 'hobbies']
@@ -332,8 +309,6 @@ const BUILT_IN_LAYOUTS = {
     ],
     main: ['summary', 'exp', 'edu', 'projects', 'certs', 'awards', 'refs']
   },
-
-  /* New 10 */
   'diamond': {
     header: ['photo', 'profile'],
     main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'refs', 'hobbies']
@@ -345,7 +320,7 @@ const BUILT_IN_LAYOUTS = {
   },
   'double-col': {
     header: ['profile', 'photo'],
-    main: ['summary', 'exp', 'edu', 'projects'],
+    main: ['kpi', 'summary', 'exp', 'edu', 'projects'],
     right: ['skills', 'langs', 'certs', 'awards', 'refs', 'hobbies']
   },
   'navy-exec': {
@@ -374,37 +349,37 @@ const BUILT_IN_LAYOUTS = {
     main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'refs', 'hobbies']
   },
   'dubai-pro': {
-    header: ['profile', 'photo'],
+    header: ['profile', 'photo', 'qr'],
     main: ['summary', 'exp', 'edu', 'projects', 'awards'],
     right: ['skills', 'langs', 'certs', 'refs', 'hobbies']
   },
+  'apex-pro': {
+    header: ['photo', 'profile'],
+    main: ['kpi', 'compass', 'exp', 'edu', 'caseStudy', 'projects'],
+    right: ['skills', 'certs', 'langs', 'awards']
+  },
 };
 
-/* ================================================================
-   BUILT-IN TEMPLATE CSS
-================================================================ */
 const BUILT_IN_CSS = {
-  /* ── Original 7 (unchanged) ── */
   'modern-stack': `
     .cv-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid var(--ac); padding-bottom: 20px; margin-bottom: 24px; }
     .cv-profile-text { flex: 1; padding-right: 20px; }
     .cv-photo-wrapper { width: 95px; height: 95px; border-radius: 50%; border: 3px solid rgba(var(--ac-rgb), 0.15); }
-    .cv-sec-title { border-bottom: 1.5px solid rgba(var(--ac-rgb), 0.2); padding-bottom: 6px; margin-bottom: 14px; color: var(--text); page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { border-bottom: 1.5px solid rgba(var(--ac-rgb), 0.2); padding-bottom: 6px; margin-bottom: 14px; color: var(--text); }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
   `,
   'pure-white': `
     .cv-doc { padding: 45px; }
     .cv-header { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; margin-bottom: 35px; }
     .cv-contact-row { justify-content: center; }
     .cv-photo-wrapper { width: 90px; height: 90px; border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    .cv-sec-title { text-align: center; letter-spacing: 0.2em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 20px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { text-align: center; letter-spacing: 0.2em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 20px; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-item-header { flex-direction: column; align-items: center; text-align: center; gap: 4px; }
     .cv-item-date { text-align: center; }
   `,
   'swiss-clean': `
     .cv-doc { padding: 0; }
-    .cv-body { display: block; }
     .cv-body::after { content: ""; display: table; clear: both; }
     .cv-sidebar { float: left; width: 260px; box-sizing: border-box; background: #f8fafc; padding: 35px 25px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); border-bottom-right-radius: 24px; margin: 0 35px 20px 0; min-height: 92vh; }
     .cv-main { display: block; padding: 35px; }
@@ -414,21 +389,19 @@ const BUILT_IN_CSS = {
     .cv-contact-row { flex-direction: column; gap: 10px; margin-top: 15px; }
     .cv-sidebar .cv-sec-title { margin-top: 30px; font-size: 0.85em; }
     .cv-skills-list li { background: rgba(var(--ac-rgb), 0.08); width: 100%; border-radius: 6px; padding: 8px 12px; }
-    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
   `,
   'ink-line': `
     .cv-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 25px; margin-bottom: 25px; }
     .cv-name { font-weight: 300; letter-spacing: -0.02em; }
     .cv-photo-wrapper { width: 85px; height: 85px; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-    .cv-sec-title { color: var(--ac); display: flex; align-items: center; gap: 10px; margin-bottom: 16px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
+    .cv-sec-title { color: var(--ac); display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
     .cv-sec-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-section { border-left: 2px solid rgba(var(--ac-rgb), 0.2); padding-left: 18px; margin-left: 4px; }
   `,
   'sidebar-dark': `
     .cv-doc { padding: 0; background: #ffffff; }
-    .cv-body { display: block; }
     .cv-body::after { content: ""; display: table; clear: both; }
     .cv-sidebar { float: left; width: 260px; box-sizing: border-box; background: #0b1120; color: #f8fafc; padding: 35px 25px; margin: 0 35px 25px 0; border-bottom-right-radius: 32px; min-height: 92vh; }
     .cv-main { display: block; padding: 35px; }
@@ -440,8 +413,7 @@ const BUILT_IN_CSS = {
     .cv-skills-list li { background: rgba(255,255,255,0.1); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.05); }
     .cv-lang-name { color: #cbd5e1; }
     .cv-lang-bar { background: rgba(255,255,255,0.1); }
-    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
   `,
   'gulf-premium': `
     .cv-doc { border-top: 16px solid var(--ac); padding-top: 30px; }
@@ -450,14 +422,13 @@ const BUILT_IN_CSS = {
     .cv-role { font-weight: 600; color: var(--muted); letter-spacing: 0.15em; }
     .cv-photo-wrapper { width: 100px; height: 100px; border-radius: 50%; box-shadow: 0 10px 25px rgba(var(--ac-rgb), 0.2); border: 2px solid #fff; }
     .cv-body.has-right { display: grid; grid-template-columns: 1fr 230px; gap: 40px; }
-    .cv-sec-title { font-weight: 800; color: var(--ac); border-bottom: 2px solid rgba(var(--ac-rgb), 0.1); padding-bottom: 6px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { font-weight: 800; color: var(--ac); border-bottom: 2px solid rgba(var(--ac-rgb), 0.1); padding-bottom: 6px; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-exp-item { position: relative; padding-left: 20px; border-left: 1px solid rgba(var(--ac-rgb), 0.2); }
     .cv-exp-item::before { content: ""; position: absolute; left: -5px; top: 6px; width: 9px; height: 9px; border-radius: 50%; background: var(--ac); box-shadow: 0 0 0 3px rgba(var(--ac-rgb), 0.2); }
   `,
   'infographic': `
     .cv-doc { padding: 0; }
-    .cv-body { display: block; }
     .cv-body::after { content: ""; display: table; clear: both; }
     .cv-sidebar { float: left; width: 280px; box-sizing: border-box; background: #f8fafc; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); border-bottom-right-radius: 40px; margin: 0 35px 25px 0; padding-bottom: 20px; min-height: 92vh; }
     .cv-main { display: block; padding: 35px; }
@@ -467,14 +438,10 @@ const BUILT_IN_CSS = {
     .cv-name { color: #ffffff; font-size: 2em; line-height: 1.1; }
     .cv-role { color: rgba(255,255,255,0.85); margin-top: 8px; font-size: 0.9em; }
     .cv-contact-row { flex-direction: column; gap: 12px; margin-top: 18px; color: rgba(255,255,255,0.9); }
-    .cv-sec-title { font-weight: 900; letter-spacing: 0.1em; color: var(--text); page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { font-weight: 900; letter-spacing: 0.1em; color: var(--text); }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-skills-list li { background: #ffffff; border: 1px solid var(--line); width: 100%; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
   `,
-
-  /* ── 10 New Templates CSS ── */
-
-  // 1. Diamond — centered, clean, single column
   'diamond': `
     .cv-doc { padding: 50px 55px; border-top: 2px solid var(--ac); border-bottom: 2px solid var(--ac); }
     .cv-header { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
@@ -482,12 +449,10 @@ const BUILT_IN_CSS = {
     .cv-name { font-size: 2.4em; font-weight: 900; letter-spacing: -0.03em; }
     .cv-role { color: var(--ac); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.9em; }
     .cv-contact-row { justify-content: center; }
-    .cv-sec-title { text-align: center; font-size: 0.8em; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ac); border-bottom: none; position: relative; margin-bottom: 18px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
+    .cv-sec-title { text-align: center; font-size: 0.8em; letter-spacing: 0.25em; text-transform: uppercase; color: var(--ac); border-bottom: none; position: relative; margin-bottom: 18px; }
     .cv-sec-title::before, .cv-sec-title::after { content: "—"; margin: 0 10px; opacity: 0.4; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
   `,
-
-  // 2. Ivy League — two-col academic
   'ivy-league': `
     .cv-doc { padding: 40px; border-top: 4px solid #1a1a1a; }
     .cv-header { margin-bottom: 28px; border-bottom: 2px solid #1a1a1a; padding-bottom: 18px; }
@@ -495,15 +460,14 @@ const BUILT_IN_CSS = {
     .cv-role { color: var(--ac); font-weight: 700; font-size: 1em; margin-top: 4px; }
     .cv-contact-row { font-size: 0.82em; color: var(--muted); gap: 8px 18px; margin-top: 8px; }
     .cv-body.has-right { display: grid; grid-template-columns: 1fr 210px; gap: 36px; }
-    .cv-main .cv-sec-title { font-size: 0.88em; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 4px; margin-bottom: 14px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-right .cv-sec-title { font-size: 0.78em; font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ac); border-bottom: 1px solid rgba(var(--ac-rgb), 0.25); padding-bottom: 4px; margin-bottom: 12px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-main .cv-sec-title { font-size: 0.88em; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding-bottom: 4px; margin-bottom: 14px; }
+    .cv-main .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
+    .cv-right .cv-sec-title { font-size: 0.78em; font-weight: 900; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ac); border-bottom: 1px solid rgba(var(--ac-rgb), 0.25); padding-bottom: 4px; margin-bottom: 12px; }
+    .cv-right .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-skills-list li { background: rgba(var(--ac-rgb), 0.08); color: var(--ac); font-weight: 700; }
     .cv-item-title { font-weight: 800; }
     .cv-item-sub { font-style: italic; }
   `,
-
-  // 3. Double Column — bold header band, balanced two-col
   'double-col': `
     .cv-doc { padding: 0; }
     .cv-header { background: var(--ac); color: #fff; padding: 32px 40px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; }
@@ -516,14 +480,13 @@ const BUILT_IN_CSS = {
     .cv-body.has-right { display: grid; grid-template-columns: 1fr 220px; gap: 0; }
     .cv-main { padding: 30px 35px; }
     .cv-right { padding: 30px 25px; background: #f8fafc; border-left: 1px solid var(--line); }
-    .cv-main .cv-sec-title { font-weight: 900; color: var(--ac); border-bottom: 2px solid rgba(var(--ac-rgb), 0.15); padding-bottom: 6px; margin-bottom: 14px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-right .cv-sec-title { font-weight: 900; font-size: 0.8em; letter-spacing: 0.12em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 5px; margin-bottom: 12px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-main .cv-sec-title { font-weight: 900; color: var(--ac); border-bottom: 2px solid rgba(var(--ac-rgb), 0.15); padding-bottom: 6px; margin-bottom: 14px; }
+    .cv-main .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
+    .cv-right .cv-sec-title { font-weight: 900; font-size: 0.8em; letter-spacing: 0.12em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 5px; margin-bottom: 12px; }
+    .cv-right .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-skills-list { gap: 5px; }
     .cv-skills-list li { padding: 3px 10px; font-size: 0.8em; }
   `,
-
-  // 4. Navy Executive — left navy accent bar, clean single col
   'navy-exec': `
     .cv-doc { padding: 0 0 0 5px; border-left: 5px solid #0b1437; }
     .cv-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 35px 40px 28px; border-bottom: 1px solid var(--line); margin-bottom: 0; }
@@ -533,15 +496,13 @@ const BUILT_IN_CSS = {
     .cv-contact-row { margin-top: 10px; gap: 6px 16px; }
     .cv-photo-wrapper { width: 90px; height: 90px; border-radius: 12px; border: 2px solid var(--line); }
     .cv-main { padding: 28px 40px; }
-    .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.15em; text-transform: uppercase; color: #0b1437; border-bottom: 2px solid #0b1437; padding-bottom: 5px; margin-bottom: 14px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.15em; text-transform: uppercase; color: #0b1437; border-bottom: 2px solid #0b1437; padding-bottom: 5px; margin-bottom: 14px; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-item-title { font-weight: 800; color: #0b1437; }
     .cv-item-date { color: var(--ac); font-weight: 800; }
     .cv-exp-item { padding-left: 16px; border-left: 2px solid rgba(var(--ac-rgb), 0.2); position: relative; }
     .cv-exp-item::before { content: ""; position: absolute; left: -5px; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--ac); }
   `,
-
-  // 5. Timeline Pro — timeline dots on experience
   'timeline-pro': `
     .cv-doc { padding: 40px; }
     .cv-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; padding-bottom: 24px; border-bottom: 2px solid var(--line); }
@@ -549,8 +510,8 @@ const BUILT_IN_CSS = {
     .cv-name { font-size: 2.3em; font-weight: 800; }
     .cv-role { color: var(--ac); font-weight: 700; margin-top: 5px; }
     .cv-photo-wrapper { width: 88px; height: 88px; border-radius: 50%; border: 3px solid var(--line); }
-    .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ac); margin-bottom: 18px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ac); margin-bottom: 18px; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-exp-item { position: relative; padding-left: 28px; margin-bottom: 20px; }
     .cv-exp-item::before { content: ""; position: absolute; left: 0; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--ac); box-shadow: 0 0 0 3px rgba(var(--ac-rgb), 0.15); z-index: 1; }
     .cv-exp-item::after { content: ""; position: absolute; left: 4px; top: 18px; width: 2px; bottom: -14px; background: rgba(var(--ac-rgb), 0.15); }
@@ -559,8 +520,6 @@ const BUILT_IN_CSS = {
     .cv-item-date { background: rgba(var(--ac-rgb), 0.08); color: var(--ac); padding: 2px 8px; border-radius: 99px; font-weight: 800; font-size: 0.8em; }
     .cv-skills-list li { background: rgba(var(--ac-rgb), 0.08); color: var(--ac); font-weight: 700; }
   `,
-
-  // 6. Coral Modern — warm tinted hero header, clean body
   'coral-modern': `
     .cv-doc { padding: 0; }
     .cv-header { display: flex; justify-content: space-between; align-items: flex-start; background: rgba(var(--ac-rgb), 0.06); border-top: 3px solid var(--ac); padding: 32px 40px 28px; margin-bottom: 0; }
@@ -569,15 +528,13 @@ const BUILT_IN_CSS = {
     .cv-role { color: var(--ac); font-weight: 700; margin-top: 5px; }
     .cv-photo-wrapper { width: 90px; height: 90px; border-radius: 18px; box-shadow: 0 8px 20px rgba(var(--ac-rgb), 0.18); border: 2px solid rgba(var(--ac-rgb), 0.15); }
     .cv-main { padding: 30px 40px; }
-    .cv-sec-title { font-weight: 900; font-size: 0.88em; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); position: relative; padding-left: 14px; margin-bottom: 16px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
+    .cv-sec-title { font-weight: 900; font-size: 0.88em; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); position: relative; padding-left: 14px; margin-bottom: 16px; }
     .cv-sec-title::before { content: ""; position: absolute; left: 0; top: 2px; bottom: 2px; width: 4px; border-radius: 2px; background: var(--ac); }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-skills-list li { background: rgba(var(--ac-rgb), 0.09); color: var(--ac); font-weight: 700; border: 1px solid rgba(var(--ac-rgb), 0.15); }
     .cv-item-title { font-weight: 800; }
     .cv-item-date { color: var(--ac); font-weight: 800; }
   `,
-
-  // 7. Slate Pro — full-width dark header, clean two-col
   'slate-pro': `
     .cv-doc { padding: 0; }
     .cv-header { background: #1e293b; padding: 36px 40px 30px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; }
@@ -590,13 +547,12 @@ const BUILT_IN_CSS = {
     .cv-body.has-right { display: grid; grid-template-columns: 1fr 220px; gap: 0; }
     .cv-main { padding: 30px 35px; }
     .cv-right { padding: 30px 25px; background: #f8fafc; border-left: 1px solid var(--line); }
-    .cv-main .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.12em; text-transform: uppercase; color: #1e293b; border-bottom: 2px solid #1e293b; padding-bottom: 5px; margin-bottom: 14px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-right .cv-sec-title { font-weight: 900; font-size: 0.78em; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ac); border-bottom: 1px solid rgba(var(--ac-rgb), 0.2); padding-bottom: 5px; margin-bottom: 12px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-main .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.12em; text-transform: uppercase; color: #1e293b; border-bottom: 2px solid #1e293b; padding-bottom: 5px; margin-bottom: 14px; }
+    .cv-main .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
+    .cv-right .cv-sec-title { font-weight: 900; font-size: 0.78em; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ac); border-bottom: 1px solid rgba(var(--ac-rgb), 0.2); padding-bottom: 5px; margin-bottom: 12px; }
+    .cv-right .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-skills-list li { font-size: 0.8em; padding: 3px 10px; }
   `,
-
-  // 8. Compact ATS — pure single column, ultra-clean, max parsability
   'compact-ats': `
     .cv-doc { padding: 36px 44px; font-size: 0.92em; }
     .cv-header { margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #0f172a; }
@@ -604,8 +560,8 @@ const BUILT_IN_CSS = {
     .cv-role { font-size: 1em; font-weight: 600; color: var(--ac); margin-top: 3px; }
     .cv-contact-row { margin-top: 6px; gap: 4px 14px; font-size: 0.82em; }
     .cv-personal-meta { margin-top: 4px; font-size: 0.78em; }
-    .cv-sec-title { font-weight: 900; font-size: 0.82em; letter-spacing: 0.2em; text-transform: uppercase; color: #0f172a; border-bottom: 0.5px solid #0f172a; padding-bottom: 4px; margin-bottom: 12px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { font-weight: 900; font-size: 0.82em; letter-spacing: 0.2em; text-transform: uppercase; color: #0f172a; border-bottom: 0.5px solid #0f172a; padding-bottom: 4px; margin-bottom: 12px; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-section { margin-bottom: 18px; }
     .cv-item { margin-bottom: 12px; }
     .cv-item-title { font-weight: 800; font-size: 0.95em; }
@@ -616,8 +572,6 @@ const BUILT_IN_CSS = {
     .cv-skills-list li { background: rgba(var(--ac-rgb), 0.07); color: var(--text); font-weight: 600; font-size: 0.82em; padding: 3px 9px; }
     .cv-summary { font-size: 0.9em; }
   `,
-
-  // 9. Bold Header — oversized name, left accent bars on sections
   'bold-header': `
     .cv-doc { padding: 0; }
     .cv-header { background: #f8fafc; padding: 36px 44px 28px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--line); margin-bottom: 0; }
@@ -628,14 +582,12 @@ const BUILT_IN_CSS = {
     .cv-photo-wrapper { width: 95px; height: 95px; border-radius: 50%; border: 3px solid rgba(var(--ac-rgb), 0.2); box-shadow: 0 8px 20px rgba(var(--ac-rgb), 0.15); }
     .cv-main { padding: 32px 44px; }
     .cv-section { border-left: 3px solid var(--ac); padding-left: 18px; margin-bottom: 28px; }
-    .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ac); margin-bottom: 14px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ac); margin-bottom: 14px; }
+    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-item-title { font-weight: 800; font-size: 1em; }
     .cv-item-date { background: rgba(var(--ac-rgb), 0.08); color: var(--ac); padding: 2px 8px; border-radius: 99px; font-weight: 800; }
     .cv-skills-list li { background: rgba(var(--ac-rgb), 0.09); color: var(--ac); font-weight: 700; border: 1px solid rgba(var(--ac-rgb), 0.12); }
   `,
-
-  // 10. Dubai Pro — Gulf two-col, right skills sidebar
   'dubai-pro': `
     .cv-doc { padding: 0; border-top: 5px solid var(--ac); }
     .cv-header { background: #f8fafc; padding: 28px 40px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
@@ -647,87 +599,97 @@ const BUILT_IN_CSS = {
     .cv-body.has-right { display: grid; grid-template-columns: 1fr 225px; gap: 0; }
     .cv-main { padding: 28px 35px; }
     .cv-right { padding: 28px 22px; background: #f8fafc; border-left: 1px solid var(--line); }
-    .cv-main .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.1em; text-transform: uppercase; color: #0b1437; border-bottom: 2px solid var(--ac); padding-bottom: 5px; margin-bottom: 14px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-right .cv-sec-title { font-weight: 900; font-size: 0.78em; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ac); border-bottom: 1px solid rgba(var(--ac-rgb), 0.25); padding-bottom: 4px; margin-bottom: 12px; page-break-after: avoid !important; break-after: avoid !important; display: block; }
-    .cv-sec-title + * { page-break-before: avoid !important; break-before: avoid !important; }
+    .cv-main .cv-sec-title { font-weight: 900; font-size: 0.85em; letter-spacing: 0.1em; text-transform: uppercase; color: #0b1437; border-bottom: 2px solid var(--ac); padding-bottom: 5px; margin-bottom: 14px; }
+    .cv-main .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
+    .cv-right .cv-sec-title { font-weight: 900; font-size: 0.78em; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ac); border-bottom: 1px solid rgba(var(--ac-rgb), 0.25); padding-bottom: 4px; margin-bottom: 12px; }
+    .cv-right .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
     .cv-exp-item { position: relative; padding-left: 18px; border-left: 2px solid rgba(var(--ac-rgb), 0.2); }
     .cv-exp-item::before { content: ""; position: absolute; left: -5px; top: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--ac); }
     .cv-skills-list { gap: 5px; }
     .cv-skills-list li { width: 100%; border-radius: 6px; padding: 5px 10px; background: rgba(var(--ac-rgb), 0.08); color: var(--ac); font-weight: 700; font-size: 0.82em; }
     .cv-lang-bar { height: 4px; }
   `,
+  'apex-pro': `
+    .cv-doc { padding: 0; border-top: 3px solid #0f172a; }
+    .cv-header { padding: 36px 44px 28px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #e2e8f0; }
+    .cv-profile-text { flex: 1; padding-right: 24px; }
+    .cv-name { font-size: 2.8em; font-weight: 900; letter-spacing: -0.04em; color: #0f172a; line-height: 1; }
+    .cv-role { color: var(--ac); font-weight: 700; font-size: 0.95em; margin-top: 6px; letter-spacing: 0.08em; }
+    .cv-contact-row { margin-top: 8px; gap: 5px 14px; font-size: 0.8em; }
+    .cv-photo-wrapper { width: 92px; height: 92px; border-radius: 8px; border: 2px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    .cv-body.has-right { display: grid; grid-template-columns: 1fr 235px; gap: 0; }
+    .cv-main { padding: 28px 38px; }
+    .cv-right { padding: 28px 22px; background: #fafafa; border-left: 1px solid #e2e8f0; }
+    .cv-main .cv-sec-title { font-weight: 900; font-size: 0.8em; letter-spacing: 0.2em; text-transform: uppercase; color: #0f172a; margin-bottom: 14px; }
+    .cv-main .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
+    .cv-right .cv-sec-title { font-weight: 900; font-size: 0.75em; letter-spacing: 0.18em; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #0f172a; padding-bottom: 4px; margin-bottom: 12px; }
+    .cv-right .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
+    .cv-item-title { font-weight: 800; color: #0f172a; }
+    .cv-item-date { background: rgba(var(--ac-rgb), 0.08); color: var(--ac); padding: 2px 8px; border-radius: 99px; font-weight: 700; font-size: 0.78em; }
+    .cv-skills-list { gap: 4px; }
+    .cv-skills-list li { padding: 2px 8px; background: rgba(var(--ac-rgb), 0.06); color: var(--ac); font-weight: 700; font-size: 0.78em; }
+    .cv-bullets { font-size: 0.9em; color: #334155; }
+  `,
 };
 
-/* ================================================================
-   MAIN RENDERER
-================================================================ */
 export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS, FSIZES, PAPERS, customConfig = null) {
   const d = data || {};
   const font = (FONTS.find(f => f.id === fontId) || FONTS[0]).s;
-  const fs   = FSIZES[fontSize] || FSIZES.medium;
+  const fs = FSIZES[fontSize] || FSIZES.medium;
   const { h: paperH = 1123 } = PAPERS[paper] || PAPERS.a4;
 
-  /* ── helpers ── */
-  const esc   = s => String(s || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]);
+  const esc = s => String(s || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
   const lines = v => String(v || '').split('\n').map(s => s.trim()).filter(Boolean);
-  const arr   = v => Array.isArray(v) ? v : [];
-  const has   = v => v && String(v).trim().length > 0;
+  const arr = v => Array.isArray(v) ? v : [];
+  const has = v => v && String(v).trim().length > 0;
 
   const fullName = esc(d.fullName || 'Your Name');
-  const title    = esc(d.title   || '');
-  const phone    = d.phoneCode && d.phoneNum ? `${d.phoneCode} ${d.phoneNum}` : (d.phoneNum || '');
-  const summary  = esc(d.summary || '');
+  const title = esc(d.title || '');
+  const phone = d.phoneCode && d.phoneNum ? `${d.phoneCode} ${d.phoneNum}` : (d.phoneNum || '');
+  const summary = esc(d.summary || '');
+  const compass = esc(d.compass || '');
 
-  /* ── filtered arrays ── */
-  const exp    = arr(d.experience).filter(x => has(x.role) || has(x.company));
-  const edu    = arr(d.education).filter(x => has(x.degree) || has(x.school));
-  const projs  = arr(d.projects).filter(x => has(x.name));
-  const certs  = arr(d.certifications).filter(x => has(x.name));
-  const langs  = arr(d.languages).filter(x => has(x.lang));
-  const awards = arr(d.awards).filter(x => has(x.title));
-  const refs   = arr(d.references).filter(x => has(x.name));
-  const skills  = lines(d.skills);
-  const hobbies = lines(d.hobbies);
-
-  /* ── contact row ── */
   const contactItems = [
-    d.email    && `<span>✉ ${esc(d.email)}</span>`,
-    phone      && `<span>📞 ${esc(phone)}</span>`,
+    d.email && `<span>✉ ${esc(d.email)}</span>`,
+    phone && `<span>📞 ${esc(phone)}</span>`,
     d.location && `<span>📍 ${esc(d.location)}</span>`,
     d.linkedin && `<span>🔗 ${esc(d.linkedin.replace(/^https?:\/\//, ''))}</span>`,
-    d.github   && `<span>💻 ${esc(d.github.replace(/^https?:\/\//, ''))}</span>`,
-    d.website  && `<span>🌐 ${esc(d.website.replace(/^https?:\/\//, ''))}</span>`,
+    d.github && `<span>💻 ${esc(d.github.replace(/^https?:\/\//, ''))}</span>`,
+    d.website && `<span>🌐 ${esc(d.website.replace(/^https?:\/\//, ''))}</span>`,
   ].filter(Boolean).join('');
 
-  /* ── personal meta ── */
   const personalMeta = [
-    has(d.nationality)    && `${esc(d.nationality)}`,
-    has(d.dob)            && `DOB: ${esc(d.dob)}`,
-    has(d.marital)        && esc(d.marital),
-    has(d.gender)         && esc(d.gender),
+    has(d.nationality) && `${esc(d.nationality)}`,
+    has(d.dob) && `DOB: ${esc(d.dob)}`,
+    has(d.marital) && esc(d.marital),
+    has(d.gender) && esc(d.gender),
     has(d.drivingLicense) && `🚗 ${esc(d.drivingLicense)}`,
-    has(d.notice)         && `⏱ ${esc(d.notice)}`,
+    has(d.notice) && `⏱ ${esc(d.notice)}`,
   ].filter(Boolean);
 
-  /* ── section wrapper ── */
   const section = (title, content, cls = '') =>
-    content
-      ? `<section class="cv-section ${cls}"><h3 class="cv-sec-title">${title}</h3><div class="cv-sec-body">${content}</div></section>`
-      : '';
+    content ? `<section class="cv-section ${cls}"><h3 class="cv-sec-title">${title}</h3><div class="cv-sec-body">${content}</div></section>` : '';
 
-  /* ── accent RGB ── */
   const hex2rgb = hex => {
     let v = (hex || '#1e3a8a').replace('#', '');
     if (v.length === 3) v = v.split('').map(c => c + c).join('');
-    return `${parseInt(v.slice(0,2),16)}, ${parseInt(v.slice(2,4),16)}, ${parseInt(v.slice(4,6),16)}`;
+    return `${parseInt(v.slice(0, 2), 16)}, ${parseInt(v.slice(2, 4), 16)}, ${parseInt(v.slice(4, 6), 16)}`;
   };
   const acRgb = hex2rgb(accent);
 
-  /* ================================================================
-     CONTENT BLOCKS
-  ================================================================ */
-  const blocks = {
+  const exp = arr(d.experience).filter(x => has(x.role) || has(x.company));
+  const edu = arr(d.education).filter(x => has(x.degree) || has(x.school));
+  const projs = arr(d.projects).filter(x => has(x.name));
+  const certs = arr(d.certifications).filter(x => has(x.name));
+  const langs = arr(d.languages).filter(x => has(x.lang));
+  const awards = arr(d.awards).filter(x => has(x.title));
+  const refs = arr(d.references).filter(x => has(x.name));
+  const skills = lines(d.skills);
+  const hobbies = lines(d.hobbies);
+  const kpis = arr(d.kpis).filter(x => has(x.value));
+  const caseStudies = arr(d.caseStudies).filter(x => has(x.name));
 
+  const blocks = {
     photo: d.photoDataUrl
       ? `<div class="cv-photo-wrapper"><img src="${d.photoDataUrl}" alt="Profile" class="cv-photo-img" /></div>`
       : '',
@@ -737,20 +699,47 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
         <h1 class="cv-name">${fullName}</h1>
         ${title ? `<h2 class="cv-role">${title}</h2>` : ''}
         <div class="cv-contact-row">${contactItems}</div>
-        ${personalMeta.length
-          ? `<div class="cv-personal-meta">${personalMeta.join('<span class="cv-meta-dot">·</span>')}</div>`
-          : ''}
+        ${personalMeta.length ? `<div class="cv-personal-meta">${personalMeta.join('<span class="cv-meta-dot">·</span>')}</div>` : ''}
       </div>`,
 
     summary: section('Professional Summary',
       summary ? `<p class="cv-summary">${summary}</p>` : ''),
 
+    compass: section('Professional Compass',
+      compass ? `<p class="cv-summary cv-compass">${compass}</p>` : ''),
+
+    kpi: kpis.length ? section('Impact Highlights', `
+      <div class="cv-kpi-grid">
+        ${kpis.map(k => `
+          <div class="cv-kpi-item">
+            <div class="cv-kpi-value">${esc(k.value)}</div>
+            <div class="cv-kpi-label">${esc(k.label)}</div>
+          </div>
+        `).join('')}
+      </div>`) : '',
+
+    caseStudy: caseStudies.length ? section('Featured Case Study',
+      caseStudies.map(cs => `
+        <article class="cv-item cv-case-study">
+          <div class="cv-item-header">
+            <div>
+              <div class="cv-item-title">${esc(cs.name)}</div>
+              ${has(cs.outcome) ? `<div class="cv-item-sub">${esc(cs.outcome)}</div>` : ''}
+            </div>
+          </div>
+          <div class="cv-case-grid">
+            ${has(cs.challenge) ? `<div class="cv-case-block"><span class="cv-case-label">Challenge</span><p>${esc(cs.challenge)}</p></div>` : ''}
+            ${has(cs.approach) ? `<div class="cv-case-block"><span class="cv-case-label">Approach</span><p>${esc(cs.approach)}</p></div>` : ''}
+            ${has(cs.result) ? `<div class="cv-case-block"><span class="cv-case-label">Result</span><p>${esc(cs.result)}</p></div>` : ''}
+          </div>
+        </article>`).join('')) : '',
+
     exp: section('Experience', exp.map(x => {
       const dateRange = [x.start, x.current ? 'Present' : x.end].filter(Boolean).join(' – ');
-      const subParts  = [
-        has(x.company)  && esc(x.company),
-        has(x.city)     && esc(x.city),
-        has(x.empType)  && x.empType !== 'Full-time' && `<em>${esc(x.empType)}</em>`,
+      const subParts = [
+        has(x.company) && esc(x.company),
+        has(x.city) && esc(x.city),
+        has(x.empType) && x.empType !== 'Full-time' && `<em>${esc(x.empType)}</em>`,
         has(x.industry) && esc(x.industry),
       ].filter(Boolean).join(' · ');
       return `
@@ -762,18 +751,16 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
             </div>
             ${dateRange ? `<div class="cv-item-date">${esc(dateRange)}</div>` : ''}
           </div>
-          ${x.bullets
-            ? `<ul class="cv-bullets">${lines(x.bullets).map(b => `<li>${esc(b)}</li>`).join('')}</ul>`
-            : ''}
+          ${x.bullets ? `<ul class="cv-bullets">${lines(x.bullets).map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
         </article>`;
     }).join('')),
 
     edu: section('Education', edu.map(x => {
       const dateRange = [x.start, x.end].filter(Boolean).join(' – ');
-      const degLabel  = [x.degType, x.degree].filter(Boolean).join(' in ');
-      const subParts  = [
+      const degLabel = [x.degType, x.degree].filter(Boolean).join(' in ');
+      const subParts = [
         has(x.school) && esc(x.school),
-        has(x.city)   && esc(x.city),
+        has(x.city) && esc(x.city),
       ].filter(Boolean).join(' · ');
       return `
         <article class="cv-item">
@@ -784,7 +771,7 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
             </div>
             ${dateRange ? `<div class="cv-item-date">${esc(dateRange)}</div>` : ''}
           </div>
-          ${has(x.gpa)   ? `<div class="cv-edu-meta">GPA / Grade: <strong>${esc(x.gpa)}</strong></div>` : ''}
+          ${has(x.gpa) ? `<div class="cv-edu-meta">GPA / Grade: <strong>${esc(x.gpa)}</strong></div>` : ''}
           ${has(x.notes) ? `<p class="cv-edu-notes">${esc(x.notes)}</p>` : ''}
         </article>`;
     }).join('')),
@@ -797,19 +784,13 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
               <div class="cv-item-title">${esc(x.name)}${has(x.status) ? ` <span class="cv-proj-status">${esc(x.status)}</span>` : ''}</div>
               ${has(x.tech) ? `<div class="cv-item-sub">${esc(x.tech)}</div>` : ''}
             </div>
-            ${has(x.url)
-              ? `<div class="cv-item-date"><a href="${esc(x.url)}" class="cv-link" target="_blank">${esc(x.url.replace(/^https?:\/\//, ''))}</a></div>`
-              : ''}
+            ${has(x.url) ? `<div class="cv-item-date"><a href="${esc(x.url)}" class="cv-link" target="_blank">${esc(x.url.replace(/^https?:\/\//, ''))}</a></div>` : ''}
           </div>
-          ${x.bullets
-            ? `<ul class="cv-bullets">${lines(x.bullets).map(b => `<li>${esc(b)}</li>`).join('')}</ul>`
-            : ''}
+          ${x.bullets ? `<ul class="cv-bullets">${lines(x.bullets).map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
         </article>`;
     }).join('')),
 
-    skills: skills.length
-      ? section('Skills', `<ul class="cv-skills-list">${skills.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`)
-      : '',
+    skills: skills.length ? section('Skills', `<ul class="cv-skills-list">${skills.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`) : '',
 
     langs: langs.length ? section('Languages', `
       <div class="cv-langs-list">
@@ -831,7 +812,7 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
         ${certs.map(x => {
           const meta = [
             has(x.issuer) && esc(x.issuer),
-            has(x.year)   && esc(x.year),
+            has(x.year) && esc(x.year),
             has(x.expiry) && `Exp: ${esc(x.expiry)}`,
           ].filter(Boolean).join(' · ');
           return `
@@ -864,25 +845,27 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
               <div class="cv-item-title">${esc(x.name)}</div>
               ${role ? `<div class="cv-item-sub">${role}</div>` : ''}
               ${has(x.company) ? `<div class="cv-ref-detail">🏢 ${esc(x.company)}</div>` : ''}
-              ${has(x.email)   ? `<div class="cv-ref-detail">✉ ${esc(x.email)}</div>` : ''}
-              ${has(x.phone)   ? `<div class="cv-ref-detail">📞 ${esc(x.phone)}</div>` : ''}
+              ${has(x.email) ? `<div class="cv-ref-detail">✉ ${esc(x.email)}</div>` : ''}
+              ${has(x.phone) ? `<div class="cv-ref-detail">📞 ${esc(x.phone)}</div>` : ''}
             </div>`;
         }).join('')}
       </div>`) : '',
 
-    hobbies: hobbies.length
-      ? section('Hobbies & Interests', `<p class="cv-summary">${esc(hobbies.join(' · '))}</p>`)
-      : '',
+    hobbies: hobbies.length ? section('Hobbies & Interests', `<p class="cv-summary">${esc(hobbies.join(' · '))}</p>`) : '',
+
+    qr: d.qrDataUrl ? `
+      <div class="cv-qr-wrapper">
+        <img src="${d.qrDataUrl}" alt="Portfolio QR" class="cv-qr-img" />
+        <span class="cv-qr-label">Portfolio</span>
+      </div>` : '',
   };
 
-  /* ── Layout + CSS ── */
-  const layout      = customConfig?.layout || BUILT_IN_LAYOUTS[tmplId] || BUILT_IN_LAYOUTS['modern-stack'];
-  const templateCss = customConfig?.css    || BUILT_IN_CSS[tmplId]     || '';
+  const layout = customConfig?.layout || BUILT_IN_LAYOUTS[tmplId] || BUILT_IN_LAYOUTS['modern-stack'];
+  const templateCss = customConfig?.css || BUILT_IN_CSS[tmplId] || '';
 
   const renderZone = zoneKeys =>
     (zoneKeys || []).map(k => (blocks[k] !== undefined ? blocks[k] : k)).join('');
 
-  /* ── Base CSS ── */
   const baseCss = `
     * { box-sizing: border-box; }
     .cv-doc {
@@ -921,6 +904,7 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
     .cv-bullets { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 0.93em; }
     .cv-bullets li { margin-bottom: 4px; line-height: 1.5; }
     .cv-summary { margin: 0; color: var(--muted); line-height: 1.7; }
+    .cv-compass { font-size: 0.95em; font-style: italic; border-left: 3px solid var(--ac); padding-left: 16px; color: #334155; }
     .cv-edu-meta { font-size: 0.82em; color: var(--ac); font-weight: 700; margin-top: 4px; }
     .cv-edu-notes { margin: 4px 0 0; font-size: 0.88em; color: var(--muted); line-height: 1.55; }
     .cv-proj-status { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 99px; font-size: 0.72em; font-weight: 700; background: rgba(var(--ac-rgb), 0.1); color: var(--ac); vertical-align: middle; }
@@ -941,6 +925,33 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
     .cv-ref-item { padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: rgba(var(--ac-rgb), 0.02); }
     .cv-ref-detail { font-size: 0.82em; color: var(--muted); margin-top: 3px; word-break: break-word; }
     .cv-simple-list { margin: 0; padding-left: 18px; color: var(--muted); font-size: 0.93em; }
+    
+    /* KPI Block */
+    .cv-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 20px; margin-bottom: 8px; }
+    .cv-kpi-item { text-align: center; padding: 16px 12px; background: rgba(var(--ac-rgb), 0.04); border-radius: 10px; border: 1px solid rgba(var(--ac-rgb), 0.08); }
+    .cv-kpi-value { font-size: 2em; font-weight: 900; color: var(--ac); line-height: 1.1; letter-spacing: -0.02em; }
+    .cv-kpi-label { font-size: 0.75em; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+    
+    /* Case Study */
+    .cv-case-study { padding: 16px; background: #f8fafc; border-radius: 10px; border: 1px solid var(--line); }
+    .cv-case-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 10px; }
+    .cv-case-block { }
+    .cv-case-label { display: inline-block; font-size: 0.7em; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: var(--ac); background: rgba(var(--ac-rgb), 0.08); padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; }
+    .cv-case-block p { margin: 0; font-size: 0.88em; color: var(--muted); line-height: 1.6; }
+    
+    /* QR Code */
+    .cv-qr-wrapper { text-align: center; flex-shrink: 0; }
+    .cv-qr-img { width: 70px; height: 70px; border-radius: 8px; border: 1px solid var(--line); }
+    .cv-qr-label { display: block; font-size: 0.6em; font-weight: 700; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; }
+    
+    /* Print optimizations */
+    @media print {
+      .cv-section { page-break-inside: avoid !important; break-inside: avoid !important; }
+      .cv-item { page-break-inside: avoid !important; break-inside: avoid !important; }
+      .cv-item-header { page-break-after: avoid !important; break-after: avoid !important; }
+      .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
+      .cv-bullets li { page-break-inside: avoid !important; break-inside: avoid !important; }
+    }
   `;
 
   return `
@@ -949,8 +960,8 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
       ${layout.header ? `<header class="cv-header">${renderZone(layout.header)}</header>` : ''}
       <div class="cv-body ${layout.sidebar ? 'has-sidebar' : ''} ${layout.right ? 'has-right' : ''}">
         ${layout.sidebar ? `<aside class="cv-sidebar">${renderZone(layout.sidebar)}</aside>` : ''}
-        ${layout.main   ? `<main class="cv-main">${renderZone(layout.main)}</main>` : ''}
-        ${layout.right  ? `<aside class="cv-right">${renderZone(layout.right)}</aside>` : ''}
+        ${layout.main ? `<main class="cv-main">${renderZone(layout.main)}</main>` : ''}
+        ${layout.right ? `<aside class="cv-right">${renderZone(layout.right)}</aside>` : ''}
       </div>
     </div>
   `;

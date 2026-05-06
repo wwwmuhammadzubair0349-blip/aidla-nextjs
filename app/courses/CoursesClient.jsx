@@ -301,7 +301,7 @@ function CourseCard({ course, delay = 0 }) {
             {course.coin_reward > 0 ? `💰 Earn ${course.coin_reward} Coins` : ""}
           </span>
           <Link href={`/courses/${slug}`} className="pc-btn-view">Details →</Link>
-          <Link href="/signup" className="pc-btn-enroll">
+          <Link href="/login" className="pc-btn-enroll">
             {isFree ? "Enroll Free" : "Enroll"}
           </Link>
         </div>

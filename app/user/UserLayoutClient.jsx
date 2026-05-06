@@ -99,10 +99,11 @@ function CatPet({ mood }) {
 }
 
 const TABS = [
-  { to: "/user",         label: "Dashboard", icon: "⚡" },
-  { to: "/user/forum",   label: "Forum",      icon: "💬" },
-  { to: "/user/wallet",  label: "Wallet",     icon: "💎" },
-  { to: "/user/profile", label: "Profile",    icon: "👤" },
+  { to: "/user",           label: "Dashboard", icon: "⚡" },
+  { to: "/user/forum",     label: "Forum",      icon: "💬" },
+  { to: "/user/resources", label: "Resources",  icon: "📚" },
+  { to: "/user/wallet",    label: "Wallet",     icon: "💎" },
+  { to: "/user/profile",   label: "Profile",    icon: "👤" },
 ];
 
 function ChevronIcon({ flipped }) {

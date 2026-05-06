@@ -725,6 +725,15 @@ const MODELS = [
     max_tokens: 3000,
     systemNote: 'Be deeply analytical and creative. Think outside the box. Give rich, insightful, nuanced, and comprehensive responses.',
   },
+  {
+    key: 'nova',
+    label: 'NOVA',
+    desc: 'Multimodal vision',
+    model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning',
+    temperature: 0.7,
+    max_tokens: 3000,
+    systemNote: 'You are a powerful multimodal AI that can understand both text and images. Provide detailed analysis of any images shared. Think visually and analytically.',
+  },
 ];
 
 function getModel(key) {
@@ -893,15 +902,35 @@ function renderMarkdown(text) {
 // ─────────────────────────────────────────────
 // MESSAGE BUBBLE
 // ─────────────────────────────────────────────
-function MessageBubble({ role, content }) {
+function MessageBubble({ role, content, hasImage }) {
   if (role === 'user') {
+    // Check if content is array (multimodal) or string
+    if (Array.isArray(content)) {
+      return (
+        <div className="ls-bubble user-bubble">
+          {/* Show images */}
+          {content.filter(c => c.type === 'image_url').map((img, i) => (
+            <img 
+              key={i}
+              src={img.image_url?.url} 
+              alt="Uploaded"
+              style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', marginBottom: '8px', display: 'block' }}
+            />
+          ))}
+          {/* Show text */}
+          {content.filter(c => c.type === 'text').map((t, i) => (
+            <span key={i}>{t.text}</span>
+          ))}
+        </div>
+      );
+    }
     return <div className="ls-bubble user-bubble">{content}</div>;
   }
-  const hasCodeBlock = content.includes('```');
+  const hasCodeBlock = typeof content === 'string' && content.includes('```');
   return (
     <div className="ls-bubble assistant-bubble">
-      <div className="md-body">{renderMarkdown(content)}</div>
-      {!hasCodeBlock && content.length > 300 && (
+      <div className="md-body">{typeof content === 'string' ? renderMarkdown(content) : renderMarkdown(JSON.stringify(content))}</div>
+      {!hasCodeBlock && typeof content === 'string' && content.length > 300 && (
         <div className="md-copy-row">
           <CopyBtn text={content} light />
         </div>
@@ -1302,6 +1331,7 @@ export default function Learning() {
   const [messages, setMessages]   = useState([]);
 
   const [input, setInput]     = useState('');
+  const [images, setImages]   = useState([]); // ← NEW: store uploaded images
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
@@ -1428,15 +1458,97 @@ export default function Learning() {
     if (user?.id) await loadSessions(user.id);
   }
 
-  const handleSend = useCallback(async (overrideText) => {
+  // ── IMAGE UPLOAD HANDLER ──
+function handleImageUpload(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+
+  // Limit to 3 images max
+  if (images.length + files.length > 3) {
+    alert('Maximum 3 images allowed at once.');
+    return;
+  }
+
+  const newImages = [];
+  let loaded = 0;
+
+  files.forEach((file) => {
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert(`${file.name} is too large. Max 10MB.`);
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      alert(`${file.name} is not an image.`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      newImages.push({
+        name: file.name,
+        type: file.type,
+        base64: reader.result, // data:image/png;base64,xxxxx
+      });
+      loaded++;
+
+      if (loaded === files.length) {
+        setImages(prev => [...prev, ...newImages].slice(0, 3));
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removeImage(index) {
+  setImages(prev => prev.filter((_, i) => i !== index));
+}
+
+const handleSend = useCallback(async (overrideText) => {
     const text = String(overrideText ?? input).trim();
-    if (!text || sending) return;
+    const hasImages = images.length > 0;
+    
+    if (!text && !hasImages) return;
+    if (sending) return;
 
     setSending(true);
-    const userMsg = { role: 'user', content: text, created_at: new Date().toISOString() };
+
+    // Build user message content
+    let userContent;
+    if (hasImages) {
+      // Multimodal: text + images
+      userContent = [];
+      // Add images first
+      images.forEach(img => {
+        userContent.push({
+          type: 'image_url',
+          image_url: { url: img.base64 },
+        });
+      });
+      // Add text if any
+      if (text) {
+        userContent.push({ type: 'text', text });
+      } else {
+        userContent.push({ type: 'text', text: 'Describe this image. What do you see?' });
+      }
+    } else {
+      // Text only
+      userContent = text;
+    }
+
+    const userMsg = { 
+      role: 'user', 
+      content: userContent, 
+      created_at: new Date().toISOString(),
+      hasImage: hasImages, // ← for UI display
+    };
+
     const tempMessages = [...messages, userMsg];
     setMessages(tempMessages);
     setInput('');
+    setImages([]); // ← clear images after sending
 
     const sendMode  = mode;
     const modeData  = getModeData(sendMode);
@@ -1465,7 +1577,7 @@ export default function Learning() {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
           },
           body: JSON.stringify({
-            messages: tempMessages.map(m => ({ role: m.role, content: m.content })),
+    messages: tempMessages.map(m => ({ role: m.role, content: m.content })),
             mode: sendMode,
             systemPrompt: finalSystemPrompt,
             model: modelData.model,
@@ -1566,7 +1678,7 @@ export default function Learning() {
                     <div key={i} className={`ls-msg-row ${m.role}`}>
                       <div className="ls-msg-wrap">
                         <div className="ls-msg-label">{m.role === 'user' ? 'You' : `AIDLA · ${currentMode.label}`}</div>
-                        <MessageBubble role={m.role} content={m.content} />
+                        <MessageBubble role={m.role} content={m.content} hasImage={m.hasImage} />
                       </div>
                     </div>
                   ))}
@@ -1589,30 +1701,112 @@ export default function Learning() {
             <div className="ls-composer-inner">
               <div className="ls-composer-box">
 
-                {/* MODE PICKER */}
-                <div className="ls-plus-wrap" ref={modeMenuRef}>
-                  <button className="ls-plus-btn" onClick={() => setModeMenu(v => !v)} title="Switch mode">+</button>
-                  {modeMenuOpen && (
-                    <div className="ls-mode-picker">
-                      <div className="ls-mode-picker-title">Switch mode</div>
-                      <div className="ls-mode-grid">
-                        {MODES.map(m => (
-                          <button key={m.key} className={`ls-mode-btn ${mode === m.key ? 'active' : ''}`} onClick={() => pickMode(m.key)} title={m.label}>
-                            <span className="ls-mode-btn-icon">{m.icon}</span>
-                            <span className="ls-mode-btn-label">{m.label}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+{/* MODE PICKER + IMAGE UPLOAD */}
+<div className="ls-plus-wrap" ref={modeMenuRef} style={{ display: 'flex', gap: '6px' }}>
+  
+  {/* Mode Switch Button */}
+  <button className="ls-plus-btn" onClick={() => setModeMenu(v => !v)} title="Switch mode">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  </button>
+
+  {/* Hidden File Input */}
+  <input
+    type="file"
+    accept="image/*"
+    multiple
+    onChange={handleImageUpload}
+    style={{ display: 'none' }}
+    id="image-upload-input"
+  />
+
+  {/* Image Upload Button */}
+  <button
+    className="ls-plus-btn"
+    onClick={() => document.getElementById('image-upload-input')?.click()}
+    title="Attach image"
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="3" ry="3"></rect>
+      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+      <polyline points="21 15 16 10 5 21"></polyline>
+    </svg>
+  </button>
+
+  {/* Mode Picker Dropdown */}
+  {modeMenuOpen && (
+    <div className="ls-mode-picker">
+      <div className="ls-mode-picker-title">Switch mode</div>
+      <div className="ls-mode-grid">
+        {MODES.map(m => (
+          <button 
+            key={m.key} 
+            className={`ls-mode-btn ${mode === m.key ? 'active' : ''}`} 
+            onClick={() => pickMode(m.key)} 
+            title={m.label}
+          >
+            <span className="ls-mode-btn-icon">{m.icon}</span>
+            <span className="ls-mode-btn-label">{m.label}</span>
+          </button>
+        ))}
+      </div>                      
+    </div>
+  )}
+</div>
+
+                {/* IMAGE PREVIEW AREA */}
+{images.length > 0 && (
+  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', padding: '6px 0', marginBottom: '4px' }}>
+    {images.map((img, i) => (
+      <div key={i} style={{ position: 'relative', display: 'inline-block' }}>
+        <img
+          src={img.base64}
+          alt={img.name}
+          style={{
+            width: '48px',
+            height: '48px',
+            objectFit: 'cover',
+            borderRadius: '8px',
+            border: '1px solid #ddd',
+          }}
+        />
+        <button
+          onClick={() => removeImage(i)}
+          style={{
+            position: 'absolute',
+            top: '-6px',
+            right: '-6px',
+            width: '18px',
+            height: '18px',
+            borderRadius: '50%',
+            background: '#ef4444',
+            color: 'white',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 0,
+            lineHeight: 1,
+          }}
+          title="Remove image"
+        >
+          ×
+        </button>
+      </div>
+    ))}
+  </div>
+)}
 
                 <textarea
                   ref={textareaRef} className="ls-textarea" value={input}
                   onChange={e => setInput(e.target.value)} onKeyDown={onKeyDown}
                   placeholder={`Message ${currentMode.label}...`} rows={1}
                 />
-                <button className="ls-send-btn" onClick={() => handleSend()} disabled={!input.trim() || sending}>↑</button>
+                <button className="ls-send-btn" onClick={() => handleSend()} disabled={(!input.trim() && images.length === 0) || sending}>↑</button>
               </div>
 
               {/* BOTTOM ROW */}

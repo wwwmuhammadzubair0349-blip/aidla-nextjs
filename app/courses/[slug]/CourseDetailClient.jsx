@@ -432,7 +432,7 @@ export default function CourseDetailClient({ slug, initialCourse = null, initial
               {/* Mobile CTA */}
               <div className="pcd-mobile-cta">
                 <Link
-                  href="/signup"
+                  href="/login"
                   style={{
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                     width: "100%", padding: "14px 20px", borderRadius: 14,
@@ -471,7 +471,7 @@ export default function CourseDetailClient({ slug, initialCourse = null, initial
                   </div>
 
                   <Link
-                    href="/signup"
+                    href="/login"
                     className="pcd-enroll-btn"
                     aria-label={isFree ? "Enroll for free" : "Enroll now"}
                   >
@@ -655,7 +655,7 @@ export default function CourseDetailClient({ slug, initialCourse = null, initial
           {isFree ? "Free" : `$${Number(course.price).toFixed(2)}`}
         </div>
         <Link
-          href="/signup"
+          href="/login"
           className="pcd-sticky-btn"
           aria-label={isFree ? "Enroll for free" : "Enroll now"}
         >

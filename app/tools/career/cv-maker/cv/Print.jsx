@@ -1,15 +1,12 @@
 "use client";
 // app/tools/career/cv-maker/cv/Print.jsx
-// Change from original: added "use client" directive only.
-// All print logic (window.open, popup, print dialog) identical to original.
-// ✅ Works on desktop Chrome/Edge/Firefox  → Save as PDF (real text)
-// ✅ Works on mobile Safari / Chrome       → Share → Print → Save as PDF
-// ✅ ATS-friendly                          → Real selectable text, not image
+// Print Specialist Edition - Complete section/page break control
+// Ensures full sections transfer together, no orphaned headers
+// ATS-friendly real text PDF with all new fonts
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 
-/* ── Paper dimensions ── */
 const PAPER_SIZES = {
   a4:     { mm_w: 210, mm_h: 297, label: "A4"     },
   letter: { mm_w: 216, mm_h: 279, label: "Letter" },
@@ -29,6 +26,7 @@ function buildPrintWindowCss(paper) {
       margin: 10mm 0mm;
     }
     @page :first { margin-top: 12mm; }
+    
     *, *::before, *::after { box-sizing: border-box; }
     html, body {
       margin: 0 !important; padding: 0 !important;
@@ -38,6 +36,7 @@ function buildPrintWindowCss(paper) {
               color-adjust: exact !important;
       width: ${mm_w}mm;
     }
+    
     .cv-doc {
       width: ${mm_w}mm !important;
       min-height: ${mm_h}mm !important;
@@ -45,23 +44,192 @@ function buildPrintWindowCss(paper) {
       box-shadow: none !important; border-radius: 0 !important;
       overflow: visible !important;
     }
-    .layout-swiss-clean .cv-doc,.layout-sidebar-dark .cv-doc,.layout-infographic .cv-doc,
-    .layout-gulf-premium .cv-doc,.layout-double-col .cv-doc,.layout-slate-pro .cv-doc,
-    .layout-dubai-pro .cv-doc,.layout-bold-header .cv-doc,.layout-coral-modern .cv-doc,
-    .layout-navy-exec .cv-doc { padding: 0 !important; }
-    .layout-gulf-premium .cv-doc { border-top: 12mm solid var(--ac) !important; }
+    
+    /* Template-specific print padding overrides */
+    .layout-swiss-clean .cv-doc,
+    .layout-sidebar-dark .cv-doc,
+    .layout-infographic .cv-doc,
+    .layout-gulf-premium .cv-doc,
+    .layout-double-col .cv-doc,
+    .layout-slate-pro .cv-doc,
+    .layout-dubai-pro .cv-doc,
+    .layout-bold-header .cv-doc,
+    .layout-coral-modern .cv-doc,
+    .layout-navy-exec .cv-doc,
+    .layout-apex-pro .cv-doc { 
+      padding: 0 !important; 
+    }
+    
+    .layout-gulf-premium .cv-doc { 
+      border-top: 12mm solid var(--ac) !important; 
+    }
+    
     .layout-sidebar-dark .cv-sidebar {
       background: #0b1120 !important; color: #ffffff !important;
-      -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+      -webkit-print-color-adjust: exact !important; 
+      print-color-adjust: exact !important;
     }
-    .cv-item { page-break-inside: avoid !important; break-inside: avoid-page !important; display: block !important; margin-bottom: 12px; }
-    .cv-photo-wrapper,.cv-sec-title,.cv-info-card,.cv-lang-item { page-break-inside: avoid !important; break-inside: avoid !important; }
-    .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
-    .cv-item-header { page-break-after: avoid !important; break-after: avoid !important; page-break-inside: avoid !important; break-inside: avoid !important; }
-    .cv-bullets li { page-break-inside: avoid !important; break-inside: avoid !important; }
-    .cv-body.has-right { display: grid !important; }
-    .cv-body.has-sidebar { display: block !important; }
-    .cv-body.has-sidebar::after { content: ""; display: table; clear: both; }
+    
+    /* ✨ PRINT SPECIALIST: Complete section page-break control ✨ */
+    
+    /* Sections always start together with their title */
+    .cv-section {
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
+    }
+    
+    /* Section titles never get orphaned at page bottom */
+    .cv-sec-title {
+      page-break-after: avoid !important;
+      break-after: avoid-page !important;
+      display: block !important;
+    }
+    
+    /* First content element after title stays with title */
+    .cv-sec-title + .cv-sec-body,
+    .cv-sec-title + * {
+      page-break-before: avoid !important;
+      break-before: avoid-page !important;
+    }
+    
+    /* Individual items avoid internal breaks */
+    .cv-item {
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
+      display: block !important;
+      margin-bottom: 12px;
+    }
+    
+    /* Experience items with their header and first bullet */
+    .cv-exp-item {
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
+    }
+    
+    /* Headers stay with content */
+    .cv-item-header {
+      page-break-after: avoid !important;
+      break-after: avoid-page !important;
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Bullet points stay together */
+    .cv-bullets {
+      page-break-inside: avoid !important;
+      break-inside: avoid-page !important;
+    }
+    
+    .cv-bullets li {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Photo and header stay together */
+    .cv-photo-wrapper {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    .cv-header {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Info card in infographic template */
+    .cv-info-card {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Language and KPI items */
+    .cv-lang-item {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    .cv-kpi-grid {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    .cv-kpi-item {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Case study blocks */
+    .cv-case-study {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Certificate items */
+    .cv-cert-item {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* References grid */
+    .cv-refs-grid {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* QR code */
+    .cv-qr-wrapper {
+      page-break-inside: avoid !important;
+      break-inside: avoid !important;
+    }
+    
+    /* Grid layouts stay intact */
+    .cv-body.has-right { 
+      display: grid !important; 
+    }
+    
+    .cv-body.has-sidebar { 
+      display: block !important; 
+    }
+    
+    .cv-body.has-sidebar::after { 
+      content: ""; 
+      display: table; 
+      clear: both; 
+    }
+    
+    /* Minimum content before page break - prevents single lines on new page */
+    .cv-section {
+      orphans: 3 !important;
+      widows: 3 !important;
+    }
+    
+    .cv-summary {
+      orphans: 3 !important;
+      widows: 3 !important;
+    }
+    
+    /* Sidebar coloring for dark template */
+    .layout-sidebar-dark .cv-sidebar {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      background-color: #0b1120 !important;
+    }
+    
+    .layout-slate-pro .cv-header {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      background-color: #1e293b !important;
+    }
+    
+    .layout-double-col .cv-header {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    
+    .layout-coral-modern .cv-header {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
   `;
 }
 
@@ -84,7 +252,8 @@ function executePrint({ paperRef, paper, filename, toast }) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${safeTitle}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Sora:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Sora:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=DM+Serif+Display:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
@@ -117,10 +286,19 @@ function executePrint({ paperRef, paper, filename, toast }) {
       font-size: 11px; font-weight: 800; flex-shrink: 0; margin-top: 1px;
     }
     .cv-wrap { margin: 24px auto; width: ${mm_w}mm; background: #fff; box-shadow: 0 8px 40px rgba(0,0,0,.25); }
+    
     @media print {
-      html, body { background: #fff !important; display: block !important; min-height: auto !important; }
+      html, body { 
+        background: #fff !important; 
+        display: block !important; 
+        min-height: auto !important; 
+      }
       .banner, .mobile-steps { display: none !important; }
-      .cv-wrap { margin: 0 !important; box-shadow: none !important; width: 100% !important; }
+      .cv-wrap { 
+        margin: 0 !important; 
+        box-shadow: none !important; 
+        width: 100% !important; 
+      }
       ${printCss}
     }
   </style>
@@ -148,7 +326,9 @@ function executePrint({ paperRef, paper, filename, toast }) {
       document.getElementById('msteps').style.display = 'block';
       document.getElementById('dtip').style.display = 'none';
     } else {
-      window.addEventListener('load', function() { setTimeout(function() { window.print(); }, 600); });
+      window.addEventListener('load', function() { 
+        setTimeout(function() { window.print(); }, 800); 
+      });
     }
   </script>
 </body>
@@ -156,7 +336,6 @@ function executePrint({ paperRef, paper, filename, toast }) {
   win.document.close();
 }
 
-/* ── Modal ── */
 function PrintModal({ defaultName, paper, onConfirm, onCancel }) {
   const [name, setName] = useState(defaultName);
   const inp    = useRef(null);
@@ -183,7 +362,6 @@ function PrintModal({ defaultName, paper, onConfirm, onCancel }) {
         boxShadow: "0 24px 60px rgba(0,0,0,0.25)", overflow: "hidden",
         maxHeight: "calc(100vh - 32px)", display: "flex", flexDirection: "column",
       }}>
-        {/* Header */}
         <div style={{
           background: "linear-gradient(135deg,#0f172a,#1e3a8a)",
           padding: "20px 24px", display: "flex", alignItems: "center", gap: "12px", flexShrink: 0,
@@ -197,12 +375,11 @@ function PrintModal({ defaultName, paper, onConfirm, onCancel }) {
           <div>
             <div id="print-modal-title" style={{ color: "#fff", fontWeight: 800, fontSize: "1rem" }}>Save CV as PDF</div>
             <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.75rem", marginTop: "2px" }}>
-              ATS-friendly · Real text · Works everywhere
+              ATS-friendly · Real text · Perfect section breaks
             </div>
           </div>
         </div>
 
-        {/* Body */}
         <div style={{ padding: "20px 24px", overflowY: "auto", flex: 1 }}>
           <div style={{
             background: "#f0fdf4", border: "1px solid #86efac",
@@ -211,7 +388,7 @@ function PrintModal({ defaultName, paper, onConfirm, onCancel }) {
             display: "flex", alignItems: "flex-start", gap: "8px", lineHeight: 1.55,
           }}>
             <span style={{ fontSize: "1rem", flexShrink: 0 }} aria-hidden="true">✅</span>
-            <span><strong>100% ATS-Friendly.</strong> Real text PDF — recruiters' systems can read every word. Not a screenshot.</span>
+            <span><strong>Print-optimized.</strong> Sections never split across pages. Headers stay with content. Real text PDF parseable by all ATS systems.</span>
           </div>
 
           <label
@@ -261,7 +438,7 @@ function PrintModal({ defaultName, paper, onConfirm, onCancel }) {
               borderRadius: "10px", padding: "12px 14px", marginBottom: "20px",
               fontSize: "0.75rem", color: "#334155", lineHeight: 1.6,
             }}>
-              <strong>💡 Tip:</strong> The print dialog opens automatically. Set <strong>Destination → Save as PDF</strong> and uncheck <strong>"Headers and footers"</strong>.
+              <strong>💡 Tip:</strong> We've optimized page breaks so sections stay together. Set <strong>Destination → Save as PDF</strong> and uncheck <strong>"Headers and footers"</strong> for the cleanest result.
             </div>
           )}
 
@@ -302,7 +479,6 @@ function PrintModal({ defaultName, paper, onConfirm, onCancel }) {
   );
 }
 
-/* ── Main export ── */
 export default function Print({ paperRef, paper, fullName, toast }) {
   const [showModal, setShowModal] = useState(false);
 

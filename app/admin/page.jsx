@@ -383,8 +383,10 @@ export default function AdminPool() {
                 </thead>
                 <tbody>
                   {transactions.map((tx) => {
-                    // Use txn_type to determine action display
-                    const isSend = tx.direction === "OUT" || (typeof tx.txn_type === "string" && tx.txn_type.toUpperCase().includes("SEND"));
+                    // RES-APR = admin pays reward to user (outflow); RES-BUY = admin receives purchase (inflow)
+                    const isSend = tx.direction === "OUT"
+                      || (typeof tx.txn_type === "string" && tx.txn_type.toUpperCase().includes("SEND"))
+                      || (typeof tx.txn_no === "string" && tx.txn_no.startsWith("RES-APR"));
 
                     return (
                       <tr key={tx.id}>

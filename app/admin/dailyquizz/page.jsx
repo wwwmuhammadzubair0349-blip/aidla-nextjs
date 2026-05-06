@@ -1,5 +1,5 @@
-// DailyQuizzAdmin Component (Named Export)
-export function DailyQuizzAdmin() {
+// DailyQuizzAdmin Component
+export default function DailyQuizzAdmin() {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>DailyQuizz Admin</h1>

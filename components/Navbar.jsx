@@ -534,7 +534,7 @@ export default function Navbar() {
                       aria-expanded={isOpen}
                       aria-controls={`mob-accordion-${item.label}`}
                       tabIndex={menuOpen ? 0 : -1}
-                      suppressHydrationWarning
+                      
                     >
                       <div className="nav2-mob-link-content">
                         <span className="nav2-mob-icon" aria-hidden="true">{item.icon}</span>
@@ -544,7 +544,7 @@ export default function Navbar() {
                         {Icons.Chevron}
                       </span>
                     </button>
-                    suppressHydrationWarning
+                    
                     
                     <div 
                       id={`mob-accordion-${item.label}`}

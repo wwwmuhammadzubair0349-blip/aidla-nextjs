@@ -387,7 +387,7 @@ function CvMakerJsonLd() {
     name: "AIDLA",
     description: "Free AI-powered career tools for Pakistan, UAE, and global job seekers. Professional CV maker, cover letter generator, and career resources — all completely free, no sign-up required. Best free alternative to Zety, Resume.io, Novoresume, and Enhancv.",
     url: baseUrl,
-    logo: "https://www.aidla.online/logo.webp",
+    logo: "https://www.aidla.online/logo.png",
     sameAs: [
       "https://www.linkedin.com/company/aidla",
       "https://twitter.com/aidla_online",
@@ -444,7 +444,7 @@ function CvMakerJsonLd() {
     headline: "The Complete 2026 Guide to Creating ATS-Friendly CVs for Pakistan, UAE, GCC & Global Jobs",
     description: "Learn how to create ATS-optimized CVs with AI writing, CAR formula achievements, industry-specific keywords, and regional formatting for Pakistan (HEC, CNIC, FSc/Matric), UAE (MOHRE, visa status), GCC, UK, US, and Canada.",
     author: { "@type": "Organization", name: "AIDLA" },
-    publisher: { "@type": "Organization", name: "AIDLA", logo: { "@type": "ImageObject", url: "https://www.aidla.online/logo.webp" } },
+    publisher: { "@type": "Organization", name: "AIDLA", logo: { "@type": "ImageObject", url: "https://www.aidla.online/logo.png" } },
     datePublished: "2025-01-15T00:00:00+05:00",
     dateModified: new Date().toISOString(),
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },

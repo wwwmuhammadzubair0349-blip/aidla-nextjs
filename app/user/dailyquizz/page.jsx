@@ -52,7 +52,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
           {/* Header - single line, no wrap */}
           <div style={{ background:"#312e81", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
-              <img src="/logo.webp" alt="AIDLA" style={{ width:30, height:30, borderRadius:8, objectFit:"cover", flexShrink:0 }} />
+              <img src="/logo.png" alt="AIDLA" style={{ width:30, height:30, borderRadius:8, objectFit:"cover", flexShrink:0 }} />
               <div>
                 <div style={{ fontSize:13, fontWeight:900, color:"white", letterSpacing:1, whiteSpace:"nowrap" }}>AIDLA</div>
                 <div style={{ fontSize:9, color:"rgba(255,255,255,0.5)", whiteSpace:"nowrap" }}>Daily Quiz · Learn & Earn</div>

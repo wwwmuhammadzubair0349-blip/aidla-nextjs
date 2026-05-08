@@ -470,7 +470,7 @@ function CoverLetterJsonLd() {
     description:
       "Free AI-powered career tools for Pakistan, UAE, GCC, and global job seekers. Professional CV maker, cover letter generator, and career resources — all completely free, no sign-up required.",
     url: baseUrl,
-    logo: "https://www.aidla.online/logo.webp",
+    logo: "https://www.aidla.online/logo.png",
     sameAs: [
       "https://www.linkedin.com/company/aidla",
       "https://twitter.com/aidla_online",

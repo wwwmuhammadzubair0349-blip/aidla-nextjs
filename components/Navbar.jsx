@@ -419,7 +419,7 @@ export default function Navbar() {
           
           {/* ── LOGO ── */}
           <Link href="/" className="nav2-logo" aria-label="AIDLA — Go to homepage" prefetch={false}>
-            <Image src="/logo.webp" alt="" width={160} height={48} className="nav2-logo-img" priority />
+            <Image src="/logo.png" alt="" width={160} height={48} className="nav2-logo-img" priority />
             <div className="nav2-logo-text" aria-hidden="true">
               <span className="nav2-logo-name">AIDLA</span>
               <span className="nav2-logo-full">AI Digital Learning Academy</span>

@@ -489,7 +489,7 @@ export default function AboutPage({ faqs = [] }) {
     name: "AIDLA",
     alternateName: "AI DLA",
     url: "https://www.aidla.online",
-    logo: { "@type": "ImageObject", url: "https://www.aidla.online/logo.webp" },
+    logo: { "@type": "ImageObject", url: "https://www.aidla.online/logo.png" },
     foundingDate: "2026",
     description: "Pakistan's #1 digital learning academy offering free AI tools, career resources, and a learn-to-earn rewards system.",
     areaServed: [

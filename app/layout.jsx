@@ -164,8 +164,8 @@ const GLOBAL_SCHEMA = {
       logo: {
         "@type": "ImageObject",
         "@id": `${SITE_URL}/#logo`,
-        url: `${SITE_URL}/logo.webp`,
-        contentUrl: `${SITE_URL}/logo.webp`,
+        url: `${SITE_URL}/logo.png`,
+        contentUrl: `${SITE_URL}/logo.png`,
         width: 200,
         height: 60,
         caption: "AIDLA — Pakistan's #1 Free Education Platform",

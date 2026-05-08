@@ -400,7 +400,7 @@ export default function Footer() {
               <div className="ft-logo">
                 <span className="ft-logo-icon">
                   {/* Changed standard img to pull from Next.js public folder */}
-                  <img src="/logo.webp" alt="AIDLA Logo" width="34" height="34" loading="lazy" decoding="async" />
+                  <img src="/logo.png" alt="AIDLA Logo" width="34" height="34" loading="lazy" decoding="async" />
                 </span>
                 AIDLA
               </div>

@@ -50,7 +50,7 @@ function buildCertHTML({ studentName, courseTitle, courseLevel, courseCategory, 
   <div style="position:absolute;bottom:40px;right:40px;width:56px;height:56px;border-bottom:2.5px solid #F5A623;border-right:2.5px solid #F5A623;z-index:2;"></div>
   <div style="position:absolute;top:52px;left:56px;z-index:4;">
     <div style="width:82px;height:82px;border-radius:50%;background:white;border:2.5px solid #F5A623;box-shadow:0 0 0 4px rgba(245,166,35,0.18),0 4px 14px rgba(0,58,140,0.14);display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <img src="/logo.png" alt="AIDLA" style="width:64px;height:64px;object-fit:contain;display:block;">
+      <img src="/logo.webp" alt="AIDLA" style="width:64px;height:64px;object-fit:contain;display:block;">
     </div>
   </div>
   <div style="position:absolute;top:52px;left:0;right:0;display:flex;flex-direction:column;align-items:center;z-index:4;">

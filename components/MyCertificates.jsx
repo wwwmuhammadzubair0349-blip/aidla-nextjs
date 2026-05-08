@@ -138,7 +138,7 @@ export default function MyCertificates() {
           <div class="cert-frame-inner"></div>
           <div class="corner tl"></div><div class="corner tr"></div>
           <div class="corner bl"></div><div class="corner br"></div>
-          <div class="cert-brand"><img src="/logo.png" alt="AIDLA" style="height:36px;object-fit:contain;"></div>
+          <div class="cert-brand"><img src="/logo.webp" alt="AIDLA" style="height:36px;object-fit:contain;"></div>
           <div class="cert-body">
             <div class="cert-overline">Certificate of Completion</div>
             <h1 class="cert-heading">Verified Achievement</h1>

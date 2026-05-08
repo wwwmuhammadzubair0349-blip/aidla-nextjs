@@ -140,7 +140,7 @@ export default function EmailConfirmedClient() {
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
               style={{ marginBottom: 22 }}>
               <Image
-                src="/logo.png"
+                src="/logo.webp"
                 alt="AIDLA Logo"
                 width={80} height={80}
                 style={{ borderRadius: "50%", objectFit: "cover", display: "block", margin: "0 auto",

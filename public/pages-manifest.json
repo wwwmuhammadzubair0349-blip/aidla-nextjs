@@ -1,0 +1,352 @@
+{
+  "generatedAt": "2026-05-08T16:21:35.609Z",
+  "totalPages": 57,
+  "categories": {
+    "public": 35,
+    "user": 22
+  },
+  "pages": [
+    {
+      "route": "/",
+      "category": "public",
+      "title": "Home",
+      "description": null
+    },
+    {
+      "route": "/about",
+      "category": "public",
+      "title": "About",
+      "description": null
+    },
+    {
+      "route": "/blogs",
+      "category": "public",
+      "title": "Blogs",
+      "description": null
+    },
+    {
+      "route": "/blogs/[slug]",
+      "category": "public",
+      "title": "Blogs Detail",
+      "description": null
+    },
+    {
+      "route": "/contact",
+      "category": "public",
+      "title": "Contact",
+      "description": null
+    },
+    {
+      "route": "/courses",
+      "category": "public",
+      "title": "Courses",
+      "description": null
+    },
+    {
+      "route": "/courses/[slug]",
+      "category": "public",
+      "title": "Courses Detail",
+      "description": null
+    },
+    {
+      "route": "/cover-letter",
+      "category": "public",
+      "title": "Cover letter",
+      "description": null
+    },
+    {
+      "route": "/cv-builder",
+      "category": "public",
+      "title": "Cv builder",
+      "description": null
+    },
+    {
+      "route": "/email-confirmed",
+      "category": "public",
+      "title": "Email confirmed",
+      "description": null
+    },
+    {
+      "route": "/faqs",
+      "category": "public",
+      "title": "Faqs",
+      "description": null
+    },
+    {
+      "route": "/faqs/[slug]",
+      "category": "public",
+      "title": "Faqs Detail",
+      "description": null
+    },
+    {
+      "route": "/forgot-password",
+      "category": "public",
+      "title": "Forgot password",
+      "description": null
+    },
+    {
+      "route": "/leaderboard",
+      "category": "public",
+      "title": "Leaderboard",
+      "description": null
+    },
+    {
+      "route": "/login",
+      "category": "public",
+      "title": "Login",
+      "description": null
+    },
+    {
+      "route": "/news",
+      "category": "public",
+      "title": "News",
+      "description": null
+    },
+    {
+      "route": "/news/[slug]",
+      "category": "public",
+      "title": "News Detail",
+      "description": null
+    },
+    {
+      "route": "/privacy-policy",
+      "category": "public",
+      "title": "Privacy policy",
+      "description": null
+    },
+    {
+      "route": "/resources",
+      "category": "public",
+      "title": "Resources",
+      "description": null
+    },
+    {
+      "route": "/resources/[slug]",
+      "category": "public",
+      "title": "Resources Detail",
+      "description": null
+    },
+    {
+      "route": "/signup",
+      "category": "public",
+      "title": "Signup",
+      "description": null
+    },
+    {
+      "route": "/terms",
+      "category": "public",
+      "title": "Terms",
+      "description": null
+    },
+    {
+      "route": "/tools",
+      "category": "public",
+      "title": "Tools",
+      "description": null
+    },
+    {
+      "route": "/tools/ai/email-writer",
+      "category": "public",
+      "title": "Email writer",
+      "description": null
+    },
+    {
+      "route": "/tools/ai/interview-prep",
+      "category": "public",
+      "title": "Interview prep",
+      "description": null
+    },
+    {
+      "route": "/tools/ai/linkedin-bio",
+      "category": "public",
+      "title": "Linkedin bio",
+      "description": null
+    },
+    {
+      "route": "/tools/ai/paraphraser",
+      "category": "public",
+      "title": "Paraphraser",
+      "description": null
+    },
+    {
+      "route": "/tools/ai/summarizer",
+      "category": "public",
+      "title": "Summarizer",
+      "description": null
+    },
+    {
+      "route": "/tools/career",
+      "category": "public",
+      "title": "Career",
+      "description": null
+    },
+    {
+      "route": "/tools/career/cover-letter-maker",
+      "category": "public",
+      "title": "Cover letter maker",
+      "description": null
+    },
+    {
+      "route": "/tools/career/cv-maker",
+      "category": "public",
+      "title": "Cv maker",
+      "description": null
+    },
+    {
+      "route": "/tools/image/jpg-to-png",
+      "category": "public",
+      "title": "Jpg to png",
+      "description": null
+    },
+    {
+      "route": "/tools/pdf/image-to-pdf",
+      "category": "public",
+      "title": "Image to pdf",
+      "description": null
+    },
+    {
+      "route": "/tools/pdf/word-to-pdf",
+      "category": "public",
+      "title": "Word to pdf",
+      "description": null
+    },
+    {
+      "route": "/verify/[certId]",
+      "category": "public",
+      "title": "Verify Detail",
+      "description": null
+    },
+    {
+      "route": "/user",
+      "category": "user",
+      "title": "User",
+      "description": null
+    },
+    {
+      "route": "/user/certificate/[certId]",
+      "category": "user",
+      "title": "Certificate Detail",
+      "description": null
+    },
+    {
+      "route": "/user/course/[id]",
+      "category": "user",
+      "title": "Course Detail",
+      "description": null
+    },
+    {
+      "route": "/user/courses",
+      "category": "user",
+      "title": "Courses",
+      "description": null
+    },
+    {
+      "route": "/user/cover-letter",
+      "category": "user",
+      "title": "Cover letter",
+      "description": null
+    },
+    {
+      "route": "/user/cv-maker",
+      "category": "user",
+      "title": "Cv maker",
+      "description": null
+    },
+    {
+      "route": "/user/dailyquizz",
+      "category": "user",
+      "title": "Dailyquizz",
+      "description": null
+    },
+    {
+      "route": "/user/forum",
+      "category": "user",
+      "title": "Forum",
+      "description": null
+    },
+    {
+      "route": "/user/learning",
+      "category": "user",
+      "title": "Learning",
+      "description": null
+    },
+    {
+      "route": "/user/lucky-draw",
+      "category": "user",
+      "title": "Lucky draw",
+      "description": null
+    },
+    {
+      "route": "/user/lucky-wheel",
+      "category": "user",
+      "title": "Lucky wheel",
+      "description": null
+    },
+    {
+      "route": "/user/mining",
+      "category": "user",
+      "title": "Mining",
+      "description": null
+    },
+    {
+      "route": "/user/profile",
+      "category": "user",
+      "title": "Profile",
+      "description": null
+    },
+    {
+      "route": "/user/resources",
+      "category": "user",
+      "title": "Resources",
+      "description": null
+    },
+    {
+      "route": "/user/shop",
+      "category": "user",
+      "title": "Shop",
+      "description": null
+    },
+    {
+      "route": "/user/social",
+      "category": "user",
+      "title": "Social",
+      "description": null
+    },
+    {
+      "route": "/user/test",
+      "category": "user",
+      "title": "Test",
+      "description": null
+    },
+    {
+      "route": "/user/wallet",
+      "category": "user",
+      "title": "Wallet",
+      "description": null
+    },
+    {
+      "route": "/user/wallet/deposit",
+      "category": "user",
+      "title": "Deposit",
+      "description": null
+    },
+    {
+      "route": "/user/wallet/invite",
+      "category": "user",
+      "title": "Invite",
+      "description": null
+    },
+    {
+      "route": "/user/wallet/transactions",
+      "category": "user",
+      "title": "Transactions",
+      "description": null
+    },
+    {
+      "route": "/user/wallet/withdraw",
+      "category": "user",
+      "title": "Withdraw",
+      "description": null
+    }
+  ]
+}

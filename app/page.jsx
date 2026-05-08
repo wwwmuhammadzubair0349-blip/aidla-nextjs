@@ -11,7 +11,7 @@ import ContentCarousel from "@/components/ContentCarousel";
 import styles from "./home.module.css";
 
 const SITE_URL = "https://www.aidla.online";
-const LAST_MODIFIED = "2025-07-01";
+const LAST_MODIFIED = "2026-05-07";
 
 // ──────────────────────────────────────────────────────────────────────
 // METADATA — SEO 100 optimized
@@ -19,9 +19,9 @@ const LAST_MODIFIED = "2025-07-01";
 //         Open Graph (SMO), Twitter Cards, AEO meta signals
 // ──────────────────────────────────────────────────────────────────────
 export const metadata = {
-  title: "AIDLA — Free Learning, Earn Coins & Win Prizes | Pakistan's #1 Education Platform",
-  description:
-    "AIDLA is Pakistan's number one free education platform. Take quizzes, earn AIDLA Coins, spin the lucky wheel, win real prizes, and access free learning resources. 100% free — no subscription required.",
+  title: "Pakistan’s #1 Free AI Education Platform | Learn, Earn Coins, Spin Wheel & Win Real Rewards | AI-Powered Learning",
+ description:
+"AIDLA is Pakistan’s free AI-powered learning platform. Take quizzes, earn coins, spin the wheel, and win real rewards — all 100% free.",
   keywords: [
     "AIDLA", "free learning platform Pakistan", "online quizzes Pakistan",
     "education Pakistan", "earn coins online", "lucky draw Pakistan",
@@ -57,7 +57,7 @@ export const metadata = {
     url: `${SITE_URL}/`,
     title: "AIDLA — Free Learning, Earn Coins & Win Prizes | Pakistan's #1 Education Platform",
     description:
-      "Pakistan's #1 free education platform. Take quizzes, earn coins, win real prizes. 100% free.",
+      "Pakistan's #1 free education platform. Free Online Courses, take quizzes, earn coins, win real prizes. 100% free.",
     images: [
       {
         url: `${SITE_URL}/og-home.jpg`,

@@ -4,10 +4,47 @@
 //   Mobile SEO, International SEO, Entity SEO, Topical Authority, Knowledge Graph,
 //   Featured Snippet, Zero-Click, Schema Markup, SERP, Core Web Vitals
 import PublicShell from "@/components/PublicShell";
+import localFont from "next/font/local";
 import "@/app/globals.css";
 
 const SITE_URL = "https://www.aidla.online";
 
+// ── SELF‑HOSTED FONTS (no more Google Fonts blocking) ──
+const dmSans = localFont({
+  src: [
+    { path: "../public/fonts/DMSans-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/DMSans-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../public/fonts/DMSans-Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-dm-sans",
+  display: "optional",
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+});
+
+const playfairDisplay = localFont({
+  src: [
+    { path: "../public/fonts/PlayfairDisplay-Bold.woff2", weight: "700", style: "normal" },
+    { path: "../public/fonts/PlayfairDisplay-ExtraBold.woff2", weight: "900", style: "normal" },
+  ],
+  variable: "--font-playfair",
+  display: "optional",
+  fallback: ["Georgia", "serif"],
+});
+
+// Optional: keep Noto Nastaliq Urdu self‑hosted if you use it heavily
+const notoUrdu = localFont({
+  src: [
+    { path: "../public/fonts/NotoNastaliqUrdu-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../public/fonts/NotoNastaliqUrdu-Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-urdu",
+  display: "optional",
+  fallback: ["serif"],
+});
+
+// ─────────────────────────────────────────────────────────────────────
+// METADATA (unchanged – already perfect)
+// ─────────────────────────────────────────────────────────────────────
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -46,7 +83,6 @@ export const metadata = {
       "max-video-preview": -1,
     },
   },
-  // ── Canonical + hreflang for International SEO ──
   alternates: {
     canonical: `${SITE_URL}/`,
     languages: {
@@ -83,7 +119,6 @@ export const metadata = {
     creator: "@AIDLA_online",
     images: [`${SITE_URL}/og-home.jpg`],
   },
-  // ── App Indexing / PWA ──
   applicationName: "AIDLA",
   appleWebApp: {
     capable: true,
@@ -95,18 +130,14 @@ export const metadata = {
     address: false,
     telephone: false,
   },
-  // ── Verification tokens ──
   verification: {
     google: "j4kq2LCJC89N6mrn45InACrIPLowwr3JyLkp1HNusbk",
-    // bing: "YOUR_BING_TOKEN",
   },
-  // ── Additional Meta ──
   other: {
     "theme-color": "#0b1437",
     "color-scheme": "light",
     "mobile-web-app-capable": "yes",
     "msapplication-TileColor": "#0b1437",
-    // GEO / Local SEO signals
     "geo.region": "PK",
     "geo.country": "Pakistan",
     "geo.placename": "Pakistan",
@@ -114,14 +145,11 @@ export const metadata = {
 };
 
 // ─────────────────────────────────────────────────────────────────────
-// COMPREHENSIVE JSON-LD SCHEMA MARKUP
-// Powers: Knowledge Graph, Featured Snippets, Rich Results,
-//         Entity SEO, AEO, GEO, Voice Search, Zero-Click
+// GLOBAL JSON-LD (unchanged – EEAT & Knowledge Graph power)
 // ─────────────────────────────────────────────────────────────────────
 const GLOBAL_SCHEMA = {
   "@context": "https://schema.org",
   "@graph": [
-    // ── 1. Organization (Knowledge Panel + EEAT) ──
     {
       "@type": ["Organization", "EducationalOrganization", "OnlineBusiness"],
       "@id": `${SITE_URL}/#organization`,
@@ -136,8 +164,8 @@ const GLOBAL_SCHEMA = {
       logo: {
         "@type": "ImageObject",
         "@id": `${SITE_URL}/#logo`,
-        url: `${SITE_URL}/logo.png`,
-        contentUrl: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/logo.webp`,
+        contentUrl: `${SITE_URL}/logo.webp`,
         width: 200,
         height: 60,
         caption: "AIDLA — Pakistan's #1 Free Education Platform",
@@ -150,7 +178,6 @@ const GLOBAL_SCHEMA = {
       foundingDate: "2026",
       numberOfEmployees: { "@type": "QuantitativeValue", value: 10 },
       inLanguage: ["en", "ur"],
-      // ── Local SEO / GEO ──
       areaServed: [
         { "@type": "Country", name: "Pakistan", "@id": "https://www.wikidata.org/wiki/Q843" },
         { "@type": "AdministrativeArea", name: "Punjab, Pakistan" },
@@ -179,7 +206,6 @@ const GLOBAL_SCHEMA = {
           availableLanguage: [{ "@type": "Language", name: "English" }],
         },
       ],
-      // ── SMO — Social Media Optimization ──
       sameAs: [
         "https://www.facebook.com/aidlaonline",
         "https://www.instagram.com/aidlaonline",
@@ -188,7 +214,6 @@ const GLOBAL_SCHEMA = {
         "https://www.linkedin.com/company/aidla",
         "https://www.tiktok.com/@aidlaonline",
       ],
-      // ── EEAT Signals ──
       knowsAbout: [
         "Online Education",
         "E-Learning",
@@ -203,7 +228,6 @@ const GLOBAL_SCHEMA = {
         credentialCategory: "Educational Platform",
         recognizedBy: { "@type": "Organization", name: "Pakistan" },
       },
-      // ── CRO — Offers ──
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: "AIDLA Services",
@@ -241,8 +265,6 @@ const GLOBAL_SCHEMA = {
         ],
       },
     },
-
-    // ── 2. WebSite (Sitelinks SearchBox + VSO) ──
     {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
@@ -255,7 +277,6 @@ const GLOBAL_SCHEMA = {
       inLanguage: ["en", "ur"],
       copyrightYear: 2026,
       copyrightHolder: { "@id": `${SITE_URL}/#organization` },
-      // ── Voice Search / Sitelinks SearchBox ──
       potentialAction: [
         {
           "@type": "SearchAction",
@@ -273,8 +294,6 @@ const GLOBAL_SCHEMA = {
         },
       ],
     },
-
-    // ── 3. SoftwareApplication (App Indexing / ASO) ──
     {
       "@type": "SoftwareApplication",
       "@id": `${SITE_URL}/#app`,
@@ -299,8 +318,6 @@ const GLOBAL_SCHEMA = {
         "Cash withdrawals",
       ],
     },
-
-    // ── 4. EducationalOrganization with Course offerings (Topical Authority) ──
     {
       "@type": "EducationalOrganization",
       "@id": `${SITE_URL}/#edu-org`,
@@ -336,8 +353,6 @@ const GLOBAL_SCHEMA = {
         ],
       },
     },
-
-    // ── 5. ItemList — Breadcrumb for all pages ──
     {
       "@type": "BreadcrumbList",
       "@id": `${SITE_URL}/#breadcrumb`,
@@ -355,48 +370,27 @@ const GLOBAL_SCHEMA = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" dir="ltr">
+    <html lang="en" dir="ltr" className={`${dmSans.variable} ${playfairDisplay.variable} ${notoUrdu.variable}`}>
       <head>
-        {/* ══════════════════════════════════════════════════════════
-            PERFORMANCE — Critical Resource Hints
-            Order matters: dns-prefetch → preconnect → preload
-            ══════════════════════════════════════════════════════════ */}
-
-        {/* DNS prefetch for third-party domains */}
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        {/* ══ PERFORMANCE — Critical Hints (only what’s needed) ══ */}
         <link rel="dns-prefetch" href="//static.cloudflareinsights.com" />
-
-        {/* Preconnect — critical third parties */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* No more fonts.googleapis.com – we’re self‑hosted */}
 
-        {/* ── FONT LOADING STRATEGY ──
-            Using font-display=swap + preload for zero render-blocking.
-            Playfair Display: headings (used above fold)
-            DM Sans: body copy
-            Noto Nastaliq Urdu: Arabic/Urdu quotes
-            Only load needed weights & subsets. */}
+        {/* ── SELF‑HOSTED FONT PRELOAD ── */}
         <link
           rel="preload"
-          href="https://fonts.gstatic.com/s/playfairdisplay/v37/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvUDQ.woff2"
+          href="/fonts/DMSans-Regular.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
         />
-
-        {/* Google Fonts — React 19 requires `precedence` on stylesheet links so it
-            can deduplicate and hoist them correctly during hydration. The preload
-            hint is kept separately (not managed by React) for early fetch. */}
         <link
           rel="preload"
-          as="style"
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap"
-        />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Syne:wght@400;600;700;800&family=Mulish:wght@300;400;500;600&display=swap"
-          precedence="default"
+          href="/fonts/PlayfairDisplay-Bold.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
         />
 
         {/* ── PWA / App Manifest ── */}
@@ -405,41 +399,30 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-        {/* ── Theme colors — duplicated from metadata.other for iOS Safari ── */}
         <meta name="theme-color" content="#0b1437" />
-
-        {/* ── Viewport — Mobile SEO ── */}
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-
-        {/* ── Language / GEO — httpEquiv and coordinates not covered by metadata API ── */}
         <meta httpEquiv="content-language" content="en, ur" />
         <meta name="ICBM" content="30.3753, 69.3451" />
-
-        {/* ── EEAT / Authorship ── */}
         <meta name="copyright" content="AIDLA 2026" />
-
-        {/* ── AEO / LLMO — additional signals not in Next.js metadata API ── */}
         <meta name="subject" content="Free Online Education, Quizzes, Rewards, Pakistan Students" />
         <meta name="classification" content="Education / E-Learning / Gamified Learning" />
         <meta name="coverage" content="Pakistan" />
         <meta name="target" content="Students, Learners, Pakistan" />
         <meta name="HandheldFriendly" content="True" />
         <meta name="MobileOptimized" content="320" />
-
-        {/* ── Pinterest SEO ── */}
         <meta name="pinterest" content="nopin" />
 
-        {/* ── Global JSON-LD Schema ── */}
+        {/* ── Global JSON-LD ── */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(GLOBAL_SCHEMA) }}
           suppressHydrationWarning
         />
 
-        {/* ── Speculation Rules API — instant navigation (Chrome 109+) ── */}
+        {/* ── Speculation Rules (instant navigation) ── */}
         <script
           type="speculationrules"
           suppressHydrationWarning

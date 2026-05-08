@@ -119,6 +119,13 @@ export default async function FAQSlugPage({ params }) {
     ],
   };
 
+  /* ── JSON-LD: Speakable (voice search) ── */
+  const speakableSchema = {
+    "@context": "https://schema.org",
+    "@type":    "SpeakableSpecification",
+    cssSelector:  ["h1", ".faqp-answer-text"],
+  };
+
   return (
     <>
       <script
@@ -128,6 +135,10 @@ export default async function FAQSlugPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
       />
       <FaqPageClient faq={faq} />
     </>

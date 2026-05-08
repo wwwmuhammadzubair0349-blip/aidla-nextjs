@@ -19,6 +19,7 @@
 //   - Mobile: Bottom sheet, 82vh max-height
 //   - No Supabase dependency — all data passed via props
 //   - Zero backdrop-filter (GPU optimized)
+//   - Auto-loads pages manifest for site-aware responses
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
@@ -311,6 +312,7 @@ export default function FloatingAssistant({
   const [loading, setLoading] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [error, setError] = useState("");
+  const [pagesManifest, setPagesManifest] = useState(null);
 
   const bottomRef = useRef(null);
   const inputRef = useRef(null);
@@ -320,6 +322,17 @@ export default function FloatingAssistant({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Load pages manifest for site-aware responses
+  useEffect(() => {
+    if (!mounted) return;
+    fetch("/pages-manifest.json")
+      .then((res) => res.json())
+      .then((data) => setPagesManifest(data))
+      .catch(() => {
+        // Silently fail — manifest is optional enhancement
+      });
+  }, [mounted]);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -378,6 +391,29 @@ export default function FloatingAssistant({
         content: m.content,
       }));
 
+      // Build site context from pages manifest
+      let siteContext = "";
+      if (pagesManifest?.pages) {
+        const publicPages = pagesManifest.pages
+          .filter((p) => p.category === "public")
+          .map((p) => `- ${p.title}: ${p.route}`)
+          .join("\n");
+        const userPages = pagesManifest.pages
+          .filter((p) => p.category === "user")
+          .map((p) => `- ${p.title}: ${p.route}`)
+          .join("\n");
+
+        siteContext = `You are AIDLA Bot, an AI assistant for the AIDLA platform. You have knowledge of the following site pages:
+
+PUBLIC PAGES (accessible to everyone):
+${publicPages}
+
+USER PAGES (require login):
+${userPages}
+
+When answering questions, you can reference these pages and guide users to the correct URL. If a user asks about a feature, suggest the relevant page. If they ask how to do something, provide step-by-step instructions based on the available pages.`;
+      }
+
       const res = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -385,6 +421,7 @@ export default function FloatingAssistant({
           message: text,
           user_id: userId || "anonymous",
           history: historyForContext,
+          site_context: siteContext,
         }),
       });
 
@@ -407,7 +444,7 @@ export default function FloatingAssistant({
       setLoading(false);
       inputRef.current?.focus();
     }
-  }, [input, loading, messages, apiUrl, userId]);
+  }, [input, loading, messages, apiUrl, userId, pagesManifest]);
 
   // Keyboard shortcut
   const onKeyDown = (e) => {

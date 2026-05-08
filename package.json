@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "node scripts/generatePagesManifest.js",
     "build": "next build",
     "dev": "next dev",
     "start": "next start",

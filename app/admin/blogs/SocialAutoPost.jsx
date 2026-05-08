@@ -18,7 +18,7 @@ const BRAND = {
   name:     "AIDLA",
   color:    "#6C3FE8",
   url:      "aidla.online",
-  logoPath: "/logo.png",
+  logoPath: "/logo.webp",
   siteBase: "https://www.aidla.online/blogs",
 };
 

@@ -1,4 +1,3 @@
-// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -12,6 +11,8 @@ const nextConfig: NextConfig = {
       "date-fns",
       "@radix-ui/react-icons",
     ],
+    // Prevents legacy polyfills for modern targets
+    optimisticClientCache: true,
   },
 
   images: {
@@ -44,7 +45,6 @@ const nextConfig: NextConfig = {
 
   async headers() {
     return [
-      // Sitemap
       {
         source: "/sitemap.xml",
         headers: [
@@ -52,19 +52,17 @@ const nextConfig: NextConfig = {
           { key: "Cache-Control", value: "public, max-age=3600, stale-while-revalidate=86400" },
         ],
       },
-      // robots.txt
       {
         source: "/robots.txt",
         headers: [
           { key: "Cache-Control", value: "public, max-age=86400" },
         ],
       },
-      // API — no cache
       {
-        source: "/api/",
+        source: "/api/(.*)",
         headers: [{ key: "Cache-Control", value: "no-store, no-cache" }],
       },
-      // Security headers on ALL routes (was wrongly limited to "/" only)
+      // Security headers for all routes
       {
         source: "/(.*)",
         headers: [
@@ -76,17 +74,38 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
           },
+          // CSP (Content Security Policy) – tighten as needed
+          {
+            key: "Content-Security-Policy",
+            value:
+              "default-src 'self'; " +
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; " +
+              "style-src 'self' 'unsafe-inline'; " +
+              "img-src 'self' data: https://*.supabase.co https://images.pexels.com https://images.unsplash.com; " +
+              "font-src 'self'; " +
+              "connect-src 'self' https://*.supabase.co; " +
+              "frame-ancestors 'none'; " +
+              "upgrade-insecure-requests;",
+          },
+          // Strict Transport Security (HSTS) for 1 year
+          { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
+          // Cross-Origin Opener Policy
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         ],
       },
     ];
   },
 
+  // Enable compression
   compress: true,
+
+  // Remove X-Powered-By
   poweredByHeader: false,
 };
 
 export default nextConfig;
 
+// Dev‑only cloudflare adapter (unchanged)
 if (process.env.NODE_ENV !== "production") {
   import("@opennextjs/cloudflare")
     .then((m) => m.initOpenNextCloudflareForDev())

@@ -2,14 +2,9 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --foreground: #0f172a;
+  --font-sans: var(--font-dm-sans, 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif);
+  --font-heading: var(--font-playfair, 'Playfair Display', Georgia, serif);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +14,21 @@
   }
 }
 
+/* ── Base ── */
 body {
+  margin: 0;
+  padding: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeSpeed;
 }
+
+/* ── Headings ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* ── Tailwind compatibility (keep your existing classes) ── */
+/* Add any additional Tailwind overrides here */

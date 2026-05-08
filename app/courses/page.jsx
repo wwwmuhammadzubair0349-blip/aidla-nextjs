@@ -116,7 +116,7 @@ export default async function CoursesPage({ searchParams }) {
     "@type": "EducationalOrganization",
     name: "AIDLA",
     url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
+    logo: `${SITE_URL}/logo.webp`,
     description: "Pakistan's #1 educational rewards platform. Learn, earn coins and win real prizes.",
   };
 

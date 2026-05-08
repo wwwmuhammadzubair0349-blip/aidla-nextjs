@@ -246,7 +246,7 @@ function ParaphraserJsonLd() {
     "@id": `${baseUrl}/#organization`,
     name: "AIDLA",
     url: baseUrl,
-    logo: { "@type": "ImageObject", url: `${baseUrl}/logo.png`, width: 200, height: 60 },
+    logo: { "@type": "ImageObject", url: `${baseUrl}/logo.webp`, width: 200, height: 60 },
     sameAs: ["https://twitter.com/aidla_online"],
     description: "AIDLA provides free AI-powered career and writing tools for students and professionals in Pakistan, UAE, and worldwide.",
     areaServed: ["Pakistan", "UAE", "Saudi Arabia", "GCC", "Worldwide"],

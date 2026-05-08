@@ -1,4 +1,3 @@
-// app/faqs/[slug]/FaqPageClient.jsx
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
@@ -202,30 +201,52 @@ export default function FaqPageClient({ faq: initialFaq }) {
   const [related,  setRelated]  = useState([]);
   const [userVote, setUserVote] = useState(null);
   const [shared,   setShared]   = useState(false);
+  const [contentReady, setContentReady] = useState(false);
   const fp = useRef("");
+
+  // Set contentReady after mount to replace skeleton with real content
+  useEffect(() => {
+    setContentReady(true);
+  }, []);
 
   useEffect(() => {
     fp.current = getFingerprint();
 
     const init = async () => {
-      // View tracking — sessionStorage dedup (mirrors News, fixes double-count on remount)
+      // View tracking — sessionStorage dedup
       const viewKey = `faq_viewed_${faq.id}`;
       if (!sessionStorage.getItem(viewKey)) {
         sessionStorage.setItem(viewKey, "1");
         try {
-          await supabase.rpc("faq_increment_view", { p_faq_id: faq.id });
+          if (window.requestIdleCallback) {
+            requestIdleCallback(() => supabase.rpc("faq_increment_view", { p_faq_id: faq.id }));
+          } else {
+            await supabase.rpc("faq_increment_view", { p_faq_id: faq.id });
+          }
         } catch {}
       }
 
-      // Related FAQs
+      // Related FAQs (low priority)
       try {
-        const { data } = await supabase.rpc("get_related_faqs", {
-          p_faq_id:   faq.id,
-          p_category: faq.category,
-          p_question: faq.question,
-          p_limit:    5,
-        });
-        setRelated(data || []);
+        if (window.requestIdleCallback) {
+          requestIdleCallback(async () => {
+            const { data } = await supabase.rpc("get_related_faqs", {
+              p_faq_id:   faq.id,
+              p_category: faq.category,
+              p_question: faq.question,
+              p_limit:    5,
+            });
+            setRelated(data || []);
+          });
+        } else {
+          const { data } = await supabase.rpc("get_related_faqs", {
+            p_faq_id:   faq.id,
+            p_category: faq.category,
+            p_question: faq.question,
+            p_limit:    5,
+          });
+          setRelated(data || []);
+        }
       } catch {}
 
       // Load user's existing vote
@@ -287,19 +308,16 @@ export default function FaqPageClient({ faq: initialFaq }) {
   const helpfulPct = totalVotes > 0 ? Math.round((faq.helpful_yes / totalVotes) * 100) : null;
 
   return (
-    // itemScope on root — bots read Q&A from microdata even without JS (new)
     <main
       className="faqp-page"
+      id="main-content"
       itemScope
       itemType="https://schema.org/QAPage"
     >
-
       {/* ── Hero ── */}
       <header className="faqp-hero">
         <div className="faqp-hero-bg" aria-hidden="true" />
         <div className="faqp-hero-inner">
-
-          {/* Breadcrumb */}
           <nav className="faqp-breadcrumb" aria-label="Breadcrumb">
             <ol>
               <li><Link href="/">Home</Link></li>
@@ -310,21 +328,15 @@ export default function FaqPageClient({ faq: initialFaq }) {
             </ol>
           </nav>
 
-          {/* Category badge */}
           <div className="faqp-cat-badge">
             <span aria-hidden="true">{cat?.icon}</span>
             <span>{cat?.label}</span>
           </div>
 
-          {/* H1 — itemProp="name" so bots read the question (new) */}
-          <h1
-            className="faqp-hero-title"
-            itemProp="name"
-          >
+          <h1 className="faqp-hero-title" itemProp="name">
             {faq.question}
           </h1>
 
-          {/* Meta */}
           <div className="faqp-hero-meta">
             <span>👁 {faq.view_count} views</span>
             <span className="faqp-meta-dot" aria-hidden="true">·</span>
@@ -348,39 +360,46 @@ export default function FaqPageClient({ faq: initialFaq }) {
 
       {/* ── Content ── */}
       <div className="faqp-content-wrap">
-
-        {/* Answer Card — itemScope wraps the accepted answer (new) */}
-        <article
-          className="faqp-answer-card"
-          itemScope
-          itemType="https://schema.org/Answer"
-          itemProp="acceptedAnswer"
-        >
-          <div className="faqp-answer-label">
-            <span className="faqp-answer-label-dot" aria-hidden="true" />
-            Official Answer
+        {/* Skeleton placeholder until content is ready */}
+        {!contentReady ? (
+          <div className="faqp-answer-skeleton">
+            <div className="faqp-skeleton-line" />
+            <div className="faqp-skeleton-line short" />
+            <div className="faqp-skeleton-line medium" />
+            <div className="faqp-skeleton-line short" />
           </div>
-          {/* itemProp="text" so bots read the answer body directly (new) */}
-          <div
-            className="faqp-answer-text"
-            itemProp="text"
-            dangerouslySetInnerHTML={{ __html: faq.answer }}
-          />
-          <div className="faqp-answer-author">
-            <div className="faqp-author-avatar" aria-hidden="true">A</div>
-            <div>
-              <div className="faqp-author-name">AIDLA Support Team</div>
-              <div className="faqp-author-role">
-                Official Answer ·{" "}
-                <time dateTime={faq.updated_at || faq.created_at}>
-                  {new Date(faq.updated_at || faq.created_at).toLocaleDateString("en-PK", {
-                    day: "2-digit", month: "short", year: "numeric",
-                  })}
-                </time>
+        ) : (
+          <article
+            className="faqp-answer-card"
+            itemScope
+            itemType="https://schema.org/Answer"
+            itemProp="acceptedAnswer"
+          >
+            <div className="faqp-answer-label">
+              <span className="faqp-answer-label-dot" aria-hidden="true" />
+              Official Answer
+            </div>
+            <div
+              className="faqp-answer-text"
+              itemProp="text"
+              dangerouslySetInnerHTML={{ __html: faq.answer }}
+            />
+            <div className="faqp-answer-author">
+              <div className="faqp-author-avatar" aria-hidden="true">A</div>
+              <div>
+                <div className="faqp-author-name">AIDLA Support Team</div>
+                <div className="faqp-author-role">
+                  Official Answer ·{" "}
+                  <time dateTime={faq.updated_at || faq.created_at}>
+                    {new Date(faq.updated_at || faq.created_at).toLocaleDateString("en-PK", {
+                      day: "2-digit", month: "short", year: "numeric",
+                    })}
+                  </time>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
+        )}
 
         {/* Helpful + Share */}
         <div className="faqp-actions-row">

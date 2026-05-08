@@ -52,7 +52,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
           {/* Header - single line, no wrap */}
           <div style={{ background:"#312e81", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
-              <img src="/logo.png" alt="AIDLA" style={{ width:30, height:30, borderRadius:8, objectFit:"cover", flexShrink:0 }} />
+              <img src="/logo.webp" alt="AIDLA" style={{ width:30, height:30, borderRadius:8, objectFit:"cover", flexShrink:0 }} />
               <div>
                 <div style={{ fontSize:13, fontWeight:900, color:"white", letterSpacing:1, whiteSpace:"nowrap" }}>AIDLA</div>
                 <div style={{ fontSize:9, color:"rgba(255,255,255,0.5)", whiteSpace:"nowrap" }}>Daily Quiz · Learn & Earn</div>
@@ -255,6 +255,8 @@ export default function DailyQuizPage() {
   const [eliminatedOptions, setEliminatedOptions] = useState([]);
   const [showShareCard, setShowShareCard] = useState(false);
   const [showProfileReminder, setShowProfileReminder] = useState(false);
+  const [wonToday, setWonToday] = useState(false);
+  const [winResult, setWinResult] = useState(null);
 
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
@@ -295,7 +297,7 @@ export default function DailyQuizPage() {
     console.log("[Quiz] profile:", prof?.user_id, "err:", profErr);
     setProfile(prof);
     await loadStatus();
-    await loadLeaderboard();
+    await loadLeaderboard(prof?.user_id);
     setLoading(false);
     console.log("[Quiz] init complete, view should be set");
     // Show profile reminder if key fields missing
@@ -321,14 +323,18 @@ export default function DailyQuizPage() {
     // Check if user has ANY passed attempt today
     const hasPassedToday = data.last_attempt?.status === "passed" || 
       (data.attempts_used > 0 && data.passed_today === true);
-    if (hasPassedToday) { console.log("[Quiz] -> passed_done"); setView("passed_done"); return; }
+    if (hasPassedToday) {
+      console.log("[Quiz] -> passed_done");
+      setView("passed_done");
+      // Winner check handled in loadLeaderboard
+      return;
+    }
     if (data.attempts_left <= 0) { console.log("[Quiz] -> no_attempts"); setView("no_attempts"); return; }
     console.log("[Quiz] -> info");
     setView("info");
   }
 
-  async function loadLeaderboard() {
-    // Winners: yesterday (distributed at 23:59), Participants: today
+  async function loadLeaderboard(currentProfileUserId = null) {
     const today = getLocalDate();
     const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
     const yDate = yesterday.getFullYear() + "-" + String(yesterday.getMonth()+1).padStart(2,"0") + "-" + String(yesterday.getDate()).padStart(2,"0");
@@ -336,11 +342,25 @@ export default function DailyQuizPage() {
       supabase.rpc("daily_quiz_leaderboard", { p_date: yDate }),
       supabase.rpc("daily_quiz_leaderboard", { p_date: today }),
     ]);
-    setLeaderboard({
-      winners: wData?.winners || [],
-      winner_date: yDate,
-      all_attempts: tData?.all_attempts || [],
-    });
+    const winners = wData?.winners || [];
+    setLeaderboard({ winners, winner_date: yDate, all_attempts: tData?.all_attempts || [] });
+
+    // Check if current user won yesterday
+    const uid = currentProfileUserId;
+    if (uid) {
+      const myWin = winners.find(w => w.user_id === uid && w.coins_earned > 0);
+      if (myWin) {
+        setWonToday(true);
+        setWinResult({
+          passed: true,
+          correct_answers: myWin.score,
+          total_questions: myWin.total_questions,
+          coins_earned: myWin.coins_earned,
+          rank: myWin.rank,
+          date: yDate,
+        });
+      }
+    }
   }
 
   function startMidnightCountdown() {
@@ -504,6 +524,31 @@ export default function DailyQuizPage() {
     <div style={S.wrap}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
+      {/* Winner Celebration Modal */}
+      {wonToday && winResult && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9997, padding:16 }}>
+          <div style={{ background:"white", borderRadius:20, padding:28, maxWidth:340, width:"100%", textAlign:"center" }}>
+            <div style={{ fontSize:56, marginBottom:8 }}>🎉</div>
+            <div style={{ fontSize:22, fontWeight:800, color:"#0f172a", marginBottom:4 }}>You Won Yesterday! 🏆</div>
+            <div style={{ fontSize:13, color:"#64748b", marginBottom:4 }}>
+              Score: {winResult.correct_answers}/{winResult.total_questions} · Rank #{winResult.rank || "—"}
+            </div>
+            <div style={{ fontSize:13, color:"#64748b", marginBottom:6 }}>Date: {winResult.date}</div>
+            <div style={{ fontSize:16, fontWeight:800, color:"#059669", marginBottom:20 }}>
+              +{winResult.coins_earned} 🪙 added to your wallet!
+            </div>
+            <div style={{ display:"flex", gap:10 }}>
+              <button style={{ flex:1, padding:"12px", background:"#f1f5f9", border:"none", borderRadius:10, fontWeight:600, fontSize:13, cursor:"pointer", color:"#475569" }}
+                onClick={() => setWonToday(false)}>Close</button>
+              <button style={{ flex:1, padding:"12px", background:"#059669", border:"none", borderRadius:10, fontWeight:700, fontSize:13, cursor:"pointer", color:"white" }}
+                onClick={() => { setWonToday(false); setResult(winResult); setShowShareCard(true); }}>
+                📤 Share Win
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Profile Reminder Modal */}
       {showProfileReminder && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9998, padding:16 }}>
@@ -560,6 +605,12 @@ export default function DailyQuizPage() {
                     <span style={{ fontSize: 12, color: "#64748b" }}>{w.score}/{w.total_questions}</span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#059669", marginLeft: 8 }}>+{w.coins_earned}🪙</span>
                     {w.streak_days >= 3 && <span style={{ fontSize: 12 }}>🔥{w.streak_days}</span>}
+                    {w.user_id === profile?.user_id && w.coins_earned > 0 && (
+                      <button style={{ fontSize:11, padding:"3px 8px", background:"#059669", color:"white", border:"none", borderRadius:6, cursor:"pointer", fontWeight:700, marginLeft:4 }}
+                        onClick={() => { setResult({ passed:true, correct_answers:w.score, total_questions:w.total_questions, coins_earned:w.coins_earned, rank:w.rank }); setShowShareCard(true); }}>
+                        📤
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

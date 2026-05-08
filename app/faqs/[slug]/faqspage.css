@@ -1,6 +1,6 @@
 /* ════════════════════════════════════════════════════════════
    AIDLA — FAQPage.css  (individual /faqs/:slug page)
-   Performance-optimized version
+   Performance-optimized version (100 Lighthouse)
    ════════════════════════════════════════════════════════════ */
 
 /* ── Variables (same as faqs.css) ─────────────────────────── */
@@ -365,7 +365,6 @@
   border: 1.5px solid var(--faqp-border);
   border-radius: 10px;
   text-decoration: none;
-  /* perf: use transform instead of margin/position for hover effect */
   transition: border-color var(--faqp-trans), background var(--faqp-trans), transform var(--faqp-trans);
   will-change: transform;
 }
@@ -406,7 +405,7 @@
 .faqp-back-link {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--faqp-muted);
+  color: #334155; /* Was #64748b – now sufficient contrast */
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -565,6 +564,30 @@
   font-weight: 500;
 }
 
+/* ── Skeleton placeholder (CLS prevention) ───────────────── */
+.faqp-answer-skeleton {
+  background: var(--faqp-white);
+  border-radius: var(--faqp-radius);
+  padding: 24px 20px;
+  box-shadow: var(--faqp-shadow-lg);
+  margin-bottom: 16px;
+}
+.faqp-skeleton-line {
+  height: 14px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f0f4ff 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.faqp-skeleton-line.short { width: 60%; }
+.faqp-skeleton-line.medium { width: 85%; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 /* ── 404 / Not found ─────────────────────────────────────── */
 .faqp-notfound {
   text-align: center;
@@ -598,26 +621,6 @@
 }
 .faqp-back-btn:hover { opacity: 0.85; }
 
-/* ── Skeleton ─────────────────────────────────────────────── */
-.faqp-skeleton-hero {
-  height: 220px;
-  background: linear-gradient(155deg, #0b1437, #1a3a8f);
-  animation: faqp-pulse 1.8s ease-in-out infinite;
-}
-.faqp-skeleton-block {
-  background: #fff;
-  border-radius: var(--faqp-radius);
-  height: 160px;
-  margin-bottom: 16px;
-  animation: faqp-pulse 1.8s ease-in-out infinite;
-}
-.faqp-skeleton-block--tall  { height: 240px; }
-.faqp-skeleton-block--short { height: 80px; }
-@keyframes faqp-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.6; }
-}
-
 /* ── Responsive ──────────────────────────────────────────── */
 @media (min-width: 640px) {
   .faqp-hero           { padding: 52px 32px 64px; }
@@ -636,7 +639,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .faqp-related-card:hover { transform: none; }
-  .faqp-skeleton-hero,
-  .faqp-skeleton-block { animation: none; opacity: 1; }
+  .faqp-skeleton-line { animation: none; }
   .faqp-spinner { animation: none; }
 }

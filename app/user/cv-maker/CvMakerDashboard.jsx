@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
 import CvMakerClient from "@/app/tools/career/cv-maker/CvMakerClient";
 
-const STORAGE_KEY = "cvmk_v11";
+const STORAGE_KEY = "cvmk_v12_apex";
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap');
@@ -384,49 +384,49 @@ export default function CvMakerDashboard() {
   /* Save current editor state to Supabase */
   const saveToCloud = async () => {
     if (!user) return;
-    setSaving(true);
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) { showToast("Nothing to save", "err"); return; }
-      const sv = JSON.parse(raw);
+      setSaving(true);
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) { showToast("Nothing to save", "err"); return; }
+        const sv = JSON.parse(raw);
 
-      const payload = {
-        data:      sv.data     || {},
-        template:  sv.tmpl     || "modern-stack",
-        accent:    sv.accent   || "#1e3a8a",
-        font_id:   sv.fontId   || "outfit",
-        font_size: sv.fontSize || "medium",
-        paper:     sv.paper    || "a4",
-        updated_at: new Date().toISOString(),
-      };
+        const payload = {
+          data:      sv.data     || {},
+          template:  sv.tmpl     || "modern-stack",
+          accent:    sv.accent   || "#1e3a8a",
+          font_id:   sv.fontId   || "outfit",
+          font_size: sv.fontSize || "medium",
+          paper:     sv.paper    || "a4",
+          updated_at: new Date().toISOString(),
+        };
 
-      if (activeCvId) {
-        await supabase.from("user_cvs").update(payload).eq("id", activeCvId);
-        setCvs(prev => prev.map(c => c.id === activeCvId
-          ? { ...c, updated_at: payload.updated_at }
-          : c
-        ));
-        showToast("CV saved ✅", "ok");
-      } else {
-        const cvName = sv.data?.fullName ? `${sv.data.fullName}'s CV` : "My CV";
-        const { data: newCv, error } = await supabase
-          .from("user_cvs")
-          .insert({ user_id: user.id, name: cvName, ...payload })
-          .select()
-          .single();
+        if (activeCvId) {
+          await supabase.from("user_cvs").update(payload).eq("id", activeCvId);
+          setCvs(prev => prev.map(c => c.id === activeCvId
+            ? { ...c, updated_at: payload.updated_at }
+            : c
+          ));
+          showToast("CV saved ✅", "ok");
+        } else {
+          const cvName = sv.data?.fullName ? `${sv.data.fullName}'s CV` : "My CV";
+          const { data: newCv, error } = await supabase
+            .from("user_cvs")
+            .insert({ user_id: user.id, name: cvName, ...payload })
+            .select()
+            .single();
 
-        if (error) throw error;
-        setActiveCvId(newCv.id);
-        setCvs(prev => [newCv, ...prev]);
-        showToast("CV saved ✅", "ok");
+          if (error) throw error;
+          setActiveCvId(newCv.id);
+          setCvs(prev => [newCv, ...prev]);
+          showToast("CV saved ✅", "ok");
+        }
+      } catch (err) {
+        console.error(err);
+        showToast("Save failed — please retry", "err");
+      } finally {
+        setSaving(false);
       }
-    } catch (err) {
-      console.error(err);
-      showToast("Save failed — please retry", "err");
-    } finally {
-      setSaving(false);
-    }
-  };
+    };
 
   /* Delete a CV */
   const deleteCv = async (cvId, e) => {

@@ -109,7 +109,8 @@ export default async function Home() {
   const userVoted = JSON.parse(votedFeatures);
 
   let blogs = null, news = null, announcements = null, draws = null,
-    wheelRaw = null, testers = null, reviews = null, faqs = null;
+    wheelRaw = null, reviews = null, faqs = null,
+    dailyQuizWinners = null;
 
   if (supabase) {
     const results = await Promise.all([
@@ -125,15 +126,14 @@ export default async function Home() {
         .order("announced_at", { ascending: false }).limit(5),
       supabase.from("luckywheel_history").select("id,user_id,result_type,coins_won,created_at")
         .in("result_type", ["coins", "gift"]).order("created_at", { ascending: false }).limit(5),
-      supabase.from("test_winners").select("id,user_name,rank_no,approved_at,test_id,test_tests(title)")
-        .order("approved_at", { ascending: false }).limit(5),
+      supabase.rpc("daily_quiz_leaderboard"),
       supabase.from("user_reviews").select("id,full_name,rating,review_text,created_at")
         .eq("is_approved", true).order("created_at", { ascending: false }).limit(10),
       supabase.from("faqs").select("id,question,answer,slug,category")
         .eq("status", "published").eq("is_visible", true)
         .order("helpful_yes", { ascending: false }).limit(6),
     ]);
-    [blogs, news, announcements, draws, wheelRaw, testers, reviews, faqs] =
+    [blogs, news, announcements, draws, wheelRaw, dailyQuizWinners, reviews, faqs] =
       results.map(r => r.data);
   }
 
@@ -717,37 +717,37 @@ export default async function Home() {
             <article className={styles.winnerCard}>
               <div className={styles.winnerCardHd}>
                 <span aria-hidden="true">📝</span>
-                <h3>Quiz Toppers</h3>
+                <h3>Daily Quizz Winners</h3>
               </div>
               <table className={styles.winnerTable}>
-                <caption className={styles.srOnly}>Recent AIDLA quiz top performers</caption>
+                <caption className={styles.srOnly}>Recent AIDLA daily quiz winners</caption>
                 <thead>
                   <tr>
                     <th scope="col">Rank</th>
                     <th scope="col">Student</th>
-                    <th scope="col">Quiz</th>
-                    <th scope="col">When</th>
+                    <th scope="col">Score</th>
+                    <th scope="col">Coins</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {testers?.map((row) => (
-                    <tr key={row.id}>
+                  {(dailyQuizWinners?.winners || dailyQuizWinners?.all_attempts || [])?.slice(0, 5).map((row, idx) => (
+                    <tr key={idx}>
                       <td>
                         <span
                           className={`${styles.rankBadge} ${
-                            row.rank_no === 1 ? styles.rank1
-                            : row.rank_no === 2 ? styles.rank2
-                            : row.rank_no === 3 ? styles.rank3
+                            row.rank === 1 ? styles.rank1
+                            : row.rank === 2 ? styles.rank2
+                            : row.rank === 3 ? styles.rank3
                             : styles.rankO
                           }`}
-                          aria-label={`Rank ${row.rank_no}`}
+                          aria-label={`Rank ${row.rank || idx + 1}`}
                         >
-                          #{row.rank_no}
+                          #{row.rank || idx + 1}
                         </span>
                       </td>
-                      <td><strong>{row.user_name}</strong></td>
-                      <td>{row.test_tests?.title || "Untitled"}</td>
-                      <td className={styles.tdDate}><time dateTime={row.approved_at}>{formatDate(row.approved_at)}</time></td>
+                      <td><strong>{row.full_name || "Anonymous"}</strong></td>
+                      <td>{row.score || row.correct_answers || 0}/{row.total_questions || "?"}</td>
+                      <td className={styles.tdDate}>🪙 {row.coins_earned || 0}</td>
                     </tr>
                   ))}
                 </tbody>

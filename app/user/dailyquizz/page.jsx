@@ -40,7 +40,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
 
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, padding:16 }} onClick={onClose}>
-      <div style={{ width:"100%", maxWidth:400, display:"flex", flexDirection:"column", gap:10 }} onClick={e => e.stopPropagation()}>
+      <div style={{ width:"100%", maxWidth:400, display:"flex", flexDirection:"column", gap:10, overflowX:"hidden" }} onClick={e => e.stopPropagation()}>
 
         {/* Close */}
         <div style={{ display:"flex", justifyContent:"flex-end" }}>
@@ -48,7 +48,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
         </div>
 
         {/* CARD - fixed 400px width for consistent screenshot */}
-        <div ref={cardRef} style={{ borderRadius:16, overflow:"hidden", background:"white", width:400, minWidth:400 }}>
+        <div ref={cardRef} style={{ borderRadius:16, overflow:"hidden", background:"white", width:"100%", maxWidth:400, boxSizing:"border-box" }}>
           {/* Header - single line, no wrap */}
           <div style={{ background:"#312e81", padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
@@ -254,6 +254,7 @@ export default function DailyQuizPage() {
   const [hintUsed, setHintUsed] = useState(false);
   const [eliminatedOptions, setEliminatedOptions] = useState([]);
   const [showShareCard, setShowShareCard] = useState(false);
+  const [showProfileReminder, setShowProfileReminder] = useState(false);
 
   const timerRef = useRef(null);
   const countdownRef = useRef(null);
@@ -297,6 +298,11 @@ export default function DailyQuizPage() {
     await loadLeaderboard();
     setLoading(false);
     console.log("[Quiz] init complete, view should be set");
+    // Show profile reminder if key fields missing
+    if (prof) {
+      const missing = !prof.full_name || !prof.educational_level || !prof.profession || !prof.city || !prof.country;
+      if (missing) setShowProfileReminder(true);
+    }
   }
 
   async function loadStatus() {
@@ -322,8 +328,19 @@ export default function DailyQuizPage() {
   }
 
   async function loadLeaderboard() {
-    const { data } = await supabase.rpc("daily_quiz_leaderboard", { p_date: getLocalDate() });
-    if (data) setLeaderboard({ winners: data.winners || [], all_attempts: data.all_attempts || [] });
+    // Winners: yesterday (distributed at 23:59), Participants: today
+    const today = getLocalDate();
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    const yDate = yesterday.getFullYear() + "-" + String(yesterday.getMonth()+1).padStart(2,"0") + "-" + String(yesterday.getDate()).padStart(2,"0");
+    const [{ data: wData }, { data: tData }] = await Promise.all([
+      supabase.rpc("daily_quiz_leaderboard", { p_date: yDate }),
+      supabase.rpc("daily_quiz_leaderboard", { p_date: today }),
+    ]);
+    setLeaderboard({
+      winners: wData?.winners || [],
+      winner_date: yDate,
+      all_attempts: tData?.all_attempts || [],
+    });
   }
 
   function startMidnightCountdown() {
@@ -487,6 +504,26 @@ export default function DailyQuizPage() {
     <div style={S.wrap}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
+      {/* Profile Reminder Modal */}
+      {showProfileReminder && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9998, padding:16 }}>
+          <div style={{ background:"white", borderRadius:16, padding:24, maxWidth:340, width:"100%", textAlign:"center" }}>
+            <div style={{ fontSize:40, marginBottom:8 }}>👤</div>
+            <div style={{ fontSize:18, fontWeight:800, marginBottom:6 }}>Complete Your Profile</div>
+            <div style={{ fontSize:13, color:"#64748b", marginBottom:16, lineHeight:1.6 }}>
+              A complete profile helps AIDLA AI generate personalized quiz questions just for you — based on your field, level, and interests!
+            </div>
+            <div style={{ display:"flex", gap:10 }}>
+              <button style={{ flex:1, padding:"11px", background:"#f1f5f9", border:"none", borderRadius:10, fontWeight:600, fontSize:13, cursor:"pointer", color:"#475569" }}
+                onClick={() => setShowProfileReminder(false)}>Later</button>
+              <a href="/user/profile" style={{ flex:1, padding:"11px", background:"#6366f1", border:"none", borderRadius:10, fontWeight:700, fontSize:13, cursor:"pointer", color:"white", textDecoration:"none", display:"block" }}>
+                Complete Profile →
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={S.header}>
         <Link href="/user" style={S.back}>←</Link>
@@ -514,7 +551,7 @@ export default function DailyQuizPage() {
           <div>
             {leaderboard.winners?.length > 0 && (
               <div style={S.card}>
-                <div style={S.cardTitle}>🏆 Today's Winners</div>
+                <div style={S.cardTitle}>🏆 Yesterday's Winners <span style={{fontSize:11,color:"#94a3b8",fontWeight:500}}>({leaderboard.winner_date || ""})</span></div>
                 {leaderboard.winners.map((w, i) => (
                   <div key={i} style={S.lbRow}>
                     <span style={{ ...S.lbRank, color: i === 0 ? "#f59e0b" : i === 1 ? "#94a3b8" : i === 2 ? "#92400e" : "#475569" }}>#{w.rank}</span>
@@ -737,7 +774,7 @@ export default function DailyQuizPage() {
                 {/* Leaderboard after result */}
                 {leaderboard.winners?.length > 0 && (
                   <div style={S.card}>
-                    <div style={S.cardTitle}>🏆 Today's Winners</div>
+                    <div style={S.cardTitle}>🏆 Yesterday's Winners <span style={{fontSize:11,color:"#94a3b8",fontWeight:500}}>({leaderboard.winner_date || ""})</span></div>
                     {leaderboard.winners.map((w, i) => (
                       <div key={i} style={S.lbRow}>
                         <span style={{ ...S.lbRank, color: i === 0 ? "#f59e0b" : "#475569" }}>#{w.rank}</span>
@@ -776,7 +813,7 @@ export default function DailyQuizPage() {
                 </div>
                 {leaderboard.winners?.length > 0 && (
                   <div style={S.card}>
-                    <div style={S.cardTitle}>🏆 Today's Winners</div>
+                    <div style={S.cardTitle}>🏆 Yesterday's Winners <span style={{fontSize:11,color:"#94a3b8",fontWeight:500}}>({leaderboard.winner_date || ""})</span></div>
                     {leaderboard.winners.map((w, i) => (
                       <div key={i} style={S.lbRow}>
                         <span style={{ ...S.lbRank, color: i === 0 ? "#f59e0b" : "#475569" }}>#{w.rank}</span>
@@ -808,7 +845,7 @@ export default function DailyQuizPage() {
                 </div>
                 {leaderboard.winners?.length > 0 && (
                   <div style={S.card}>
-                    <div style={S.cardTitle}>🏆 Today's Winners</div>
+                    <div style={S.cardTitle}>🏆 Yesterday's Winners <span style={{fontSize:11,color:"#94a3b8",fontWeight:500}}>({leaderboard.winner_date || ""})</span></div>
                     {leaderboard.winners.map((w, i) => (
                       <div key={i} style={S.lbRow}>
                         <span style={{ ...S.lbRank, color: i === 0 ? "#f59e0b" : "#475569" }}>#{w.rank}</span>

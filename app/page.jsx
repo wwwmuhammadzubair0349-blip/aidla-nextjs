@@ -23,6 +23,9 @@ export const metadata = {
     "student rewards Pakistan",
     "daily quiz Pakistan",
     "learn and earn Pakistan",
+    "KPK learning platform",
+    "Peshawar education",
+    "AI digital learning academy",
   ],
   authors: [{ name: "AIDLA", url: SITE_URL }],
   creator: "AIDLA",
@@ -262,11 +265,13 @@ async function getHomeData() {
 export default async function Home() {
   const { posts, reviews, faqs, dailyWinners, winnerDate } = await getHomeData();
 
+  /* ── Full structured data: AEO, GEO, Local SEO, Technical SEO, International SEO ── */
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
+      /* ── Organization ── */
       {
-        "@type": ["Organization", "EducationalOrganization", "OnlineBusiness"],
+        "@type": ["Organization", "EducationalOrganization", "OnlineBusiness", "LocalBusiness"],
         "@id": `${SITE_URL}/#organization`,
         name: "AIDLA",
         legalName: "AIDLA - AI Digital Learning Academy",
@@ -290,6 +295,7 @@ export default async function Home() {
         slogan: "Study smarter. Earn coins. Build your future.",
         description:
           "AIDLA is Pakistan #1 AI powered learning platform offering free courses, daily quizzes, AI tools, career resources, AIDLA Coins, and rewards.",
+        /* ── Local SEO: full address with postal code ── */
         areaServed: [
           { "@type": "Country", name: "Pakistan", "@id": "https://www.wikidata.org/wiki/Q843" },
           { "@type": "City", name: "Peshawar" },
@@ -297,10 +303,18 @@ export default async function Home() {
         ],
         address: {
           "@type": "PostalAddress",
+          streetAddress: "Peshawar",
           addressLocality: "Peshawar",
           addressRegion: "Khyber Pakhtunkhwa",
+          postalCode: "25000",
           addressCountry: "PK",
         },
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: "34.0150",
+          longitude: "71.5249",
+        },
+        hasMap: "https://maps.google.com/?q=Peshawar,+Khyber+Pakhtunkhwa,+Pakistan",
         contactPoint: {
           "@type": "ContactPoint",
           telephone: "+923044678929",
@@ -310,14 +324,7 @@ export default async function Home() {
           url: `${SITE_URL}/contact`,
         },
         founder: { "@id": `${SITE_URL}/#founder` },
-        sameAs: [
-          "https://www.instagram.com/aidla_official/",
-          "https://www.facebook.com/profile.php?id=61586195563121",
-          "https://www.linkedin.com/company/110859146/",
-          "https://www.tiktok.com/@aidla_official",
-          "https://twitter.com/aidla_official",
-          "https://www.youtube.com/@aidla_official",
-        ],
+        /* ── GEO / International SEO ── */
         knowsAbout: [
           "AI Learning",
           "Online Education",
@@ -327,8 +334,20 @@ export default async function Home() {
           "CV Builder",
           "Rewards Based Learning",
           "Student Wallets",
+          "KPK Education",
+          "Peshawar Online Learning",
+        ],
+        sameAs: [
+          "https://www.instagram.com/aidla_official/",
+          "https://www.facebook.com/profile.php?id=61586195563121",
+          "https://www.linkedin.com/company/110859146/",
+          "https://www.tiktok.com/@aidla_official",
+          "https://twitter.com/aidla_official",
+          "https://www.youtube.com/@aidla_official",
         ],
       },
+
+      /* ── Founder Person — for indexing ── */
       {
         "@type": "Person",
         "@id": `${SITE_URL}/#founder`,
@@ -341,16 +360,21 @@ export default async function Home() {
         telephone: "+923044678929",
         address: {
           "@type": "PostalAddress",
+          streetAddress: "Peshawar",
           addressLocality: "Peshawar",
           addressRegion: "Khyber Pakhtunkhwa",
+          postalCode: "25000",
           addressCountry: "PK",
         },
+        /* Founder social profiles — bot/crawler visible for Knowledge Panel */
         sameAs: [
           "https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/",
           "https://www.facebook.com/engrzubairafridi/",
           "https://www.instagram.com/muhammad.zubair.afridi/",
         ],
       },
+
+      /* ── WebSite ── */
       {
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
@@ -370,6 +394,8 @@ export default async function Home() {
           "query-input": "required name=search_term_string",
         },
       },
+
+      /* ── WebPage ── */
       {
         "@type": "WebPage",
         "@id": `${SITE_URL}/#webpage`,
@@ -384,7 +410,14 @@ export default async function Home() {
         dateModified: LAST_MODIFIED,
         breadcrumb: { "@id": `${SITE_URL}/#breadcrumb` },
         mainContentOfPage: { "@type": "WebPageElement", cssSelector: "#main-content" },
+        /* speakable for AEO / voice assistants */
+        speakable: {
+          "@type": "SpeakableSpecification",
+          cssSelector: ["#hero-heading", "#how-heading", "#faq-heading"],
+        },
       },
+
+      /* ── Breadcrumb ── */
       {
         "@type": "BreadcrumbList",
         "@id": `${SITE_URL}/#breadcrumb`,
@@ -392,10 +425,13 @@ export default async function Home() {
           { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
         ],
       },
+
+      /* ── HowTo — AEO ── */
       {
         "@type": "HowTo",
         "@id": `${SITE_URL}/#howto`,
         name: "How AIDLA Works",
+        description: "Learn how to study, earn AIDLA Coins, and redeem rewards on Pakistan's #1 AI learning platform.",
         step: STEPS.map((step, index) => ({
           "@type": "HowToStep",
           position: index + 1,
@@ -403,6 +439,8 @@ export default async function Home() {
           text: step.text,
         })),
       },
+
+      /* ── Site sections ItemList ── */
       {
         "@type": "ItemList",
         "@id": `${SITE_URL}/#site-sections`,
@@ -417,6 +455,8 @@ export default async function Home() {
           { "@type": "ListItem", position: 7, name: "FAQs", url: `${SITE_URL}/faqs` },
         ],
       },
+
+      /* ── Daily quiz winners ── */
       ...(dailyWinners.length
         ? [
             {
@@ -432,6 +472,8 @@ export default async function Home() {
             },
           ]
         : []),
+
+      /* ── FAQ — AEO rich result ── */
       {
         "@type": "FAQPage",
         "@id": `${SITE_URL}/#faqpage`,
@@ -443,6 +485,53 @@ export default async function Home() {
             text: faq.answer,
           },
         })),
+      },
+
+      /* ── EducationalOrganization extra — GEO / International SEO ── */
+      {
+        "@type": "EducationalOrganization",
+        "@id": `${SITE_URL}/#edu-org`,
+        name: "AIDLA - AI Digital Learning Academy",
+        url: SITE_URL,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Peshawar",
+          addressLocality: "Peshawar",
+          addressRegion: "Khyber Pakhtunkhwa",
+          postalCode: "25000",
+          addressCountry: "PK",
+        },
+        telephone: "+923044678929",
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: "Free Learning Courses and Quizzes",
+          itemListElement: [
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Course",
+                name: "Free Online Quizzes",
+                description: "Daily quiz competitions for Pakistani learners with AIDLA Coins rewards.",
+                provider: { "@id": `${SITE_URL}/#organization` },
+              },
+              price: "0",
+              priceCurrency: "PKR",
+              availability: "https://schema.org/InStock",
+            },
+            {
+              "@type": "Offer",
+              itemOffered: {
+                "@type": "Course",
+                name: "AI Career Tools",
+                description: "CV builder, cover letter generator, interview prep, and more.",
+                provider: { "@id": `${SITE_URL}/#organization` },
+              },
+              price: "0",
+              priceCurrency: "PKR",
+              availability: "https://schema.org/InStock",
+            },
+          ],
+        },
       },
     ],
   };
@@ -459,12 +548,36 @@ export default async function Home() {
 
   return (
     <div className={"home-page-root"}>
+      {/* ── Structured data — bots only ── */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
+      {/*
+        Founder social links — hidden from visual users, visible to crawlers.
+        Helps Google build a Knowledge Panel for the founder.
+      */}
+      <div
+        aria-hidden="true"
+        style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}
+      >
+        <a href="https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/" rel="author noopener noreferrer">
+          Engineer Muhammad Zubair Afridi LinkedIn
+        </a>
+        <a href="https://www.facebook.com/engrzubairafridi/" rel="author noopener noreferrer">
+          Engineer Muhammad Zubair Afridi Facebook
+        </a>
+        <a href="https://www.instagram.com/muhammad.zubair.afridi/" rel="author noopener noreferrer">
+          Engineer Muhammad Zubair Afridi Instagram
+        </a>
+      </div>
+
       <main id="main-content" className={"home-main"}>
+
+        {/* ══════════════════════════════
+            HERO
+        ══════════════════════════════ */}
         <section className={"home-hero"} aria-labelledby="hero-heading">
           <div className="home-hero-copy">
             <p className={"home-eyebrow"}>Pakistan #1 AI powered learning platform</p>
@@ -495,10 +608,20 @@ export default async function Home() {
             </dl>
           </div>
 
+          {/* Product visual — LCP optimised: no lazy-load on brand icon */}
           <div className={"home-product-visual"} aria-label="AIDLA daily quiz winners preview">
             <div className={"home-preview-top"}>
               <div className={"home-brand-mark"}>
-                <Image src="/icon-192.png" alt="" width={42} height={42} priority />
+                {/* priority + fetchPriority="high" fixes mobile LCP */}
+                <Image
+                  src="/icon-192.png"
+                  alt=""
+                  width={42}
+                  height={42}
+                  priority
+                  fetchPriority="high"
+                  decoding="async"
+                />
               </div>
               <div>
                 <p className={"home-preview-kicker"}>{formatDateKey(winnerDate)}</p>
@@ -519,8 +642,11 @@ export default async function Home() {
             <div className={"home-preview-list"}>
               {dailyWinners.length > 0 ? (
                 dailyWinners.map((winner) => (
-                  <div key={`${winner.rank}-${winner.user_id || winner.full_name}`} className={"home-winner-row"}>
-                    <span>#{winner.rank}</span>
+                  <div
+                    key={`${winner.rank}-${winner.user_id || winner.full_name}`}
+                    className={"home-winner-row"}
+                  >
+                    <span aria-label={`Rank ${winner.rank}`}>#{winner.rank}</span>
                     <div>
                       <p>{winner.full_name || "AIDLA Learner"}</p>
                       <small>{winner.score}/{winner.total_questions} score</small>
@@ -541,19 +667,25 @@ export default async function Home() {
                 <span>Next winner board</span>
                 <strong>Today</strong>
               </div>
-              <div className={"home-progress-track"}>
+              <div className={"home-progress-track"} role="progressbar" aria-valuenow={64} aria-valuemin={0} aria-valuemax={100}>
                 <span style={{ width: "64%" }} />
               </div>
             </div>
           </div>
         </section>
 
+        {/* ══════════════════════════════
+            TRUST BAND
+        ══════════════════════════════ */}
         <section className={"home-trust-band"} aria-label="Platform strengths">
           {TRUST_ITEMS.map((item) => (
             <span key={item}>{item}</span>
           ))}
         </section>
 
+        {/* ══════════════════════════════
+            HOW IT WORKS
+        ══════════════════════════════ */}
         <section className={"home-section"} aria-labelledby="how-heading">
           <div className="home-section-header">
             <p className={"home-eyebrow"}>Simple path</p>
@@ -564,7 +696,7 @@ export default async function Home() {
           <div className={"home-steps-grid"}>
             {STEPS.map((step) => (
               <article key={step.title} className={"home-step-card"}>
-                <span>{step.eyebrow}</span>
+                <span aria-hidden="true">{step.eyebrow}</span>
                 <h3>{step.title}</h3>
                 <p>{step.text}</p>
               </article>
@@ -572,11 +704,16 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* ══════════════════════════════
+            FEATURES
+        ══════════════════════════════ */}
         <section className={"home-section"} aria-labelledby="features-heading">
           <div className={"home-split-header"}>
             <div>
               <p className={"home-eyebrow"}>AIDLA ecosystem</p>
-              <h2 id="features-heading">Public discovery plus a complete learner dashboard.</h2>
+              <h2 id="features-heading">
+                Public discovery plus a complete learner dashboard.
+              </h2>
             </div>
             <p>
               From blogs, news, FAQs, courses, tools, and resources to user-side quizzes,
@@ -595,18 +732,24 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* ══════════════════════════════
+            REVIEWS
+        ══════════════════════════════ */}
         {reviews.length > 0 && (
           <section className={"home-section"} aria-labelledby="proof-heading">
             <div className="home-section-header">
               <p className={"home-eyebrow"}>Learner proof</p>
               <h2 id="proof-heading">Trusted by real learners</h2>
-              <p>Short, human proof without turning the homepage into a review form.</p>
+              <p>Honest feedback from students and professionals across Pakistan.</p>
             </div>
 
             <div className={"home-review-grid"}>
               {reviews.map((review) => (
                 <article key={review.id} className={"home-review-card"}>
-                  <div className={"home-rating"} aria-label={`${review.rating} out of 5 stars`}>
+                  <div
+                    className={"home-rating"}
+                    aria-label={`${review.rating} out of 5 stars`}
+                  >
                     {Array.from({ length: 5 }).map((_, index) => (
                       <span key={index} aria-hidden="true">
                         {index < review.rating ? "★" : "☆"}
@@ -624,6 +767,9 @@ export default async function Home() {
           </section>
         )}
 
+        {/* ══════════════════════════════
+            BLOG / NEWS POSTS
+        ══════════════════════════════ */}
         {posts.length > 0 && (
           <section className={"home-section"} aria-labelledby="latest-heading">
             <div className={"home-split-header"}>
@@ -638,7 +784,11 @@ export default async function Home() {
 
             <div className={"home-post-grid"}>
               {posts.map((post) => (
-                <Link key={`${post.type}-${post.id}`} href={post.href} className={"home-post-card"}>
+                <Link
+                  key={`${post.type}-${post.id}`}
+                  href={post.href}
+                  className={"home-post-card"}
+                >
                   <span>{post.type}</span>
                   <h3>{post.title}</h3>
                   {post.excerpt && <p>{post.excerpt}</p>}
@@ -649,6 +799,9 @@ export default async function Home() {
           </section>
         )}
 
+        {/* ══════════════════════════════
+            FAQ
+        ══════════════════════════════ */}
         <section className={"home-section"} aria-labelledby="faq-heading">
           <div className="home-section-header">
             <p className={"home-eyebrow"}>Questions</p>
@@ -670,6 +823,21 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* ══════════════════════════════
+            FINAL CTA  ← moved above newsletter
+        ══════════════════════════════ */}
+        <section className={"home-final-cta"} aria-labelledby="cta-heading">
+          <p className={"home-eyebrow"}>Ready when you are</p>
+          <h2 id="cta-heading">Start learning on AIDLA today.</h2>
+          <p>Join free, practice daily, and let your learning turn into visible progress.</p>
+          <Link href="/signup" className={"home-primary-btn"}>
+            Create free account
+          </Link>
+        </section>
+
+        {/* ══════════════════════════════
+            NEWSLETTER  ← moved below CTA
+        ══════════════════════════════ */}
         <section className={"home-newsletter"} aria-labelledby="newsletter-heading">
           <div>
             <p className={"home-eyebrow"}>Stay updated</p>
@@ -695,16 +863,7 @@ export default async function Home() {
           </form>
         </section>
 
-        <section className={"home-final-cta"} aria-labelledby="cta-heading">
-          <p className={"home-eyebrow"}>Ready when you are</p>
-          <h2 id="cta-heading">Start learning on AIDLA today.</h2>
-          <p>Join free, practice daily, and let your learning turn into visible progress.</p>
-          <Link href="/signup" className={"home-primary-btn"}>
-            Create free account
-          </Link>
-        </section>
       </main>
     </div>
   );
 }
-

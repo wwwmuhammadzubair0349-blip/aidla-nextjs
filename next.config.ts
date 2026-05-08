@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
@@ -84,11 +86,17 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: https://*.supabase.co https://images.pexels.com https://images.unsplash.com; " +
               "font-src 'self'; " +
               "connect-src 'self' https://*.supabase.co; " +
-              "frame-ancestors 'none'; " +
-              "upgrade-insecure-requests;",
+              "frame-ancestors 'none';" +
+              (isProduction ? " upgrade-insecure-requests;" : ""),
           },
-          // Strict Transport Security (HSTS) for 1 year
-          { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
+          ...(isProduction
+            ? [
+                {
+                  key: "Strict-Transport-Security",
+                  value: "max-age=31536000; includeSubDomains; preload",
+                },
+              ]
+            : []),
           // Cross-Origin Opener Policy
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         ],

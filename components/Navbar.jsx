@@ -14,6 +14,8 @@ const Icons = {
   News: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>,
   FAQs: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
   Tools: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>,
+  Learning: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 6.5 3 11l9 4.5L21 11l-9-4.5Z"/><path d="M5 13v4.5c2.2 2 11.8 2 14 0V13"/><path d="M21 11v5"/></svg>,
+  Platform: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 22h8"/><path d="M12 18v4"/><path d="M7 9h4"/><path d="M7 13h7"/></svg>,
   Courses: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>,
   Resources: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
   Leaderboard: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
@@ -158,9 +160,17 @@ const NAV_CSS = `
 
 /* ── DESKTOP DROPDOWN (Mega Menu Style) ── */
 .nav2-dropdown-wrapper { position: relative; }
+.nav2-dropdown-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: -8px;
+  right: -8px;
+  height: 14px;
+}
 .nav2-dropdown-menu {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%) translateY(10px) scale(0.98);
   background: #ffffff;
@@ -180,7 +190,8 @@ const NAV_CSS = `
 }
 /* Show on hover OR when active within focus */
 .nav2-dropdown-wrapper:hover .nav2-dropdown-menu,
-.nav2-dropdown-wrapper:focus-within .nav2-dropdown-menu {
+.nav2-dropdown-wrapper:focus-within .nav2-dropdown-menu,
+.nav2-dropdown-wrapper[data-open="true"] .nav2-dropdown-menu {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -361,28 +372,38 @@ const NAV_CSS = `
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
   
   // States
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobAccordionOpen, setMobAccordionOpen] = useState(""); // Tracks which mobile accordion is open
+  const [desktopDropdownOpen, setDesktopDropdownOpen] = useState("");
   
   // Refs
   const headerRef = useRef(null);
   const burgerRef = useRef(null);
   const firstLinkRef = useRef(null);
 
-  useEffect(() => { setMounted(true); },[]);
-
   // Close menus on route change
   useEffect(() => {
-    setMenuOpen(false);
-    setMobAccordionOpen("");
+    const t = setTimeout(() => {
+      setMenuOpen(false);
+      setMobAccordionOpen("");
+      setDesktopDropdownOpen("");
+    }, 0);
+
+    return () => clearTimeout(t);
   }, [pathname]);
 
   // Utility to check active links
   const isActive = (href) => pathname === href || (href !== "/" && pathname?.startsWith(href));
   const isAnyChildActive = (subItems) => subItems?.some(item => isActive(item.href));
+
+  const closeDesktopDropdown = useCallback(() => {
+    setDesktopDropdownOpen("");
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }, []);
 
   // ── ACCESSIBILITY: Keyboard Navigation & Focus Trap ──
   useEffect(() => {
@@ -392,6 +413,7 @@ export default function Navbar() {
     const handleKey = (e) => {
       if (e.key === "Escape") {
         setMenuOpen(false);
+        setDesktopDropdownOpen("");
         burgerRef.current?.focus(); // Return focus to trigger
       }
     };
@@ -404,9 +426,9 @@ export default function Navbar() {
 
   // ── DESKTOP DROPDOWN ACCESSIBILITY (Focus Management) ──
   const handleDropdownBlur = (e, wrapperRef) => {
-    // If focus leaves the dropdown wrapper entirely, we could trigger a state if we were managing it purely via JS.
-    // Since we use CSS focus-within for desktop, CSS handles it natively! 
-    // This empty wrapper exists to document that native focus-within is intentionally fulfilling this role.
+    if (!wrapperRef.contains(e.relatedTarget)) {
+      setDesktopDropdownOpen("");
+    }
   };
 
   return (
@@ -436,12 +458,20 @@ export default function Navbar() {
                   <div 
                     key={item.label} 
                     className="nav2-dropdown-wrapper"
+                    data-open={desktopDropdownOpen === item.label}
+                    onMouseEnter={() => setDesktopDropdownOpen(item.label)}
+                    onMouseLeave={() => setDesktopDropdownOpen("")}
+                    onFocus={() => setDesktopDropdownOpen(item.label)}
                     onBlur={(e) => handleDropdownBlur(e, e.currentTarget)}
                   >
                     <button
                       className={`nav2-link${isChildActive ? " active" : ""}`}
                       aria-haspopup="true"
-                      aria-expanded="false" // CSS handles hover/focus state visually
+                      aria-expanded={desktopDropdownOpen === item.label}
+                      onClick={() => setDesktopDropdownOpen(
+                        desktopDropdownOpen === item.label ? "" : item.label
+                      )}
+                      type="button"
                     >
                       {item.label}
                       <span className="chevron" aria-hidden="true">{Icons.Chevron}</span>
@@ -454,6 +484,7 @@ export default function Navbar() {
                           href={sub.href}
                           className="nav2-dd-item"
                           role="menuitem"
+                          onClick={closeDesktopDropdown}
                           prefetch={false}
                         >
                           <div className="nav2-dd-icon" aria-hidden="true">{sub.icon}</div>
@@ -513,7 +544,7 @@ export default function Navbar() {
           role="dialog"
           aria-label="Mobile Navigation"
           aria-modal="false"
-          inert={mounted && !menuOpen ? true : undefined}// ARIA fix
+          inert={!menuOpen ? true : undefined}
         >
           <nav className="nav2-mob-nav">
             {NAV_LINKS.map((item, idx) => {

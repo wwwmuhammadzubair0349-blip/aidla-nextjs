@@ -12,7 +12,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
   const rank = result?.rank ? `#${result.rank}` : "—";
   const avatar = profile?.avatar_url;
   const name = profile?.full_name || "Quiz Player";
-  const date = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+  const date = result?.date || new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
 
   React.useEffect(() => {
     if (!cardRef.current) return;
@@ -25,12 +25,22 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
     return () => clearTimeout(t);
   }, []);
 
+  const isWinnerWithCoins = passed && result?.coins_earned > 0;
+  const winDate = result?.date || new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
+
   const caption = [
-    passed ? "🏆 I just WON today's AIDLA Daily Quiz!" : "🎯 I took the AIDLA Daily Quiz!",
+    isWinnerWithCoins
+      ? `🏆 I WON the AIDLA Daily Quiz and earned ${result.coins_earned} coins!`
+      : passed
+        ? "🎯 I passed today's AIDLA Daily Quiz!"
+        : "💪 I took the AIDLA Daily Quiz!",
     "",
     `📊 Score: ${score}`,
     result?.rank ? `🥇 Rank: #${result.rank}` : "",
-    "🪙 Coins distributed at end of day",
+    isWinnerWithCoins
+      ? `🪙 Coins earned: +${result.coins_earned}`
+      : "🪙 Coins distributed at end of day",
+    result?.date ? `📅 Date: ${result.date}` : "",
     "",
     `Think you can beat ${name.split(" ")[0]}? 💪`,
     "👉 www.aidla.online/user/dailyquizz",
@@ -59,7 +69,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
               </div>
             </div>
             <div style={{ background:"rgba(255,255,255,0.15)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, whiteSpace:"nowrap", flexShrink:0 }}>
-              {passed ? "🏆 Winner" : "💪 Player"}
+              {result?.coins_earned > 0 ? `🏆 +${result.coins_earned}🪙` : passed ? "🏆 Winner" : "💪 Player"}
             </div>
           </div>
 
@@ -76,7 +86,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
 
           {/* Stats */}
           <div style={{ display:"flex", borderTop:"1px solid #f1f5f9", background:"white" }}>
-            {[["Score", score], ["Rank", rank], ["Date", date]].map(([l,v], i) => (
+            {[["Score", score], ["Rank", rank], result?.coins_earned > 0 ? ["Coins", `+${result.coins_earned}🪙`] : ["Date", date]].map(([l,v], i) => (
               <div key={l} style={{ flex:1, padding:"14px 8px", textAlign:"center", borderRight: i<2 ? "1px solid #f1f5f9" : "none" }}>
                 <div style={{ fontSize:15, fontWeight:800, color:"#0f172a" }}>{v}</div>
                 <div style={{ fontSize:9, color:"#94a3b8", marginTop:3, textTransform:"uppercase", letterSpacing:0.5 }}>{l}</div>
@@ -607,7 +617,7 @@ export default function DailyQuizPage() {
                     {w.streak_days >= 3 && <span style={{ fontSize: 12 }}>🔥{w.streak_days}</span>}
                     {w.user_id === profile?.user_id && w.coins_earned > 0 && (
                       <button style={{ fontSize:11, padding:"3px 8px", background:"#059669", color:"white", border:"none", borderRadius:6, cursor:"pointer", fontWeight:700, marginLeft:4 }}
-                        onClick={() => { setResult({ passed:true, correct_answers:w.score, total_questions:w.total_questions, coins_earned:w.coins_earned, rank:w.rank }); setShowShareCard(true); }}>
+                        onClick={() => { setResult({ passed:true, correct_answers:w.score, total_questions:w.total_questions, coins_earned:w.coins_earned, rank:w.rank, date:leaderboard.winner_date }); setShowShareCard(true); }}>
                         📤
                       </button>
                     )}
@@ -856,10 +866,11 @@ export default function DailyQuizPage() {
                   <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>Next quiz in</div>
                   <div style={S.countdown}>{countdown}</div>
                   <button style={{ ...S.btnPrimary, background: "#059669", marginTop: 12 }} onClick={() => {
-                    if (!result) setResult({ passed: true, correct_answers: status?.last_attempt?.correct_answers, total_questions: status?.last_attempt?.total_questions, coins_earned: 0, rank: status?.last_attempt?.rank });
+                    // Always set coins_earned: 0 here — user passed but coins not yet distributed
+                    setResult({ passed: true, correct_answers: status?.last_attempt?.correct_answers, total_questions: status?.last_attempt?.total_questions, coins_earned: 0, rank: status?.last_attempt?.rank });
                     setShowShareCard(true);
                   }}>
-                    📤 Share Your Win
+                    📤 Share Your Pass
                   </button>
                 </div>
                 {leaderboard.winners?.length > 0 && (

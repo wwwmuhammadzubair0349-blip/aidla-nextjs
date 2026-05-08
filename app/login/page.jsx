@@ -2,10 +2,10 @@ import { Suspense } from "react";
 import LoginClient from "./LoginClient";
 
 export const metadata = {
-  title: "Log In | AIDLA",
+  title: "Log In to your AIDLA Account | AIDLA",
   description: "Sign in to your AIDLA account to continue learning, earning coins, and experiencing the future of AI.",
   openGraph: {
-    title: "Log In | AIDLA",
+    title: "Log In to your AIDLA Account | AIDLA",
     description: "Sign in to your AIDLA account to continue learning, earning coins, and experiencing the future of AI.",
     url: "https://www.aidla.online/login",
     siteName: "AIDLA",
@@ -14,7 +14,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Log In | AIDLA",
+    title: "Log In to your AIDLA Account | AIDLA",
     description: "Welcome back to the AIDLA ecosystem.",
   },
   alternates: {

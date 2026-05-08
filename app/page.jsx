@@ -19,7 +19,7 @@ const LAST_MODIFIED = "2026-05-07";
 //         Open Graph (SMO), Twitter Cards, AEO meta signals
 // ──────────────────────────────────────────────────────────────────────
 export const metadata = {
-  title: "Pakistan’s #1 AI-Powered Learning Platform | Learn, Earn, Spin Wheel & Win Real Rewards",
+  title: "Pakistan’s #1 AI-Powered Learning Platform | Learn, earn & Play",
  description:
 "AIDLA is Pakistan’s free AI-powered learning platform. Take quizzes, earn coins, spin the wheel, and win real rewards — all 100% free.",
   keywords: [

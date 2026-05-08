@@ -69,8 +69,8 @@ export async function generateMetadata({ searchParams }) {
   }
 
   return {
-    title: "Free AI Text Summarizer 2026 — Summarize Any Article, Essay or Document Instantly | AIDLA Pakistan",
-    description: "AI text summarizer that condenses any article, essay, research paper or document into Short, Medium, Long or Bullet-Point format in seconds. No word limit, no login. Better than TLDR This, QuillBot Summarizer, Scholarcy — 100% free forever. No sign-up. Perfect for Pakistan (HEC, Dawn, Geo), UAE (Gulf News, GCC reports) & worldwide.",
+    title: "Free AI Text Summarizer 2026 — Summarize Any Article, Essay or Document Instantly",
+    description: "AI text summarizer that condenses any article, essay, research paper or document into any format in seconds. No word limit, no login. Better than TLDR This, QuillBot Summarizer, Scholarcy — 100% free forever.",
     keywords: [
       "free AI text summarizer 2026", "article summarizer AI free no sign up",
       "text summary generator online free no login", "best TLDR This alternative free 2026",

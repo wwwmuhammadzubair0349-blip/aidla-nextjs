@@ -2,10 +2,10 @@ import { Suspense } from "react";
 import SignupClient from "./SignupClient";
 
 export const metadata = {
-  title: "Create Account | AIDLA",
+  title: "Create Account and Join thousands of Students | AIDLA",
   description: "Join the AIDLA ecosystem. Create your free account to start learning, earn rewards, and experience the future of AI.",
   openGraph: {
-    title: "Create Account | AIDLA",
+    title: "Create Account and Join thousands of Students | AIDLA",
     description: "Join the AIDLA ecosystem. Create your free account to start learning, earn rewards, and experience the future of AI.",
     url: "https://www.aidla.online/signup",
     siteName: "AIDLA",
@@ -14,7 +14,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Create Account | AIDLA",
+    title: "Create Account and Join thousands of Students | AIDLA",
     description: "Join the AIDLA ecosystem today.",
   },
   alternates: {

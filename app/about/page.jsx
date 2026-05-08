@@ -5,25 +5,25 @@ import AboutPage from "./about";
 export const metadata = {
   title: "About AIDLA | Pakistan's #1 Free AI Tools & Learn-to-Earn Academy",
   description:
-    "Discover AIDLA — Pakistan's leading digital academy founded by Engineer Muhammad Zubair Afridi. Free AI tools, CV maker, career builders & a Learn-to-Earn rewards system. 100% free, forever.",
+    "Discover AIDLA — Pakistan's leading AI-digital academy. Free AI-powered Online Courses, tools, CV maker & a Learn-to-Earn rewards system. 100% free, forever.",
   keywords:
-    "AIDLA, free AI tools Pakistan, learn and earn Pakistan, CV maker Pakistan, AI paraphraser Pakistan, online education Pakistan, digital academy Pakistan, Engineer Muhammad Zubair Afridi, AIDLA Peshawar",
+    "AIDLA, Free online Courses, Free CV Maker, Free Cover letter maker, free AI tools, learn and earn, CV maker, AI paraphraser, dailyquizz. spin & win, free learning platform Pakistan, online quizzes Pakistan, education Pakistan, earn coins online, lucky draw Pakistan",
   alternates: { canonical: "https://www.aidla.online/about" },
   openGraph: {
     title: "About AIDLA — Pakistan's #1 Free AI Tools Academy",
     description:
-      "Free AI tools, career builders & cash rewards for Pakistani students. Founded in Peshawar by Engineer Muhammad Zubair Afridi.",
+      "Discover AIDLA — Pakistan's leading AI-digital academy. Free AI-powered Online Courses, tools, CV maker & a Learn-to-Earn rewards system. 100% free, forever.",
     url: "https://www.aidla.online/about",
     siteName: "AIDLA",
     locale: "en_PK",
     type: "website",
-    images: [{ url: "https://www.aidla.online/og-about.png", width: 1200, height: 630 }],
+    images: [{ url: "https://www.aidla.online/og-home.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "About AIDLA — Pakistan's #1 Free AI Tools Academy",
-    description: "Free AI tools, CV maker & Learn-to-Earn rewards. 100% free for Pakistan.",
-    images: ["https://www.aidla.online/og-about.png"],
+    title: "About AIDLA — Pakistan's #1 Free AI Powered Learning Academy",
+    description: "Free AI tools, CV maker & Learn-to-Earn rewards. 100% free for All.",
+    images: ["https://www.aidla.online/og-home.jpg"],
   },
 };
 

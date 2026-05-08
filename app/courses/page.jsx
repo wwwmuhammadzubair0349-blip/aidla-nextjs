@@ -17,15 +17,15 @@ function toSlug(title = "") {
 export const metadata = {
   title: "Online Courses | AIDLA — Learn, Earn & Grow",
   description:
-    "Browse free and paid online courses on AIDLA. Learn Mathematics, Science, English, Computer Science and more. Earn coins and certificates as you learn.",
+    "Browse free and paid online courses on AIDLA. Learn AI, DataScience, Electrical Engineering, IT, Technical Skills and more. Earn coins and certificates as you learn.",
   keywords:
-    "AIDLA courses, free online courses Pakistan, learn online, earn coins, certificates, mathematics, science, English",
+    "AIDLA courses, free online courses Pakistan, learn online, earn coins, certificates, AI, data analytics, Electrical engineering, IT courses, technical skills, online learning platform Pakistan",
   robots: { index: true, follow: true },
   alternates: { canonical: `${SITE_URL}/courses` },
   openGraph: {
     title: "Online Courses — AIDLA",
     description:
-      "Browse expert-led courses, earn coins, and get verified certificates on AIDLA — Pakistan's #1 educational rewards platform.",
+      "Browse expert-led courses, earn coins, and get verified certificates on AIDLA — Pakistan's #1 Online educational platform.",
     type: "website",
     url: `${SITE_URL}/courses`,
     images:[{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630 }],
@@ -117,7 +117,7 @@ export default async function CoursesPage({ searchParams }) {
     name: "AIDLA",
     url: SITE_URL,
     logo: `${SITE_URL}/logo.png`,
-    description: "Pakistan's #1 educational rewards platform. Learn, earn coins and win real prizes.",
+    description: "Pakistan's #1 Online educational platform. Learn, earn coins and win real prizes.",
   };
 
   const breadcrumbSchema = {

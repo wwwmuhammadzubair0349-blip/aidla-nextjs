@@ -23,7 +23,7 @@ export async function generateMetadata({ searchParams }) {
   if (template && region) {
     return {
       title: `${template} CV Template for ${region} — Free ATS Resume Builder 2026 | AIDLA`,
-      description: `Create a professional ${template} CV for ${region} jobs. AI writing, ATS score checker, 17 templates, PDF download. ${region === "Pakistan" ? "HEC-compliant with CNIC, domicile, FSc/Matric fields." : region === "Dubai" || region === "UAE" ? "MOHRE-optimized with visa status, nationality, photo fields." : region === "Saudi Arabia" ? "Vision 2030 aligned, GCC employer optimized." : ""} 100% free, no sign-up.`,
+      description: `Create a professional ${template} CV for ${region} jobs. AI writing, ATS score checker, 17 templates, PDF download. , 100% free, no sign-up.`,
       keywords: [
         `${template.toLowerCase()} CV template ${region.toLowerCase()} free 2026`,
         `${region.toLowerCase()} resume builder free no sign up`,
@@ -76,9 +76,9 @@ export async function generateMetadata({ searchParams }) {
 
   // Fallback — maximum keyword coverage
   return {
-    title: "Free CV Maker 2026 — AI-Powered ATS Resume Builder | 17 Templates | No Sign-Up | AIDLA Pakistan",
+    title: "Free CV Maker 2026 — AI-Powered ATS Resume Builder | Premium Templates",
     description:
-      "Create professional ATS-friendly CVs & resumes online free. AI writing assistant, 17 premium templates, real-time ATS checker, instant PDF download. No sign-up, no watermarks. Best CV maker for Pakistan (HEC), UAE (MOHRE), Dubai, GCC, UK, US & worldwide. Better than Zety, Enhancv, Resume.io — 100% free forever.",
+      "Create ATS-friendly CVs & resumes free. AI assistant & instant download. Best CV maker for Asia, GCC, UK, US & worldwide. Better than Zety, Enhancv, Resume.io — 100% free forever.",
     keywords: [
       "free CV maker 2026", "ATS resume builder online free", "CV maker Pakistan free",
       "resume builder no sign up", "AI CV builder free", "create CV online free",

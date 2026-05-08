@@ -69,8 +69,8 @@ export async function generateMetadata({ searchParams }) {
   }
 
   return {
-    title: "Free AI Paraphraser 2026 — Rewrite & Rephrase Text Instantly | No Sign-Up | AIDLA Pakistan",
-    description: "AI paraphraser that rewrites any text in 8 styles: Formal, Academic, Casual, Creative, Simplified, Professional, Concise & Fluent. No word limit, instant results. Better than QuillBot $19.95/mo — 100% free forever. No sign-up. Trusted by 50,000+ students & professionals in Pakistan, UAE & worldwide.",
+    title: "Free AI Paraphraser 2026 — Rewrite & Rephrase Text Instantly",
+    description: "AI paraphraser that rewrites any text in Formal, Academic, Casual, Creative, Simplified, Professional, Concise & Fluent styles. Better than QuillBot $19.95/mo — 100% free forever.",
     keywords: [
       "free AI paraphraser 2026", "paraphrase tool free no sign up", "AI text rewriter online free",
       "best QuillBot free alternative 2026", "rephrase generator free no word limit",

@@ -122,9 +122,9 @@ export async function generateMetadata({ searchParams }) {
   }
 
   return {
-    title: "Free AI Email Writer 2026 — Professional Email Generator | No Sign-Up | AIDLA Pakistan",
+    title: "Free AI Powered Email Writer 2026 | No Sign-Up",
     description:
-      "AI email writer that crafts professional, business, personal & academic emails in seconds. 24 types, 6 tones, 11 languages (English, Arabic, Urdu). Opens directly in Gmail, Outlook, Yahoo. Better than Grammarly's $12/mo — 100% free forever, no sign-up. Perfect for Pakistan, UAE, GCC & worldwide.",
+      "AI email writer that crafts professional, business, personal & academic emails in seconds. Better than Grammarly's $12/mo — 100% free forever.",
     keywords: [
       "free AI email writer 2026", "professional email generator free", "AI email writer no sign up",
       "best free alternative to Grammarly email", "job application email generator",

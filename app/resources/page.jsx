@@ -9,7 +9,7 @@ const SITE_URL = "https://www.aidla.online";
 export const metadata = {
   title: "Free Study Materials — Notes, Past Papers & Books | AIDLA",
   description:
-    "Download free study materials, notes, past papers, thesis, templates and books on AIDLA. Organized by subject, university and class level.",
+    "Access and download thousands of free study materials, notes, past papers, thesis, templates and books on AIDLA. Organized by subject, university and class level.",
   keywords:[
     "study materials Pakistan", "free notes", "past papers", "thesis", "templates",
     "free books", "AIDLA resources", "Pakistan education resources",

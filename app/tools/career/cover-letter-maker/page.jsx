@@ -90,9 +90,9 @@ export async function generateMetadata({ searchParams }) {
 
   // Fallback — maximum keyword coverage
   return {
-    title: "Free Cover Letter Maker 2026 — AI-Powered, 6 Templates, PDF | No Sign-Up | AIDLA Pakistan",
+    title: "Free Cover Letter Maker 2026 — AI-Powered | No Sign-Up",
     description:
-      "Create professional cover letters online free. AI writes any field — highlights, custom paragraph, reference. 6 premium templates, live A4 preview, print to PDF. No sign-up. Optimized for Pakistan, UAE, Dubai, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman, GCC, UK, US, Canada, India & worldwide. Better than Zety, Enhancv, Resume.io — 100% free forever.",
+      "Create AI powered cover letters free. Optimized for Asia, UAE, Dubai, Saudi Arabia, GCC, UK, US, Canada, & worldwide. Better than Zety, Enhancv, Resume.io",
     keywords: [
       "free cover letter maker 2026",
       "AI cover letter generator free no sign up",

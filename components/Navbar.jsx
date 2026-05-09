@@ -472,6 +472,7 @@ export default function Navbar() {
                         desktopDropdownOpen === item.label ? "" : item.label
                       )}
                       type="button"
+                      suppressHydrationWarning
                     >
                       {item.label}
                       <span className="chevron" aria-hidden="true">{Icons.Chevron}</span>

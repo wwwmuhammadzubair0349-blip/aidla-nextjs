@@ -7,7 +7,7 @@
   --gold-light:  #fcd34d;
   --slate:       #64748b;
 
-  --bg-page:     #f4f7ff;
+  --bg-page:     #f8fafc;
   --bg-card:     #ffffff;
   --bg-card-2:   #f8faff;
   --bg-tag:      #ffffff;
@@ -111,10 +111,18 @@
 .blogs-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 32px; }
 .blogs-header-text { flex: 1; min-width: 0; }
 
-.sec-label { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); padding: 5px 13px; border-radius: 30px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(245,158,11,0.22); }
+.sec-label { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #1e3a8a, #2563eb); color: #fff; padding: 5px 13px; border-radius: 30px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(37,99,235,0.28); }
 .sec-title { font-size: 1.9rem; font-weight: 900; color: var(--text-primary); line-height: 1.12; margin: 0 0 8px; letter-spacing: -0.02em; }
 .sec-title span { background: linear-gradient(135deg, var(--royal), var(--sky)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .sec-desc { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.55; margin: 0; }
+
+/* Category filter — mirrors News page pills */
+.bl-cat-section { margin-bottom: 20px; }
+.bl-cat-label { display: block; font-size: 0.62rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+.bl-cat-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.bl-cat-btn { padding: 6px 14px; border-radius: 999px; border: 1.5px solid var(--border-strong); background: var(--bg-tag); color: var(--text-secondary); font-size: 0.75rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.15s ease; font-family: inherit; }
+.bl-cat-btn:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+.bl-cat-btn.active { background: #2563eb; border-color: #2563eb; color: #fff; box-shadow: 0 3px 10px rgba(37,99,235,0.25); }
 
 .dm-toggle { flex-shrink: 0; margin-top: 4px; display: flex; align-items: center; gap: 8px; }
 .dm-toggle-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
@@ -241,7 +249,7 @@
    RESPONSIVE (Mobile First Setup)
 ══════════════════════════════════════════════ */
 @media (min-width: 640px) {
-  .blogs-container { padding: 40px 24px 80px; }
+  .blogs-container { padding: 28px 24px 64px; }
   .sec-title { font-size: 2.3rem; }
   .sec-desc { font-size: 0.95rem; }
   .bl-sort-wrap { flex-direction: row; align-items: center; justify-content: space-between; margin-bottom: 20px; }
@@ -259,7 +267,7 @@
 }
 
 @media (min-width: 1024px) {
-  .blogs-container { padding: 56px 32px 100px; }
+  .blogs-container { padding: 36px 32px 80px; }
   .sec-title { font-size: 2.7rem; }
   .blog-img-wrap { width: 100px; }
   .blog-hero-title { font-size: 1.9rem; }

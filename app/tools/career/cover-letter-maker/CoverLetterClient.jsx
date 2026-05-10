@@ -864,7 +864,6 @@ export default function CoverLetterClient() {
     if (!styleEl) { styleEl = document.createElement("style"); styleEl.id = "cvm-print-style"; document.head.appendChild(styleEl); }
 
     styleEl.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
       *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
       @media print {
         body>*:not(#cvm-print-root){display:none!important}

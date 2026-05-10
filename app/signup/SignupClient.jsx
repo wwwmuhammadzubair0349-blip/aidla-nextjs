@@ -1,32 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import styles from "./signup.module.css";
-
-// ── Social Proof Data ──
-const SP_NAMES = [
-  "Ali Khan","Muhammad Usman","Ahmed Raza","Fatima Noor",
-  "Ayesha Khan","Hassan Ali","Sana Ahmed","Usman Tariq",
-  "Zainab Malik","Omar Sheikh","Bilal Chaudhry","Hira Baig",
-  "Imran Siddiqui","Maria Qureshi","Saad Butt","Nadia Iqbal",
-];
-const SP_DOMAINS = ["gmail.com","yahoo.com","hotmail.com","outlook.com"];
-const SP_CITIES = ["Karachi","Lahore","Dubai","Islamabad","London","Toronto"];
-
-function spMaskEmail(name) {
-  const parts = name.toLowerCase().split(" ");
-  const local = (parts[0].slice(0,2) + parts[1]?.slice(0,1) || "").replace(/\s/g,"");
-  const stars = "*".repeat(Math.floor(Math.random()*3)+3);
-  const domain = SP_DOMAINS[Math.floor(Math.random()*SP_DOMAINS.length)];
-  return `${local}${stars}@${domain}`;
-}
-
-function spRandInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 export default function SignupClient() {
   const router = useRouter();
@@ -52,9 +30,6 @@ export default function SignupClient() {
   // Success Modal State
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [countdown, setCountdown] = useState(5);
-  const [spToasts, setSpToasts] = useState([]);
-const spTimerRef = useRef(null);
-const spExitTimerRef = useRef(null);
 
 
   // 1) Real-Time Name Validation
@@ -162,43 +137,6 @@ const spExitTimerRef = useRef(null);
     return () => clearInterval(timer);
   }, [showSuccessModal, countdown, router]);
 
-  // ── Social Proof Effect ──
-useEffect(() => {
-  const MAX = 3;
-
-  function showNext() {
-    const name = SP_NAMES[spRandInt(0, SP_NAMES.length - 1)];
-    const city = SP_CITIES[spRandInt(0, SP_CITIES.length - 1)];
-    const useEmail = Math.random() > 0.5;
-    const text = useEmail
-      ? `New user ${spMaskEmail(name)} joined`
-      : `${name} just signed up from ${city}`;
-    const id = Date.now();
-
-    setSpToasts(prev => {
-      const next = [...prev, { id, text, exiting: false }];
-      return next.length > MAX ? next.slice(next.length - MAX) : next;
-    });
-
-    // mark exiting after 3.2s
-    spExitTimerRef.current = setTimeout(() => {
-      setSpToasts(prev => prev.map(t => t.id === id ? { ...t, exiting: true } : t));
-      // remove after exit anim
-      setTimeout(() => {
-        setSpToasts(prev => prev.filter(t => t.id !== id));
-      }, 380);
-    }, 3200);
-
-    spTimerRef.current = setTimeout(showNext, spRandInt(5000, 12000));
-  }
-
-  spTimerRef.current = setTimeout(showNext, spRandInt(3000, 6000));
-
-  return () => {
-    clearTimeout(spTimerRef.current);
-    clearTimeout(spExitTimerRef.current);
-  };
-}, []);
 
   // Robust cross-platform Gmail handler
   const handleOpenGmail = () => {
@@ -312,19 +250,6 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        {/* Social Proof Toasts */}
-      <div className={styles.toastContainer}>
-        {spToasts.map(t => (
-          <div key={t.id} className={`${styles.toast} ${t.exiting ? styles.toastExiting : ""}`}>
-            <div className={styles.toastDot} />
-            <div>
-              <div className={styles.toastText}>{t.text}</div>
-              <div className={styles.toastSub}>just joined AIDLA</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
         <form onSubmit={onSubmit}>
           <div className={styles.inputGroup}>
             <label className={styles.labelCompact}>Full Name</label>

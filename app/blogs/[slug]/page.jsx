@@ -128,22 +128,8 @@ export default async function BlogPostPage({ params }) {
       "@type": "SpeakableSpecification",
       cssSelector: ["h1", ".article-lead", "article h2:first-of-type"],
     },
-    publisher: {
-      "@type": "Organization",
-      "@id":   `${SITE_URL}/#organization`,
-      name:    "AIDLA",
-      url:     SITE_URL,
-      logo: {
-        "@type":  "ImageObject",
-        url:      `${SITE_URL}/logo.png`,
-        width:    200,
-        height:   60,
-      },
-    },
-    author: {
-      "@type": "Person",
-      name:    post.author_name || "Engr-Muhammad Zubair",
-    },
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    author: { "@id": `${SITE_URL}/#founder` },
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id":   canonical,

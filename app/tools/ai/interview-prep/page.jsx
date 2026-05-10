@@ -233,35 +233,6 @@ function InterviewPrepJsonLd() {
     ],
   };
 
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${baseUrl}/#organization`,
-    name: "AIDLA",
-    url: baseUrl,
-    logo: { "@type": "ImageObject", url: `${baseUrl}/logo.png`, width: 200, height: 60 },
-    sameAs: ["https://twitter.com/aidla_online"],
-    description: "AIDLA provides free AI-powered career and writing tools for students and professionals in Pakistan, UAE, and worldwide.",
-    areaServed: ["Pakistan", "UAE", "Saudi Arabia", "GCC", "Worldwide"],
-  };
-
-  const localBusinessSchema = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "@id": `${baseUrl}/#localbusiness`,
-    name: "AIDLA — Free AI Career Tools Pakistan",
-    url: baseUrl,
-    description: "Free AI interview prep, CV maker, email writer and career tools for Pakistan & UAE students and professionals.",
-    address: { "@type": "PostalAddress", addressCountry: "PK", addressRegion: "Punjab", addressLocality: "Lahore" },
-    geo: { "@type": "GeoCoordinates", latitude: 31.5204, longitude: 74.3587 },
-    areaServed: [
-      { "@type": "City", name: "Karachi", sameAs: "https://en.wikipedia.org/wiki/Karachi" },
-      { "@type": "City", name: "Lahore", sameAs: "https://en.wikipedia.org/wiki/Lahore" },
-      { "@type": "City", name: "Islamabad", sameAs: "https://en.wikipedia.org/wiki/Islamabad" },
-      { "@type": "City", name: "Dubai", sameAs: "https://en.wikipedia.org/wiki/Dubai" },
-    ],
-    priceRange: "Free",
-  };
 
   return (
     <>
@@ -269,8 +240,6 @@ function InterviewPrepJsonLd() {
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
-      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
-      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }} />
     </>
   );
 }

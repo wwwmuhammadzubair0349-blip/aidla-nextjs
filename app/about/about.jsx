@@ -64,8 +64,8 @@ const STATS = [
 const S = {
   root: {
     fontFamily: "'DM Sans', system-ui, sans-serif",
-    background: "linear-gradient(160deg,#f0f4ff 0%,#fffbf0 55%,#e8f4fd 100%)",
-    color: "#0b1437",
+    background: "#f8fafc",
+    color: "#0f172a",
     overflowX: "hidden",
     WebkitFontSmoothing: "antialiased",
     minHeight: "100vh",
@@ -74,9 +74,9 @@ const S = {
   /* ── HERO ── */
   hero: {
     position: "relative",
-    background: "linear-gradient(160deg,#0b1437 0%,#1a3a8f 55%,#1e5abf 100%)",
+    background: "linear-gradient(135deg,#0b1437 0%,#1a3a8f 55%,#1e40af 100%)",
     overflow: "hidden",
-    padding: "clamp(28px,5vw,56px) 16px clamp(32px,5vw,56px)",
+    padding: "clamp(28px,4vw,44px) clamp(16px,4vw,28px) clamp(28px,4vw,44px)",
     textAlign: "center",
     display: "flex",
     flexDirection: "column",
@@ -102,12 +102,12 @@ const S = {
   },
   heroH1: {
     fontFamily: "'Playfair Display', Georgia, serif",
-    fontSize: "clamp(1.9rem, 5vw, 3.4rem)",
+    fontSize: "clamp(1.7rem, 4.5vw, 2.8rem)",
     fontWeight: 900, color: "#fff",
     lineHeight: 1.1, letterSpacing: "-0.02em",
     margin: "0 0 12px",
   },
-  heroH1Accent: { color: "#60a5fa", background: "linear-gradient(135deg,#3b82f6,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" },
+  heroH1Accent: { color: "#93c5fd", background: "linear-gradient(135deg,#93c5fd,#bfdbfe)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" },
   heroSub: {
     fontSize: "clamp(0.875rem,2vw,1rem)",
     color: "rgba(255,255,255,0.8)", lineHeight: 1.6,
@@ -236,7 +236,7 @@ const S = {
   },
   toolGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))",
+    gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))",
     gap: 1, background: "#e2e8f0",
   },
   toolCard: {
@@ -617,13 +617,6 @@ export default function AboutPage({ faqs = [] }) {
 
       {/* ──────────────────── HERO ──────────────────── */}
       <header style={S.hero} aria-label="About AIDLA — Pakistan's Digital Academy">
-        <HeroCanvas />
-
-        {/* Animated gradient orbs */}
-        <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none", overflow: "hidden" }}>
-          <div style={{ position: "absolute", top: "-20%", left: "-10%", width: "clamp(300px,50vw,600px)", height: "clamp(300px,50vw,600px)", borderRadius: "50%", background: "radial-gradient(circle,rgba(96,165,250,0.15) 0%,transparent 70%)", animation: "drift1 12s ease-in-out infinite alternate" }} />
-          <div style={{ position: "absolute", bottom: "-10%", right: "-5%", width: "clamp(200px,40vw,500px)", height: "clamp(200px,40vw,500px)", borderRadius: "50%", background: "radial-gradient(circle,rgba(245,158,11,0.1) 0%,transparent 70%)", animation: "drift2 15s ease-in-out infinite alternate" }} />
-        </div>
 
         <div style={S.heroInner}>
           {/* Breadcrumb */}
@@ -918,7 +911,7 @@ That vision became AIDLA.
 
       {/* ── GLOBAL KEYFRAMES ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=DM+Sans:wght@400;600;700;800&display=swap');
+
 
         @keyframes pulse {
           0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.5); }

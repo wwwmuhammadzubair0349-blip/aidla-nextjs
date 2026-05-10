@@ -1,6 +1,6 @@
 /* terms.css - Original styling preserved */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
 
 :root {
   --navy: #0b1437;
@@ -13,7 +13,7 @@
 
 .tc-root {
   min-height: 100vh;
-  background: linear-gradient(160deg, #f0f4ff 0%, #fffbf0 60%, #e8f4fd 100%);
+  background: #f8fafc;
   font-family: 'DM Sans', sans-serif;
   overflow-x: hidden;
   position: relative;
@@ -21,9 +21,7 @@
   flex-direction: column;
 }
 
-.bg-orbs { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-.bg-orb-1 { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: rgba(59,130,246,0.06); filter: blur(80px); top: -200px; left: -200px; }
-.bg-orb-2 { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: rgba(245,158,11,0.05); filter: blur(80px); top: 300px; right: -250px; }
+.bg-orbs, .bg-orb-1, .bg-orb-2 { display: none; }
 
 .tc-wrap {
   flex: 1;
@@ -37,8 +35,8 @@
 
 .tc-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #f59e0b, #fcd34d);
-  color: #0b1437;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
   padding: 5px 14px;
   border-radius: 30px;
   font-size: 0.68rem;
@@ -46,7 +44,7 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
   margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(245,158,11,0.25);
+  box-shadow: 0 4px 12px rgba(124,58,237,0.28);
 }
 
 .tc-title {
@@ -59,7 +57,7 @@
 }
 
 .tc-title-accent {
-  background: linear-gradient(135deg, #1a3a8f, #3b82f6);
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

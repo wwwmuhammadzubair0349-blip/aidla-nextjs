@@ -1,6 +1,6 @@
 /* privacy.module.css - Privacy Policy styles for Next.js */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
 
 :root {
   --navy: #0b1437;
@@ -17,7 +17,7 @@
 
 .ppRoot {
   min-height: 100vh;
-  background: linear-gradient(160deg, #f0f4ff 0%, #fffbf0 60%, #e8f4fd 100%);
+  background: #f8fafc;
   font-family: 'DM Sans', sans-serif;
   overflow-x: hidden;
   position: relative;
@@ -25,9 +25,9 @@
   flex-direction: column;
 }
 
-.bgOrbs { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-.bgOrb1 { position: absolute; width: 600px; height: 600px; border-radius: 50%; background: rgba(59,130,246,0.06); filter: blur(80px); top: -200px; left: -200px; }
-.bgOrb2 { position: absolute; width: 500px; height: 500px; border-radius: 50%; background: rgba(245,158,11,0.05); filter: blur(80px); top: 300px; right: -250px; }
+.bgOrbs { display: none; }
+.bgOrb1 { display: none; }
+.bgOrb2 { display: none; }
 
 .ppWrap {
   flex: 1;
@@ -41,8 +41,8 @@
 
 .ppBadge {
   display: inline-block;
-  background: linear-gradient(135deg, #f59e0b, #fcd34d);
-  color: #0b1437;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
   padding: 5px 14px;
   border-radius: 30px;
   font-size: 0.68rem;
@@ -50,7 +50,7 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
   margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(245,158,11,0.25);
+  box-shadow: 0 4px 12px rgba(124,58,237,0.28);
 }
 
 .ppTitle {
@@ -63,7 +63,7 @@
 }
 
 .ppTitleAccent {
-  background: linear-gradient(135deg, #1a3a8f, #3b82f6);
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -100,7 +100,7 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #1a3a8f, #3b82f6);
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
   color: #fff;
   display: flex;
   align-items: center;
@@ -148,8 +148,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(59,130,246,0.08);
-  color: #1a3a8f;
+  background: rgba(124,58,237,0.08);
+  color: #2563eb;
   padding: 8px 14px;
   border-radius: 20px;
   font-size: 0.82rem;

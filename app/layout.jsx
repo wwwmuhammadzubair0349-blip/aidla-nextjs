@@ -6,6 +6,7 @@
 import PublicShell from "@/components/PublicShell";
 import localFont from "next/font/local";
 import "@/app/globals.css";
+import { buildGraph, buildFounderSchema, buildOrganizationSchema, buildWebSiteSchema, buildSoftwareSchema, buildSyedSolarSchema } from "@/lib/schemas";
 
 const SITE_URL = "https://www.aidla.online";
 
@@ -144,229 +145,13 @@ export const metadata = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────
-// GLOBAL JSON-LD (unchanged – EEAT & Knowledge Graph power)
-// ─────────────────────────────────────────────────────────────────────
-const GLOBAL_SCHEMA = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": ["Organization", "EducationalOrganization", "OnlineBusiness"],
-      "@id": `${SITE_URL}/#organization`,
-      name: "AIDLA",
-      alternateName: [
-        "AI-Digital Learning Academy",
-        "Artificial Intelligence Digital Learning Academy",
-        "AIDLA Pakistan",
-        "AIDLA Online",
-      ],
-      url: SITE_URL,
-      logo: {
-        "@type": "ImageObject",
-        "@id": `${SITE_URL}/#logo`,
-        url: `${SITE_URL}/logo.png`,
-        contentUrl: `${SITE_URL}/logo.png`,
-        width: 200,
-        height: 60,
-        caption: "AIDLA — Pakistan's #1 Free Education Platform",
-        representativeOfPage: true,
-      },
-      image: { "@id": `${SITE_URL}/#logo` },
-      description:
-        "AIDLA is Pakistan's number one free education and rewards platform. Students take curriculum-aligned quizzes, earn AIDLA Coins, spin the lucky wheel, win real cash prizes and gadgets, and access thousands of free study materials — entirely free, no subscription required.",
-      slogan: "Learn. Earn Coins. Redeem Rewards.",
-      foundingDate: "2026",
-      numberOfEmployees: { "@type": "QuantitativeValue", value: 10 },
-      inLanguage: ["en", "ur"],
-      areaServed: [
-        { "@type": "Country", name: "Pakistan", "@id": "https://www.wikidata.org/wiki/Q843" },
-        { "@type": "AdministrativeArea", name: "Punjab, Pakistan" },
-        { "@type": "AdministrativeArea", name: "Sindh, Pakistan" },
-        { "@type": "AdministrativeArea", name: "KPK, Pakistan" },
-      ],
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: "PK",
-        addressRegion: "Punjab",
-      },
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          contactType: "customer support",
-          url: `${SITE_URL}/contact`,
-          availableLanguage: [
-            { "@type": "Language", name: "English" },
-            { "@type": "Language", name: "Urdu" },
-          ],
-        },
-        {
-          "@type": "ContactPoint",
-          contactType: "technical support",
-          url: `${SITE_URL}/contact`,
-          availableLanguage: [{ "@type": "Language", name: "English" }],
-        },
-      ],
-      sameAs: [
-        "https://www.facebook.com/aidlaonline",
-        "https://www.instagram.com/aidlaonline",
-        "https://www.youtube.com/@aidlaonline",
-        "https://twitter.com/AIDLA_online",
-        "https://www.linkedin.com/company/aidla",
-        "https://www.tiktok.com/@aidlaonline",
-      ],
-      knowsAbout: [
-        "Online Education",
-        "E-Learning",
-        "Pakistan Education System",
-        "Gamified Learning",
-        "Cryptocurrency Rewards",
-        "Educational Quizzes",
-        "Digital Rewards",
-      ],
-      hasCredential: {
-        "@type": "EducationalOccupationalCredential",
-        credentialCategory: "Educational Platform",
-        recognizedBy: { "@type": "Organization", name: "Pakistan" },
-      },
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: "AIDLA Services",
-        itemListElement: [
-          {
-            "@type": "Offer",
-            itemOffered: {
-              "@type": "Service",
-              name: "Free Online Quizzes",
-              description: "Curriculum-aligned quizzes for Pakistan students",
-            },
-            price: "0",
-            priceCurrency: "PKR",
-          },
-          {
-            "@type": "Offer",
-            itemOffered: {
-              "@type": "Service",
-              name: "Lucky Draw",
-              description: "Win real prizes through lucky draws",
-            },
-            price: "0",
-            priceCurrency: "PKR",
-          },
-          {
-            "@type": "Offer",
-            itemOffered: {
-              "@type": "Service",
-              name: "Lucky Wheel",
-              description: "Spin to earn AIDLA Coins daily",
-            },
-            price: "0",
-            priceCurrency: "PKR",
-          },
-        ],
-      },
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${SITE_URL}/#website`,
-      url: SITE_URL,
-      name: "AIDLA",
-      alternateName: "AIDLA — Pakistan's #1 Free Education Platform",
-      description:
-        "Pakistan's free education and rewards platform. Complete quizzes, earn coins, win prizes.",
-      publisher: { "@id": `${SITE_URL}/#organization` },
-      inLanguage: ["en", "ur"],
-      copyrightYear: 2026,
-      copyrightHolder: { "@id": `${SITE_URL}/#organization` },
-      potentialAction: [
-        {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `${SITE_URL}/faqs?q={search_term_string}`,
-          },
-          "query-input": "required name=search_term_string",
-        },
-        {
-          "@type": "RegisterAction",
-          target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/signup` },
-          name: "Sign up for AIDLA",
-          object: { "@id": `${SITE_URL}/#website` },
-        },
-      ],
-    },
-    {
-      "@type": "SoftwareApplication",
-      "@id": `${SITE_URL}/#app`,
-      name: "AIDLA",
-      url: SITE_URL,
-      applicationCategory: "EducationApplication",
-      applicationSubCategory: "E-Learning",
-      operatingSystem: "Web, iOS, Android",
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "PKR",
-      },
-      screenshot: `${SITE_URL}/og-home.jpg`,
-      featureList: [
-        "Free online quizzes",
-        "Earn AIDLA coins",
-        "Lucky draw prizes",
-        "Lucky wheel",
-        "Leaderboard",
-        "Free study materials",
-        "Cash withdrawals",
-      ],
-    },
-    {
-      "@type": "EducationalOrganization",
-      "@id": `${SITE_URL}/#edu-org`,
-      name: "AIDLA Learning Academy",
-      url: SITE_URL,
-      description: "Free online academy offering curriculum-aligned quizzes and courses for Pakistani students",
-      educationalCredentialAwarded: "AIDLA Achievement Certificate",
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: "AIDLA Courses",
-        itemListElement: [
-          {
-            "@type": "Course",
-            name: "Pakistan Studies",
-            description: "Comprehensive quizzes and resources for Pakistan Studies",
-            provider: { "@id": `${SITE_URL}/#organization` },
-            offers: { "@type": "Offer", price: "0", priceCurrency: "PKR" },
-          },
-          {
-            "@type": "Course",
-            name: "Mathematics",
-            description: "Practice quizzes for Matric and Intermediate Mathematics",
-            provider: { "@id": `${SITE_URL}/#organization` },
-            offers: { "@type": "Offer", price: "0", priceCurrency: "PKR" },
-          },
-          {
-            "@type": "Course",
-            name: "English Language",
-            description: "English language improvement quizzes and resources",
-            provider: { "@id": `${SITE_URL}/#organization` },
-            offers: { "@type": "Offer", price: "0", priceCurrency: "PKR" },
-          },
-        ],
-      },
-    },
-    {
-      "@type": "BreadcrumbList",
-      "@id": `${SITE_URL}/#breadcrumb`,
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: SITE_URL,
-        },
-      ],
-    },
-  ],
-};
+const GLOBAL_SCHEMA = buildGraph(
+  buildFounderSchema(),
+  buildOrganizationSchema(),
+  buildWebSiteSchema(),
+  buildSoftwareSchema(),
+  buildSyedSolarSchema(),
+);
 
 export default function RootLayout({ children }) {
   return (
@@ -374,7 +159,6 @@ export default function RootLayout({ children }) {
       <head>
         {/* ══ PERFORMANCE — Critical Hints (only what’s needed) ══ */}
         <link rel="dns-prefetch" href="//static.cloudflareinsights.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* No more fonts.googleapis.com – we’re self‑hosted */}
 
         {/* ── SELF‑HOSTED FONT PRELOAD ── */}

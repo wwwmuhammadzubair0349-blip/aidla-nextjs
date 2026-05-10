@@ -111,14 +111,6 @@ export default async function CoursesPage({ searchParams }) {
     })),
   };
 
-  const orgSchema = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    name: "AIDLA",
-    url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
-    description: "Pakistan's #1 Online educational platform. Learn, earn coins and win real prizes.",
-  };
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -132,7 +124,6 @@ export default async function CoursesPage({ searchParams }) {
   return (
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <Suspense fallback={<CoursesPageSkeleton />}>

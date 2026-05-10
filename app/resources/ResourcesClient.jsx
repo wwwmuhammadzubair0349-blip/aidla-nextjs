@@ -23,7 +23,7 @@ const FILE_TYPE_ICONS = {
   doc:  { icon: "📝", color: "#2563eb", bg: "rgba(59,130,246,0.1)" },
   ppt:  { icon: "📊", color: "#d97706", bg: "rgba(245,158,11,0.1)" },
   xls:  { icon: "📈", color: "#059669", bg: "rgba(16,185,129,0.1)" },
-  zip:  { icon: "🗜️", color: "#7c3aed", bg: "rgba(139,92,246,0.1)" },
+  zip:  { icon: "🗜️", color: "#2563eb", bg: "rgba(37,99,235,0.1)" },
   mp4:  { icon: "🎥", color: "#db2777", bg: "rgba(236,72,153,0.1)" },
   link: { icon: "🔗", color: "#0284c7", bg: "rgba(14,165,233,0.1)" },
 };
@@ -31,7 +31,7 @@ const FILE_TYPE_ICONS = {
 const CAT_COLORS = {
   notes:         "#3b82f6",
   past_papers:   "#f59e0b",
-  thesis:        "#8b5cf6",
+  thesis:        "#3b82f6",
   templates:     "#06b6d4",
   books:         "#10b981",
   video_link:    "#ef4444",
@@ -85,12 +85,12 @@ function ActiveChip({ label, onRemove }) {
   return (
     <span style={{
       display:"inline-flex", alignItems:"center", gap:5,
-      padding:"4px 10px", background:"rgba(26,58,143,0.08)",
-      color:"#1a3a8f", border:"1px solid rgba(26,58,143,0.2)",
+      padding:"4px 10px", background:"rgba(37,99,235,0.08)",
+      color:"#2563eb", border:"1px solid rgba(37,99,235,0.2)",
       borderRadius:20, fontSize:12, fontWeight:600,
     }}>
       {label}
-      <button onClick={onRemove} style={{ background:"none", border:"none", cursor:"pointer", color:"#1a3a8f", fontSize:14, padding:0, lineHeight:1 }}>✕</button>
+      <button onClick={onRemove} style={{ background:"none", border:"none", cursor:"pointer", color:"#2563eb", fontSize:14, padding:0, lineHeight:1 }}>✕</button>
     </span>
   );
 }
@@ -136,9 +136,9 @@ function MaterialCard({ item }) {
             </div>
             <span style={{
               fontSize:9, fontWeight:800, padding:"3px 7px", borderRadius:20, flexShrink:0,
-              background: item.access==="free" ? "rgba(22,163,74,0.08)" : "rgba(139,92,246,0.08)",
-              color: item.access==="free" ? "#15803d" : "#7c3aed",
-              border: `1px solid ${item.access==="free" ? "rgba(22,163,74,0.25)" : "rgba(139,92,246,0.25)"}`,
+              background: item.access==="free" ? "rgba(22,163,74,0.08)" : "rgba(37,99,235,0.08)",
+              color: item.access==="free" ? "#15803d" : "#2563eb",
+              border: `1px solid ${item.access==="free" ? "rgba(22,163,74,0.25)" : "rgba(37,99,235,0.25)"}`,
               textTransform:"uppercase", letterSpacing:"0.04em",
             }}>
               {item.access==="free" ? "Free" : "Login"}
@@ -170,7 +170,7 @@ function MaterialCard({ item }) {
               <span>👁 {(item.view_count||0).toLocaleString()}</span>
               {item.file_size_bytes && <span>{formatBytes(item.file_size_bytes)}</span>}
             </div>
-            <span style={{ fontSize:11, fontWeight:700, color:"#1a3a8f" }}>View →</span>
+            <span style={{ fontSize:11, fontWeight:700, color:"#2563eb" }}>View →</span>
           </div>
         </div>
       </article>
@@ -207,9 +207,9 @@ function FilterSidebar({ filters, options, onChange, onReset, total, isMobile, o
           <button key={c.value} onClick={() => onChange("category", c.value)}
             style={{
               padding:"5px 10px", borderRadius:20, fontSize:11, fontWeight:700, cursor:"pointer", border:"1px solid",
-              background: filters.category === c.value ? "linear-gradient(135deg,#1a3a8f,#3b82f6)" : "#f8fafc",
+              background: filters.category === c.value ? "linear-gradient(135deg,#1e3a8a,#2563eb)" : "#f8fafc",
               color:       filters.category === c.value ? "#fff" : "#475569",
-              borderColor: filters.category === c.value ? "#1a3a8f" : "#e2e8f0",
+              borderColor: filters.category === c.value ? "#2563eb" : "#e2e8f0",
             }}>
             {c.icon} {c.label}
           </button>
@@ -373,7 +373,7 @@ export default function ResourcesClient({ initialMaterials = [], initialTotal = 
 
       <div style={{ minHeight:"100vh", background:"#f8fafc", fontFamily:"'DM Sans',sans-serif" }}>
         {/* ── Hero ── */}
-        <section style={{ background:"linear-gradient(135deg,#0b1437 0%,#1a3a8f 60%,#3b82f6 100%)", padding:"40px 16px 48px", textAlign:"center" }}>
+        <section style={{ background:"linear-gradient(135deg,#0b1437 0%,#1a3a8f 55%,#1e40af 100%)", padding:"clamp(28px,4vw,44px) clamp(16px,4vw,28px) clamp(28px,4vw,44px)", textAlign:"center" }}>
           <div style={{ maxWidth:680, margin:"0 auto" }}>
             <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.1)", border:"1px solid rgba(255,255,255,0.2)", borderRadius:24, padding:"4px 12px", fontSize:11, color:"rgba(255,255,255,0.85)", marginBottom:14 }}>
               📚 Free Study Resources
@@ -433,7 +433,7 @@ export default function ResourcesClient({ initialMaterials = [], initialTotal = 
             onClick={() => setShowFilter(true)}
             style={{ width:"100%", padding:"11px 0", background:"#fff", border:"1px solid #e2e8f0", borderRadius:10, fontSize:14, fontWeight:700, color:"#334155", cursor:"pointer", marginBottom:14, alignItems:"center", justifyContent:"center", gap:8 }}>
             🔍 Filters
-            {hasFilters && <span style={{ background:"#1a3a8f", color:"#fff", borderRadius:12, padding:"1px 7px", fontSize:11 }}>●</span>}
+            {hasFilters && <span style={{ background:"#2563eb", color:"#fff", borderRadius:12, padding:"1px 7px", fontSize:11 }}>●</span>}
           </button>
 
           <div className="res-filter-overlay"
@@ -480,7 +480,7 @@ export default function ResourcesClient({ initialMaterials = [], initialTotal = 
                   <div style={{ fontSize:44, marginBottom:10 }}>📭</div>
                   <div style={{ fontWeight:700, fontSize:17, color:"#334155", marginBottom:6 }}>No materials found</div>
                   <div style={{ color:"#94a3b8", marginBottom:18, fontSize:13 }}>Try adjusting your filters or search</div>
-                  <button onClick={handleReset} style={{ padding:"10px 24px", background:"linear-gradient(135deg,#1a3a8f,#3b82f6)", color:"#fff", border:"none", borderRadius:10, fontWeight:700, cursor:"pointer" }}>Clear filters</button>
+                  <button onClick={handleReset} style={{ padding:"10px 24px", background:"linear-gradient(135deg,#1e3a8a,#2563eb)", color:"#fff", border:"none", borderRadius:10, fontWeight:700, cursor:"pointer" }}>Clear filters</button>
                 </div>
               ) : (
                 <div className="res-cards">{materials.map(m => <MaterialCard key={m.id} item={m} />)}</div>
@@ -506,7 +506,7 @@ export default function ResourcesClient({ initialMaterials = [], initialTotal = 
                     if (p > 1) pageParams.set("page", p); else pageParams.delete("page");
                     return (
                       <Link key={p} href={`/resources?${pageParams.toString()}`} prefetch={false} style={{ textDecoration: 'none' }} onClick={(e) => { e.preventDefault(); applyFilters(filters, p); }}>
-                        <div style={{ width:34, height:34, display:"flex", alignItems:"center", justifyContent:"center", border:"1px solid", borderRadius:8, cursor:"pointer", fontWeight:700, fontSize:13, background:page===p?"linear-gradient(135deg,#1a3a8f,#3b82f6)":"#fff", color:page===p?"#fff":"#334155", borderColor:page===p?"#1a3a8f":"#e2e8f0" }}>
+                        <div style={{ width:34, height:34, display:"flex", alignItems:"center", justifyContent:"center", border:"1px solid", borderRadius:8, cursor:"pointer", fontWeight:700, fontSize:13, background:page===p?"linear-gradient(135deg,#1e3a8a,#2563eb)":"#fff", color:page===p?"#fff":"#334155", borderColor:page===p?"#2563eb":"#e2e8f0" }}>
                           {p}
                         </div>
                       </Link>

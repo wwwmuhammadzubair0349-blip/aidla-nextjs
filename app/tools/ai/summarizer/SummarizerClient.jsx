@@ -20,7 +20,7 @@ const LENGTHS = [
 ];
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
 .sum-root{min-height:100vh;background:#f8fafc;font-family:'DM Sans',sans-serif;overflow-x:hidden}
 .sum-root*{box-sizing:border-box}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
@@ -93,7 +93,7 @@ export default function SummarizerClient() {
           </nav>
         </div>
 
-        <div style={{ background:"linear-gradient(135deg,#4c1d95,#7c3aed)", padding:"clamp(24px,5vw,40px) clamp(14px,4vw,24px)", textAlign:"center" }}>
+        <div style={{ background:"linear-gradient(135deg,#1e3a8a,#2563eb)", padding:"clamp(24px,5vw,40px) clamp(14px,4vw,24px)", textAlign:"center" }}>
           <div style={{ fontSize:"clamp(28px,7vw,40px)", marginBottom:10 }} aria-hidden="true">📝</div>
           <h1 style={{ margin:"0 0 8px", fontSize:"clamp(1.4rem,5vw,2rem)", fontWeight:900, color:"#fff" }}>AI Text Summarizer</h1>
           <p style={{ margin:"0 0 14px", fontSize:"clamp(12px,3vw,15px)", color:"rgba(255,255,255,0.75)" }}>Powered by Groq AI · Summarize any text in seconds</p>
@@ -107,13 +107,13 @@ export default function SummarizerClient() {
 
         <div style={S.wrap}>
           {!canUse && !user && (
-            <div style={{ background:"rgba(124,58,237,.07)", border:"1px solid rgba(124,58,237,.25)", borderRadius:16, padding:"clamp(16px,4vw,24px)", marginBottom:16, textAlign:"center" }} role="alert">
+            <div style={{ background:"rgba(37,99,235,.07)", border:"1px solid rgba(37,99,235,.25)", borderRadius:16, padding:"clamp(16px,4vw,24px)", marginBottom:16, textAlign:"center" }} role="alert">
               <div style={{ fontSize:32, marginBottom:10 }} aria-hidden="true">🔐</div>
-              <div style={{ fontSize:"clamp(14px,3.5vw,17px)", fontWeight:800, color:"#4c1d95", marginBottom:6 }}>Free uses exhausted</div>
+              <div style={{ fontSize:"clamp(14px,3.5vw,17px)", fontWeight:800, color:"#1e3a8a", marginBottom:6 }}>Free uses exhausted</div>
               <p style={{ color:"#64748b", fontSize:"clamp(12px,3vw,14px)", marginBottom:16, lineHeight:1.6 }}>Create a free AIDLA account for unlimited access.</p>
               <div style={{ display:"flex", gap:10, justifyContent:"center", flexWrap:"wrap" }}>
-                <button onClick={()=>router.push("/login?redirect=/tools/ai/summarizer")} style={{ padding:"11px 24px", background:"linear-gradient(135deg,#7c3aed,#8b5cf6)", color:"#fff", border:"none", borderRadius:10, fontWeight:700, fontSize:14, cursor:"pointer" }}>🔑 Login</button>
-                <button onClick={()=>router.push("/signup?redirect=/tools/ai/summarizer")} style={{ padding:"11px 24px", background:"rgba(124,58,237,.1)", color:"#7c3aed", border:"1px solid rgba(124,58,237,.25)", borderRadius:10, fontWeight:700, fontSize:14, cursor:"pointer" }}>✨ Sign Up Free</button>
+                <button onClick={()=>router.push("/login?redirect=/tools/ai/summarizer")} style={{ padding:"11px 24px", background:"linear-gradient(135deg,#1e3a8a,#2563eb)", color:"#fff", border:"none", borderRadius:10, fontWeight:700, fontSize:14, cursor:"pointer" }}>🔑 Login</button>
+                <button onClick={()=>router.push("/signup?redirect=/tools/ai/summarizer")} style={{ padding:"11px 24px", background:"rgba(37,99,235,.1)", color:"#2563eb", border:"1px solid rgba(37,99,235,.25)", borderRadius:10, fontWeight:700, fontSize:14, cursor:"pointer" }}>✨ Sign Up Free</button>
               </div>
             </div>
           )}
@@ -190,10 +190,10 @@ export default function SummarizerClient() {
           </div>
 
           {!user && remaining > 0 && remaining <= FREE_LIMIT && (
-            <div style={{ marginTop:16, background:"rgba(124,58,237,.06)", border:"1px solid rgba(124,58,237,.15)", borderRadius:12, padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
-              <div style={{ fontSize:"clamp(12px,3vw,13px)", color:"#4c1d95" }}><strong>{remaining}</strong> free use{remaining!==1?"s":""} remaining</div>
+            <div style={{ marginTop:16, background:"rgba(37,99,235,.06)", border:"1px solid rgba(37,99,235,.15)", borderRadius:12, padding:"12px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
+              <div style={{ fontSize:"clamp(12px,3vw,13px)", color:"#1e3a8a" }}><strong>{remaining}</strong> free use{remaining!==1?"s":""} remaining</div>
               <button onClick={()=>router.push("/signup?redirect=/tools/ai/summarizer")}
-                style={{ padding:"7px 16px", background:"linear-gradient(135deg,#7c3aed,#8b5cf6)", color:"#fff", border:"none", borderRadius:8, fontWeight:700, fontSize:12, cursor:"pointer" }}>
+                style={{ padding:"7px 16px", background:"linear-gradient(135deg,#1e3a8a,#2563eb)", color:"#fff", border:"none", borderRadius:8, fontWeight:700, fontSize:12, cursor:"pointer" }}>
                 Get Unlimited Free →
               </button>
             </div>

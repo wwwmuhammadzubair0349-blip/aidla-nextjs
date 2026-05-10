@@ -6,6 +6,29 @@
   --foreground: #0f172a;
   --font-sans: var(--font-dm-sans, 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif);
   --font-heading: var(--font-playfair, 'Playfair Display', Georgia, serif);
+
+  /* ── AIDLA Design System — Clean SaaS ── */
+  /* Brand — indigo blue */
+  --brand:        #2563eb;
+  --brand-dark:   #1d4ed8;
+  --brand-deep:   #1e3a8a;
+  --brand-light:  #eff6ff;
+  --brand-muted:  rgba(37,99,235,0.08);
+
+  /* Page */
+  --page-bg:   #f9fafb;
+  --surface:   #ffffff;
+  --border-ui: #e5e7eb;
+
+  /* Text */
+  --text-1: #111827;
+  --text-2: #6b7280;
+  --text-3: #9ca3af;
+
+  /* Hero — compact, consistent */
+  --hero-bg:     #1e3a8a;
+  --hero-pad-y:  clamp(24px, 3.5vw, 40px);
+  --hero-pad-x:  clamp(16px, 4vw, 32px);
 }
 
 @media (prefers-color-scheme: dark) {

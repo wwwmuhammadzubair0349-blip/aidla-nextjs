@@ -8,8 +8,8 @@ const TOOLS = [
   {
     category: "AI Tools",
     categoryIcon: "🤖",
-    categoryColor: "#7c3aed",
-    categoryBg: "rgba(124,58,237,0.06)",
+    categoryColor: "#2563eb",
+    categoryBg: "rgba(37,99,235,0.06)",
     categoryBorder: "rgba(124,58,237,0.15)",
     items: [
       { href:"/tools/ai/email-writer",   emoji:"📧", label:"AI Email Writer",        desc:"Write professional emails instantly. 24 types, 6 tones, 11 languages. Open in Gmail or Outlook.", badge:"Popular", badgeColor:"#ef4444" },
@@ -67,27 +67,31 @@ const CSS = `
 .fade-2{animation:fadeUp .65s cubic-bezier(.22,1,.36,1) .12s both}
 .fade-3{animation:fadeUp .65s cubic-bezier(.22,1,.36,1) .2s both}
 
-.tools-root{min-height:100vh;background:#eef2ff;font-family:'DM Sans',sans-serif;overflow-x:hidden;position:relative;display:flex;flex-direction:column;color:#0b1437}
-.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.bg-orbs::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(59,130,246,.08) 1px,transparent 1px);background-size:32px 32px}
-.bg-orb-1{position:absolute;width:min(700px,90vw);height:min(700px,90vw);border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 65%);top:-20%;right:-15%;animation:orbFloat1 20s ease-in-out infinite alternate}
-.bg-orb-2{position:absolute;width:min(500px,80vw);height:min(500px,80vw);border-radius:50%;background:radial-gradient(circle,rgba(200,146,42,.08) 0%,transparent 65%);bottom:0;left:-20%;animation:orbFloat2 26s ease-in-out infinite alternate}
-.tools-wrap{flex:1;width:100%;max-width:1100px;margin:0 auto;padding:clamp(24px,6vw,64px) clamp(16px,5vw,32px) clamp(48px,10vw,96px);position:relative;z-index:2}
+.tools-root{min-height:100vh;background:#f8fafc;font-family:'DM Sans',sans-serif;overflow-x:hidden;position:relative;display:flex;flex-direction:column;color:#0f172a}
+.bg-orbs{display:none}
 
-/* Hero */
+/* Dark Hero */
+.tools-hero{position:relative;background:linear-gradient(135deg,#0b1437 0%,#1a3a8f 55%,#1e40af 100%);overflow:hidden;padding:clamp(28px,4vw,44px) clamp(20px,5vw,40px);text-align:center}
+.tools-hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none}
+.tools-hero::after{content:'';position:absolute;top:-30%;right:-8%;width:50vw;max-width:580px;height:50vw;max-height:580px;background:radial-gradient(circle,rgba(37,99,235,0.28) 0%,transparent 68%);pointer-events:none}
+.tools-hero-inner{position:relative;z-index:1;max-width:760px;margin:0 auto}
+
+.tools-wrap{flex:1;width:100%;max-width:1100px;margin:0 auto;padding:clamp(20px,4vw,36px) clamp(16px,5vw,32px) clamp(40px,8vw,72px);position:relative;z-index:2}
+
+/* Hero text — white on dark */
 .tools-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#c8922a,#f5c84a);color:#0b1437;padding:5px 18px;border-radius:999px;font-size:.58rem;font-family:'Space Mono',monospace;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:18px;box-shadow:0 4px 20px rgba(200,146,42,.3)}
 .tools-badge::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#0b1437;opacity:.6;animation:pulse 2s ease-in-out infinite}
-.tools-title{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,7vw,3.8rem);font-weight:900;color:#0b1437;line-height:1.06;letter-spacing:-.025em;margin-bottom:14px}
-.tools-title-accent{background:linear-gradient(135deg,#1a3a8f 0%,#3b82f6 60%,#60a5fa 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic}
-.tools-sub{color:#3a4a7a;font-size:clamp(.88rem,2.5vw,1rem);max-width:540px;margin:0 auto 28px;line-height:1.7;font-weight:400}
+.tools-title{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,6vw,3.2rem);font-weight:900;color:#fff;line-height:1.07;letter-spacing:-.025em;margin-bottom:12px}
+.tools-title-accent{background:linear-gradient(135deg,#93c5fd 0%,#bfdbfe 60%,#dbeafe 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:italic}
+.tools-sub{color:rgba(255,255,255,0.72);font-size:clamp(.88rem,2.5vw,1rem);max-width:540px;margin:0 auto 24px;line-height:1.7;font-weight:400}
 
 /* Search */
-.tools-search-wrap{position:relative;max-width:520px;margin:0 auto 36px}
+.tools-search-wrap{position:relative;max-width:520px;margin:0 auto 0}
 .tools-search-icon{position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;opacity:.45}
-.tools-search{width:100%;padding:16px 50px;border:1.5px solid rgba(59,130,246,.14);border-radius:999px;font-size:clamp(13.5px,2.5vw,15px);font-family:'DM Sans',sans-serif;font-weight:400;color:#0b1437;background:#fff;outline:none;box-shadow:0 4px 20px rgba(11,20,55,.09);transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none}
+.tools-search{width:100%;padding:15px 50px;border:1.5px solid rgba(255,255,255,0.15);border-radius:999px;font-size:clamp(13.5px,2.5vw,15px);font-family:'DM Sans',sans-serif;font-weight:400;color:#0b1437;background:rgba(255,255,255,0.96);outline:none;box-shadow:0 4px 24px rgba(0,0,0,0.2);transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none}
 .tools-search::placeholder{color:#a0aac8}
 .tools-search::-webkit-search-cancel-button,.tools-search::-webkit-search-decoration{display:none}
-.tools-search:focus{border-color:#3b82f6;box-shadow:0 4px 20px rgba(11,20,55,.09),0 0 0 4px rgba(59,130,246,.1)}
+.tools-search:focus{border-color:#3b82f6;box-shadow:0 4px 24px rgba(0,0,0,0.2),0 0 0 4px rgba(59,130,246,.15)}
 
 /* Category section */
 .tools-cat-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:14px;border-bottom:1.5px solid rgba(11,20,55,.06)}
@@ -116,14 +120,14 @@ const CSS = `
 .tools-card-arrow{font-size:13px;font-weight:800;color:#1a3a8f}
 
 /* Stats */
-.tools-stats{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:40px;background:rgba(255,255,255,.72);border:1px solid rgba(59,130,246,.14);border-radius:999px;padding:16px 32px;backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(11,20,55,.06)}
+.tools-stats{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:32px;background:#fff;border:1px solid rgba(59,130,246,.14);border-radius:999px;padding:14px 32px;box-shadow:0 2px 12px rgba(11,20,55,.08)}
 .tools-stat{text-align:center}
 .tools-stat-val{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,4vw,1.6rem);font-weight:900;background:linear-gradient(135deg,#1a3a8f,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;letter-spacing:-.02em}
 .tools-stat-lbl{font-size:9px;color:#a0aac8;font-weight:700;text-transform:uppercase;letter-spacing:.09em;margin-top:3px;font-family:'Space Mono',monospace}
 .tools-stat-div{width:1px;height:36px;background:rgba(59,130,246,.15)}
 
 /* CTA */
-.tools-cta{margin-top:16px;border-radius:28px;padding:clamp(24px,5vw,44px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;position:relative;overflow:hidden;border:1px solid rgba(200,146,42,.2);background:linear-gradient(130deg,#0b1437 0%,#1a3a8f 50%,#1e1b4b 100%);box-shadow:0 16px 40px rgba(11,20,55,.2);color:#fff}
+.tools-cta{margin-top:16px;border-radius:28px;padding:clamp(24px,5vw,44px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px;position:relative;overflow:hidden;border:1px solid rgba(30,58,138,.3);background:linear-gradient(130deg,#0b1437 0%,#1a3a8f 50%,#1d4ed8 100%);box-shadow:0 16px 40px rgba(11,20,55,.2);color:#fff}
 .tools-cta::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(200,146,42,.16),transparent 70%);pointer-events:none}
 .tools-cta-free{display:inline-flex;align-items:center;gap:6px;background:rgba(200,146,42,.15);border:1px solid rgba(200,146,42,.28);border-radius:999px;padding:4px 12px;font-size:8.5px;font-weight:700;color:#f5c84a;margin-bottom:10px;letter-spacing:.12em;text-transform:uppercase;position:relative;z-index:1;font-family:'Space Mono',monospace}
 .tools-cta h2{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,4vw,1.8rem);font-weight:800;margin-bottom:6px;color:#fff;position:relative;z-index:1;letter-spacing:-.02em;line-height:1.15}
@@ -153,23 +157,17 @@ export default function ToolsClient() {
     <>
       <style>{CSS}</style>
       <div className="tools-root">
-        <div className="bg-orbs" aria-hidden="true">
-          <div className="bg-orb-1"/><div className="bg-orb-2"/>
-        </div>
 
-        <div className="tools-wrap">
-
-          {/* Hero */}
-          <header style={{ textAlign:"center", marginBottom:40 }}>
-            <p className="tools-badge fade-1">10+ Free Tools</p>
+        {/* Dark hero — full-bleed */}
+        <header className="tools-hero fade-1">
+          <div className="tools-hero-inner">
+            <p className="tools-badge">10+ Free Tools</p>
             <h1 className="tools-title fade-2">
               Free <span className="tools-title-accent">AI &amp; Career</span> Tools
             </h1>
             <p className="tools-sub fade-2">
               AI Email Writer, CV Maker, Cover Letter, Summarizer, Paraphraser, LinkedIn Bio and Interview Prep — all free, no sign-up.
             </p>
-
-            {/* Search */}
             <div className="tools-search-wrap fade-3" role="search" aria-label="Search tools">
               <span className="tools-search-icon" aria-hidden="true">🔍</span>
               <label htmlFor="tools-search" className="sr-only">Search tools</label>
@@ -184,8 +182,10 @@ export default function ToolsClient() {
                 spellCheck="false"
               />
             </div>
-          </header>
+          </div>
+        </header>
 
+        <div className="tools-wrap">
           {/* Stats */}
           <div className="tools-stats fade-3" aria-label="Tool statistics">
             {[["10+","Free Tools"],["0","Sign-up Needed"],["4","Categories"],["100%","Free"]].map(([v,l],i,arr) => (

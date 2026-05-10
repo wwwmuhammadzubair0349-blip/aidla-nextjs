@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import LoginClient from "./LoginClient";
+import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 export const metadata = {
   title: "Log In to your AIDLA Account | AIDLA",
@@ -33,10 +34,25 @@ export const metadata = {
   },
 };
 
+const schema = buildGraph(
+  buildWebPageSchema({
+    path: "/login",
+    name: "Log In to your AIDLA Account | AIDLA",
+    description: "Sign in to your AIDLA account to continue learning, earning coins, and experiencing the future of AI.",
+  }),
+  buildBreadcrumbSchema(
+    [{ name: "Home", url: "/" }, { name: "Log In", url: "/login" }],
+    "/login",
+  ),
+);
+
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div style={{ width: '100vw', height: '100dvh', background: '#f4f7fb' }}></div>}>
-      <LoginClient />
-    </Suspense>
+    <>
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <Suspense fallback={<div style={{ width: '100vw', height: '100dvh', background: '#f4f7fb' }}></div>}>
+        <LoginClient />
+      </Suspense>
+    </>
   );
 }

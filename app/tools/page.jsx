@@ -1,6 +1,7 @@
 ﻿// app/tools/page.jsx — Updated tools home (AI + Career tools only)
 import { Suspense } from "react";
 import ToolsClient from "./ToolsClient";
+import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 export const metadata = {
   title: "Free AI powered Career Tools Email Writer, CV Maker, Cover Letter & More",
@@ -12,27 +13,38 @@ export const metadata = {
   twitter: { card: "summary_large_image", title: "Free AI & Career Tools | AIDLA", images: ["https://www.aidla.online/og-home.jpg"] },
 };
 
-function JsonLd() {
-  const schema = {
-    "@context": "https://schema.org",
+const pageSchema = buildGraph(
+  buildWebPageSchema({
+    path: "/tools",
+    name: "Free AI powered Career Tools Email Writer, CV Maker, Cover Letter & More | AIDLA",
+    description: "Access free AI powered career tools Email Writer, Summarizer, Paraphraser, LinkedIn Bio Generator, Interview Prep, CV Maker and Cover Letter Maker.",
+  }),
+  buildBreadcrumbSchema(
+    [{ name: "Home", url: "/" }, { name: "Free Tools", url: "/tools" }],
+    "/tools",
+  ),
+  {
     "@type": "ItemList",
+    "@id": "https://www.aidla.online/tools#tool-list",
     name: "AIDLA Free AI & Career Tools",
-    url: "https://www.aidla.online/tools",
     numberOfItems: 10,
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "AI Email Writer",        url: "https://www.aidla.online/tools/ai/email-writer"               },
-      { "@type": "ListItem", position: 2, name: "AI Text Summarizer",     url: "https://www.aidla.online/tools/ai/summarizer"                 },
-      { "@type": "ListItem", position: 3, name: "AI Paraphraser",         url: "https://www.aidla.online/tools/ai/paraphraser"                },
-      { "@type": "ListItem", position: 4, name: "AI LinkedIn Bio",        url: "https://www.aidla.online/tools/ai/linkedin-bio"               },
-      { "@type": "ListItem", position: 5, name: "AI Interview Prep",      url: "https://www.aidla.online/tools/ai/interview-prep"             },
-      { "@type": "ListItem", position: 6, name: "CV Maker",               url: "https://www.aidla.online/tools/career/cv-maker"               },
-      { "@type": "ListItem", position: 7, name: "Cover Letter Maker",     url: "https://www.aidla.online/tools/career/cover-letter-maker"     },
-      { "@type": "ListItem", position: 8, name: "Image to PDF",           url: "https://www.aidla.online/tools/pdf/image-to-pdf"              },
-      { "@type": "ListItem", position: 9, name: "Word to PDF",            url: "https://www.aidla.online/tools/pdf/word-to-pdf"               },
-      { "@type": "ListItem", position: 10, name: "JPG to PNG",            url: "https://www.aidla.online/tools/image/jpg-to-png"              },
+      { "@type": "ListItem", position: 1,  name: "AI Email Writer",     url: "https://www.aidla.online/tools/ai/email-writer"           },
+      { "@type": "ListItem", position: 2,  name: "AI Text Summarizer",  url: "https://www.aidla.online/tools/ai/summarizer"             },
+      { "@type": "ListItem", position: 3,  name: "AI Paraphraser",      url: "https://www.aidla.online/tools/ai/paraphraser"            },
+      { "@type": "ListItem", position: 4,  name: "AI LinkedIn Bio",     url: "https://www.aidla.online/tools/ai/linkedin-bio"           },
+      { "@type": "ListItem", position: 5,  name: "AI Interview Prep",   url: "https://www.aidla.online/tools/ai/interview-prep"         },
+      { "@type": "ListItem", position: 6,  name: "CV Maker",            url: "https://www.aidla.online/tools/career/cv-maker"           },
+      { "@type": "ListItem", position: 7,  name: "Cover Letter Maker",  url: "https://www.aidla.online/tools/career/cover-letter-maker" },
+      { "@type": "ListItem", position: 8,  name: "Image to PDF",        url: "https://www.aidla.online/tools/pdf/image-to-pdf"          },
+      { "@type": "ListItem", position: 9,  name: "Word to PDF",         url: "https://www.aidla.online/tools/pdf/word-to-pdf"           },
+      { "@type": "ListItem", position: 10, name: "JPG to PNG",          url: "https://www.aidla.online/tools/image/jpg-to-png"          },
     ],
-  };
-  return <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
+  },
+);
+
+function JsonLd() {
+  return <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }} />;
 }
 
 export default function ToolsPage() {

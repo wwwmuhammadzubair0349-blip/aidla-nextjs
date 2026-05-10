@@ -1,9 +1,16 @@
 // app/page.jsx
+import {
+  buildGraph, buildEducationalOrgSchema,
+  buildWebPageSchema, buildBreadcrumbSchema,
+  buildHowToSchema, buildFAQSchema, buildItemListSchema,
+} from "@/lib/schemas";
+import { SITE } from "@/lib/siteConfig";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
-const SITE_URL = "https://www.aidla.online";
+const SITE_URL = SITE.url;
+
 const LAST_MODIFIED = "2026-05-09";
 
 export const revalidate = 3600;
@@ -113,36 +120,42 @@ const STEPS = [
 
 const FEATURES = [
   {
+    emoji: "🎯",
     title: "Daily Quizz",
     text: "Compete every day, see yesterday's winners, and earn coins for consistent learning.",
     href: "/user/dailyquizz",
     label: "Play daily quiz",
   },
   {
+    emoji: "📚",
     title: "Courses and Resources",
     text: "Structured courses and study resources for learners who want clear next steps.",
     href: "/courses",
     label: "Browse courses",
   },
   {
+    emoji: "🤖",
     title: "AI Career Tools",
     text: "CV, cover letter, summarizer, paraphraser, interview prep, email writer, and more.",
     href: "/tools",
     label: "Open tools",
   },
   {
+    emoji: "🪙",
     title: "Rewards, Wallet and Shop",
     text: "Earn AIDLA Coins, track wallet activity, redeem products, and manage withdrawals.",
     href: "/user/shop",
     label: "See rewards",
   },
   {
+    emoji: "🏆",
     title: "Leaderboards and Tests",
     text: "Live rankings, quiz champions, test winners, and prize history in one place.",
     href: "/leaderboard",
     label: "View ranks",
   },
   {
+    emoji: "🤝",
     title: "Community Learning",
     text: "Forum, social learning, lucky draw, lucky wheel, referrals, and learner milestones.",
     href: "/user",
@@ -265,276 +278,43 @@ async function getHomeData() {
 export default async function Home() {
   const { posts, reviews, faqs, dailyWinners, winnerDate } = await getHomeData();
 
-  /* ── Full structured data: AEO, GEO, Local SEO, Technical SEO, International SEO ── */
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      /* ── Organization ── */
-      {
-        "@type": ["Organization", "EducationalOrganization", "OnlineBusiness", "LocalBusiness"],
-        "@id": `${SITE_URL}/#organization`,
-        name: "AIDLA",
-        legalName: "AIDLA - AI Digital Learning Academy",
-        alternateName: [
-          "AI Digital Learning Academy",
-          "AIDLA Online",
-          "AIDLA Pakistan",
-          "Pakistan #1 AI Powered Learning Platform",
-        ],
-        url: SITE_URL,
-        logo: {
-          "@type": "ImageObject",
-          "@id": `${SITE_URL}/#logo`,
-          url: `${SITE_URL}/logo.png`,
-          contentUrl: `${SITE_URL}/logo.png`,
-          width: 200,
-          height: 60,
-        },
-        image: `${SITE_URL}/og-home.jpg`,
-        foundingDate: "2026",
-        slogan: "Study smarter. Earn coins. Build your future.",
-        description:
-          "AIDLA is Pakistan #1 AI powered learning platform offering free courses, daily quizzes, AI tools, career resources, AIDLA Coins, and rewards.",
-        /* ── Local SEO: full address with postal code ── */
-        areaServed: [
-          { "@type": "Country", name: "Pakistan", "@id": "https://www.wikidata.org/wiki/Q843" },
-          { "@type": "City", name: "Peshawar" },
-          { "@type": "AdministrativeArea", name: "Khyber Pakhtunkhwa" },
-        ],
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: "Peshawar",
-          addressLocality: "Peshawar",
-          addressRegion: "Khyber Pakhtunkhwa",
-          postalCode: "25000",
-          addressCountry: "PK",
-        },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: "34.0150",
-          longitude: "71.5249",
-        },
-        hasMap: "https://maps.google.com/?q=Peshawar,+Khyber+Pakhtunkhwa,+Pakistan",
-        contactPoint: {
-          "@type": "ContactPoint",
-          telephone: "+923044678929",
-          contactType: "customer support",
-          areaServed: "PK",
-          availableLanguage: ["English", "Urdu"],
-          url: `${SITE_URL}/contact`,
-        },
-        founder: { "@id": `${SITE_URL}/#founder` },
-        /* ── GEO / International SEO ── */
-        knowsAbout: [
-          "AI Learning",
-          "Online Education",
-          "Pakistan Education",
-          "Daily Quizzes",
-          "Career Tools",
-          "CV Builder",
-          "Rewards Based Learning",
-          "Student Wallets",
-          "KPK Education",
-          "Peshawar Online Learning",
-        ],
-        sameAs: [
-          "https://www.instagram.com/aidla_official/",
-          "https://www.facebook.com/profile.php?id=61586195563121",
-          "https://www.linkedin.com/company/110859146/",
-          "https://www.tiktok.com/@aidla_official",
-          "https://twitter.com/aidla_official",
-          "https://www.youtube.com/@aidla_official",
-        ],
-      },
-
-      /* ── Founder Person — for indexing ── */
-      {
-        "@type": "Person",
-        "@id": `${SITE_URL}/#founder`,
-        name: "Engineer Muhammad Zubair Afridi",
-        givenName: "Muhammad Zubair",
-        familyName: "Afridi",
-        honorificPrefix: "Engineer",
-        jobTitle: "Founder & CEO",
-        worksFor: { "@id": `${SITE_URL}/#organization` },
-        telephone: "+923044678929",
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: "Peshawar",
-          addressLocality: "Peshawar",
-          addressRegion: "Khyber Pakhtunkhwa",
-          postalCode: "25000",
-          addressCountry: "PK",
-        },
-        /* Founder social profiles — bot/crawler visible for Knowledge Panel */
-        sameAs: [
-          "https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/",
-          "https://www.facebook.com/engrzubairafridi/",
-          "https://www.instagram.com/muhammad.zubair.afridi/",
-        ],
-      },
-
-      /* ── WebSite ── */
-      {
-        "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
-        url: SITE_URL,
-        name: "AIDLA",
-        alternateName: "AIDLA Online",
-        description:
-          "Pakistan #1 AI powered learning platform for free quizzes, AI tools, courses, and learner rewards.",
-        publisher: { "@id": `${SITE_URL}/#organization` },
-        inLanguage: ["en", "ur"],
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `${SITE_URL}/faqs?q={search_term_string}`,
-          },
-          "query-input": "required name=search_term_string",
-        },
-      },
-
-      /* ── WebPage ── */
-      {
-        "@type": "WebPage",
-        "@id": `${SITE_URL}/#webpage`,
-        url: SITE_URL,
-        name: "AIDLA - Pakistan #1 AI Powered Learning Platform",
-        description:
-          "AIDLA helps Pakistani learners study with free quizzes, AI tools, courses, daily quiz competitions, AIDLA Coins, and rewards.",
-        isPartOf: { "@id": `${SITE_URL}/#website` },
-        about: { "@id": `${SITE_URL}/#organization` },
-        primaryImageOfPage: `${SITE_URL}/og-home.jpg`,
-        inLanguage: "en",
-        dateModified: LAST_MODIFIED,
-        breadcrumb: { "@id": `${SITE_URL}/#breadcrumb` },
-        mainContentOfPage: { "@type": "WebPageElement", cssSelector: "#main-content" },
-        /* speakable for AEO / voice assistants */
-        speakable: {
-          "@type": "SpeakableSpecification",
-          cssSelector: ["#hero-heading", "#how-heading", "#faq-heading"],
-        },
-      },
-
-      /* ── Breadcrumb ── */
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${SITE_URL}/#breadcrumb`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        ],
-      },
-
-      /* ── HowTo — AEO ── */
-      {
-        "@type": "HowTo",
-        "@id": `${SITE_URL}/#howto`,
-        name: "How AIDLA Works",
-        description: "Learn how to study, earn AIDLA Coins, and redeem rewards on Pakistan's #1 AI learning platform.",
-        step: STEPS.map((step, index) => ({
-          "@type": "HowToStep",
-          position: index + 1,
-          name: step.title,
-          text: step.text,
-        })),
-      },
-
-      /* ── Site sections ItemList ── */
-      {
-        "@type": "ItemList",
-        "@id": `${SITE_URL}/#site-sections`,
-        name: "AIDLA public and learner sections",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Courses", url: `${SITE_URL}/courses` },
-          { "@type": "ListItem", position: 2, name: "Daily Quizz", url: `${SITE_URL}/user/dailyquizz` },
-          { "@type": "ListItem", position: 3, name: "AI Tools", url: `${SITE_URL}/tools` },
-          { "@type": "ListItem", position: 4, name: "Leaderboard", url: `${SITE_URL}/leaderboard` },
-          { "@type": "ListItem", position: 5, name: "Resources", url: `${SITE_URL}/resources` },
-          { "@type": "ListItem", position: 6, name: "News", url: `${SITE_URL}/news` },
-          { "@type": "ListItem", position: 7, name: "FAQs", url: `${SITE_URL}/faqs` },
-        ],
-      },
-
-      /* ── Daily quiz winners ── */
-      ...(dailyWinners.length
-        ? [
-            {
-              "@type": "ItemList",
-              "@id": `${SITE_URL}/#daily-quiz-winners`,
-              name: `AIDLA Daily Quizz Winners - ${winnerDate}`,
-              itemListElement: dailyWinners.map((winner, index) => ({
-                "@type": "ListItem",
-                position: index + 1,
-                name: winner.full_name || "AIDLA Learner",
-                url: `${SITE_URL}/user/dailyquizz`,
-              })),
-            },
-          ]
-        : []),
-
-      /* ── FAQ — AEO rich result ── */
-      {
-        "@type": "FAQPage",
-        "@id": `${SITE_URL}/#faqpage`,
-        mainEntity: faqs.map((faq) => ({
-          "@type": "Question",
-          name: faq.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: faq.answer,
-          },
-        })),
-      },
-
-      /* ── EducationalOrganization extra — GEO / International SEO ── */
-      {
-        "@type": "EducationalOrganization",
-        "@id": `${SITE_URL}/#edu-org`,
-        name: "AIDLA - AI Digital Learning Academy",
-        url: SITE_URL,
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: "Peshawar",
-          addressLocality: "Peshawar",
-          addressRegion: "Khyber Pakhtunkhwa",
-          postalCode: "25000",
-          addressCountry: "PK",
-        },
-        telephone: "+923044678929",
-        hasOfferCatalog: {
-          "@type": "OfferCatalog",
-          name: "Free Learning Courses and Quizzes",
-          itemListElement: [
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Course",
-                name: "Free Online Quizzes",
-                description: "Daily quiz competitions for Pakistani learners with AIDLA Coins rewards.",
-                provider: { "@id": `${SITE_URL}/#organization` },
-              },
-              price: "0",
-              priceCurrency: "PKR",
-              availability: "https://schema.org/InStock",
-            },
-            {
-              "@type": "Offer",
-              itemOffered: {
-                "@type": "Course",
-                name: "AI Career Tools",
-                description: "CV builder, cover letter generator, interview prep, and more.",
-                provider: { "@id": `${SITE_URL}/#organization` },
-              },
-              price: "0",
-              priceCurrency: "PKR",
-              availability: "https://schema.org/InStock",
-            },
-          ],
-        },
-      },
-    ],
-  };
+  /* ── Page-specific structured data (global Org/Founder/WebSite injected by layout) ── */
+  const jsonLd = buildGraph(
+    buildWebPageSchema({
+      path: "/",
+      name: "AIDLA - Pakistan #1 AI Powered Learning Platform",
+      description: "AIDLA helps Pakistani learners study with free quizzes, AI tools, courses, daily quiz competitions, AIDLA Coins, and rewards.",
+      dateModified: LAST_MODIFIED,
+      speakableSelectors: ["#hero-heading", "#how-heading", "#faq-heading"],
+    }),
+    buildBreadcrumbSchema([{ name: "Home", url: "/" }], "/"),
+    buildHowToSchema(STEPS.map((s) => ({ title: s.title, text: s.text }))),
+    buildFAQSchema(faqs),
+    buildEducationalOrgSchema(),
+    buildItemListSchema({
+      id: "site-sections",
+      name: "AIDLA public and learner sections",
+      items: [
+        { name: "Courses",     url: "/courses" },
+        { name: "Daily Quizz", url: "/user/dailyquizz" },
+        { name: "AI Tools",    url: "/tools" },
+        { name: "Leaderboard", url: "/leaderboard" },
+        { name: "Resources",   url: "/resources" },
+        { name: "News",        url: "/news" },
+        { name: "FAQs",        url: "/faqs" },
+      ],
+    }),
+    dailyWinners.length
+      ? buildItemListSchema({
+          id: "daily-quiz-winners",
+          name: `AIDLA Daily Quizz Winners - ${winnerDate}`,
+          items: dailyWinners.map((w) => ({
+            name: w.full_name || "AIDLA Learner",
+            url: "/user/dailyquizz",
+          })),
+        })
+      : null,
+  );
 
   async function submitNewsletter(formData) {
     "use server";
@@ -742,6 +522,7 @@ export default async function Home() {
           <div className={"home-feature-grid"}>
             {FEATURES.map((feature) => (
               <article key={feature.title} className={"home-feature-card"}>
+                <span className={"home-feature-emoji"} aria-hidden="true">{feature.emoji}</span>
                 <h3>{feature.title}</h3>
                 <p>{feature.text}</p>
                 <Link href={feature.href}>{feature.label}</Link>

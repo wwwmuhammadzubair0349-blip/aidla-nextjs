@@ -312,6 +312,7 @@ export default function UserDashboard() {
         <RegCard title="Lucky Draw"  subtitle="Scheduled draws & big prizes"  icon="🎟️" to="/user/lucky-draw"  iconClass="ic-amber" />
         <RegCard title="Lucky Wheel" subtitle="Spin the wheel & win rewards"  icon="🎡" to="/user/lucky-wheel" iconClass="ic-amber" />
         <RegCard title="Shop"        subtitle="Buy products with AIDLA coins" icon="🛍️" to="/user/shop"        iconClass="ic-amber" />
+        <RegCard title="Battle Arena" subtitle="Compete in skill-based battles" icon="⚔️" to="/user/battle"      iconClass="ic-amber" /> 
       </Section>
 
       {/* Career */}

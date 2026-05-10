@@ -22,7 +22,7 @@
 /* Root layout */
 .lbRoot {
   min-height: 100vh;
-  background: linear-gradient(160deg, #f0f4ff 0%, #fffbf0 60%, #e8f4fd 100%);
+  background: #f8fafc;
   font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
   position: relative;
@@ -63,12 +63,12 @@
 /* Section label & title */
 .secLabel {
   display: inline-block;
-  background: linear-gradient(135deg, var(--gold), var(--gold-light));
-  color: #1a1a1a; /* ✅ ACCESSIBILITY FIX: was var(--navy), now explicit dark for contrast */
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff;
   padding: 6px 14px; border-radius: 30px;
   font-size: 0.7rem; font-weight: 800; letter-spacing: 0.06em;
   text-transform: uppercase; margin-bottom: 10px;
-  box-shadow: 0 4px 12px rgba(245,158,11,0.25);
+  box-shadow: 0 4px 12px rgba(37,99,235,0.28);
 }
 .secTitle {
   font-family: 'Playfair Display', Georgia, serif;
@@ -76,7 +76,7 @@
   color: var(--navy); line-height: 1.15; margin-bottom: 8px;
 }
 .secTitle span {
-  background: linear-gradient(135deg, var(--royal), var(--sky));
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .secDesc {
@@ -95,8 +95,8 @@
 }
 .lbTab:hover { color: var(--navy); box-shadow: 0 4px 16px rgba(11,20,55,0.1); }
 .lbTab.active {
-  background: linear-gradient(135deg, var(--royal), var(--sky));
-  color: #fff; box-shadow: 0 4px 16px rgba(26,58,143,0.28); border-color: transparent;
+  background: linear-gradient(135deg, #1e3a8a, #2563eb);
+  color: #fff; box-shadow: 0 4px 16px rgba(37,99,235,0.28); border-color: transparent;
 }
 /* ✅ ACCESSIBILITY FIX: Visible focus ring for keyboard users */
 .lbTab:focus-visible {

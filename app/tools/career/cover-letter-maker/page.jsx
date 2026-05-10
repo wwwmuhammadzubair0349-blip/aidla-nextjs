@@ -462,104 +462,6 @@ function CoverLetterJsonLd() {
     ],
   };
 
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": `${baseUrl}/#organization`,
-    name: "AIDLA",
-    description:
-      "Free AI-powered career tools for Pakistan, UAE, GCC, and global job seekers. Professional CV maker, cover letter generator, and career resources — all completely free, no sign-up required.",
-    url: baseUrl,
-    logo: "https://www.aidla.online/logo.png",
-    sameAs: [
-      "https://www.linkedin.com/company/aidla",
-      "https://twitter.com/aidla_online",
-      "https://www.facebook.com/aidla.online",
-      "https://www.instagram.com/aidla.online",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "customer service",
-      email: "support@aidla.online",
-      availableLanguage: ["English", "Urdu", "Arabic"],
-    },
-    areaServed: [
-      { "@type": "Country", name: "Pakistan" },
-      { "@type": "Country", name: "United Arab Emirates" },
-      { "@type": "Country", name: "Saudi Arabia" },
-      { "@type": "Country", name: "Qatar" },
-      { "@type": "Country", name: "Kuwait" },
-      { "@type": "Country", name: "Bahrain" },
-      { "@type": "Country", name: "Oman" },
-      { "@type": "Country", name: "United Kingdom" },
-      { "@type": "Country", name: "United States" },
-      { "@type": "Country", name: "Canada" },
-      { "@type": "Country", name: "India" },
-    ],
-  };
-
-  const localBusinessSchema = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "@id": `${pageUrl}#localbusiness`,
-    name: "AIDLA — Free Cover Letter Maker for Pakistan & GCC",
-    description:
-      "Free online cover letter maker serving Pakistan (Karachi, Lahore, Islamabad, Faisalabad, Multan, Peshawar) and GCC (Dubai, Abu Dhabi, Riyadh, Doha, Kuwait City, Manama, Muscat). AI-powered with 6 templates, live preview, PDF print. 100% free — no sign-up.",
-    url: pageUrl,
-    areaServed: [
-      {
-        "@type": "City",
-        name: "Karachi",
-        sameAs: "https://en.wikipedia.org/wiki/Karachi",
-      },
-      {
-        "@type": "City",
-        name: "Lahore",
-        sameAs: "https://en.wikipedia.org/wiki/Lahore",
-      },
-      {
-        "@type": "City",
-        name: "Islamabad",
-        sameAs: "https://en.wikipedia.org/wiki/Islamabad",
-      },
-      {
-        "@type": "City",
-        name: "Faisalabad",
-        sameAs: "https://en.wikipedia.org/wiki/Faisalabad",
-      },
-      {
-        "@type": "City",
-        name: "Multan",
-        sameAs: "https://en.wikipedia.org/wiki/Multan",
-      },
-      {
-        "@type": "City",
-        name: "Peshawar",
-        sameAs: "https://en.wikipedia.org/wiki/Peshawar",
-      },
-      {
-        "@type": "City",
-        name: "Dubai",
-        sameAs: "https://en.wikipedia.org/wiki/Dubai",
-      },
-      {
-        "@type": "City",
-        name: "Abu Dhabi",
-        sameAs: "https://en.wikipedia.org/wiki/Abu_Dhabi",
-      },
-      {
-        "@type": "City",
-        name: "Riyadh",
-        sameAs: "https://en.wikipedia.org/wiki/Riyadh",
-      },
-      {
-        "@type": "City",
-        name: "Doha",
-        sameAs: "https://en.wikipedia.org/wiki/Doha",
-      },
-    ],
-    priceRange: "Free",
-  };
 
   return (
     <>
@@ -586,20 +488,6 @@ function CoverLetterJsonLd() {
         type="application/ld+json"
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(organizationSchema),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(localBusinessSchema),
-        }}
       />
     </>
   );

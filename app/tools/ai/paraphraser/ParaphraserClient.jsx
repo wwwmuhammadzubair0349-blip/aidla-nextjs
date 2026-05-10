@@ -13,7 +13,7 @@ const STORAGE_KEY       = "aidla_paraphraser_uses";
 
 const STYLES = [
   { id:"formal",     label:"Formal",      desc:"Professional & business",  color:"#1a3a8f" },
-  { id:"academic",   label:"Academic",    desc:"Scholarly & precise",       color:"#7c3aed" },
+  { id:"academic",   label:"Academic",    desc:"Scholarly & precise",       color:"#2563eb" },
   { id:"casual",     label:"Casual",      desc:"Friendly & conversational", color:"#16a34a" },
   { id:"creative",   label:"Creative",    desc:"Vivid & engaging",          color:"#d97706" },
   { id:"simplified", label:"Simplified",  desc:"Simple & easy to read",     color:"#0284c7" },
@@ -77,7 +77,7 @@ export default function ParaphraserClient() {
 
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');*{box-sizing:border-box}`}</style>
+      <style>{`*{box-sizing:border-box}`}</style>
       <div style={S.page}>
         <div style={{ background:"#fff", borderBottom:"1px solid #f1f5f9", padding:"10px clamp(14px,4vw,24px)" }}>
           <nav style={{ maxWidth:900, margin:"0 auto", fontSize:"clamp(10px,2.5vw,12px)", color:"#94a3b8", display:"flex", gap:6, flexWrap:"wrap" }} aria-label="Breadcrumb">

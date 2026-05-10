@@ -1,6 +1,7 @@
 ﻿// app/about/page.jsx  —  SERVER COMPONENT
 import { createClient } from "@supabase/supabase-js";
 import AboutPage from "./about";
+import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema, buildFAQSchema } from "@/lib/schemas";
 
 export const metadata = {
   title: "About AIDLA | Pakistan's #1 Free AI Tools & Learn-to-Earn Academy",
@@ -48,5 +49,33 @@ async function getFaqs() {
 
 export default async function Page() {
   const faqs = await getFaqs();
-  return <AboutPage faqs={faqs} />;
+
+  const schema = buildGraph(
+    buildWebPageSchema({
+      path: "/about",
+      name: "About AIDLA | Pakistan's #1 Free AI Tools & Learn-to-Earn Academy",
+      description: "Discover AIDLA — Pakistan's leading AI-digital academy. Free AI-powered Online Courses, tools, CV maker & a Learn-to-Earn rewards system. 100% free, forever.",
+    }),
+    buildBreadcrumbSchema(
+      [{ name: "Home", url: "/" }, { name: "About", url: "/about" }],
+      "/about",
+    ),
+    faqs.length
+      ? buildFAQSchema(faqs.map((f) => ({
+          question: f.question,
+          answer: f.answer.replace(/<[^>]+>/g, "").trim(),
+        })))
+      : null,
+  );
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <AboutPage faqs={faqs} />
+    </>
+  );
 }

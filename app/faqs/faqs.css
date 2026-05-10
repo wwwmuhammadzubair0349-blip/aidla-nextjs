@@ -15,7 +15,7 @@
   --faq-blue-mid:  #2563eb;
   --faq-accent:    #f59e0b;
   --faq-accent2:   #10b981;
-  --faq-bg:        #f0f4ff;
+  --faq-bg:        #f8fafc;
   --faq-white:     #ffffff;
   --faq-border:    rgba(59,130,246,0.12);
   --faq-text:      #1e293b;
@@ -42,8 +42,8 @@
 .faq-hero {
   position: relative;
   overflow: hidden;
-  padding: 48px 20px 60px;
-  background: linear-gradient(155deg, var(--faq-navy) 0%, #1a3a8f 55%, #1e40af 100%);
+  padding: clamp(28px,4vw,44px) clamp(16px,4vw,28px) clamp(28px,4vw,44px);
+  background: linear-gradient(135deg, #0b1437 0%, #1a3a8f 55%, #1e40af 100%);
 }
 
 .faq-hero-bg {
@@ -90,7 +90,7 @@
   letter-spacing: -0.02em;
 }
 .faq-hero-accent {
-  background: linear-gradient(90deg, #f59e0b, #fcd34d);
+  background: linear-gradient(90deg, #93c5fd, #bfdbfe);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -699,7 +699,7 @@
 
 /* Tablet and up */
 @media (min-width: 640px) {
-  .faq-hero    { padding: 64px 32px 72px; }
+  .faq-hero    { padding: 36px 32px 42px; }
   .faq-content-wrap { padding: 36px 24px 80px; }
   .faq-question { padding: 20px 20px; }
   .ask-form-wrap { padding: 36px 32px; }
@@ -708,7 +708,7 @@
 
 /* Desktop */
 @media (min-width: 1024px) {
-  .faq-hero    { padding: 80px 40px 90px; }
+  .faq-hero    { padding: 44px 40px 50px; }
   .faq-content-wrap { padding: 48px 0 100px; }
 }
 

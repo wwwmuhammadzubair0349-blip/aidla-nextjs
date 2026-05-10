@@ -578,16 +578,6 @@ export default function AboutPage({ faqs = [] }) {
     ),
   };
 
-  const faqSchema = faqs.length > 0 ? {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: f.question,
-      acceptedAnswer: { "@type": "Answer", text: f.answer },
-    })),
-  } : null;
-
   const keywordsSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -610,7 +600,6 @@ export default function AboutPage({ faqs = [] }) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(toolsSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(keywordsSchema) }} />
-      {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
 
       {/* ── SKIP LINK ── */}
       <a href="#main-content" style={{ position: "absolute", left: -9999, top: 0, zIndex: 999, background: "#1d4ed8", color: "#fff", padding: "8px 16px", borderRadius: 6, fontWeight: 700, textDecoration: "none" }} onFocus={e => e.target.style.left = "16px"} onBlur={e => e.target.style.left = "-9999px"}>Skip to main content</a>
@@ -741,9 +730,9 @@ export default function AboutPage({ faqs = [] }) {
                   </div>
                   <div style={S.toolGrid} role="list">
                     {cat.items.map((tool, j) => (
-                      <Link key={j} href={tool.href} style={S.toolCard} role="listitem" aria-label={`Use ${tool.name} — ${tool.desc}`} itemScope itemType="https://schema.org/SoftwareApplication">
-                        <h4 style={S.toolName} itemProp="name">{tool.name}</h4>
-                        <p style={S.toolDesc} itemProp="description">{tool.desc}</p>
+                      <Link key={j} href={tool.href} style={S.toolCard} role="listitem" aria-label={`Use ${tool.name} — ${tool.desc}`}>
+                        <h4 style={S.toolName}>{tool.name}</h4>
+                        <p style={S.toolDesc}>{tool.desc}</p>
                         <span style={S.toolCTA} aria-hidden="true">Launch Tool →</span>
                       </Link>
                     ))}
@@ -788,11 +777,11 @@ That vision became AIDLA.
                 <div style={S.timeline} aria-label="AIDLA Milestones" role="list">
                   <div style={S.timelineLine} aria-hidden="true" />
                   {MILESTONES.map((m, i) => (
-                    <div key={i} style={S.milestoneRow} role="listitem" itemScope itemType="https://schema.org/Event">
+                    <div key={i} style={S.milestoneRow} role="listitem">
                       <div style={S.milestoneDot} aria-hidden="true" />
                       <span style={S.milestoneYear}>{m.year}</span>
-                      <h3 style={S.milestoneTitle} itemProp="name">{m.title}</h3>
-                      <p style={S.milestoneDesc} itemProp="description">{m.desc}</p>
+                      <h3 style={S.milestoneTitle}>{m.title}</h3>
+                      <p style={S.milestoneDesc}>{m.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -835,15 +824,15 @@ That vision became AIDLA.
                   </p>
                   <Link href="/faqs" style={{ ...S.btnPrimary, background: "#f1f5f9", color: "#0f172a", boxShadow: "none", display: "inline-flex" }} aria-label="Read all frequently asked questions">📚 Read Full FAQs</Link>
                 </div>
-                <div style={S.faqList} itemScope itemType="https://schema.org/FAQPage">
+                <div style={S.faqList}>
                   {faqs.map((f, i) => (
-                    <details key={i} style={S.faqItem} itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-                      <summary style={S.faqSummary} itemProp="name">
+                    <details key={i} style={S.faqItem}>
+                      <summary style={S.faqSummary}>
                         {f.question}
                         <span style={S.faqChevron} aria-hidden="true">▼</span>
                       </summary>
-                      <div style={S.faqAnswer} itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                        <span itemProp="text">{f.answer}</span>
+                      <div style={S.faqAnswer}>
+                        <span>{f.answer}</span>
                       </div>
                     </details>
                   ))}

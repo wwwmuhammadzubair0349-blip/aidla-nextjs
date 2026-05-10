@@ -2,6 +2,7 @@
 import { notFound }        from "next/navigation";
 import { supabase }        from "@/lib/supabase";
 import NewsPageClient      from "./NewsPageClient";
+import { buildGraph, buildArticleSchema, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 /* ─────────────────────────────────────────────
    ISR — revalidate every 60 seconds
@@ -129,61 +130,32 @@ export default async function NewsArticlePage({ params }) {
     ? relatedRaw
     : (allPosts || []).filter(p => p.slug !== post.slug).slice(0, 4);
 
-  /* ── JSON-LD: NewsArticle + BreadcrumbList ── */
   const canonical = `${SITE_URL}/news/${slug}`;
 
-  const articleSchema = {
-    "@context":       "https://schema.org",
-    "@type":          "NewsArticle",
-    headline:         post.title,
-    description:      post.excerpt || "",
-    url:              canonical,
-    datePublished:    post.published_at,
-    dateModified:     post.updated_at || post.published_at,
-    image:            post.cover_image_url || OG_IMAGE,
-    keywords:         (post.tags || []).join(", "),
-    inLanguage:       "en",
-    publisher: {
-      "@type": "Organization",
-      name:    "AIDLA",
-      url:     SITE_URL,
-      logo: {
-        "@type": "ImageObject",
-        url:     `${SITE_URL}/logo.png`,
-        width:   200,
-        height:  60,
-      },
-    },
-    author: {
-      "@type": "Organization",
-      name:    "AIDLA",
-      url:     SITE_URL,
-    },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id":   canonical,
-    },
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type":    "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home",       item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "News",       item: `${SITE_URL}/news` },
-      { "@type": "ListItem", position: 3, name: post.title,   item: canonical },
-    ],
-  };
+  const jsonLd = buildGraph(
+    buildWebPageSchema({ path: `/news/${slug}`, name: post.title, description: post.excerpt || "" }),
+    buildBreadcrumbSchema(
+      [{ name: "Home", url: "/" }, { name: "News", url: "/news" }, { name: post.title, url: `/news/${slug}` }],
+      `/news/${slug}`,
+    ),
+    buildArticleSchema({
+      slug,
+      type:        "NewsArticle",
+      basePath:    "news",
+      title:       post.title,
+      description: post.excerpt || "",
+      image:       post.cover_image_url || undefined,
+      datePublished:   post.published_at,
+      dateModified:    post.updated_at || post.published_at,
+      keywords:        (post.tags || []).join(", ") || undefined,
+    }),
+  );
 
   return (
     <>
       <script
         type="application/ld+json" suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-      <script
-        type="application/ld+json" suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <NewsPageClient post={post} related={related} />
     </>

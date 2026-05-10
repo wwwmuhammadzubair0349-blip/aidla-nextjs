@@ -6,6 +6,7 @@
 import { notFound }       from "next/navigation";
 import { serverFetch }    from "@/lib/supabaseServer";
 import BlogPostClient     from "./BlogPostClient";
+import { buildGraph, buildArticleSchema, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 export const revalidate = 60;
 
@@ -110,51 +111,31 @@ export default async function BlogPostPage({ params }) {
 
   const canonical = `${SITE_URL}/blogs/${slug}`;
 
-  /* ── JSON-LD: Article + BreadcrumbList ── */
-  const articleSchema = {
-    "@context":    "https://schema.org",
-    "@type":       "BlogPosting",
-    headline:      post.title,
-    description:   post.excerpt || "",
-    url:           canonical,
-    datePublished: post.published_at,
-    dateModified:  post.updated_at || post.published_at,
-    image: post.cover_image_url
-      ? { "@type": "ImageObject", url: post.cover_image_url, width: 1200, height: 630 }
-      : { "@type": "ImageObject", url: OG_IMAGE, width: 1200, height: 630 },
-    keywords:      (post.tags || []).join(", "),
-    inLanguage:    "en",
-    speakable: {
-      "@type": "SpeakableSpecification",
-      cssSelector: ["h1", ".article-lead", "article h2:first-of-type"],
-    },
-    publisher: { "@id": `${SITE_URL}/#organization` },
-    author: { "@id": `${SITE_URL}/#founder` },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id":   canonical,
-    },
-  };
-
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type":    "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home",     item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Insights", item: `${SITE_URL}/blogs` },
-      { "@type": "ListItem", position: 3, name: post.title, item: canonical },
-    ],
-  };
+  const jsonLd = buildGraph(
+    buildWebPageSchema({ path: `/blogs/${slug}`, name: post.title, description: post.excerpt || "" }),
+    buildBreadcrumbSchema(
+      [{ name: "Home", url: "/" }, { name: "Insights", url: "/blogs" }, { name: post.title, url: `/blogs/${slug}` }],
+      `/blogs/${slug}`,
+    ),
+    buildArticleSchema({
+      slug,
+      title:       post.title,
+      description: post.excerpt || "",
+      image:       post.cover_image_url
+        ? { "@type": "ImageObject", url: post.cover_image_url, width: 1200, height: 630 }
+        : undefined,
+      datePublished:      post.published_at,
+      dateModified:       post.updated_at || post.published_at,
+      keywords:           (post.tags || []).join(", ") || undefined,
+      speakableSelectors: ["h1", ".article-lead", "article h2:first-of-type"],
+    }),
+  );
 
   return (
     <>
       <script
         type="application/ld+json" suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-      <script
-        type="application/ld+json" suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <BlogPostClient
         initialPost={post}

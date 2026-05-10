@@ -1,7 +1,7 @@
 ﻿// app/tools/page.jsx — Updated tools home (AI + Career tools only)
 import { Suspense } from "react";
 import ToolsClient from "./ToolsClient";
-import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
+import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema, buildSoftwareSchema } from "@/lib/schemas";
 
 export const metadata = {
   title: "Free AI powered Career Tools Email Writer, CV Maker, Cover Letter & More",
@@ -23,6 +23,7 @@ const pageSchema = buildGraph(
     [{ name: "Home", url: "/" }, { name: "Free Tools", url: "/tools" }],
     "/tools",
   ),
+  buildSoftwareSchema(),
   {
     "@type": "ItemList",
     "@id": "https://www.aidla.online/tools#tool-list",

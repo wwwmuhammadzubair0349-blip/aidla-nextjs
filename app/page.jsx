@@ -291,29 +291,6 @@ export default async function Home() {
     buildHowToSchema(STEPS.map((s) => ({ title: s.title, text: s.text }))),
     buildFAQSchema(faqs),
     buildEducationalOrgSchema(),
-    buildItemListSchema({
-      id: "site-sections",
-      name: "AIDLA public and learner sections",
-      items: [
-        { name: "Courses",     url: "/courses" },
-        { name: "Daily Quizz", url: "/user/dailyquizz" },
-        { name: "AI Tools",    url: "/tools" },
-        { name: "Leaderboard", url: "/leaderboard" },
-        { name: "Resources",   url: "/resources" },
-        { name: "News",        url: "/news" },
-        { name: "FAQs",        url: "/faqs" },
-      ],
-    }),
-    dailyWinners.length
-      ? buildItemListSchema({
-          id: "daily-quiz-winners",
-          name: `AIDLA Daily Quizz Winners - ${winnerDate}`,
-          items: dailyWinners.map((w) => ({
-            name: w.full_name || "AIDLA Learner",
-            url: "/user/dailyquizz",
-          })),
-        })
-      : null,
   );
 
   async function submitNewsletter(formData) {

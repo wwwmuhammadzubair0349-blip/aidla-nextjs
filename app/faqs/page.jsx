@@ -1,10 +1,11 @@
 ﻿// app/faqs/page.jsx
 import { serverFetch } from "@/lib/supabaseServer";
 import FaqsClient      from "./FaqsClient";
+import { buildGraph, buildFAQSchema, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 export const revalidate = 60;
 
-const SITE_URL = "https://www.aidla.online";
+const SITE_URL = "https://www.aidla.online"; // used in metadata only
 
 /* ── SEO Metadata ── */
 export const metadata = {
@@ -59,39 +60,29 @@ export default async function FAQsPage({ searchParams }) {
     filteredFaqs = safeFaqs.filter(f => f.category === initialCat);
   }
 
-  /* ── JSON-LD: FAQPage — answer HTML stripped for clean schema text ── */
-  const structuredData = {
-    "@context":   "https://schema.org",
-    "@type":      "FAQPage",
-    mainEntity:   safeFaqs.map(f => ({
-      "@type": "Question",
-      name:    f.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text:    f.answer.replace(/<[^>]+>/g, "").trim(),
-      },
-    })),
-  };
-
-  /* ── JSON-LD: BreadcrumbList ── */
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type":    "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "FAQs", item: `${SITE_URL}/faqs` },
-    ],
-  };
+  const jsonLd = buildGraph(
+    buildWebPageSchema({
+      path: "/faqs",
+      name: "Frequently Asked Questions — AIDLA Pakistan Education Platform",
+      description: "Find answers to the most common questions about AIDLA — earn coins, tests, lucky draw, withdrawals, and Pakistan education system.",
+    }),
+    buildBreadcrumbSchema(
+      [{ name: "Home", url: "/" }, { name: "FAQs", url: "/faqs" }],
+      "/faqs",
+    ),
+    buildFAQSchema(
+      safeFaqs.map(f => ({
+        question: f.question,
+        answer:   f.answer.replace(/<[^>]+>/g, "").trim(),
+      }))
+    ),
+  );
 
   return (
     <>
       <script
         type="application/ld+json" suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-      <script
-        type="application/ld+json" suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <FaqsClient
         initialFaqs={filteredFaqs}

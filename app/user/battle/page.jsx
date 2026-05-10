@@ -323,10 +323,12 @@ export default function BattlePage() {
       setQIndex(next);
       setSelected(null);
       setFeedback(null);
-      setHintsUsed(0);
+      // DO NOT reset hintsUsed — price persists per round
       setEliminated([]);
       submitLock.current = false;
-      startTimer(30);
+      const curDiff = room?.[`round${currentRound}_difficulty`];
+      const secPerQ = curDiff === "hard" ? 10 : curDiff === "easy" ? 15 : 12;
+      startTimer(secPerQ);
     }
   }
 
@@ -391,13 +393,13 @@ export default function BattlePage() {
     await supabase.from("users_transactions").insert({
       txn_no: txnNo+"-U", user_id: user.id,
       user_email: profile?.email || user.email,
-      txn_type: "battle_hint", direction: "out", amount: cost,
+      txn_type: "battle_hint", direction: "OUT", amount: cost,
       balance_before: profile?.total_aidla_coins || 0,
       balance_after: newBal,
       note: "Battle hint used",
     });
     await supabase.from("admin_pool_transactions").insert({
-      txn_no: txnNo+"-A", txn_type: "battle_hint", direction: "in", amount: cost,
+      txn_no: txnNo+"-A", txn_type: "battle_hint", direction: "IN", amount: cost,
       admin_email: "system@battle",
       target_user_id: user.id,
       target_user_email: profile?.email || user.email,
@@ -716,7 +718,7 @@ export default function BattlePage() {
           </div>
 
           {/* Hint button */}
-          {!feedback && hintsUsed < 3 && (
+          {!feedback && hintsUsed < HINT_COSTS.length && (
             <button style={S.hintBtn} onClick={useHint}>
               💡 Hint #{hintsUsed+1} — costs {HINT_COSTS[Math.min(hintsUsed, HINT_COSTS.length-1)]}🪙 (eliminates 1 wrong option)
             </button>

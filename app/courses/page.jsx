@@ -2,6 +2,7 @@
 import { Suspense } from "react";
 import { serverFetch } from "@/lib/supabaseServer";
 import CoursesClient from "./CoursesClient";
+import { buildEducationalOrgSchema } from "@/lib/schemas";
 
 export const revalidate = 60;
 
@@ -125,6 +126,7 @@ export default async function CoursesPage({ searchParams }) {
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(buildEducationalOrgSchema()) }} />
 
       <Suspense fallback={<CoursesPageSkeleton />}>
         <CoursesClient 

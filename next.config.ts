@@ -13,7 +13,6 @@ const nextConfig: NextConfig = {
       "date-fns",
       "@radix-ui/react-icons",
     ],
-    // Prevents legacy polyfills for modern targets
     optimisticClientCache: true,
   },
 
@@ -23,13 +22,19 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60 * 60 * 24 * 365,
     dangerouslyAllowSVG: false,
+
+    // ── FIX 1: Allow ANY https domain for course thumbnails ──
+    // You're storing random internet URLs in DB — this allows all of them.
+    // Once you migrate to Supabase Storage, tighten this back down.
     remotePatterns: [
+      // Supabase storage (your own uploads)
       {
         protocol: "https",
         hostname: "*.supabase.co",
         port: "",
         pathname: "/storage/v1/object/public/**",
       },
+      // Stock photo sites
       {
         protocol: "https",
         hostname: "images.pexels.com",
@@ -39,6 +44,88 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
+      // Common CDN / image hosts people paste randomly
+      {
+        protocol: "https",
+        hostname: "i.imgur.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.pixabay.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "blogger.googleusercontent.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.googleapis.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.cloudinary.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.freepik.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "img.freepik.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "media.istockphoto.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "plus.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
+      // ── WILDCARD FALLBACK for everything else ──
+      // This is the key fix — allows ANY https image URL.
+      // Safe for a learning platform where you control the DB.
+      {
+        protocol: "https",
+        hostname: "**",
         port: "",
         pathname: "/**",
       },
@@ -64,7 +151,6 @@ const nextConfig: NextConfig = {
         source: "/api/(.*)",
         headers: [{ key: "Cache-Control", value: "no-store, no-cache" }],
       },
-      // Security headers for all routes
       {
         source: "/(.*)",
         headers: [
@@ -76,16 +162,19 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=(self), interest-cohort=()",
           },
-          // CSP (Content Security Policy) – tighten as needed
+          // ── FIX 2: CSP img-src now allows ALL https sources ──
+          // Before: only supabase + pexels + unsplash → everything else blocked
+          // After:  https: wildcard allows any https image URL from your DB
           {
             key: "Content-Security-Policy",
             value:
               "default-src 'self'; " +
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; " +
               "style-src 'self' 'unsafe-inline'; " +
-              "img-src 'self' data: https://*.supabase.co https://images.pexels.com https://images.unsplash.com; " +
+              // KEY CHANGE: was specific domains, now https: allows all https image sources
+              "img-src 'self' data: blob: https:; " +
               "font-src 'self'; " +
-              "connect-src 'self' https://*.supabase.co; " +
+              "connect-src 'self' https://*.supabase.co https://api.anthropic.com; " +
               "frame-ancestors 'none';" +
               (isProduction ? " upgrade-insecure-requests;" : ""),
           },
@@ -97,23 +186,19 @@ const nextConfig: NextConfig = {
                 },
               ]
             : []),
-          // Cross-Origin Opener Policy
           { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         ],
       },
     ];
   },
 
-  // Enable compression
   compress: true,
-
-  // Remove X-Powered-By
   poweredByHeader: false,
 };
 
 export default nextConfig;
 
-// Dev‑only cloudflare adapter (unchanged)
+// Dev-only Cloudflare adapter
 if (process.env.NODE_ENV !== "production") {
   import("@opennextjs/cloudflare")
     .then((m) => m.initOpenNextCloudflareForDev())

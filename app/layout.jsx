@@ -18,7 +18,7 @@ const dmSans = localFont({
     { path: "../public/fonts/DMSans-Bold.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-dm-sans",
-  display: "optional",
+  display: "swap",
   fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
 });
 
@@ -28,7 +28,7 @@ const playfairDisplay = localFont({
     { path: "../public/fonts/PlayfairDisplay-ExtraBold.woff2", weight: "900", style: "normal" },
   ],
   variable: "--font-playfair",
-  display: "optional",
+  display: "swap",
   fallback: ["Georgia", "serif"],
 });
 
@@ -39,7 +39,7 @@ const notoUrdu = localFont({
     { path: "../public/fonts/NotoNastaliqUrdu-Bold.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-urdu",
-  display: "optional",
+  display: "swap",
   fallback: ["serif"],
 });
 
@@ -160,22 +160,6 @@ export default function RootLayout({ children }) {
         {/* ══ PERFORMANCE — Critical Hints (only what’s needed) ══ */}
         <link rel="dns-prefetch" href="//static.cloudflareinsights.com" />
         {/* No more fonts.googleapis.com – we’re self‑hosted */}
-
-        {/* ── SELF‑HOSTED FONT PRELOAD ── */}
-        <link
-          rel="preload"
-          href="/fonts/DMSans-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/PlayfairDisplay-Bold.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
 
         {/* ── PWA / App Manifest ── */}
         <link rel="manifest" href="/manifest.json" />

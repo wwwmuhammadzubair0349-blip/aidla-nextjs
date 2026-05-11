@@ -2,7 +2,6 @@
 import { Suspense } from "react";
 import { serverFetch } from "@/lib/supabaseServer";
 import CoursesClient from "./CoursesClient";
-import { buildEducationalOrgSchema } from "@/lib/schemas";
 
 export const revalidate = 60;
 
@@ -126,7 +125,6 @@ export default async function CoursesPage({ searchParams }) {
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(buildEducationalOrgSchema()) }} />
 
       <Suspense fallback={<CoursesPageSkeleton />}>
         <CoursesClient 
@@ -142,15 +140,17 @@ export default async function CoursesPage({ searchParams }) {
 
 function CoursesPageSkeleton() {
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#f0f4ff 0%,#fffbf0 55%,#e8f4fd 100%)", fontFamily: "'DM Sans',sans-serif" }}>
-      <div style={{ padding: "80px 24px 64px", textAlign: "center", maxWidth: 700, margin: "0 auto" }}>
-        <div style={{ height: 22, width: 180, borderRadius: 30, background: "#e2e8f0", margin: "0 auto 20px" }} />
-        <div style={{ height: 52, width: "80%", borderRadius: 10, background: "#e2e8f0", margin: "0 auto 14px" }} />
-        <div style={{ height: 20, width: "60%", borderRadius: 8, background: "#e2e8f0", margin: "0 auto" }} />
+    <div style={{ minHeight: "100vh", background: "#fffbeb", fontFamily: "'DM Sans',sans-serif" }}>
+      <div style={{ background: "linear-gradient(135deg,#fffbeb 0%,#fef3c7 55%,#fde68a 100%)", borderBottom: "1px solid #f0c96a", padding: "48px 24px 40px", textAlign: "center" }}>
+        <div style={{ maxWidth: 700, margin: "0 auto" }}>
+          <div style={{ height: 22, width: 200, borderRadius: 999, background: "rgba(15,23,42,0.1)", margin: "0 auto 20px" }} />
+          <div style={{ height: 50, width: "80%", borderRadius: 10, background: "rgba(15,23,42,0.1)", margin: "0 auto 14px" }} />
+          <div style={{ height: 20, width: "60%", borderRadius: 8, background: "rgba(15,23,42,0.08)", margin: "0 auto" }} />
+        </div>
       </div>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 20 }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 24px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 18 }}>
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} style={{ height: 320, borderRadius: 20, background: "linear-gradient(90deg,#e8edf5 25%,#dde3ee 50%,#e8edf5 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.4s infinite" }} />
+          <div key={i} style={{ height: 320, borderRadius: 20, background: "linear-gradient(90deg,#fef3c7 25%,#fde68a 50%,#fef3c7 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.4s infinite" }} />
         ))}
       </div>
       <style>{`@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}`}</style>

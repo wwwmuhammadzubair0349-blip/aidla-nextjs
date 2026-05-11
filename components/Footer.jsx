@@ -59,6 +59,7 @@ export default function Footer() {
     { label: "Terms of Use",   href: "/terms" },
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Contact Us",     href: "/contact" },
+    { label: "Careers",        href: "/careers" },
   ];
 
   // Original CSS with Gold/Yellow colors restored
@@ -116,14 +117,13 @@ export default function Footer() {
       margin-bottom: 10px;
     }
 
-    /* 🟡 RESTORED ORIGINAL YELLOW BACKGROUND */
     .ft-logo-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 34px;
       height: 34px;
-      background: linear-gradient(135deg, var(--ft-gold), #fcd34d);
+      background: transparent;
       border-radius: 7px;
       font-size: 1.1rem;
     }

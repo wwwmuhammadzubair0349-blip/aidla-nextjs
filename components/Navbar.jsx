@@ -109,7 +109,7 @@ const NAV_CSS = `
   color: #64748b;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  display: none;
+  display: block;
 }
 
 /* ── DESKTOP NAV ── */
@@ -346,9 +346,6 @@ const NAV_CSS = `
 .nav2-skip:focus { top: 0; }
 
 /* ── RESPONSIVE ── */
-@media (min-width: 480px) {
-  .nav2-logo-full { display: block; }
-}
 @media (min-width: 900px) { /* Shifted from 768 to 900 to ensure enough space for nav items */
   .nav2-inner { height: 72px; padding: 0 24px; }
   .nav2-desktop { display: flex; }
@@ -531,6 +528,7 @@ export default function Navbar() {
             aria-controls="nav2-mobile-menu"
             aria-haspopup="true"
             type="button"
+            suppressHydrationWarning
           >
             <span aria-hidden="true" />
             <span aria-hidden="true" />

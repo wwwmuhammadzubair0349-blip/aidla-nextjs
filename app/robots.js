@@ -14,8 +14,6 @@ export default function robots() {
           "/admin/",
           "/user/",
           "/api/",
-          "/signup",
-          "/login",
           "/forgot-password",
           "/reset-password",
           "/email-confirmed",

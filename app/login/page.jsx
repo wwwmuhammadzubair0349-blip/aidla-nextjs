@@ -4,7 +4,7 @@ import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/sch
 
 export const metadata = {
   title: "Login to AIDLA — Courses, AI Tools, Rewards & Career Growth",
-  description: "Sign in to AIDLA to continue courses, AI tools, career resources, quizzes, certificates, AIDLA Coins, rewards and professional learning.",
+  description: "Sign in to AIDLA to continue your courses, use AI tools, access career resources, quizzes, certificates, AIDLA Coins, rewards and professional learning.",
   openGraph: {
     title: "Login to AIDLA — Courses, AI Tools & Rewards",
     description: "Sign in to continue learning, using AI tools, building career resources and earning rewards.",

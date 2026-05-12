@@ -5,17 +5,16 @@ import { buildGraph, buildFAQSchema, buildWebPageSchema, buildBreadcrumbSchema }
 
 export const revalidate = 60;
 
-const SITE_URL = "https://www.aidla.online"; // used in metadata only
+const SITE_URL = "https://www.aidla.online";
 
-/* -- SEO Metadata -- */
 export const metadata = {
-  title:       "AIDLA FAQs � Courses, AI Tools, Rewards & Career Help",
-  description: "Find answers about AIDLA courses, AI tools, career resources, quizzes, rewards, AIDLA Coins, accounts, withdrawals, learning and professional growth.",
+  title:       "AIDLA FAQs – Courses, AI Tools, Rewards & Career Help",
+  description: "Find answers about AIDLA courses, AI tools, career resources, quizzes, rewards, AIDLA Coins, accounts, withdrawals, professional learning and career growth.",
   keywords:    ["AIDLA FAQ", "AIDLA questions", "AI tools help", "online courses FAQ", "career tools FAQ", "AIDLA coins help"],
   robots:      { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1 } },
   alternates:  { canonical: `${SITE_URL}/faqs` },
   openGraph: {
-    title:       "FAQs � AIDLA",
+    title:       "FAQs – AIDLA",
     description: "Find answers to the most common questions about AIDLA.",
     url:         `${SITE_URL}/faqs`,
     siteName:    "AIDLA",
@@ -25,25 +24,13 @@ export const metadata = {
   },
   twitter: {
     card:        "summary_large_image",
-    title:       "FAQs � AIDLA",
+    title:       "FAQs – AIDLA",
     description: "Find answers to the most common questions about AIDLA.",
     images:      [`${SITE_URL}/og-home.jpg`],
   },
 };
 
-export default async function FAQsPage({ searchParams }) {
-  // ? FIXED: Safely handle searchParams � can be undefined when bots hit /faqs directly
-  let initialCat = "all";
-
-  try {
-    const params = searchParams ? await searchParams : {};
-    initialCat = params?.cat || "all";
-  } catch (e) {
-    // If searchParams fails, use default � don't block the page
-    console.warn("Failed to parse searchParams:", e);
-    initialCat = "all";
-  }
-
+export default async function FAQsPage() {
   const { data: faqs, error } = await serverFetch("faqs", {
     select:        "*",
     "status":      "eq.published",
@@ -54,17 +41,11 @@ export default async function FAQsPage({ searchParams }) {
   const safeFaqs   = faqs   || [];
   const fetchError = !!error;
 
-  // Filter FAQs by category on server for SEO
-  let filteredFaqs = safeFaqs;
-  if (initialCat !== "all") {
-    filteredFaqs = safeFaqs.filter(f => f.category === initialCat);
-  }
-
   const jsonLd = buildGraph(
     buildWebPageSchema({
       path: "/faqs",
-      name: "AIDLA FAQs � Courses, AI Tools, Rewards & Career Help",
-      description: "Find answers about AIDLA courses, AI tools, career resources, quizzes, rewards, AIDLA Coins, accounts, withdrawals, learning and professional growth.",
+      name: "AIDLA FAQs – Courses, AI Tools, Rewards & Career Help",
+      description: "Find answers about AIDLA courses, AI tools, career resources, quizzes, rewards, AIDLA Coins, accounts, withdrawals, professional learning and career growth.",
     }),
     buildBreadcrumbSchema(
       [{ name: "Home", url: "/" }, { name: "FAQs", url: "/faqs" }],
@@ -85,9 +66,9 @@ export default async function FAQsPage({ searchParams }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <FaqsClient
-        initialFaqs={filteredFaqs}
+        initialFaqs={safeFaqs}
         fetchError={fetchError}
-        initialCat={initialCat}
+        initialCat="all"
       />
     </>
   );

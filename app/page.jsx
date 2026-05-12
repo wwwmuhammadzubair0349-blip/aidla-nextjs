@@ -17,7 +17,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: "AIDLA - Pakistan #1 AI Powered Learning Platform",
   description:
-    "AIDLA is Pakistan's #1 AI powered learning platform for global learners, students, professionals, freshers, career switchers, AI tools, courses, quizzes, rewards, CVs and cover letters.",
+    "AIDLA is Pakistan's #1 AI learning platform. Free courses, AI tools, quizzes, AIDLA Coins, rewards, CV builder and cover letter maker for global learners.",
   keywords: [
     "AIDLA","Pakistan #1 AI powered learning platform","global AI learning platform",
     "online courses","AI tools","career tools","career switching","freshers CV builder",

@@ -17,7 +17,7 @@ export const metadata = {
   robots: { index: true, follow: true, "max-image-preview": "large" },
   alternates: { canonical: `${SITE_URL}/resources` },
   openGraph: {
-    title: "Free Study & Career Resources � AIDLA",
+    title: "Free Study & Career Resources – AIDLA",
     description: "Download free notes, PDFs, thesis, books, templates and career resources organized by subject and level.",
     type: "website",
     url: `${SITE_URL}/resources`,
@@ -27,57 +27,37 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Study & Career Resources � AIDLA",
+    title: "Free Study & Career Resources – AIDLA",
     description: "Download free notes, PDFs, thesis, books, templates and career resources.",
     images:[`${SITE_URL}/og-home.jpg`],
   },
 };
 
-export default async function ResourcesPage({ searchParams }) {
-  // Safely handle searchParams
-  let q = "";
-  let category = "";
-  let subject = "";
-  let university = "";
-  let class_level = "";
-  let year = "";
-  let page = 1;
-
-  if (searchParams) {
-    const params = await searchParams;
-    q = params?.q || "";
-    category = params?.category || "";
-    subject = params?.subject || "";
-    university = params?.university || "";
-    class_level = params?.class || "";
-    year = params?.year || "";
-    page = parseInt(params?.page) || 1;
-  }
-
+export default async function ResourcesPage() {
   const [{ data: materialsData }, { data: optionsData }] = await Promise.all([
     serverRpc("study_materials_public_list", {
-      p_search: q || null,
-      p_category: category || null,
-      p_subject: subject || null,
-      p_class_level: class_level || null,
-      p_university: university || null,
-      p_year: year || null,
-      p_limit: 12,
-      p_offset: (page - 1) * 12,
+      p_search:      null,
+      p_category:    null,
+      p_subject:     null,
+      p_class_level: null,
+      p_university:  null,
+      p_year:        null,
+      p_limit:       12,
+      p_offset:      0,
     }),
     serverRpc("study_materials_filter_options"),
   ]);
 
   const initialMaterials = materialsData || [];
-  const initialTotal = materialsData?.[0]?.total_count || 0;
-  const initialOptions = optionsData || { subjects: [], universities:[], classes: [], years:[] };
+  const initialTotal     = materialsData?.[0]?.total_count || 0;
+  const initialOptions   = optionsData || { subjects: [], universities: [], classes: [], years: [] };
 
   const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "@id": `${SITE_URL}/resources${category ? `?category=${category}` : ""}`,
+    "@id": `${SITE_URL}/resources`,
     url: `${SITE_URL}/resources`,
-    name: `Free Study Materials ${category ? `- ${category.toUpperCase()}` : "� Notes, Past Papers & Books"}`,
+    name: "Free Study Materials – Notes, Past Papers & Books",
     description: "Free study and career materials including notes, PDFs, thesis, templates, books, and professional learning resources.",
     isPartOf: { "@id": `${SITE_URL}/#website` },
     inLanguage: "en",

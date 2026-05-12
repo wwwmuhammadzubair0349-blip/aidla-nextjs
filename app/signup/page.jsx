@@ -3,8 +3,8 @@ import SignupClient from "./SignupClient";
 import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 export const metadata = {
-  title: "Create Free AIDLA Account — Learn, Use AI Tools & Earn Rewards",
-  description: "Join AIDLA for free to access courses, AI tools, career resources, CVs, cover letters, quizzes, certificates, AIDLA Coins and rewards.",
+  title: "Create Your Free AIDLA Account – Courses, AI Tools & Rewards",
+  description: "Create a free AIDLA account to access courses, AI tools, career resources, CV builder, cover letter maker, quizzes, certificates, AIDLA Coins and rewards.",
   openGraph: {
     title: "Create Free AIDLA Account — Courses, AI Tools & Rewards",
     description: "Join AIDLA to access courses, AI tools, career resources, quizzes, certificates and rewards.",
@@ -37,8 +37,8 @@ export const metadata = {
 const schema = buildGraph(
   buildWebPageSchema({
     path: "/signup",
-    name: "Create Free AIDLA Account — Learn, Use AI Tools & Earn Rewards",
-    description: "Join AIDLA for free to access courses, AI tools, career resources, CVs, cover letters, quizzes, certificates, AIDLA Coins and rewards.",
+    name: "Create Your Free AIDLA Account – Courses, AI Tools & Rewards",
+    description: "Create a free AIDLA account to access courses, AI tools, career resources, CV builder, cover letter maker, quizzes, certificates, AIDLA Coins and rewards.",
   }),
   buildBreadcrumbSchema(
     [{ name: "Home", url: "/" }, { name: "Sign Up", url: "/signup" }],

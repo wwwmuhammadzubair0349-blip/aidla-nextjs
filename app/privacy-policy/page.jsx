@@ -4,7 +4,7 @@ const SITE_URL = "https://www.aidla.online";
 
 export const metadata = {
   title: "Privacy Policy | AIDLA – Your Data, Our Commitment",
-  description: "AIDLA's Privacy Policy explains how we collect, use, and protect your personal information. Learn about your rights and our data practices.",
+  description: "AIDLA's Privacy Policy explains how we collect, use, store and protect your personal data. Learn about your rights, cookies, data sharing and our practices.",
   keywords: ["AIDLA privacy policy", "data protection", "user rights", "cookies", "information collection", "Pakistan edtech"],
   robots: { index: true, follow: true },
   alternates: { canonical: `${SITE_URL}/privacy-policy` },

@@ -1,13 +1,41 @@
 import Link from "next/link";
 import { SITE } from "@/lib/siteConfig";
+import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 const SITE_URL = SITE.url;
 
 export const metadata = {
   title: "Careers at AIDLA | Build AI Learning & Career Tools",
-  description: "Join AIDLA and help build Pakistan's #1 AI powered learning platform for global courses, career tools, mentoring, rewards, and professional growth.",
+  description: "Join AIDLA and help build Pakistan's #1 AI learning platform. Work on courses, AI tools, career resources, rewards and mentoring. Apply now.",
+  robots: { index: true, follow: true },
   alternates: { canonical: `${SITE_URL}/careers` },
+  openGraph: {
+    title: "Careers at AIDLA – Build the Future of Free AI Learning",
+    description: "Join AIDLA and help build Pakistan's #1 AI learning platform. Work on courses, AI tools, career resources and rewards.",
+    type: "website",
+    url: `${SITE_URL}/careers`,
+    siteName: "AIDLA",
+    images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "Careers at AIDLA" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Careers at AIDLA – Build AI Learning & Career Tools",
+    description: "Join AIDLA and work on courses, AI tools, career resources and rewards.",
+    images: [`${SITE_URL}/og-home.jpg`],
+  },
 };
+
+const schema = buildGraph(
+  buildWebPageSchema({
+    path: "/careers",
+    name: "Careers at AIDLA | Build AI Learning & Career Tools",
+    description: "Join AIDLA and help build Pakistan's #1 AI learning platform. Work on courses, AI tools, career resources, rewards and mentoring. Apply now.",
+  }),
+  buildBreadcrumbSchema(
+    [{ name: "Home", url: "/" }, { name: "Careers", url: "/careers" }],
+    "/careers",
+  ),
+);
 
 const WHY = [
   { icon: "🎯", title: "Real Impact", desc: "Your work helps learners, freshers, professionals, and career switchers access free education and career tools." },
@@ -20,6 +48,8 @@ const WHY = [
 
 export default function CareersPage() {
   return (
+    <>
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
     <main>
       <style>{CSS}</style>
       <div className="cr-root">
@@ -93,6 +123,7 @@ export default function CareersPage() {
 
       </div>
     </main>
+    </>
   );
 }
 

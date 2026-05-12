@@ -1,11 +1,12 @@
 import CvBuilderClient from "./CvBuilderClient";
+import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 const SITE_URL = "https://www.aidla.online";
 
 export const metadata = {
   title: "Free AI CV Builder for Freshers & Professionals | AIDLA",
   description:
-    "Build an ATS-ready CV for freshers, job seekers, professionals and career switchers. AI writing, 17 templates, instant PDF download. Free forever.",
+    "Build an ATS-ready CV for freshers, job seekers, professionals and career switchers. AI writing, 17 templates, instant PDF download and LinkedIn export. Free.",
   alternates: { canonical: `${SITE_URL}/tools/career/cv-maker` },
   openGraph: {
     title: "Free AI CV Builder for Freshers & Professionals | AIDLA",
@@ -25,6 +26,23 @@ export const metadata = {
   },
 };
 
+const schema = buildGraph(
+  buildWebPageSchema({
+    path: "/cv-builder",
+    name: "Free AI CV Builder for Freshers & Professionals | AIDLA",
+    description: "Build an ATS-ready CV for freshers, job seekers, professionals and career switchers. AI writing, 17 templates, instant PDF download and LinkedIn export. Free.",
+  }),
+  buildBreadcrumbSchema(
+    [{ name: "Home", url: "/" }, { name: "CV Builder", url: "/cv-builder" }],
+    "/cv-builder",
+  ),
+);
+
 export default function CvBuilderPage() {
-  return <CvBuilderClient />;
+  return (
+    <>
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <CvBuilderClient />
+    </>
+  );
 }

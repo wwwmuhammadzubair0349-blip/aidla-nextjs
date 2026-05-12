@@ -17,13 +17,13 @@ function toSlug(title = "") {
 export const metadata = {
   title: "Online Courses for AI, Data, Career & Startup Skills | AIDLA",
   description:
-    "Explore AI, data analytics, AI engineering, medical, power electronics, career switching, startup, mentoring and professional courses from school to master level.",
+    "Explore AI, data analytics, engineering, medical, career switching and mentoring courses on AIDLA. Learn from school to master level, all free.",
   keywords:
     "AIDLA courses, online courses, AI for beginners, AI engineer course, data analytics, medical courses, power electronics, career switching, startup advice, career mentoring, certificates",
   robots: { index: true, follow: true },
   alternates: { canonical: `${SITE_URL}/courses` },
   openGraph: {
-    title: "Online Courses for AI, Data, Career & Startup Skills � AIDLA",
+    title: "Online Courses for AI, Data, Career & Startup Skills – AIDLA",
     description:
       "Browse courses for students, freshers, professionals, career switchers, founders and lifelong learners.",
     type: "website",
@@ -33,7 +33,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Online Courses for Career Growth � AIDLA",
+    title: "Online Courses for Career Growth – AIDLA",
     description:
       "Browse expert-led courses, earn coins, and get verified certificates on AIDLA.",
     images:[`${SITE_URL}/og-home.jpg`],
@@ -43,22 +43,7 @@ export const metadata = {
 /* ---------------------------------------------
    Page
 --------------------------------------------- */
-export default async function CoursesPage({ searchParams }) {
-  // ? FIXED: Safely handle searchParams � can be undefined when bots hit /courses directly
-  let level = "all";
-  let sort = "newest";
-  let q = "";
-
-  try {
-    const params = searchParams ? await searchParams : {};
-    level = params?.level || "all";
-    sort = params?.sort || "newest";
-    q = params?.q || "";
-  } catch (e) {
-    // If searchParams fails, use defaults � don't block the page
-    console.warn("Failed to parse searchParams:", e);
-  }
-
+export default async function CoursesPage() {
   const { data: coursesData } = await serverFetch("course_courses", {
     select: "*",
     "status": "eq.published",
@@ -67,37 +52,14 @@ export default async function CoursesPage({ searchParams }) {
 
   const courses = coursesData || [];
 
-  // Filter courses on server for SEO
-  let filteredCourses = courses;
-  if (level !== "all") {
-    filteredCourses = courses.filter(c => c.level === level || c.difficulty === level);
-  }
-  if (q.trim()) {
-    const query = q.toLowerCase();
-    filteredCourses = filteredCourses.filter(c =>
-      c.title.toLowerCase().includes(query) ||
-      c.description?.toLowerCase().includes(query) ||
-      c.subject?.toLowerCase().includes(query)
-    );
-  }
-
-  // Sort
-  if (sort === "newest") {
-    filteredCourses.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  } else if (sort === "oldest") {
-    filteredCourses.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-  } else if (sort === "title") {
-    filteredCourses.sort((a, b) => a.title.localeCompare(b.title));
-  }
-
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `AIDLA Online Courses ${level !== "all" ? `- ${level.toUpperCase()}` : ""}`,
+    name: "AIDLA Online Courses",
     description: "Online courses on AIDLA for AI, data analytics, medical fields, power electronics, career switching, startup skills, mentoring, certificates and rewards.",
-    url: `${SITE_URL}/courses${level !== "all" ? `?level=${level}` : ""}`,
-    itemListElement: filteredCourses
-      .slice(0, 15) // Limit to 15 for schema
+    url: `${SITE_URL}/courses`,
+    itemListElement: courses
+      .slice(0, 15)
       .map((c, i) => ({
       "@type": "ListItem",
       position: i + 1,
@@ -110,7 +72,6 @@ export default async function CoursesPage({ searchParams }) {
       },
     })),
   };
-
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -128,10 +89,10 @@ export default async function CoursesPage({ searchParams }) {
 
       <Suspense fallback={<CoursesPageSkeleton />}>
         <CoursesClient
-          initialCourses={filteredCourses}
-          initialLevel={level}
-          initialSort={sort}
-          initialSearch={q}
+          initialCourses={courses}
+          initialLevel="all"
+          initialSort="newest"
+          initialSearch=""
         />
       </Suspense>
     </>

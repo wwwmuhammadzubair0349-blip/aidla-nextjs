@@ -14,12 +14,12 @@ const OG_IMAGE    = `${SITE_URL}/og-home.jpg`;
 
 /* ── SEO Metadata ── */
 export const metadata = {
-  title:       "AIDLA Insights – Educational Blog & Updates",
-  description: "Explore AIDLA's blog for learning strategies, platform updates, and tips to earn more coins. Stay informed and maximize your experience.",
+  title:       "AIDLA Blog – AI Learning, Career Tips & Platform Updates",
+  description: "Explore AIDLA's blog for learning strategies, AI tips, platform updates, and guides to earn more AIDLA Coins. Stay informed and grow your skills today.",
   keywords:    ["AIDLA blog", "educational insights", "learning tips", "platform updates", "Pakistan edtech"],
   alternates:  { canonical: CANONICAL_URL },
   openGraph: {
-    title:       "AIDLA Insights – Educational Blog",
+    title:       "AIDLA Blog – AI Learning, Career Tips & Platform Updates",
     description: "Learn, earn, and stay updated with AIDLA's official blog.",
     url:         CANONICAL_URL,
     siteName:    "AIDLA",
@@ -34,22 +34,7 @@ export const metadata = {
   },
 };
 
-export default async function BlogsPage({ searchParams }) {
-  // ✅ FIXED: Safely handle searchParams — can be undefined when accessed directly
-  let tag = "all";
-  let cat = "all";
-  let q = "";
-  
-  try {
-    const params = searchParams ? await searchParams : {};
-    tag = params?.tag || "all";
-    cat = params?.cat || "all";
-    q = params?.q || "";
-  } catch (e) {
-    // If searchParams fails, use defaults — don't block the page
-    console.warn("Failed to parse searchParams:", e);
-  }
-
+export default async function BlogsPage() {
   const { data: posts, error } = await serverFetch("blogs_posts", {
     select:       "id,title,slug,excerpt,cover_image_url,published_at,tags,view_count",
     "deleted_at": "is.null",
@@ -59,23 +44,6 @@ export default async function BlogsPage({ searchParams }) {
 
   const safePosts  = posts  || [];
   const fetchError = !!error;
-
-  // Filter posts on server for SEO
-  let filteredPosts = safePosts;
-  if (cat !== "all") {
-    filteredPosts = safePosts.filter(p => (p.tags || []).includes(cat));
-  }
-  if (tag !== "all") {
-    filteredPosts = filteredPosts.filter(p => (p.tags || []).includes(tag));
-  }
-  if (q.trim()) {
-    const query = q.toLowerCase();
-    filteredPosts = filteredPosts.filter(p =>
-      p.title.toLowerCase().includes(query) ||
-      p.excerpt?.toLowerCase().includes(query) ||
-      (p.tags || []).some(t => t.toLowerCase().includes(query))
-    );
-  }
 
   /* ── JSON-LD: Blog + BlogPosting list (mirrors News @graph pattern) ── */
   const structuredData = {
@@ -97,7 +65,7 @@ export default async function BlogsPage({ searchParams }) {
           { "@type": "ListItem", position: 2, name: "Insights", item: CANONICAL_URL },
         ],
       },
-      ...filteredPosts.slice(0, 15).map(post => ({
+      ...safePosts.slice(0, 15).map(post => ({
         "@type":       "BlogPosting",
         headline:      post.title,
         description:   post.excerpt || "",
@@ -117,7 +85,7 @@ export default async function BlogsPage({ searchParams }) {
         type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <BlogsClient initialPosts={filteredPosts} fetchError={fetchError} />
+      <BlogsClient initialPosts={safePosts} fetchError={fetchError} />
     </>
   );
 }

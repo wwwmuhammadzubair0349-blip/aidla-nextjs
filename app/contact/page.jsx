@@ -4,8 +4,8 @@ import ContactClient from "./ContactClient";
 const SITE_URL = "https://www.aidla.online";
 
 export const metadata = {
-  title: "Contact AIDLA — Support, Help & Inquiries",
-  description: "Get in touch with AIDLA support. Ask questions, report issues, or partner with us. We are here to help you learn and earn!",
+  title: "Contact AIDLA – Get Support, Help & Partnership Info",
+  description: "Get in touch with the AIDLA team for support, questions, course help, partnership inquiries or to report issues. We're here to help you learn and earn.",
   keywords: ["AIDLA contact", "support", "help", "customer service", "education platform", "Pakistan"],
   authors: [{ name: "AIDLA" }],
   robots: { index: true, follow: true },

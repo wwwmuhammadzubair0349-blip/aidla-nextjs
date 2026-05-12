@@ -10,7 +10,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: "About AIDLA | Pakistan's #1 AI Powered Learning Platform",
   description:
-    "Learn about AIDLA, Pakistan's #1 AI powered learning platform for global learners, students, professionals, freshers, career switchers, courses, AI tools and rewards.",
+    "Discover AIDLA's story and mission – Pakistan's #1 AI learning platform helping global learners access free courses, AI tools, career resources and rewards.",
   keywords: [
     "About AIDLA", "Pakistan #1 AI powered learning platform",
     "global AI learning platform", "AI courses", "career tools",

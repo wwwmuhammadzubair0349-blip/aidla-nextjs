@@ -3,8 +3,8 @@
 const SITE_URL = "https://www.aidla.online";
 
 export const metadata = {
-  title: "Terms & Conditions | AIDLA – User Agreement",
-  description: "Read AIDLA's Terms and Conditions. Learn about user responsibilities, rewards, prohibited activities, and your legal agreement with our platform.",
+  title: "AIDLA Terms & Conditions – Read Our User Agreement",
+  description: "Read AIDLA's Terms and Conditions. Understand user responsibilities, rewards policy, prohibited activities, withdrawals and your legal agreement with AIDLA.",
   keywords: ["AIDLA terms", "terms and conditions", "user agreement", "legal", "educational platform", "Pakistan"],
   robots: { index: true, follow: true },
   alternates: { canonical: `${SITE_URL}/terms` },

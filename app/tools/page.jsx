@@ -4,12 +4,12 @@ import ToolsClient from "./ToolsClient";
 import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema, buildSoftwareSchema } from "@/lib/schemas";
 
 export const metadata = {
-  title: "Free AI Tools for Writing, Careers, CVs & Productivity | AIDLA",
-  description: "Use free AI tools for email writing, CVs, cover letters, summaries, paraphrasing, LinkedIn bios, interview prep, freshers and career switchers.",
+  title: "Free AI Tools: Email Writer, CV, Cover Letter & More | AIDLA",
+  description: "Use AIDLA's free AI tools for email writing, CV building, cover letters, summarizing, paraphrasing, LinkedIn bios and interview prep. Perfect for freshers.",
   keywords: "free AI tools, AI email writer, AI summarizer, AI paraphraser, LinkedIn bio generator, interview prep, CV maker, cover letter maker, career tools, productivity tools, AIDLA",
   robots: { index: true, follow: true },
   alternates: { canonical: "https://www.aidla.online/tools" },
-  openGraph: { title: "Free AI Tools for Writing, Careers & Productivity | AIDLA", description: "AI Email Writer, CV Maker, Cover Letter, Summarizer, Paraphraser and more. Free for everyone.", type: "website", url: "https://www.aidla.online/tools", siteName: "AIDLA", locale: "en_PK", images: [{ url: "https://www.aidla.online/og-home.jpg", width: 1200, height: 630, alt: "AIDLA Free AI Tools" }] },
+  openGraph: { title: "Free AI Tools: Email Writer, CV, Cover Letter & More | AIDLA", description: "AI Email Writer, CV Maker, Cover Letter, Summarizer, Paraphraser and more. Free for everyone.", type: "website", url: "https://www.aidla.online/tools", siteName: "AIDLA", locale: "en_PK", images: [{ url: "https://www.aidla.online/og-home.jpg", width: 1200, height: 630, alt: "AIDLA Free AI Tools" }] },
   twitter: { card: "summary_large_image", title: "Free AI Tools for Careers & Productivity | AIDLA", images: ["https://www.aidla.online/og-home.jpg"] },
 };
 

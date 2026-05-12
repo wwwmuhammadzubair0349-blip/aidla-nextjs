@@ -1,10 +1,11 @@
 import CoverLetterClient from "./CoverLetterClient";
+import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 const SITE_URL = "https://www.aidla.online";
 
 export const metadata = {
-  title: "Free AI Cover Letter Builder for Jobs & Career Switches | AIDLA",
-  description: "Write ATS-optimized cover letters for freshers, job seekers, professionals and career switchers. AI-powered, role-specific and free forever.",
+  title: "Free AI Cover Letter Builder for Jobs & Careers | AIDLA",
+  description: "Write ATS-optimized cover letters for freshers, job seekers, professionals and career switchers. AI-powered, role-specific, instantly downloadable and free.",
   alternates: { canonical: `${SITE_URL}/tools/career/cover-letter-maker` },
   openGraph: {
     title: "Free AI Cover Letter Builder for Jobs & Career Switches | AIDLA",
@@ -23,6 +24,23 @@ export const metadata = {
   },
 };
 
+const schema = buildGraph(
+  buildWebPageSchema({
+    path: "/cover-letter",
+    name: "Free AI Cover Letter Builder for Jobs & Careers | AIDLA",
+    description: "Write ATS-optimized cover letters for freshers, job seekers, professionals and career switchers. AI-powered, role-specific, instantly downloadable and free.",
+  }),
+  buildBreadcrumbSchema(
+    [{ name: "Home", url: "/" }, { name: "Cover Letter Builder", url: "/cover-letter" }],
+    "/cover-letter",
+  ),
+);
+
 export default function CoverLetterPage() {
-  return <CoverLetterClient />;
+  return (
+    <>
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <CoverLetterClient />
+    </>
+  );
 }

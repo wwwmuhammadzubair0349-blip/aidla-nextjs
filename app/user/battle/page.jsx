@@ -58,21 +58,44 @@ export default function BattlePage() {
   const botTimerRef = useRef(null);
   const timerRef = useRef(null);
   const submitLock = useRef(false);
+  const channelRef = useRef(null);
+  const lookupTimerRef = useRef(null);
+  const roomTimeoutRef = useRef(null);
+  const tabHideTimerRef = useRef(null);
+  const handleAnswerRef = useRef(null);
+  const sessionRef = useRef(null);
+
+  // Invite state
+  const [pendingInvite, setPendingInvite] = useState(null);
+  const [selectedMode, setSelectedMode] = useState(null);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteeInfo, setInviteeInfo] = useState(null); // { found, name } | null
+  const [inviteSending, setInviteSending] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState("");
+  const [joinRoomInput, setJoinRoomInput] = useState("");
+  const [currentRoomId, setCurrentRoomId] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     init();
-    return () => { clearAllTimers(); };
+    return () => {
+      clearAllTimers();
+      if (channelRef.current) supabase.removeChannel(channelRef.current);
+    };
   }, []);
 
   function clearAllTimers() {
     clearInterval(pollRef.current);
     clearInterval(botTimerRef.current);
     clearInterval(timerRef.current);
+    clearTimeout(roomTimeoutRef.current);
+    clearTimeout(tabHideTimerRef.current);
   }
 
   async function init() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { window.location.href = "/login"; return; }
+    sessionRef.current = session;
     setUser(session.user);
     const { data: prof } = await supabase.from("users_profiles").select("*").eq("user_id", session.user.id).single();
     setProfile(prof);
@@ -81,6 +104,37 @@ export default function BattlePage() {
     await loadOpenRooms();
     await loadHistory();
     setLoading(false);
+
+    // Broadcast channel — inviter sends directly to this channel for instant popup
+    // No publication/replication setup needed unlike postgres_changes
+    const ch = supabase
+      .channel(`battle-invite:${session.user.id}`)
+      .on("broadcast", { event: "new_invite" }, ({ payload }) => {
+        if (payload && new Date(payload.expires_at) > new Date()) {
+          setPendingInvite(payload);
+        }
+      })
+      .subscribe();
+    channelRef.current = ch;
+
+    // Check pending invites by email (for users who weren't online when invited)
+    const userEmail = prof?.email || session.user.email;
+    if (userEmail) {
+      const { data: pending } = await supabase
+        .from("battle_invites")
+        .select("*")
+        .eq("invitee_email", userEmail)
+        .eq("status", "pending")
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1);
+      if (pending?.[0]) setPendingInvite(pending[0]);
+    }
+
+    // Handle URL params: ?room=<id> to auto-show join prompt
+    const params = new URLSearchParams(window.location.search);
+    const urlRoom = params.get("room");
+    if (urlRoom) setJoinRoomInput(urlRoom);
   }
 
   async function loadOpenRooms() {
@@ -111,6 +165,7 @@ export default function BattlePage() {
     const { data, error } = await supabase.rpc("battle_find_or_create", { p_mode: mode });
     if (error || !data?.ok) { flash(data?.error || error?.message); setView("lobby"); return; }
     setMyRole(data.role);
+    setCurrentRoomId(data.room_id);
     await pollRoom(data.room_id, true);
   }
 
@@ -138,35 +193,37 @@ export default function BattlePage() {
       if (!r) return;
       setRoom(r);
       if (r.status === "selecting") {
-        clearInterval(pollRef.current);
+        // Keep polling so non-selector detects in_progress
         clearTimeout(botTimerRef.current);
+        clearTimeout(roomTimeoutRef.current);
         setView("selecting");
-        setCurrentRound(1);
+        setCurrentRound(r.round1_category ? 2 : 1);
       }
       if (r.status === "in_progress") {
         clearInterval(pollRef.current);
+        clearTimeout(roomTimeoutRef.current);
         await startRound(r, 1);
       }
       if (r.status === "completed") {
         clearInterval(pollRef.current);
+        clearTimeout(roomTimeoutRef.current);
         handleResult(r);
       }
     }, 2000);
   }
 
   // ── ROUND SELECTION ──
+  // Round 1 → player1 picks. Round 2 → player2 picks.
   function isMySelectorTurn() {
     if (!room) return false;
-    const round = room.round1_category ? 2 : 1;
-    const selector = round === 1 ? room.round1_selector : room.round2_selector;
-    return (selector === 1 && myRole === "player1") || (selector === 2 && myRole === "player2");
+    const isRound2 = !!room.round1_category;
+    return isRound2 ? myRole === "player2" : myRole === "player1";
   }
 
   function isOpponentSelectorTurn() {
     if (!room) return false;
-    const round = room.round1_category ? 2 : 1;
-    const selector = round === 1 ? room.round1_selector : room.round2_selector;
-    return (selector === 1 && myRole === "player2") || (selector === 2 && myRole === "player1");
+    const isRound2 = !!room.round1_category;
+    return isRound2 ? myRole === "player1" : myRole === "player2";
   }
 
   async function submitSelection() {
@@ -205,7 +262,8 @@ export default function BattlePage() {
       }, 3000 + Math.random() * 4000);
     }
 
-    // Poll for game start
+    // Clear any stale poll (from pollRoom's selecting branch) before starting fresh
+    clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
       if (!r) return;
@@ -332,6 +390,61 @@ export default function BattlePage() {
     }
   }
 
+  // Keep ref current so visibility/unload closures always call latest handleAnswer
+  handleAnswerRef.current = handleAnswer;
+
+  // ── TAB SWITCH DETECTION ──
+  useEffect(() => {
+    if (view !== "in_progress" || !room?.id) return;
+
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        // Immediately count current question as wrong
+        if (!submitLock.current) handleAnswerRef.current?.(null);
+        // Start 20s elimination timer
+        tabHideTimerRef.current = setTimeout(async () => {
+          await supabase.rpc("battle_forfeit", { p_room_id: room.id, p_role: myRole });
+          clearAllTimers();
+          const { data: finalRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
+          if (finalRoom) handleResult(finalRoom);
+          else { flash("Eliminated — opponent wins."); setView("lobby"); }
+        }, 20000);
+      } else {
+        clearTimeout(tabHideTimerRef.current);
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      clearTimeout(tabHideTimerRef.current);
+    };
+  }, [view, room?.id, myRole, qIndex]);
+
+  // ── WINDOW CLOSE / NAVIGATE AWAY ──
+  useEffect(() => {
+    if (!room?.id || !["in_progress", "selecting"].includes(view)) return;
+
+    const onUnload = () => {
+      fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/battle_forfeit`,
+        {
+          method: "POST",
+          keepalive: true,
+          headers: {
+            "Content-Type": "application/json",
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${sessionRef.current?.access_token || ""}`,
+          },
+          body: JSON.stringify({ p_room_id: room.id, p_role: myRole }),
+        }
+      );
+    };
+
+    window.addEventListener("beforeunload", onUnload);
+    return () => window.removeEventListener("beforeunload", onUnload);
+  }, [view, room?.id, myRole]);
+
   async function simulateBotRound(r, roundNum, qs) {
     const totalQ = qs.length;
     for (let i = 0; i < totalQ; i++) {
@@ -417,6 +530,157 @@ export default function BattlePage() {
     setTimeout(() => setMsg(""), 3000);
   }
 
+  // ── INVITE FUNCTIONS ──
+  function handleInviteEmailChange(val) {
+    setInviteEmail(val);
+    setInviteeInfo(null);
+    clearTimeout(lookupTimerRef.current);
+    if (!val.trim() || !val.includes("@")) return;
+    lookupTimerRef.current = setTimeout(() => lookupInvitee(val.trim().toLowerCase()), 700);
+  }
+
+  async function lookupInvitee(email) {
+    const { data } = await supabase
+      .from("users_profiles").select("full_name").eq("email", email).maybeSingle();
+    setInviteeInfo(data ? { found: true, name: data.full_name || email } : { found: false });
+  }
+
+  // Shared helper — insert invite record + fire broadcast for instant popup
+  async function _insertAndBroadcast(roomId, email) {
+    const { data: inviteeProf } = await supabase
+      .from("users_profiles").select("user_id").eq("email", email).maybeSingle();
+
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const { data: inv, error } = await supabase
+      .from("battle_invites")
+      .insert({
+        room_id:       roomId,
+        inviter_id:    user.id,
+        inviter_name:  profile?.full_name || user.email,
+        invitee_email: email,
+        invitee_id:    inviteeProf?.user_id || null,
+        expires_at:    expiresAt,
+      })
+      .select()
+      .single();
+
+    if (error) return { ok: false };
+
+    // Broadcast directly to invitee's personal channel for instant popup
+    if (inviteeProf?.user_id) {
+      await supabase
+        .channel(`battle-invite:${inviteeProf.user_id}`)
+        .httpSend({
+          type: "broadcast", event: "new_invite",
+          payload: { ...inv, inviter_name: profile?.full_name || user.email },
+        });
+    }
+    return { ok: true, inviteeFound: !!inviteeProf?.user_id };
+  }
+
+  // Send invite to an already-created room (from waiting screen)
+  async function sendInvite() {
+    if (!inviteEmail.trim() || !currentRoomId) return;
+    setInviteSending(true);
+    setInviteMsg("");
+    const { ok, inviteeFound } = await _insertAndBroadcast(
+      currentRoomId, inviteEmail.trim().toLowerCase()
+    );
+    setInviteSending(false);
+    if (!ok) { setInviteMsg("Failed to send. Check email."); return; }
+    setInviteMsg(inviteeFound ? "Invite sent — they'll get a popup!" : "Invite sent — they'll see it next time they open Battle.");
+    setInviteEmail(""); setInviteeInfo(null);
+  }
+
+  // Create room + send invite + skip bot timer (from pre_waiting screen)
+  async function sendInviteAndWait() {
+    if (!inviteEmail.trim() || !selectedMode) return;
+    setInviteSending(true);
+    const modeObj = selectedMode;
+    if (modeObj.stake > 0 && profile?.total_aidla_coins < modeObj.stake) {
+      flash("Insufficient coins"); setInviteSending(false); return;
+    }
+    const { data, error } = await supabase.rpc("battle_find_or_create", { p_mode: modeObj.id });
+    if (error || !data?.ok) {
+      flash(data?.error || "Failed to create room"); setInviteSending(false); return;
+    }
+    const roomId = data.room_id;
+    setMyRole(data.role);
+    setCurrentRoomId(roomId);
+
+    const { ok } = await _insertAndBroadcast(roomId, inviteEmail.trim().toLowerCase());
+    if (!ok) flash("Room created but invite failed — share the Room ID manually.");
+
+    setInviteSending(false);
+    setInviteEmail(""); setInviteeInfo(null);
+    setView("waiting");
+
+    // Cancel room if nobody joins within 30s
+    roomTimeoutRef.current = setTimeout(async () => {
+      const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: roomId });
+      if (r?.status === "waiting") {
+        clearInterval(pollRef.current);
+        await supabase.rpc("battle_cancel_room", { p_room_id: roomId });
+        flash("Nobody joined — room cancelled.");
+        setView("pre_waiting");
+        setCurrentRoomId(null);
+      }
+    }, 30000);
+
+    await pollRoom(roomId, false); // no bot timer — waiting for specific person
+  }
+
+  async function acceptInvite(invite) {
+    await supabase.from("battle_invites").update({ status: "accepted" }).eq("id", invite.id);
+    setPendingInvite(null);
+    setView("waiting");
+    const roomId = invite.room_id;
+    setCurrentRoomId(roomId);
+    const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: roomId });
+    if (error || !data?.ok) {
+      flash(data?.error || error?.message || "Room no longer available");
+      setView("lobby");
+      return;
+    }
+    setMyRole("player2");
+    await pollRoom(roomId, false);
+  }
+
+  async function declineInvite(invite) {
+    await supabase.from("battle_invites").update({ status: "declined" }).eq("id", invite.id);
+    setPendingInvite(null);
+  }
+
+  async function joinByRoomId() {
+    if (!joinRoomInput.trim()) return;
+    const rid = joinRoomInput.trim();
+    setView("waiting");
+    setCurrentRoomId(rid);
+    const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: rid });
+    if (error || !data?.ok) {
+      flash(data?.error || error?.message || "Room not found or full");
+      setView("lobby");
+      return;
+    }
+    setMyRole("player2");
+    await pollRoom(rid, false);
+  }
+
+  function copyRoomId() {
+    if (!currentRoomId) return;
+    navigator.clipboard.writeText(currentRoomId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  function copyRoomLink() {
+    if (!currentRoomId) return;
+    const link = `${window.location.origin}/user/battle?room=${currentRoomId}`;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   const q = questions[qIndex];
   const secPerQ = room ? (room[`round${currentRound}_difficulty`] === "hard" ? 10 : room[`round${currentRound}_difficulty`] === "easy" ? 15 : 12) : 12;
   const timePct = timeLeft / secPerQ * 100;
@@ -442,6 +706,26 @@ export default function BattlePage() {
       </div>
 
       {msg && <div style={S.toast}>{msg}</div>}
+
+      {/* INVITE POPUP */}
+      {pendingInvite && (
+        <div style={S.inviteOverlay}>
+          <div style={S.invitePopup}>
+            <div style={{ fontSize:40, marginBottom:8 }}>⚔️</div>
+            <div style={{ fontWeight:800, fontSize:17, marginBottom:6 }}>Battle Invite!</div>
+            <div style={{ fontSize:13, color:"#475569", marginBottom:4 }}>
+              <strong>{pendingInvite.inviter_name}</strong> challenged you to a 1v1 battle!
+            </div>
+            <div style={{ fontSize:11, color:"#94a3b8", marginBottom:20 }}>
+              Expires {new Date(pendingInvite.expires_at).toLocaleTimeString()}
+            </div>
+            <div style={{ display:"flex", gap:8 }}>
+              <button style={{ ...S.btn, flex:1 }} onClick={() => acceptInvite(pendingInvite)}>Accept ⚔️</button>
+              <button style={{ ...S.btnGhost, flex:1 }} onClick={() => declineInvite(pendingInvite)}>Decline</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* LOBBY */}
       {view === "lobby" && (
@@ -483,7 +767,7 @@ export default function BattlePage() {
                 <div style={S.cardTitle}>Choose Mode</div>
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   {MODES.map(m => (
-                    <button key={m.id} style={{ ...S.modeBtn, borderColor: m.color }} onClick={() => findBattle(m.id)}>
+                    <button key={m.id} style={{ ...S.modeBtn, borderColor: m.color }} onClick={() => { setSelectedMode(m); setView("pre_waiting"); }}>
                       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
                         <div>
                           <div style={{ fontWeight:800, fontSize:15 }}>{m.label}</div>
@@ -508,27 +792,53 @@ export default function BattlePage() {
 
           {/* OPEN ROOMS TAB */}
           {activeTab === "open" && (
-            <div style={S.card}>
-              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-                <div style={S.cardTitle}>Open Battles</div>
-                <button style={S.smBtn} onClick={loadOpenRooms}>↻ Refresh</button>
+            <div>
+              {/* Join by Room ID */}
+              <div style={S.card}>
+                <div style={S.cardTitle}>🔗 Join by Room ID</div>
+                <div style={{ fontSize:12, color:"#64748b", marginBottom:10 }}>
+                  Have a room ID or invite link? Paste and join directly.
+                </div>
+                <div style={{ display:"flex", gap:8 }}>
+                  <input
+                    style={S.input}
+                    placeholder="Paste room ID here..."
+                    value={joinRoomInput}
+                    onChange={e => setJoinRoomInput(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && joinByRoomId()}
+                  />
+                  <button
+                    style={{ ...S.smBtn, background:"#6366f1", color:"white", whiteSpace:"nowrap" }}
+                    onClick={joinByRoomId}
+                    disabled={!joinRoomInput.trim()}>
+                    Join →
+                  </button>
+                </div>
               </div>
-              {openRooms.length === 0 ? (
-                <p style={S.empty}>No open battles. Create one from Play tab!</p>
-              ) : openRooms.map((r, i) => {
-                const m = MODES.find(md => md.id === r.mode);
-                return (
-                  <div key={i} style={S.lbRow}>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontWeight:700, fontSize:14 }}>{r.player1_name}</div>
-                      <div style={{ fontSize:12, color:"#64748b" }}>Mode: {m?.label} · Stake: {m?.stake}🪙</div>
+
+              {/* Open rooms list */}
+              <div style={S.card}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
+                  <div style={S.cardTitle}>Open Battles</div>
+                  <button style={S.smBtn} onClick={loadOpenRooms}>↻ Refresh</button>
+                </div>
+                {openRooms.length === 0 ? (
+                  <p style={S.empty}>No open battles. Create one from Play tab!</p>
+                ) : openRooms.map((r, i) => {
+                  const m = MODES.find(md => md.id === r.mode);
+                  return (
+                    <div key={i} style={S.lbRow}>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontWeight:700, fontSize:14 }}>{r.player1_name}</div>
+                        <div style={{ fontSize:12, color:"#64748b" }}>Mode: {m?.label} · Stake: {m?.stake}🪙</div>
+                      </div>
+                      <button style={{ ...S.smBtn, background:"#6366f1", color:"white" }} onClick={() => joinRoom(r.id)}>
+                        Join
+                      </button>
                     </div>
-                    <button style={{ ...S.smBtn, background:"#6366f1", color:"white" }} onClick={() => joinRoom(r.id)}>
-                      Join
-                    </button>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -579,6 +889,69 @@ export default function BattlePage() {
         </div>
       )}
 
+      {/* PRE-WAITING — mode selected, choose to search or invite */}
+      {view === "pre_waiting" && selectedMode && (
+        <div style={{ padding:16 }}>
+          {/* Mode summary */}
+          <div style={{ ...S.card, border:`2px solid ${selectedMode.color}33`, marginBottom:12 }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+              <div>
+                <div style={{ fontWeight:800, fontSize:18 }}>{selectedMode.label} Mode</div>
+                <div style={{ fontSize:12, color:"#64748b", marginTop:3 }}>
+                  {selectedMode.stake === 0 ? "Free entry" : `Stake: ${selectedMode.stake} coins`} · Winner gets {selectedMode.prize} 🪙
+                </div>
+              </div>
+              <div style={{ fontWeight:900, fontSize:24, color: selectedMode.color }}>
+                {selectedMode.stake === 0 ? "FREE" : `${selectedMode.stake}🪙`}
+              </div>
+            </div>
+          </div>
+
+          {/* Find public match */}
+          <button style={{ ...S.btn, marginBottom:16 }} onClick={() => findBattle(selectedMode.id)}>
+            ⚔️ Find Public Match
+          </button>
+
+          {/* Divider */}
+          <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+            <div style={{ flex:1, height:1, background:"#e2e8f0" }}/>
+            <span style={{ fontSize:12, color:"#94a3b8", fontWeight:600 }}>or invite a friend</span>
+            <div style={{ flex:1, height:1, background:"#e2e8f0" }}/>
+          </div>
+
+          {/* Invite by email */}
+          <div style={S.card}>
+            <div style={S.cardTitle}>📨 Invite by Email</div>
+            <div style={S.label}>Friend's Email</div>
+            <input
+              style={{ ...S.input, width:"100%", marginBottom:8 }}
+              type="email"
+              placeholder="friend@email.com"
+              value={inviteEmail}
+              onChange={e => handleInviteEmailChange(e.target.value)}
+            />
+            {inviteeInfo && (
+              <div style={{ fontSize:13, fontWeight:700, marginBottom:10, color: inviteeInfo.found ? "#059669" : "#dc2626" }}>
+                {inviteeInfo.found ? `✓ ${inviteeInfo.name}` : "✗ User not found on AIDLA"}
+              </div>
+            )}
+            <button
+              style={{ ...S.btn, opacity: (!inviteEmail.trim() || inviteSending) ? 0.55 : 1 }}
+              onClick={sendInviteAndWait}
+              disabled={!inviteEmail.trim() || inviteSending}>
+              {inviteSending ? "Setting up..." : "Send Invite & Wait ✉️"}
+            </button>
+            <div style={{ fontSize:11, color:"#94a3b8", marginTop:8 }}>
+              They'll get a popup if logged in, or see it next time they open Battle.
+            </div>
+          </div>
+
+          <button style={{ ...S.btnGhost, marginTop:4 }} onClick={() => { setView("lobby"); setInviteEmail(""); setInviteeInfo(null); }}>
+            ← Back
+          </button>
+        </div>
+      )}
+
       {/* WAITING */}
       {view === "waiting" && (
         <div style={{ padding:16 }}>
@@ -597,6 +970,57 @@ export default function BattlePage() {
             `}</style>
             <button style={{ ...S.btnGhost, maxWidth:200, margin:"0 auto" }} onClick={() => { clearAllTimers(); setView("lobby"); }}>Cancel</button>
           </div>
+
+          {/* Invite panel — visible while waiting */}
+          {currentRoomId && (
+            <div style={S.card}>
+              <div style={S.cardTitle}>📨 Invite Someone</div>
+
+              {/* Room ID + copy */}
+              <div style={{ background:"#f8fafc", borderRadius:10, padding:"10px 12px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
+                <div>
+                  <div style={{ fontSize:10, color:"#94a3b8", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:2 }}>Room ID</div>
+                  <div style={{ fontSize:12, fontWeight:700, color:"#0f172a", fontFamily:"monospace", wordBreak:"break-all" }}>{currentRoomId}</div>
+                </div>
+                <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                  <button style={S.smBtn} onClick={copyRoomId}>{copied ? "✓" : "📋"} ID</button>
+                  <button style={S.smBtn} onClick={copyRoomLink}>{copied ? "✓" : "🔗"} Link</button>
+                </div>
+              </div>
+
+              {/* Invite by email */}
+              <div style={S.label}>Invite by Email</div>
+              <div style={{ display:"flex", gap:8, marginBottom:4 }}>
+                <input
+                  style={S.input}
+                  type="email"
+                  placeholder="opponent@email.com"
+                  value={inviteEmail}
+                  onChange={e => handleInviteEmailChange(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && sendInvite()}
+                />
+                <button
+                  style={{ ...S.smBtn, background:"#6366f1", color:"white", whiteSpace:"nowrap" }}
+                  onClick={sendInvite}
+                  disabled={inviteSending || !inviteEmail.trim()}>
+                  {inviteSending ? "..." : "Send"}
+                </button>
+              </div>
+              {inviteeInfo && (
+                <div style={{ fontSize:12, fontWeight:700, marginBottom:4, color: inviteeInfo.found ? "#059669" : "#dc2626" }}>
+                  {inviteeInfo.found ? `✓ ${inviteeInfo.name}` : "✗ User not found on AIDLA"}
+                </div>
+              )}
+              {inviteMsg && (
+                <div style={{ fontSize:12, color: inviteMsg.startsWith("Failed") ? "#dc2626" : "#059669", fontWeight:600 }}>
+                  {inviteMsg}
+                </div>
+              )}
+              <div style={{ fontSize:11, color:"#94a3b8", marginTop:6 }}>
+                They'll get a popup if logged in, or see the invite when they visit Battle.
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -877,4 +1301,7 @@ const S = {
   timerBar: { width:"100%", height:4, background:"#e2e8f0", borderRadius:4, overflow:"hidden", marginBottom:6 },
   timerFill: { height:"100%", borderRadius:4, transition:"width 1s linear" },
   hintBtn: { width:"100%", padding:"10px", background:"#fffbeb", border:"1px solid #fde047", borderRadius:10, color:"#854d0e", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit", marginTop:4 },
+  inviteOverlay: { position:"fixed", inset:0, background:"rgba(0,0,0,0.55)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, padding:16 },
+  invitePopup: { background:"white", borderRadius:20, padding:"28px 24px", maxWidth:320, width:"100%", textAlign:"center", boxShadow:"0 24px 64px rgba(0,0,0,0.25)" },
+  input: { flex:1, border:"1px solid #e2e8f0", borderRadius:10, padding:"10px 12px", fontSize:13, outline:"none", fontFamily:"inherit", minWidth:0 },
 };

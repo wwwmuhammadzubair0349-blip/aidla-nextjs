@@ -55,6 +55,8 @@ export default function BattlePage() {
   const [lbPeriod, setLbPeriod] = useState("daily");
 
   const pollRef = useRef(null);
+  const roomSyncRef = useRef(null);
+  const roomChannelRef = useRef(null);
   const botTimerRef = useRef(null);
   const timerRef = useRef(null);
   const submitLock = useRef(false);
@@ -62,8 +64,14 @@ export default function BattlePage() {
   const lookupTimerRef = useRef(null);
   const roomTimeoutRef = useRef(null);
   const tabHideTimerRef = useRef(null);
-  const handleAnswerRef = useRef(null);
   const sessionRef = useRef(null);
+  const roomRef = useRef(null);
+  const currentRoomIdRef = useRef(null);
+  const myRoleRef = useRef(null);
+  const viewRef = useRef("lobby");
+  const startedRoundsRef = useRef(new Set());
+  const completedRoundsRef = useRef(new Set());
+  const forfeitLockRef = useRef(false);
 
   // Invite state
   const [pendingInvite, setPendingInvite] = useState(null);
@@ -81,8 +89,14 @@ export default function BattlePage() {
     return () => {
       clearAllTimers();
       if (channelRef.current) supabase.removeChannel(channelRef.current);
+      if (roomChannelRef.current) supabase.removeChannel(roomChannelRef.current);
     };
   }, []);
+
+  useEffect(() => { roomRef.current = room; }, [room]);
+  useEffect(() => { currentRoomIdRef.current = currentRoomId; }, [currentRoomId]);
+  useEffect(() => { myRoleRef.current = myRole; }, [myRole]);
+  useEffect(() => { viewRef.current = view; }, [view]);
 
   function clearAllTimers() {
     clearInterval(pollRef.current);
@@ -90,6 +104,46 @@ export default function BattlePage() {
     clearInterval(timerRef.current);
     clearTimeout(roomTimeoutRef.current);
     clearTimeout(tabHideTimerRef.current);
+    if (roomChannelRef.current) {
+      supabase.removeChannel(roomChannelRef.current);
+      roomChannelRef.current = null;
+    }
+  }
+
+  function roundFromRoom(r) {
+    return Number(r?.current_round) || (r?.round2_category ? 2 : 1);
+  }
+
+  function myRoundScore(r, round = currentRound) {
+    if (!r || !myRoleRef.current) return 0;
+    return Number(r[`${myRoleRef.current}_round${round}_score`]) || 0;
+  }
+
+  async function goLobby() {
+    const r = roomRef.current;
+    const role = myRoleRef.current;
+    clearAllTimers();
+    if ((r?.id || currentRoomIdRef.current) && viewRef.current === "waiting") await supabase.rpc("battle_cancel_room", { p_room_id: r?.id || currentRoomIdRef.current });
+    if (r?.id && role && ["selecting", "in_progress"].includes(viewRef.current)) await supabase.rpc("battle_forfeit", { p_room_id: r.id, p_role: role });
+    setRoom(null);
+    setCurrentRoomId(null);
+    startedRoundsRef.current.clear();
+    completedRoundsRef.current.clear();
+    forfeitLockRef.current = false;
+    setView("lobby");
+    setActiveTab("play");
+  }
+
+  async function forfeitNow() {
+    const r = roomRef.current;
+    const role = myRoleRef.current;
+    if (!r?.id || !role || forfeitLockRef.current) return;
+    forfeitLockRef.current = true;
+    await supabase.rpc("battle_forfeit", { p_room_id: r.id, p_role: role });
+    clearAllTimers();
+    const { data: finalRoom } = await supabase.rpc("battle_get_room", { p_room_id: r.id });
+    if (finalRoom) handleResult(finalRoom);
+    else { flash("Eliminated — opponent wins."); setView("lobby"); }
   }
 
   async function init() {
@@ -139,7 +193,9 @@ export default function BattlePage() {
 
   async function loadOpenRooms() {
     const { data } = await supabase.rpc("battle_open_rooms");
-    setOpenRooms(data || []);
+    const { data: invites } = await supabase.from("battle_invites").select("room_id").eq("status", "pending");
+    const privateIds = new Set((invites || []).map(i => i.room_id));
+    setOpenRooms((data || []).filter(r => !privateIds.has(r.id)));
   }
 
   async function loadHistory() {
@@ -162,10 +218,15 @@ export default function BattlePage() {
       flash("Insufficient coins"); return;
     }
     setView("waiting");
+    setRoom(null);
+    startedRoundsRef.current.clear();
+    completedRoundsRef.current.clear();
+    forfeitLockRef.current = false;
     const { data, error } = await supabase.rpc("battle_find_or_create", { p_mode: mode });
     if (error || !data?.ok) { flash(data?.error || error?.message); setView("lobby"); return; }
     setMyRole(data.role);
     setCurrentRoomId(data.room_id);
+    watchRoom(data.room_id);
     await pollRoom(data.room_id, true);
   }
 
@@ -173,10 +234,17 @@ export default function BattlePage() {
     const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: roomId });
     if (error || !data?.ok) { flash(data?.error || error?.message); return; }
     setMyRole("player2");
+    setCurrentRoomId(data.room_id);
+    startedRoundsRef.current.clear();
+    completedRoundsRef.current.clear();
+    forfeitLockRef.current = false;
+    watchRoom(data.room_id);
     await pollRoom(data.room_id, false);
   }
 
   async function pollRoom(roomId, startBotTimer) {
+    clearInterval(pollRef.current);
+    clearInterval(roomSyncRef.current);
     // Start bot timer if player1 and no match in 12s
     if (startBotTimer) {
       botTimerRef.current = setTimeout(async () => {
@@ -192,17 +260,21 @@ export default function BattlePage() {
       const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: roomId });
       if (!r) return;
       setRoom(r);
+      const rn = roundFromRoom(r);
+      setCurrentRound(rn);
+      setMyScore(myRoundScore(r, rn));
       if (r.status === "selecting") {
         // Keep polling so non-selector detects in_progress
         clearTimeout(botTimerRef.current);
         clearTimeout(roomTimeoutRef.current);
         setView("selecting");
-        setCurrentRound(r.round1_category ? 2 : 1);
       }
       if (r.status === "in_progress") {
-        clearInterval(pollRef.current);
         clearTimeout(roomTimeoutRef.current);
-        await startRound(r, 1);
+        if (!startedRoundsRef.current.has(rn) && !completedRoundsRef.current.has(rn)) {
+          clearInterval(pollRef.current);
+          await startRound(r, rn);
+        }
       }
       if (r.status === "completed") {
         clearInterval(pollRef.current);
@@ -230,11 +302,12 @@ export default function BattlePage() {
     if (!selCategory) { flash("Pick a category"); return; }
     setSubmittingSelection(true);
     const round = room.round1_category ? 2 : 1;
-    await supabase.rpc("battle_set_round", {
+    const { error: setErr } = await supabase.rpc("battle_set_round", {
       p_room_id: room.id, p_round: round,
       p_category_id: selCategory.id, p_category: selCategory.name,
       p_difficulty: selDifficulty, p_questions: selQuestions,
     });
+    if (setErr) { flash(setErr.message); setSubmittingSelection(false); return; }
 
     // Generate questions via edge function
     setGeneratingQ(true);
@@ -250,14 +323,16 @@ export default function BattlePage() {
         const botCat = categories[Math.floor(Math.random() * categories.length)];
         const diffs = ["easy","medium","hard"];
         const qs = [5,10,15,20];
+        const botDifficulty = diffs[Math.floor(Math.random()*3)];
+        const botQuestions = qs[Math.floor(Math.random()*4)];
         await supabase.rpc("battle_set_round", {
           p_room_id: room.id, p_round: 2,
           p_category_id: botCat.id, p_category: botCat.name,
-          p_difficulty: diffs[Math.floor(Math.random()*3)],
-          p_questions: qs[Math.floor(Math.random()*4)],
+          p_difficulty: botDifficulty,
+          p_questions: botQuestions,
         });
         await supabase.functions.invoke("battle-generate", {
-          body: { room_id: room.id, round: 2, category: botCat.name, difficulty: diffs[Math.floor(Math.random()*3)], total_questions: 10 }
+          body: { room_id: room.id, round: 2, category: botCat.name, difficulty: botDifficulty, total_questions: botQuestions }
         });
       }, 3000 + Math.random() * 4000);
     }
@@ -270,13 +345,15 @@ export default function BattlePage() {
       setRoom(r);
       if (r.status === "in_progress") {
         clearInterval(pollRef.current);
-        await startRound(r, 1);
+        await startRound(r, round);
       }
     }, 2000);
   }
 
   // ── QUIZ ROUND ──
   async function startRound(r, roundNum) {
+    if (startedRoundsRef.current.has(roundNum) || completedRoundsRef.current.has(roundNum)) return;
+    startedRoundsRef.current.add(roundNum);
     setCurrentRound(roundNum);
     setMyScore(0);
     setQIndex(0);
@@ -288,7 +365,11 @@ export default function BattlePage() {
     setView("in_progress");
 
     const { data } = await supabase.rpc("battle_get_questions", { p_room_id: r.id, p_round: roundNum });
-    if (!data?.ok || !data.questions?.length) { flash("Failed to load questions"); return; }
+    if (!data?.ok || !data.questions?.length) {
+      startedRoundsRef.current.delete(roundNum);
+      flash("Failed to load questions");
+      return;
+    }
     setQuestions(data.questions);
     const diff = r[`round${roundNum}_difficulty`];
     const secPerQ = diff === "hard" ? 10 : diff === "easy" ? 15 : 12;
@@ -298,11 +379,47 @@ export default function BattlePage() {
     clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       const { data: rd } = await supabase.rpc("battle_get_room", { p_room_id: r.id });
-      if (rd) setRoom(rd);
+      if (rd?.status === "completed") {
+        clearInterval(pollRef.current);
+        clearInterval(timerRef.current);
+        handleResult(rd);
+      } else if (rd) {
+        setRoom(rd);
+        setMyScore(myRoundScore(rd, roundNum));
+      }
     }, 2000);
 
     // Bot plays too
     if (r.is_bot) simulateBotRound(r, roundNum, data.questions);
+  }
+
+  async function syncRoom(roomId) {
+    const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: roomId });
+    if (!r) return;
+    setRoom(r);
+    const rn = roundFromRoom(r);
+    setCurrentRound(rn);
+    setMyScore(myRoundScore(r, rn));
+    if (r.status === "completed") {
+      clearAllTimers();
+      handleResult(r);
+    }
+  }
+
+  function watchRoom(roomId) {
+    clearInterval(roomSyncRef.current);
+    if (roomChannelRef.current) supabase.removeChannel(roomChannelRef.current);
+    roomSyncRef.current = setInterval(() => syncRoom(roomId), 1000);
+    roomChannelRef.current = supabase
+      .channel(`battle-room:${roomId}`)
+      .on("postgres_changes", { event:"UPDATE", schema:"public", table:"battle_rooms", filter:`id=eq.${roomId}` }, ({ new: r }) => {
+        setRoom(r);
+        const rn = roundFromRoom(r);
+        setCurrentRound(rn);
+        setMyScore(myRoundScore(r, rn));
+        if (r.status === "completed") { clearAllTimers(); handleResult(r); }
+      })
+      .subscribe();
   }
 
   function startTimer(sec) {
@@ -327,7 +444,8 @@ export default function BattlePage() {
     submitLock.current = true;
     clearInterval(timerRef.current);
     const q = questions[qIndex];
-    const timeTaken = 30 - timeLeft;
+    const roundSec = room[`round${currentRound}_difficulty`] === "hard" ? 10 : room[`round${currentRound}_difficulty`] === "easy" ? 15 : 12;
+    const timeTaken = roundSec - timeLeft;
     setSelected(optionIdx);
 
     const { data } = await supabase.rpc("battle_submit_answer", {
@@ -339,13 +457,19 @@ export default function BattlePage() {
     });
 
     const correct = data?.is_correct;
-    if (correct) setMyScore(s => s + 1);
+    const { data: scoreRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
+    if (scoreRoom) {
+      setRoom(scoreRoom);
+      setMyScore(myRoundScore(scoreRoom, currentRound));
+    } else if (correct) setMyScore(s => s + 1);
     setFeedback({ correct, correctIndex: q.correct_option_index });
     await new Promise(r => setTimeout(r, 1000));
 
     const next = qIndex + 1;
     if (next >= questions.length) {
+      completedRoundsRef.current.add(currentRound);
       clearInterval(pollRef.current);
+      await supabase.rpc("battle_finish_round", { p_room_id: room.id, p_round: currentRound, p_is_bot: false });
       if (currentRound === 1) {
         // Round 1 done — go to round 2 selection
         setView("selecting");
@@ -359,7 +483,7 @@ export default function BattlePage() {
           const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
           if (!r) return;
           setRoom(r);
-          if (r.round2_category && r.status === "in_progress") {
+          if (r.round2_category && r.status === "in_progress" && !completedRoundsRef.current.has(2)) {
             // Check questions cached
             const { data: qd } = await supabase.rpc("battle_get_questions", { p_room_id: r.id, p_round: 2 });
             if (qd?.questions?.length) {
@@ -390,25 +514,14 @@ export default function BattlePage() {
     }
   }
 
-  // Keep ref current so visibility/unload closures always call latest handleAnswer
-  handleAnswerRef.current = handleAnswer;
-
   // ── TAB SWITCH DETECTION ──
   useEffect(() => {
     if (view !== "in_progress" || !room?.id) return;
 
     const onVisibility = () => {
       if (document.visibilityState === "hidden") {
-        // Immediately count current question as wrong
-        if (!submitLock.current) handleAnswerRef.current?.(null);
-        // Start 20s elimination timer
-        tabHideTimerRef.current = setTimeout(async () => {
-          await supabase.rpc("battle_forfeit", { p_room_id: room.id, p_role: myRole });
-          clearAllTimers();
-          const { data: finalRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
-          if (finalRoom) handleResult(finalRoom);
-          else { flash("Eliminated — opponent wins."); setView("lobby"); }
-        }, 20000);
+        submitLock.current = true;
+        forfeitNow();
       } else {
         clearTimeout(tabHideTimerRef.current);
       }
@@ -420,6 +533,13 @@ export default function BattlePage() {
       clearTimeout(tabHideTimerRef.current);
     };
   }, [view, room?.id, myRole, qIndex]);
+
+  useEffect(() => {
+    if (view !== "in_progress" || !room?.id) return;
+    const fail = () => forfeitNow();
+    window.addEventListener("blur", fail);
+    return () => window.removeEventListener("blur", fail);
+  }, [view, room?.id, myRole]);
 
   // ── WINDOW CLOSE / NAVIGATE AWAY ──
   useEffect(() => {
@@ -461,6 +581,7 @@ export default function BattlePage() {
         p_time_taken: Math.floor(delay / 1000), p_is_bot: true,
       });
     }
+    await supabase.rpc("battle_finish_round", { p_room_id: r.id, p_round: roundNum, p_is_bot: true });
   }
 
   function handleResult(r) {
@@ -600,13 +721,19 @@ export default function BattlePage() {
     if (modeObj.stake > 0 && profile?.total_aidla_coins < modeObj.stake) {
       flash("Insufficient coins"); setInviteSending(false); return;
     }
-    const { data, error } = await supabase.rpc("battle_find_or_create", { p_mode: modeObj.id });
+    const { data, error } = await supabase.rpc("battle_find_or_create", { p_mode: modeObj.id, p_is_open: false });
     if (error || !data?.ok) {
       flash(data?.error || "Failed to create room"); setInviteSending(false); return;
+    }
+    if (data.role !== "player1") {
+      flash("Invite room unavailable. Try again.");
+      setInviteSending(false);
+      return;
     }
     const roomId = data.room_id;
     setMyRole(data.role);
     setCurrentRoomId(roomId);
+    watchRoom(roomId);
 
     const { ok } = await _insertAndBroadcast(roomId, inviteEmail.trim().toLowerCase());
     if (!ok) flash("Room created but invite failed — share the Room ID manually.");
@@ -631,7 +758,6 @@ export default function BattlePage() {
   }
 
   async function acceptInvite(invite) {
-    await supabase.from("battle_invites").update({ status: "accepted" }).eq("id", invite.id);
     setPendingInvite(null);
     setView("waiting");
     const roomId = invite.room_id;
@@ -642,7 +768,9 @@ export default function BattlePage() {
       setView("lobby");
       return;
     }
+    await supabase.from("battle_invites").update({ status: "accepted" }).eq("id", invite.id);
     setMyRole("player2");
+    watchRoom(roomId);
     await pollRoom(roomId, false);
   }
 
@@ -663,6 +791,7 @@ export default function BattlePage() {
       return;
     }
     setMyRole("player2");
+    watchRoom(rid);
     await pollRoom(rid, false);
   }
 
@@ -700,7 +829,7 @@ export default function BattlePage() {
 
       {/* Header */}
       <div style={S.header}>
-        <button style={S.backBtn} onClick={() => { clearAllTimers(); setView("lobby"); setActiveTab("play"); }}>←</button>
+        <button style={S.backBtn} onClick={goLobby}>←</button>
         <span style={S.headerTitle}>⚔️ 1v1 Battle</span>
         <span style={S.coins}>🪙 {(profile?.total_aidla_coins||0).toLocaleString()}</span>
       </div>
@@ -968,7 +1097,7 @@ export default function BattlePage() {
               @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
               @keyframes wobble{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
             `}</style>
-            <button style={{ ...S.btnGhost, maxWidth:200, margin:"0 auto" }} onClick={() => { clearAllTimers(); setView("lobby"); }}>Cancel</button>
+            <button style={{ ...S.btnGhost, maxWidth:200, margin:"0 auto" }} onClick={goLobby}>Cancel</button>
           </div>
 
           {/* Invite panel — visible while waiting */}

@@ -29,6 +29,7 @@ const playfairDisplay = localFont({
   ],
   variable: "--font-playfair",
   display: "swap",
+  preload: false,
   fallback: ["Georgia", "serif"],
 });
 
@@ -40,6 +41,7 @@ const notoUrdu = localFont({
   ],
   variable: "--font-urdu",
   display: "swap",
+  preload: false,
   fallback: ["serif"],
 });
 

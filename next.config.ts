@@ -13,7 +13,6 @@ const nextConfig: NextConfig = {
       "date-fns",
       "@radix-ui/react-icons",
     ],
-    optimisticClientCache: true,
   },
 
   images: {

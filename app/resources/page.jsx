@@ -1,4 +1,5 @@
 // app/resources/page.jsx
+import { Suspense } from "react";
 import { serverRpc } from "@/lib/supabaseServer";
 import ResourcesClient from "./ResourcesClient";
 
@@ -76,11 +77,13 @@ export default async function ResourcesPage() {
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <ResourcesClient
-        initialMaterials={initialMaterials}
-        initialTotal={initialTotal}
-        initialOptions={initialOptions}
-      />
+      <Suspense fallback={<div style={{ minHeight: "100vh" }} />}>
+        <ResourcesClient
+          initialMaterials={initialMaterials}
+          initialTotal={initialTotal}
+          initialOptions={initialOptions}
+        />
+      </Suspense>
     </>
   );
 }

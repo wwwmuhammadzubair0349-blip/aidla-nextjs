@@ -3,6 +3,8 @@
 // AIDLA Discussion Forum — Reddit-inspired, educational, mobile-first
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -25,6 +27,14 @@ const CATEGORIES = [
 const REPORT_REASONS = [
   "Spam or misleading", "Harassment or bullying", "Hate speech",
   "Sexual content", "Violence", "Misinformation", "Other",
+];
+
+const RANKS = [
+  { key: "learner", label: "Learner", icon: "🌱", color: "#059669", bg: "#ECFDF5" },
+  { key: "achiever", label: "Achiever", icon: "⭐", color: "#D97706", bg: "#FFFBEB" },
+  { key: "champion", label: "Champion", icon: "🔥", color: "#DC2626", bg: "#FEF2F2" },
+  { key: "ambassador", label: "Ambassador", icon: "💎", color: "#7C3AED", bg: "#F5F3FF" },
+  { key: "legend", label: "Legend", icon: "👑", color: "#B45309", bg: "#FFFBEB" },
 ];
 
 const BANNED_WORDS = [
@@ -70,7 +80,7 @@ function parsePost(content) {
 function Avatar({ profile, size = 34 }) {
   const initials = profile?.full_name?.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
   if (profile?.avatar_url) return (
-    <img src={profile.avatar_url} alt={profile.full_name || "User"}
+    <Image src={profile.avatar_url} alt={profile.full_name || "User"} width={size} height={size} unoptimized
       style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
   );
   return (
@@ -85,7 +95,7 @@ function Avatar({ profile, size = 34 }) {
 
 function BlueTick() {
   return (
-    <span title="AIDLA Official" style={{
+    <span title="Verified" style={{
       display: "inline-flex", alignItems: "center", justifyContent: "center",
       width: 14, height: 14, borderRadius: "50%",
       background: "#1d9bf0", marginLeft: 3, flexShrink: 0,
@@ -95,6 +105,20 @@ function BlueTick() {
       </svg>
     </span>
   );
+}
+
+function RankBadge({ profile }) {
+  const rank = RANKS.find(r => r.key === profile?.rank) || RANKS[0];
+  return (
+    <span className="fr-rank-badge" style={{ background: rank.bg, color: rank.color }}>
+      {rank.icon} {rank.label}
+    </span>
+  );
+}
+
+function ProfileLink({ userId, children, className }) {
+  if (!userId) return <span className={className}>{children}</span>;
+  return <Link href={`/user/profile/${userId}`} className={className}>{children}</Link>;
 }
 
 function CategoryBadge({ cat }) {
@@ -139,19 +163,22 @@ function ReportModal({ onClose, onSubmit }) {
 
 // ── Comment ────────────────────────────────────────────────────────────────
 function Comment({ c, currentUserId, isAdmin, postOwnerId, onDelete }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const canDelete = isAdmin || currentUserId === c.user_id || currentUserId === postOwnerId;
   const isAdminComment = c.profiles?.email === ADMIN_EMAIL;
+  const showTick = isAdminComment || c.profiles?.is_verified;
 
   return (
     <div className="fr-comment">
-      <Avatar profile={c.profiles} size={26} />
+      <ProfileLink userId={c.user_id} className="fr-author-link">
+        <Avatar profile={c.profiles} size={26} />
+      </ProfileLink>
       <div className="fr-comment-body">
         <div className="fr-comment-header">
-          <span className="fr-comment-name">
+          <ProfileLink userId={c.user_id} className="fr-comment-name">
             {isAdminComment ? "AIDLA_Official" : (c.profiles?.full_name || "User")}
-            {isAdminComment && <BlueTick />}
-          </span>
+            {showTick && <BlueTick />}
+          </ProfileLink>
+          <RankBadge profile={c.profiles} />
           <span className="fr-comment-time">{timeAgo(c.created_at)}</span>
           {canDelete && (
             <button className="fr-comment-del" onClick={() => onDelete(c.id)} aria-label="Delete comment">🗑</button>
@@ -164,7 +191,7 @@ function Comment({ c, currentUserId, isAdmin, postOwnerId, onDelete }) {
 }
 
 // ── Thread Card ────────────────────────────────────────────────────────────
-function ThreadCard({ post, currentUserId, isAdmin, onDelete, onReport, onUpvote }) {
+function ThreadCard({ post, currentUserId, currentProfile, isAdmin, onDelete }) {
   const [comments, setComments]           = useState([]);
   const [showComments, setShowComments]   = useState(false);
   const [commentText, setCommentText]     = useState("");
@@ -179,6 +206,7 @@ function ThreadCard({ post, currentUserId, isAdmin, onDelete, onReport, onUpvote
 
   const isOwner     = currentUserId === post.user_id;
   const isAdminPost = post.profiles?.email === ADMIN_EMAIL;
+  const showTick    = isAdminPost || post.profiles?.is_verified;
   const displayName = isAdminPost ? "AIDLA_Official" : (post.profiles?.full_name || "User");
   const { title, body } = parsePost(post.content);
   const category    = post.feeling || "General";
@@ -212,8 +240,8 @@ function ThreadCard({ post, currentUserId, isAdmin, onDelete, onReport, onUpvote
       .order("created_at", { ascending: true });
     if (!data || data.length === 0) { setComments([]); return; }
     const ids = [...new Set(data.map(c => c.user_id))];
-    const { data: profiles } = await supabase
-      .from("users_profiles").select("user_id,full_name,avatar_url,email").in("user_id", ids);
+      const { data: profiles } = await supabase
+      .from("users_profiles").select("user_id,full_name,avatar_url,email,is_verified,rank").in("user_id", ids);
     const map = Object.fromEntries((profiles || []).map(p => [p.user_id, p]));
     setComments(data.map(c => ({ ...c, profiles: map[c.user_id] || null })));
   };
@@ -232,7 +260,7 @@ function ThreadCard({ post, currentUserId, isAdmin, onDelete, onReport, onUpvote
       .insert({ post_id: post.id, user_id: currentUserId, content: commentText.trim() })
       .select("*").single();
     if (!error && data) {
-      setComments(p => [...p, { ...data, profiles: null }]);
+      setComments(p => [...p, { ...data, profiles: currentProfile }]);
       setCommentCount(c => c + 1);
       setCommentText("");
       setShowComments(true);
@@ -280,11 +308,14 @@ function ThreadCard({ post, currentUserId, isAdmin, onDelete, onReport, onUpvote
         <div className="fr-thread-meta-top">
           <CategoryBadge cat={category} />
           <span className="fr-meta-sep">·</span>
-          <Avatar profile={post.profiles} size={16} />
-          <span className="fr-author-name">
+          <ProfileLink userId={post.user_id} className="fr-author-link">
+            <Avatar profile={post.profiles} size={16} />
+          </ProfileLink>
+          <ProfileLink userId={post.user_id} className="fr-author-name">
             {isAdminPost ? "AIDLA_Official" : displayName}
-            {isAdminPost && <BlueTick />}
-          </span>
+            {showTick && <BlueTick />}
+          </ProfileLink>
+          <RankBadge profile={post.profiles} />
           <span className="fr-meta-sep">·</span>
           <span className="fr-time">{timeAgo(post.created_at)}</span>
 
@@ -401,7 +432,8 @@ function NewThreadModal({ profile, userId, isAdmin, onPosted, onClose }) {
           <div className="fr-compose-modal-title-row">
             <Avatar profile={profile} size={32} />
             <div>
-              <span className="fr-compose-author">{displayName}{isAdmin && <BlueTick />}</span>
+              <span className="fr-compose-author">{displayName}{(isAdmin || profile?.is_verified) && <BlueTick />}</span>
+              <RankBadge profile={profile} />
               <span className="fr-compose-sub">Starting a discussion</span>
             </div>
           </div>
@@ -473,21 +505,7 @@ export default function Forum() {
 
   const isAdmin = userEmail === ADMIN_EMAIL;
 
-  useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { doLoadPosts(0, true, null); return; }
-      setUserId(user.id);
-      setUserEmail(user.email);
-      userIdRef.current = user.id;
-      const { data: p } = await supabase.from("users_profiles")
-        .select("full_name,avatar_url,email").eq("user_id", user.id).single();
-      if (p) setProfile(p);
-      doLoadPosts(0, true, user.id);
-    })();
-  }, []);
-
-  const doLoadPosts = async (pageNum, replace, uid) => {
+  const doLoadPosts = useCallback(async (pageNum, replace, uid) => {
     if (replace) setLoading(true); else setFetchingMore(true);
     const from = pageNum * PAGE_SIZE;
     const to   = from + PAGE_SIZE - 1;
@@ -509,7 +527,7 @@ export default function Forum() {
       const userIds = [...new Set(data.map(p => p.user_id))];
 
       const { data: profileRows } = await supabase
-        .from("users_profiles").select("user_id,full_name,avatar_url,email").in("user_id", userIds);
+        .from("users_profiles").select("user_id,full_name,avatar_url,email,is_verified,rank").in("user_id", userIds);
       const profileMap = Object.fromEntries((profileRows || []).map(p => [p.user_id, p]));
 
       // Upvote counts
@@ -551,16 +569,25 @@ export default function Forum() {
     }
 
     if (replace) setLoading(false); else setFetchingMore(false);
-  };
-
-  const loadPosts = useCallback((pageNum, replace) => {
-    doLoadPosts(pageNum, replace, userIdRef.current);
   }, [activeCategory]);
 
   useEffect(() => {
-    setPage(0);
-    doLoadPosts(0, true, userIdRef.current);
-  }, [activeCategory]);
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { doLoadPosts(0, true, null); return; }
+      setUserId(user.id);
+      setUserEmail(user.email);
+      userIdRef.current = user.id;
+      const { data: p } = await supabase.from("users_profiles")
+        .select("user_id,full_name,avatar_url,email,is_verified,rank").eq("user_id", user.id).single();
+      if (p) setProfile(p);
+      doLoadPosts(0, true, user.id);
+    })();
+  }, [doLoadPosts]);
+
+  const loadPosts = useCallback((pageNum, replace) => {
+    doLoadPosts(pageNum, replace, userIdRef.current);
+  }, [doLoadPosts]);
 
   const hasMoreRef       = useRef(hasMore);
   const isFetchingRef    = useRef(fetchingMore);
@@ -641,10 +668,9 @@ export default function Forum() {
               key={post.id}
               post={post}
               currentUserId={userId}
+              currentProfile={profile}
               isAdmin={isAdmin}
               onDelete={handleDelete}
-              onReport={() => {}}
-              onUpvote={() => {}}
             />
           ))
         )}
@@ -845,6 +871,17 @@ const CSS = `
     color: #334155;
     display: flex;
     align-items: center;
+    gap: 2px;
+    text-decoration: none;
+  }
+  .fr-author-link { display: inline-flex; align-items: center; flex-shrink: 0; text-decoration: none; color: inherit; }
+  .fr-author-name:hover, .fr-comment-name:hover { color: #1e3a8a; text-decoration: underline; }
+  .fr-rank-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    padding: 2px 6px; border-radius: 999px;
+    font-size: 0.6rem; font-weight: 900;
+    border: 1px solid rgba(15,23,42,.06);
+    white-space: nowrap;
   }
   .fr-time { color: #94a3b8; }
 
@@ -949,6 +986,7 @@ const CSS = `
   .fr-comment-name {
     font-weight: 700; font-size: 0.76rem; color: #0f172a;
     display: flex; align-items: center; gap: 2px;
+    text-decoration: none;
   }
   .fr-comment-time { font-size: 0.66rem; color: #94a3b8; font-weight: 500; }
   .fr-comment-del {

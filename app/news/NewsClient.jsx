@@ -57,12 +57,12 @@ const normalizeTag = (t) => t.toLowerCase().trim();
 async function sharePost(title, slug) {
   const url = `${typeof window !== "undefined" ? window.location.origin : ""}/news/${slug}`;
   if (navigator.share) {
-    try { await navigator.share({ title, url }); return; } catch (_) {}
+    try { await navigator.share({ title, url }); return; } catch {}
   }
   try {
     await navigator.clipboard.writeText(url);
     alert("Link copied to clipboard!");
-  } catch (_) {
+  } catch {
     prompt("Copy this link:", url);
   }
 }
@@ -92,17 +92,23 @@ function useDarkMode() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    const isDark = localStorage.getItem("aidla_theme") === "dark";
-    setDark(isDark);
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    const t = setTimeout(() => {
+      const isDark = localStorage.getItem("aidla_theme") === "dark";
+      setDark(isDark);
+      setMounted(true);
+      document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    }, 0);
+    return () => {
+      clearTimeout(t);
+      document.documentElement.removeAttribute("data-theme");
+    };
   }, []);
 
   const toggle = useCallback(() => {
     setDark(prev => {
       const next = !prev;
       document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
-      try { localStorage.setItem("aidla_theme", next ? "dark" : "light"); } catch (_) {}
+      try { localStorage.setItem("aidla_theme", next ? "dark" : "light"); } catch {}
       return next;
     });
   }, []);
@@ -414,30 +420,6 @@ function NewsCard({ post, index, bookmarks, onBookmark, onShare }) {
 }
 
 /* ══════════════════════════════════════════════
-   SKELETON — matches existing news.css skel-bg
-══════════════════════════════════════════════ */
-function SkeletonCard() {
-  return (
-    <div className="news-card" aria-hidden="true">
-      {/* Thumbnail placeholder */}
-      <div
-        className="news-img-wrap skel-bg"
-        style={{ background: "none" }}
-      />
-      <div className="news-content">
-        <div className="skel-bg" style={{ height: "16px", width: "80%", marginBottom: "8px" }} />
-        <div className="skel-bg" style={{ height: "12px", width: "100%", marginBottom: "6px" }} />
-        <div className="skel-bg" style={{ height: "12px", width: "60%", marginBottom: "12px" }} />
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div className="skel-bg" style={{ height: "20px", width: "70px", borderRadius: "10px" }} />
-          <div className="skel-bg" style={{ height: "14px", width: "35px" }} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ══════════════════════════════════════════════
    MAIN CLIENT COMPONENT
    Props: initialPosts (server-fetched), fetchError (bool)
 ══════════════════════════════════════════════ */
@@ -446,7 +428,11 @@ export default function NewsClient({ initialPosts, fetchError }) {
 
   // Bookmarks — client only, avoid SSR mismatch
   const [bookmarks, setBookmarks] = useState([]);
-  useEffect(() => { setBookmarks(getBookmarks()); }, []);
+  const filterKeyRef = useRef("");
+  useEffect(() => {
+    const t = setTimeout(() => setBookmarks(getBookmarks()), 0);
+    return () => clearTimeout(t);
+  }, []);
 
   // Filters & sort
   const [search,    setSearch]    = useState("");
@@ -458,11 +444,21 @@ export default function NewsClient({ initialPosts, fetchError }) {
   const [page,        setPage]        = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
   const sentinelRef = useRef(null);
+  const loadTimerRef = useRef(null);
 
   const debouncedSearch = useDebounce(search, 300);
 
   // Reset pagination whenever filters change
-  useEffect(() => { setPage(1); }, [debouncedSearch, activeTag, activeCat, sort]);
+  useEffect(() => {
+    const key = `${debouncedSearch}|${activeTag}|${activeCat}|${sort}`;
+    if (!filterKeyRef.current) {
+      filterKeyRef.current = key;
+      return undefined;
+    }
+    filterKeyRef.current = key;
+    const t = setTimeout(() => setPage(1), 0);
+    return () => clearTimeout(t);
+  }, [debouncedSearch, activeTag, activeCat, sort]);
 
   /* ── Derived data ── */
 
@@ -543,19 +539,29 @@ export default function NewsClient({ initialPosts, fetchError }) {
 
   /* ── Infinite scroll ── */
   useEffect(() => {
-    if (!sentinelRef.current || !hasMore) return;
+    const node = sentinelRef.current;
+    if (!node || !hasMore) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !loadingMore) {
+        if (entry.isIntersecting && !loadingMore && !loadTimerRef.current) {
           setLoadingMore(true);
-          // Small delay keeps the UI from jumping
-          setTimeout(() => { setPage(p => p + 1); setLoadingMore(false); }, 400);
+          loadTimerRef.current = setTimeout(() => {
+            setPage(p => p + 1);
+            setLoadingMore(false);
+            loadTimerRef.current = null;
+          }, 250);
         }
       },
       { rootMargin: "200px" }
     );
-    observer.observe(sentinelRef.current);
-    return () => observer.disconnect();
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+      if (loadTimerRef.current) {
+        clearTimeout(loadTimerRef.current);
+        loadTimerRef.current = null;
+      }
+    };
   }, [hasMore, loadingMore, visibleList.length]);
 
   /* ── Handlers ── */
@@ -835,7 +841,7 @@ export default function NewsClient({ initialPosts, fetchError }) {
             {!hasMore && filtered.length > 1 && (
               <div className="news-end-message" aria-live="polite">
                 <div className="news-end-line" />
-                <span>You're all caught up ✦</span>
+                <span>You&apos;re all caught up ✦</span>
                 <div className="news-end-line" />
               </div>
             )}
@@ -874,7 +880,7 @@ export default function NewsClient({ initialPosts, fetchError }) {
                 </span>
                 <h2 className="news-empty-title">No News Yet</h2>
                 <p style={{ color: "var(--text-secondary)", margin: 0, fontSize: "0.85rem" }}>
-                  We're preparing the latest news. Check back soon!
+                  We&apos;re preparing the latest news. Check back soon!
                 </p>
               </motion.div>
             )}

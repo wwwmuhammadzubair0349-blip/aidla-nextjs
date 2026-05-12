@@ -2,6 +2,13 @@
 import { notFound }    from "next/navigation";
 import { serverFetch } from "@/lib/supabaseServer";
 import FaqPageClient   from "./FaqPageClient";
+import {
+  buildBreadcrumbSchema,
+  buildFAQSchema,
+  buildFounderSchema,
+  buildGraph,
+  buildWebPageSchema,
+} from "@/lib/schemas";
 
 export const revalidate = 60;
 
@@ -78,12 +85,15 @@ export default async function FAQSlugPage({ params }) {
 
   const canonical = `${SITE_URL}/faqs/${faq.slug}`;
 
-  /* ── JSON-LD: QAPage ── */
+  const plainAnswer = faq.answer.replace(/<[^>]+>/g, "").trim();
+
   const qaSchema = {
-    "@context":  "https://schema.org",
     "@type":     "QAPage",
+    "@id":       `${canonical}#qapage`,
+    url:         canonical,
     mainEntity: {
       "@type":       "Question",
+      "@id":         `${canonical}#question`,
       name:          faq.question,
       text:          faq.question,
       dateCreated:   faq.created_at,
@@ -95,7 +105,8 @@ export default async function FAQSlugPage({ params }) {
       },
       acceptedAnswer: {
         "@type":       "Answer",
-        text:          faq.answer.replace(/<[^>]+>/g, "").trim(),
+        "@id":         `${canonical}#answer`,
+        text:          plainAnswer,
         dateCreated:   faq.updated_at || faq.created_at,
         upvoteCount:   faq.helpful_yes,
         url:           canonical,
@@ -108,37 +119,28 @@ export default async function FAQSlugPage({ params }) {
     },
   };
 
-  /* ── JSON-LD: BreadcrumbList ── */
-  const breadcrumbSchema = {
-    "@context": "https://schema.org",
-    "@type":    "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "FAQs", item: `${SITE_URL}/faqs` },
-      { "@type": "ListItem", position: 3, name: faq.question, item: canonical },
-    ],
-  };
-
-  /* ── JSON-LD: Speakable (voice search) ── */
-  const speakableSchema = {
-    "@context": "https://schema.org",
-    "@type":    "SpeakableSpecification",
-    cssSelector:  ["h1", ".faqp-answer-text"],
-  };
+  const jsonLd = buildGraph(
+    buildWebPageSchema({
+      path: `/faqs/${faq.slug}`,
+      name: `${faq.question} - AIDLA FAQ`,
+      description: plainAnswer.slice(0, 155),
+      dateModified: (faq.updated_at || faq.created_at || "").slice(0, 10),
+      speakableSelectors: [".faqp-hero-title", ".faqp-answer-text"],
+    }),
+    buildBreadcrumbSchema(
+      [{ name: "Home", url: "/" }, { name: "FAQs", url: "/faqs" }, { name: faq.question, url: `/faqs/${faq.slug}` }],
+      `/faqs/${faq.slug}`,
+    ),
+    buildFAQSchema([{ question: faq.question, answer: plainAnswer }]),
+    qaSchema,
+    buildFounderSchema(),
+  );
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(qaSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <FaqPageClient faq={faq} />
     </>

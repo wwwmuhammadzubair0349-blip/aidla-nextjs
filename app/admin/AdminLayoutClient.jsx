@@ -233,6 +233,7 @@ export default function AdminLayout({ children }) {
             <Tab to="/admin/AutoNewsTab"          label="Auto News"         />
             <Tab to="/admin/dailyquizz"           label="Daily Quizz"       />
             <Tab to="/admin/battle"               label="Battle Arena"      />
+            <Tab to="/admin/AdminProjects"             label="Projects"          />
           </nav>
         </div>
       </header>

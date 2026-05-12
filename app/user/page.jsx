@@ -305,6 +305,7 @@ export default function UserDashboard() {
         <RegCard title="Test"      subtitle="Testing & assessments"          icon="✅" to="/user/test"         iconClass="ic-blue" />
         <RegCard title="Resources" subtitle="Study materials & past papers"   icon="📚" to="/user/resources" iconClass="ic-blue" />
         <RegCard title="Mining"    subtitle="Start mining AIDLA coins"        icon="💎" to="/user/mining"        iconClass="ic-blue" />
+        <RegCard title="Projects"   subtitle="Explore project ideas & FYP help" icon="🛠️" to="/user/projects"       iconClass="ic-blue" />
       </Section>
 
       {/* Earn & Play */}

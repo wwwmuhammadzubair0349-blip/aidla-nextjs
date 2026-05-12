@@ -5,14 +5,14 @@
 
 /* ── Variables (same as faqs.css) ─────────────────────────── */
 :root {
-  --faqp-navy:      #0b1437;
-  --faqp-blue:      #1a3a8f;
-  --faqp-blue-mid:  #2563eb;
+  --faqp-navy:      #0f172a;
+  --faqp-blue:      #1e3a8a;
+  --faqp-blue-mid:  #1e3a8a;
   --faqp-accent:    #f59e0b;
   --faqp-green:     #10b981;
   --faqp-bg:        #f9fafb;
   --faqp-white:     #ffffff;
-  --faqp-border:    rgba(59,130,246,0.12);
+  --faqp-border:    #fed7aa;
   --faqp-text:      #1e293b;
   --faqp-muted:     #64748b;
   --faqp-radius:    16px;
@@ -27,7 +27,7 @@
 .faqp-page {
   font-family: var(--faqp-font-body);
   color: var(--faqp-text);
-  background: var(--faqp-bg);
+  background: #f8fafc;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeSpeed;
@@ -38,15 +38,16 @@
   position: relative;
   overflow: hidden;
   padding: clamp(28px,4vw,44px) clamp(16px,4vw,28px) clamp(28px,4vw,44px);
-  background: linear-gradient(135deg, var(--faqp-navy) 0%, #1a3a8f 55%, #1e40af 100%);
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 55%, #fde68a 100%);
+  border-bottom: 1px solid #f0c96a;
 }
 
 .faqp-hero-bg {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 15% 85%, rgba(245,158,11,0.15) 0%, transparent 50%),
-    radial-gradient(circle at 85% 15%, rgba(37,99,235,0.3) 0%, transparent 50%),
+    radial-gradient(circle at 15% 85%, rgba(245,158,11,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, rgba(15,23,42,0.08) 0%, transparent 50%),
     url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   pointer-events: none;
 }
@@ -69,23 +70,23 @@
   padding: 0; margin: 0;
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.55);
+  color: rgba(15,23,42,0.55);
 }
 .faqp-breadcrumb a {
-  color: rgba(255,255,255,0.7);
+  color: rgba(15,23,42,0.7);
   text-decoration: none;
   transition: color var(--faqp-trans);
 }
-.faqp-breadcrumb a:hover { color: #fff; }
+.faqp-breadcrumb a:hover { color: #0f172a; }
 
 /* Category badge */
 .faqp-cat-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(245,158,11,0.2);
-  border: 1px solid rgba(245,158,11,0.35);
-  color: #fcd34d;
+  background: #f59e0b;
+  border: 1px solid rgba(15,23,42,0.08);
+  color: #0f172a;
   padding: 4px 12px;
   border-radius: 30px;
   font-size: 0.75rem;
@@ -99,7 +100,7 @@
   font-family: var(--faqp-font-head);
   font-size: clamp(1.4rem, 5vw, 2.2rem);
   font-weight: 900;
-  color: #fff;
+  color: #0f172a;
   line-height: 1.25;
   margin: 0 0 16px;
   letter-spacing: -0.02em;
@@ -112,7 +113,7 @@
   gap: 8px;
   flex-wrap: wrap;
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.65);
+  color: rgba(15,23,42,0.62);
   font-weight: 600;
 }
 .faqp-meta-dot { opacity: 0.4; }
@@ -128,7 +129,7 @@
 .faqp-answer-card {
   background: var(--faqp-white);
   border-radius: var(--faqp-radius);
-  border: 1.5px solid var(--faqp-border);
+  border: 1.5px solid #fed7aa;
   padding: 24px 20px 20px;
   box-shadow: var(--faqp-shadow-lg);
   margin-bottom: 16px;
@@ -183,19 +184,19 @@
 }
 
 .faqp-answer-text strong {
-  color: #0b1437;
+  color: #0f172a;
   font-weight: 700;
 }
 
 .faqp-answer-text a {
-  color: #1a3a8f;
+  color: #1e3a8a;
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color 0.2s;
 }
 
-.faqp-answer-text a:hover { color: #3b82f6; }
+.faqp-answer-text a:hover { color: #f59e0b; }
 
 .faqp-answer-text blockquote {
   border-left: 4px solid #f59e0b;
@@ -248,7 +249,7 @@
   flex-wrap: wrap;
   background: var(--faqp-white);
   border-radius: var(--faqp-radius);
-  border: 1.5px solid var(--faqp-border);
+  border: 1.5px solid #fed7aa;
   padding: 14px 20px;
   margin-bottom: 24px;
   box-shadow: var(--faqp-shadow);
@@ -285,8 +286,8 @@
   min-height: 36px;
 }
 .faqp-vote-btn:hover {
-  border-color: rgba(26,58,143,0.3);
-  background: rgba(26,58,143,0.04);
+  border-color: #fed7aa;
+  background: #fff7ed;
 }
 .faqp-vote-btn--active.faqp-vote-btn--yes {
   background: linear-gradient(135deg, #dcfce7, #bbf7d0);
@@ -334,7 +335,7 @@
 .faqp-related {
   background: var(--faqp-white);
   border-radius: var(--faqp-radius);
-  border: 1.5px solid var(--faqp-border);
+  border: 1.5px solid #fed7aa;
   padding: 20px;
   margin-bottom: 24px;
   box-shadow: var(--faqp-shadow);
@@ -361,16 +362,16 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  background: #f8faff;
-  border: 1.5px solid var(--faqp-border);
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
   border-radius: 10px;
   text-decoration: none;
   transition: border-color var(--faqp-trans), background var(--faqp-trans), transform var(--faqp-trans);
   will-change: transform;
 }
 .faqp-related-card:hover {
-  border-color: rgba(26,58,143,0.3);
-  background: #f0f4ff;
+  border-color: rgba(245,158,11,0.5);
+  background: #fffbeb;
   transform: translateX(3px);
 }
 .faqp-related-q {
@@ -419,7 +420,7 @@
 .faqp-ask-wrap {
   background: var(--faqp-white);
   border-radius: 20px;
-  border: 2px solid rgba(26,58,143,0.12);
+  border: 2px solid #fed7aa;
   padding: 24px 20px;
   box-shadow: var(--faqp-shadow-lg);
   position: relative;
@@ -441,7 +442,7 @@
 .faqp-ask-icon {
   font-size: 1.8rem;
   width: 48px; height: 48px;
-  background: linear-gradient(135deg, #f0f4ff, #dbeafe);
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -477,7 +478,7 @@
 .faqp-input {
   width: 100%;
   padding: 10px 13px;
-  border: 1.5px solid rgba(26,58,143,0.15);
+  border: 1.5px solid #fed7aa;
   border-radius: 10px;
   font-size: 1rem;
   font-family: var(--faqp-font-body);
@@ -490,12 +491,12 @@
 }
 .faqp-input:focus {
   border-color: var(--faqp-blue-mid);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.14);
 }
 .faqp-textarea {
   width: 100%;
   padding: 10px 13px;
-  border: 1.5px solid rgba(26,58,143,0.15);
+  border: 1.5px solid #fed7aa;
   border-radius: 10px;
   font-size: 1rem;
   font-family: var(--faqp-font-body);
@@ -510,7 +511,7 @@
 }
 .faqp-textarea:focus {
   border-color: var(--faqp-blue-mid);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.14);
 }
 .faqp-char-count {
   font-size: 0.72rem;
@@ -575,7 +576,7 @@
 }
 .faqp-skeleton-line {
   height: 14px;
-  background: linear-gradient(90deg, #e2e8f0 25%, #f0f4ff 50%, #e2e8f0 75%);
+  background: linear-gradient(90deg, #fed7aa 25%, #fff7ed 50%, #fed7aa 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 4px;
@@ -648,7 +649,7 @@
 .ask-form-wrap {
   background: var(--faqp-white);
   border-radius: 20px;
-  border: 2px solid rgba(26,58,143,0.12);
+  border: 2px solid #fed7aa;
   padding: 24px 20px;
   box-shadow: var(--faqp-shadow-lg);
   position: relative;
@@ -670,7 +671,7 @@
 .ask-form-icon {
   font-size: 1.8rem;
   width: 48px; height: 48px;
-  background: linear-gradient(135deg, #f0f4ff, #dbeafe);
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -698,27 +699,27 @@
 .ask-input {
   width: 100%;
   padding: 10px 13px;
-  border: 1.5px solid rgba(26,58,143,0.15);
+  border: 1.5px solid #fed7aa;
   border-radius: 10px;
   font-size: 1rem;
   font-family: var(--faqp-font-body);
   color: var(--faqp-navy);
-  background: #fafbff;
+  background: #fff;
   outline: none;
   transition: border-color var(--faqp-trans), box-shadow var(--faqp-trans);
   box-sizing: border-box;
   margin-bottom: 14px;
 }
-.ask-input:focus { border-color: var(--faqp-blue-mid); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.ask-input:focus { border-color: var(--faqp-accent); box-shadow: 0 0 0 3px rgba(245,158,11,0.14); }
 .ask-textarea {
   width: 100%;
   padding: 10px 13px;
-  border: 1.5px solid rgba(26,58,143,0.15);
+  border: 1.5px solid #fed7aa;
   border-radius: 10px;
   font-size: 1rem;
   font-family: var(--faqp-font-body);
   color: var(--faqp-navy);
-  background: #fafbff;
+  background: #fff;
   outline: none;
   resize: vertical;
   min-height: 100px;
@@ -726,7 +727,7 @@
   box-sizing: border-box;
   line-height: 1.6;
 }
-.ask-textarea:focus { border-color: var(--faqp-blue-mid); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.ask-textarea:focus { border-color: var(--faqp-accent); box-shadow: 0 0 0 3px rgba(245,158,11,0.14); }
 .ask-char-count { font-size: 0.72rem; color: var(--faqp-muted); font-weight: 600; text-align: right; margin-bottom: 14px; }
 .ask-submit {
   width: 100%;

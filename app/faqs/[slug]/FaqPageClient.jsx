@@ -139,7 +139,7 @@ function AskForm() {
               Your question is similar to an existing FAQ:
             </p>
             <div style={{ background: "#f0f4ff", border: "1.5px solid rgba(26,58,143,0.15)", borderRadius: 12, padding: "12px 16px", marginBottom: 20, fontSize: "0.9rem", fontWeight: 700, color: "#0b1437", lineHeight: 1.4 }}>
-              "{duplicate.question}"
+              &quot;{duplicate.question}&quot;
             </div>
             <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
               <Link href={`/faqs/${duplicate.slug}`} style={{ padding: "10px 22px", borderRadius: 30, background: "linear-gradient(135deg,#0b1437,#1a3a8f)", color: "#fff", textDecoration: "none", fontWeight: 800, fontSize: "0.88rem" }}>
@@ -160,7 +160,7 @@ function AskForm() {
         <div className="ask-form-header">
           <span className="ask-form-icon" aria-hidden="true">💬</span>
           <div>
-            <h2 className="ask-form-title">Can't find your answer?</h2>
+            <h2 className="ask-form-title">Can&apos;t find your answer?</h2>
             <p className="ask-form-sub">Ask us — our team will answer and publish it to help others.</p>
           </div>
         </div>
@@ -206,6 +206,7 @@ export default function FaqPageClient({ faq: initialFaq }) {
 
   // Set contentReady after mount to replace skeleton with real content
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setContentReady(true);
   }, []);
 

@@ -173,7 +173,7 @@ const nextConfig: NextConfig = {
               // KEY CHANGE: was specific domains, now https: allows all https image sources
               "img-src 'self' data: blob: https:; " +
               "font-src 'self'; " +
-              "connect-src 'self' https://*.supabase.co https://api.anthropic.com; " +
+              "connect-src 'self' https://aidla.online https://www.aidla.online https://*.supabase.co https://api.anthropic.com; " +
               "frame-ancestors 'none';" +
               (isProduction ? " upgrade-insecure-requests;" : ""),
           },

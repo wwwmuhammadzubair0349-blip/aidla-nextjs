@@ -1,4 +1,4 @@
-﻿// app/resources/page.jsx
+// app/resources/page.jsx
 import { serverRpc } from "@/lib/supabaseServer";
 import ResourcesClient from "./ResourcesClient";
 
@@ -7,18 +7,18 @@ export const revalidate = 60;
 const SITE_URL = "https://www.aidla.online";
 
 export const metadata = {
-  title: "Free Study Materials — Notes, Past Papers & Books | AIDLA",
+  title: "Free Study & Career Resources, Notes, PDFs, Books | AIDLA",
   description:
-    "Access and download thousands of free study materials, notes, past papers, thesis, templates and books on AIDLA. Organized by subject, university and class level.",
+    "Access free study materials, career resources, notes, PDFs, books, thesis, templates and professional learning resources organized by subject and level.",
   keywords:[
-    "study materials Pakistan", "free notes", "past papers", "thesis", "templates",
-    "free books", "AIDLA resources", "Pakistan education resources",
+    "free study materials", "career resources", "free notes", "PDF resources", "thesis", "templates",
+    "free books", "AIDLA resources", "professional learning resources", "global education resources",
   ],
   robots: { index: true, follow: true, "max-image-preview": "large" },
   alternates: { canonical: `${SITE_URL}/resources` },
   openGraph: {
-    title: "Free Study Materials — Notes, Past Papers & Books | AIDLA",
-    description: "Download free notes, past papers, thesis and books organized by subject and class.",
+    title: "Free Study & Career Resources � AIDLA",
+    description: "Download free notes, PDFs, thesis, books, templates and career resources organized by subject and level.",
     type: "website",
     url: `${SITE_URL}/resources`,
     siteName: "AIDLA",
@@ -27,8 +27,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Study Materials — AIDLA",
-    description: "Download free notes, past papers, thesis and books.",
+    title: "Free Study & Career Resources � AIDLA",
+    description: "Download free notes, PDFs, thesis, books, templates and career resources.",
     images:[`${SITE_URL}/og-home.jpg`],
   },
 };
@@ -42,7 +42,7 @@ export default async function ResourcesPage({ searchParams }) {
   let class_level = "";
   let year = "";
   let page = 1;
-  
+
   if (searchParams) {
     const params = await searchParams;
     q = params?.q || "";
@@ -77,8 +77,8 @@ export default async function ResourcesPage({ searchParams }) {
     "@type": "CollectionPage",
     "@id": `${SITE_URL}/resources${category ? `?category=${category}` : ""}`,
     url: `${SITE_URL}/resources`,
-    name: `Free Study Materials ${category ? `- ${category.toUpperCase()}` : "— Notes, Past Papers & Books"}`,
-    description: "Free study materials including notes, past papers, thesis, templates and books.",
+    name: `Free Study Materials ${category ? `- ${category.toUpperCase()}` : "� Notes, Past Papers & Books"}`,
+    description: "Free study and career materials including notes, PDFs, thesis, templates, books, and professional learning resources.",
     isPartOf: { "@id": `${SITE_URL}/#website` },
     inLanguage: "en",
   };
@@ -96,9 +96,9 @@ export default async function ResourcesPage({ searchParams }) {
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <ResourcesClient 
-        initialMaterials={initialMaterials} 
-        initialTotal={initialTotal} 
+      <ResourcesClient
+        initialMaterials={initialMaterials}
+        initialTotal={initialTotal}
         initialOptions={initialOptions}
       />
     </>

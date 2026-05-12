@@ -67,8 +67,8 @@ export async function generateMetadata({ searchParams }) {
   }
 
   return {
-    title: "Free AI Interview Prep 2026 — Practice Questions & Model Answers | No Sign-Up | AIDLA Pakistan",
-    description: "AI interview prep that generates likely questions + model answers for any job role. Technical, behavioral, HR & situational rounds. 50+ industries, all experience levels. Better than LinkedIn Premium ($40/mo) — 100% free forever. No sign-up. Perfect for Pakistan (Rozee.pk, PPSC, FPSC), UAE (Bayt.com, MOHRE) & worldwide.",
+    title: "Free AI Interview Prep 2026 — Practice Questions & Model Answers | No Sign-Up | AIDLA",
+    description: "AI interview prep that generates likely questions + model answers for any job role. Technical, behavioral, HR & situational rounds. 50+ industries, all experience levels. Better than LinkedIn Premium ($40/mo) — 100% free forever. No sign-up. Perfect for freshers, professionals and career switchers worldwide.",
     keywords: [
       "free AI interview prep 2026", "interview questions generator free no sign up", "AI interview practice tool",
       "job interview questions and answers free 2026", "mock interview AI free",
@@ -120,8 +120,8 @@ export async function generateMetadata({ searchParams }) {
       "geo.placename": "Pakistan",
       "geo.position": "30.3753;69.3451",
       "ICBM": "30.3753, 69.3451",
-      "DC.title": "Free AI Interview Prep 2026 — Practice Questions & Model Answers | AIDLA Pakistan",
-      "DC.description": "AI interview preparation with questions & answers for any job role. Technical, behavioral, HR rounds. Free for Pakistan, UAE & global job seekers. No sign-up.",
+      "DC.title": "Free AI Interview Prep 2026 — Practice Questions & Model Answers | AIDLA",
+      "DC.description": "AI interview preparation with questions & answers for any job role. Technical, behavioral, HR rounds. Free for global job seekers. No sign-up.",
       "DC.subject": "AI interview prep, interview questions generator, job interview practice, Pakistan PPSC FPSC, UAE Bayt.com interview, Rozee.pk, free career tools 2026",
       "DC.language": "en",
       "DC.coverage": "Pakistan, UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman, GCC, UK, US, Canada, India, Worldwide",
@@ -148,7 +148,7 @@ function InterviewPrepJsonLd() {
       "Pakistan Job Interview Prep PPSC FPSC", "UAE Interview Questions AI Bayt",
       "Free Interview Prep No Sign Up", "AI STAR Method Practice Tool",
     ],
-    description: "AI interview prep tool that generates likely interview questions and model answers for any job role, industry, or experience level. Covers technical, behavioral, HR, and situational rounds. 50+ industries, 100+ job roles, all experience levels. 100% free forever — better than LinkedIn Premium ($40/mo). No sign-up. Optimized for Pakistan (Rozee.pk, PPSC, FPSC) and UAE (Bayt.com, MOHRE, Naukrigulf) job markets.",
+    description: "AI interview prep tool that generates likely interview questions and model answers for any job role, industry, or experience level. Covers technical, behavioral, HR, and situational rounds. 50+ industries, 100+ job roles, all experience levels. 100% free forever — better than LinkedIn Premium ($40/mo). No sign-up. Optimized for freshers, professionals, career switchers, and global job markets.",
     url: pageUrl,
     applicationCategory: "ProductivityApplication",
     operatingSystem: "Web Browser",

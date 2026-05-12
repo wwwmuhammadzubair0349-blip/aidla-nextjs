@@ -1,4 +1,4 @@
-﻿// app/courses/page.jsx
+// app/courses/page.jsx
 import { Suspense } from "react";
 import { serverFetch } from "@/lib/supabaseServer";
 import CoursesClient from "./CoursesClient";
@@ -11,21 +11,21 @@ function toSlug(title = "") {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    Static metadata (crawled by every bot)
-───────────────────────────────────────────── */
+--------------------------------------------- */
 export const metadata = {
-  title: "Online Courses | AIDLA — Learn, Earn & Grow",
+  title: "Online Courses for AI, Data, Career & Startup Skills | AIDLA",
   description:
-    "Browse free and paid online courses on AIDLA. Learn AI, DataScience, Electrical Engineering, IT, Technical Skills and more. Earn coins and certificates as you learn.",
+    "Explore AI, data analytics, AI engineering, medical, power electronics, career switching, startup, mentoring and professional courses from school to master level.",
   keywords:
-    "AIDLA courses, free online courses Pakistan, learn online, earn coins, certificates, AI, data analytics, Electrical engineering, IT courses, technical skills, online learning platform Pakistan",
+    "AIDLA courses, online courses, AI for beginners, AI engineer course, data analytics, medical courses, power electronics, career switching, startup advice, career mentoring, certificates",
   robots: { index: true, follow: true },
   alternates: { canonical: `${SITE_URL}/courses` },
   openGraph: {
-    title: "Online Courses — AIDLA",
+    title: "Online Courses for AI, Data, Career & Startup Skills � AIDLA",
     description:
-      "Browse expert-led courses, earn coins, and get verified certificates on AIDLA — Pakistan's #1 Online educational platform.",
+      "Browse courses for students, freshers, professionals, career switchers, founders and lifelong learners.",
     type: "website",
     url: `${SITE_URL}/courses`,
     images:[{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630 }],
@@ -33,29 +33,29 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Online Courses — AIDLA",
+    title: "Online Courses for Career Growth � AIDLA",
     description:
       "Browse expert-led courses, earn coins, and get verified certificates on AIDLA.",
     images:[`${SITE_URL}/og-home.jpg`],
   },
 };
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    Page
-───────────────────────────────────────────── */
+--------------------------------------------- */
 export default async function CoursesPage({ searchParams }) {
-  // ✅ FIXED: Safely handle searchParams — can be undefined when bots hit /courses directly
+  // ? FIXED: Safely handle searchParams � can be undefined when bots hit /courses directly
   let level = "all";
   let sort = "newest";
   let q = "";
-  
+
   try {
     const params = searchParams ? await searchParams : {};
     level = params?.level || "all";
     sort = params?.sort || "newest";
     q = params?.q || "";
   } catch (e) {
-    // If searchParams fails, use defaults — don't block the page
+    // If searchParams fails, use defaults � don't block the page
     console.warn("Failed to parse searchParams:", e);
   }
 
@@ -66,7 +66,7 @@ export default async function CoursesPage({ searchParams }) {
   });
 
   const courses = coursesData || [];
-  
+
   // Filter courses on server for SEO
   let filteredCourses = courses;
   if (level !== "all") {
@@ -80,7 +80,7 @@ export default async function CoursesPage({ searchParams }) {
       c.subject?.toLowerCase().includes(query)
     );
   }
-  
+
   // Sort
   if (sort === "newest") {
     filteredCourses.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -89,12 +89,12 @@ export default async function CoursesPage({ searchParams }) {
   } else if (sort === "title") {
     filteredCourses.sort((a, b) => a.title.localeCompare(b.title));
   }
-  
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: `AIDLA Online Courses ${level !== "all" ? `- ${level.toUpperCase()}` : ""}`,
-    description: "Free and paid online courses on AIDLA — Pakistan's #1 educational rewards platform.",
+    description: "Online courses on AIDLA for AI, data analytics, medical fields, power electronics, career switching, startup skills, mentoring, certificates and rewards.",
     url: `${SITE_URL}/courses${level !== "all" ? `?level=${level}` : ""}`,
     itemListElement: filteredCourses
       .slice(0, 15) // Limit to 15 for schema
@@ -127,11 +127,11 @@ export default async function CoursesPage({ searchParams }) {
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <Suspense fallback={<CoursesPageSkeleton />}>
-        <CoursesClient 
-          initialCourses={filteredCourses} 
-          initialLevel={level} 
-          initialSort={sort} 
-          initialSearch={q} 
+        <CoursesClient
+          initialCourses={filteredCourses}
+          initialLevel={level}
+          initialSort={sort}
+          initialSearch={q}
         />
       </Suspense>
     </>

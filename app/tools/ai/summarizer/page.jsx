@@ -47,7 +47,7 @@ export async function generateMetadata({ searchParams }) {
     const langLabel = language === "Urdu (اردو)" ? "Urdu" : language === "Arabic (عربي)" ? "Arabic" : language;
     return {
       title: `Free ${langLabel} AI Text Summarizer 2026 — Summarize in ${langLabel} | AIDLA`,
-      description: `Summarize any text in ${langLabel} with AI. Short, medium, long and bullet formats. ${langLabel === "Urdu" ? "Best for Pakistan: HEC research papers, Dawn news, Urdu academic content, UrduPoint articles." : langLabel === "Arabic" ? "UAE, Saudi Arabia, GCC business and academic Arabic content, Gulf News, Al Arabiya." : ""} 100% free, no sign-up.`,
+      description: `Summarize any text in ${langLabel} with AI. Short, medium, long and bullet formats. ${langLabel === "Urdu" ? "Best for academic and professional use: HEC research papers, Dawn news, Urdu academic content, UrduPoint articles." : langLabel === "Arabic" ? "UAE, Saudi Arabia, GCC business and academic Arabic content, Gulf News, Al Arabiya." : ""} 100% free, no sign-up.`,
       keywords: [`${langLabel.toLowerCase()} text summarizer AI free 2026`, `summarize in ${langLabel.toLowerCase()}`, `${langLabel.toLowerCase()} article summary tool`, "multilingual AI summarizer free", "free summary generator multilingual"].join(", "),
     };
   }
@@ -102,7 +102,7 @@ export async function generateMetadata({ searchParams }) {
     },
     openGraph: {
       title: "Free AI Text Summarizer 2026 — Better Than TLDR This | No Sign-Up | AIDLA",
-      description: "AI summarizes any text in Short, Medium, Long or Bullet formats. No word limit, no login, 100% free forever. Best for Pakistan, UAE & worldwide.",
+      description: "AI summarizes any text in Short, Medium, Long or Bullet formats. No word limit, no login, 100% free forever. Best for learners and professionals worldwide.",
       type: "website",
       url: "https://www.aidla.online/tools/ai/summarizer",
       images: [{ url: "https://www.aidla.online/og-summarizer.jpg", width: 1200, height: 630, alt: "AIDLA Free AI Text Summarizer 2026 — Summarize Any Article Instantly", type: "image/jpeg" }],
@@ -122,8 +122,8 @@ export async function generateMetadata({ searchParams }) {
       "geo.placename": "Pakistan",
       "geo.position": "30.3753;69.3451",
       "ICBM": "30.3753, 69.3451",
-      "DC.title": "Free AI Text Summarizer 2026 — Article & Document Summary Generator | AIDLA Pakistan",
-      "DC.description": "AI text summarizer with 4 formats, no word limit, no sign-up. Best free alternative to TLDR This and QuillBot Summarizer for Pakistan, UAE & worldwide.",
+      "DC.title": "Free AI Text Summarizer 2026 — Article & Document Summary Generator | AIDLA",
+      "DC.description": "AI text summarizer with 4 formats, no word limit, no sign-up. Best free alternative to TLDR This and QuillBot Summarizer for users worldwide.",
       "DC.subject": "AI text summarizer, article summarizer, document summary, Pakistan HEC summarizer, UAE text tool, Dawn news summarizer, free summary generator 2026",
       "DC.language": "en",
       "DC.coverage": "Pakistan, UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman, GCC, UK, US, Canada, Worldwide",
@@ -194,8 +194,8 @@ function SummarizerJsonLd() {
       },
       {
         "@type": "Question",
-        name: "Can it summarize HEC research papers for Pakistani students?",
-        acceptedAnswer: { "@type": "Answer", text: "Yes, AIDLA is used by thousands of Pakistani students for summarizing HEC research papers, JSTOR articles, Google Scholar papers, and university study materials. The Academic domain option optimizes summaries for scholarly content." },
+        name: "Can it summarize HEC research papers for global learners?",
+        acceptedAnswer: { "@type": "Answer", text: "Yes, AIDLA is used by thousands of global learners for summarizing HEC research papers, JSTOR articles, Google Scholar papers, and university study materials. The Academic domain option optimizes summaries for scholarly content." },
       },
       {
         "@type": "Question",

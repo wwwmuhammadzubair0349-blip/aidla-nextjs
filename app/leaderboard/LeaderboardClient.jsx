@@ -19,6 +19,12 @@ function fmtDate(d) {
   return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+function getDateKey(offsetDays = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+}
+
 function fmtCoins(val) {
   const n = Number(val);
   if (!n && n !== 0) return null;
@@ -274,6 +280,7 @@ function TestResults() {
     <section className={styles.lbSection} aria-label="Test Results">
       <div className={styles.lbSectionHeader}>
         <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🏆</span> Test Results</h2>
+        <Link href="/user/test" className={styles.sectionLink}>Register now →</Link>
       </div>
       {tests.length > 0 && (
         <div className={styles.testSelector} role="group" aria-label="Select a test">
@@ -370,6 +377,7 @@ function LuckyDrawResults() {
     <section className={styles.lbSection} aria-label="Lucky Draw Results">
       <div className={styles.lbSectionHeader}>
         <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🎰</span> Lucky Draw Results</h2>
+        <Link href="/user/lucky-draw" className={styles.sectionLink}>Draw now →</Link>
       </div>
       {draws.length > 0 && (
         <div className={styles.drawSelector} role="group" aria-label="Select a draw">
@@ -428,10 +436,11 @@ function LuckyWheelHistory() {
         .select("id,user_id,created_at,result_type,coins_won,entry_type")
         .neq("result_type", "try_again_free")
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(10);
       if (wheelErr) { setError(wheelErr.message); setLoading(false); return; }
       if (!wheelData || wheelData.length === 0) { setResults([]); setLoading(false); return; }
-      const userIds = [...new Set(wheelData.map(r => r.user_id))];
+      const userIds = [...new Set(wheelData.map(r => r.user_id).filter(Boolean))];
+      if (userIds.length === 0) { setResults(wheelData.map(r => ({ ...r, full_name: "—" }))); setLoading(false); return; }
       const { data: profileData } = await supabase
         .from("users_profiles").select("user_id,id,full_name").in("user_id", userIds);
       const nameMap = {};
@@ -456,19 +465,19 @@ function LuckyWheelHistory() {
   };
 
   return (
-    <section className={styles.lbSection} aria-label="Lucky Wheel Winners">
+    <section className={styles.lbSection} aria-label="Spin and Win Results">
       <div className={styles.lbSectionHeader}>
-        <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🎡</span> Lucky Wheel Winners</h2>
-        <span style={{ fontSize: "0.7rem", color: "#4b5563", fontWeight: 700 }}>Last 50 wins</span>
+        <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🎡</span> Spin &amp; Win</h2>
+        <Link href="/user/lucky-wheel" className={styles.sectionLink}>Spin now →</Link>
       </div>
-      <div className={styles.eventStrip}><span aria-hidden="true">🎡</span> Lucky Wheel</div>
+      <div className={styles.eventStrip}><span aria-hidden="true">🎡</span> Latest 10 Spin &amp; Win results</div>
       {error && <div className={styles.lbError} role="alert">{error}</div>}
       {loading ? (
         <div style={{ padding: "12px 0" }} role="status" aria-label="Loading results"><SkeletonRows n={5} /></div>
       ) : results.length === 0 ? (
         <div className={styles.lbEmpty} role="status">
           <span className={styles.lbEmptyIcon} aria-hidden="true">🎡</span>
-          No lucky wheel wins yet.
+          No Spin &amp; Win results yet.
         </div>
       ) : results.map((r, i) => (
         <motion.div key={r.id} className={styles.resultRow}
@@ -479,7 +488,7 @@ function LuckyWheelHistory() {
           <div className={styles.resultInfo}>
             <div className={styles.resultName}>{r.full_name || "—"}</div>
             <div className={styles.resultSub}>
-              <span aria-hidden="true">🎡</span> Lucky Wheel · <time dateTime={r.created_at}>{fmtDate(r.created_at)}</time> · {r.entry_type === "paid" ? "Paid Spin" : "Free Spin"}
+              <span aria-hidden="true">🎡</span> Spin &amp; Win · <time dateTime={r.created_at}>{fmtDate(r.created_at)}</time> · {r.entry_type === "paid" ? "Paid Spin" : "Free Spin"}
             </div>
           </div>
           <div className={`${styles.resultPrize} ${styles.blue}`}>
@@ -495,9 +504,11 @@ function LuckyWheelHistory() {
 /* ── Tabs ── */
 const TABS = [
   { id: "live",    label: "🏁 Live Board"   },
+  { id: "daily",   label: "🧠 Daily Quiz"   },
+  { id: "battle",  label: "⚔️ Battle"       },
   { id: "results", label: "🏆 Test Results" },
   { id: "draw",    label: "🎰 Lucky Draw"   },
-  { id: "wheel",   label: "🎡 Lucky Wheel"  },
+  { id: "wheel",   label: "Spin & Win"  },
 ];
 
 export default function LeaderboardClient() {
@@ -515,7 +526,7 @@ export default function LeaderboardClient() {
           <span className={styles.secLabel}>Community</span>
           {/* ✅ ACCESSIBILITY FIX: h1 is the page title */}
           <h1 className={styles.secTitle}>AIDLA <span>Leaderboard</span></h1>
-          <p className={styles.secDesc}>Celebrate our top learners, test champions, lucky draw winners, and lucky wheel winners.</p>
+          <p className={styles.secDesc}>Daily quiz results, battle champions, test winners, lucky draw and wheel winners.</p>
         </motion.div>
 
         {/* ✅ ACCESSIBILITY FIX: nav + role="tablist" for proper tab semantics */}
@@ -554,6 +565,8 @@ export default function LeaderboardClient() {
             transition={{ duration: 0.25 }}
           >
             {activeTab === "live"    && <LiveLeaderboard />}
+            {activeTab === "daily"   && <DailyQuizResults />}
+            {activeTab === "battle"  && <BattleLeaderboard />}
             {activeTab === "results" && <TestResults />}
             {activeTab === "draw"    && <LuckyDrawResults />}
             {activeTab === "wheel"   && <LuckyWheelHistory />}
@@ -561,5 +574,112 @@ export default function LeaderboardClient() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+function DailyQuizResults() {
+  const [data, setData] = useState({ winners: [], all_attempts: [], winner_date: "" });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true); setError("");
+      const yDate = getDateKey(-1);
+      const today = getDateKey(0);
+      const [wRes, tRes] = await Promise.all([
+        supabase.rpc("daily_quiz_leaderboard", { p_date: yDate }),
+        supabase.rpc("daily_quiz_leaderboard", { p_date: today }),
+      ]);
+      if (wRes.error || tRes.error) setError(wRes.error?.message || tRes.error?.message);
+      setData({
+        winners: wRes.data?.winners || [],
+        all_attempts: tRes.data?.all_attempts || [],
+        winner_date: yDate,
+      });
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  return (
+    <section className={styles.lbSection} aria-label="Daily Quiz Results">
+      <div className={styles.lbSectionHeader}>
+        <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🧠</span> Daily Quiz Results</h2>
+        <Link href="/user/dailyquizz" className={styles.sectionLink}>Play quiz →</Link>
+      </div>
+      <div className={styles.eventStrip}><span aria-hidden="true">🏆</span> Yesterday winners {data.winner_date ? `· ${data.winner_date}` : ""}</div>
+      {error && <div className={styles.lbError} role="alert">{error}</div>}
+      {loading ? (
+        <div style={{ padding: "12px 0" }} role="status" aria-label="Loading daily quiz results"><SkeletonRows n={5} /></div>
+      ) : (
+        <>
+          {data.winners.length === 0 ? (
+            <div className={styles.lbEmpty} role="status"><span className={styles.lbEmptyIcon} aria-hidden="true">🏆</span>No daily quiz winners yet.</div>
+          ) : data.winners.map((w, i) => (
+            <motion.div key={`${w.user_id}-${i}`} className={styles.resultRow}
+              initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}>
+              <div className={styles.resultSeq} aria-hidden="true">{w.rank || i + 1}</div>
+              <div className={styles.resultInfo}>
+                <div className={styles.resultName}>{w.full_name || "AIDLA Learner"}</div>
+                <div className={styles.resultSub}>{w.score}/{w.total_questions} correct {w.streak_days >= 3 ? `· 🔥 ${w.streak_days}` : ""}</div>
+              </div>
+              <div className={`${styles.resultPrize} ${styles.gold}`}>+{fmtCoins(w.coins_earned || 0)} coins</div>
+            </motion.div>
+          ))}
+        </>
+      )}
+    </section>
+  );
+}
+
+function BattleLeaderboard() {
+  const [period, setPeriod] = useState("daily");
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+    supabase.rpc("battle_leaderboard", { p_period: period }).then(({ data, error }) => {
+      if (!active) return;
+      if (error) setError(error.message);
+      setRows(data || []);
+      setLoading(false);
+    });
+    return () => { active = false; };
+  }, [period]);
+
+  return (
+    <section className={styles.lbSection} aria-label="Battle Leaderboard">
+      <div className={styles.lbSectionHeader}>
+        <h2 className={styles.lbSectionTitle}><span aria-hidden="true">⚔️</span> Battle Leaderboard</h2>
+        <Link href="/user/battle" className={styles.sectionLink}>Start battle →</Link>
+      </div>
+      <div className={styles.testSelector} role="group" aria-label="Battle leaderboard period">
+        {["daily", "weekly", "monthly"].map(p => (
+          <button key={p} className={`${styles.testPill} ${period === p ? styles.active : ""}`} onClick={() => { setLoading(true); setError(""); setPeriod(p); }} aria-pressed={period === p}>
+            {p.charAt(0).toUpperCase() + p.slice(1)}
+          </button>
+        ))}
+      </div>
+      <div className={styles.eventStrip}><span aria-hidden="true">⚔️</span> Top 1v1 battle champions</div>
+      {error && <div className={styles.lbError} role="alert">{error}</div>}
+      {loading ? (
+        <div style={{ padding: "12px 0" }} role="status" aria-label="Loading battle leaderboard"><SkeletonRows n={5} /></div>
+      ) : rows.length === 0 ? (
+        <div className={styles.lbEmpty} role="status"><span className={styles.lbEmptyIcon} aria-hidden="true">⚔️</span>No battle data yet.</div>
+      ) : rows.slice(0, 20).map((r, i) => (
+        <motion.div key={`${r.user_id || r.full_name}-${i}`} className={styles.resultRow}
+          initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}>
+          <div className={styles.resultSeq} aria-hidden="true">{i + 1}</div>
+          <div className={styles.resultInfo}>
+            <div className={styles.resultName}>{r.full_name || "Battle Player"}</div>
+            <div className={styles.resultSub}>{r.wins || 0} wins</div>
+          </div>
+          <div className={`${styles.resultPrize} ${styles.blue}`}>{r.wins || 0} wins</div>
+        </motion.div>
+      ))}
+    </section>
   );
 }

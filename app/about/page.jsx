@@ -1,4 +1,4 @@
-﻿// app/about/page.jsx — SERVER COMPONENT
+// app/about/page.jsx � SERVER COMPONENT
 import { supabase } from "@/lib/supabase";
 import { SITE } from "@/lib/siteConfig";
 import AboutClient from "./about-client";
@@ -8,28 +8,27 @@ const SITE_URL = SITE.url;
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "About AIDLA | Pakistan's #1 Free AI Learning Platform — Founded by Engineer Muhammad Zubair Afridi",
+  title: "About AIDLA | Pakistan's #1 AI Powered Learning Platform",
   description:
-    "Learn about AIDLA — Pakistan's leading AI-powered digital learning academy. Free courses, AI tools, AIDLA Coins, and a Learn-to-Earn rewards system. Founded by Gold Medalist Engineer Muhammad Zubair Afridi in Peshawar. 100% free, forever.",
+    "Learn about AIDLA, Pakistan's #1 AI powered learning platform for global learners, students, professionals, freshers, career switchers, courses, AI tools and rewards.",
   keywords: [
-    "About AIDLA", "AIDLA founder", "Engineer Muhammad Zubair Afridi",
-    "Pakistan free learning platform", "AI digital learning academy Pakistan",
-    "free AI tools Pakistan", "learn and earn Pakistan", "AIDLA Peshawar",
-    "Gold Medalist engineer Pakistan", "free education platform KPK",
+    "About AIDLA", "Pakistan #1 AI powered learning platform",
+    "global AI learning platform", "AI courses", "career tools",
+    "career switching", "startup advice", "career mentoring", "AIDLA rewards",
   ],
-  authors: [{ name: "Engineer Muhammad Zubair Afridi", url: `${SITE_URL}/about` }],
+  authors: [{ name: "AIDLA", url: `${SITE_URL}/about` }],
   alternates: { canonical: `${SITE_URL}/about` },
   openGraph: {
     type: "website", siteName: "AIDLA", locale: "en_PK",
     url: `${SITE_URL}/about`,
-    title: "About AIDLA | Pakistan's #1 Free AI Learning Platform",
-    description: "Free courses, AI tools, and a Learn-to-Earn rewards system. Founded by Gold Medalist Engineer Muhammad Zubair Afridi.",
+    title: "About AIDLA | Pakistan's #1 AI Powered Learning Platform",
+    description: "Free courses, AI tools, career resources, AIDLA Coins and rewards for learners and professionals worldwide.",
     images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "About AIDLA", type: "image/jpeg" }],
   },
   twitter: {
     card: "summary_large_image", site: "@AIDLA_online", creator: "@AIDLA_online",
-    title: "About AIDLA | Pakistan's #1 Free AI Learning Platform",
-    description: "Free courses, AI tools, AIDLA Coins & rewards. Founded by Engineer Muhammad Zubair Afridi.",
+    title: "About AIDLA | Pakistan's #1 AI Powered Learning Platform",
+    description: "Free courses, AI tools, AIDLA Coins, career resources and rewards for global learners.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
 };
@@ -76,7 +75,7 @@ async function getAboutData() {
 export default async function AboutPage() {
   const { reviews, faqs, featuredIn } = await getAboutData();
 
-  /* ── Structured data ── */
+  /* -- Structured data -- */
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": ["Organization", "EducationalOrganization"],
@@ -86,10 +85,10 @@ export default async function AboutPage() {
     url: SITE_URL,
     logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
     foundingDate: "2026",
-    description: "Pakistan's #1 AI-powered digital learning academy offering free courses, AI career tools, daily quiz competitions, AIDLA Coins rewards, and a Learn-to-Earn system.",
+    description: "Pakistan's #1 AI-powered digital learning academy offering global courses, AI career tools, daily quiz competitions, AIDLA Coins rewards, and a Learn-to-Earn system.",
     areaServed: [
       { "@type": "Country", name: "Pakistan" },
-      { "@type": "City", name: "Peshawar" },
+      { "@type": "Place", name: "Worldwide" },
     ],
     address: {
       "@type": "PostalAddress",
@@ -101,7 +100,7 @@ export default async function AboutPage() {
       "@type": "ContactPoint",
       email: "ceo@aidla.online",
       contactType: "customer support",
-      areaServed: "PK",
+      areaServed: "Worldwide",
       availableLanguage: ["English", "Urdu"],
     },
     founder: {
@@ -109,7 +108,7 @@ export default async function AboutPage() {
       "@id": `${SITE_URL}/#founder`,
       name: "Engineer Muhammad Zubair Afridi",
       jobTitle: "Founder & CEO",
-      description: "Gold Medalist Electrical Engineer and founder of AIDLA — Pakistan's #1 free AI-powered learning platform.",
+      description: "Gold Medalist Electrical Engineer and founder of AIDLA � Pakistan's #1 free AI-powered learning platform.",
       url: `${SITE_URL}/about`,
       sameAs: [
         "https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/",
@@ -155,7 +154,7 @@ export default async function AboutPage() {
       name: "University of Engineering and Technology Peshawar",
       address: { "@type": "PostalAddress", addressLocality: "Peshawar", addressCountry: "PK" },
     },
-    award: "Gold Medal — Electrical Engineering",
+    award: "Gold Medal � Electrical Engineering",
     sameAs: [
       "https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/",
       "https://www.facebook.com/engrzubairafridi/",
@@ -168,8 +167,8 @@ export default async function AboutPage() {
     "@type": "AboutPage",
     "@id": `${SITE_URL}/about`,
     url: `${SITE_URL}/about`,
-    name: "About AIDLA — Pakistan's #1 Free AI Learning Platform",
-    description: "Learn about AIDLA's mission, free AI tools, founder Engineer Muhammad Zubair Afridi, and how AIDLA is transforming digital education in Pakistan.",
+    name: "About AIDLA � Pakistan's #1 AI Powered Learning Platform",
+    description: "Learn about AIDLA's mission, AI tools, courses, career resources, rewards, and how AIDLA supports learners and professionals worldwide.",
     inLanguage: "en",
     isPartOf: { "@id": `${SITE_URL}/#website` },
     about: { "@id": `${SITE_URL}/#organization` },

@@ -373,28 +373,28 @@ export default function ResourcesClient({ initialMaterials = [], initialTotal = 
         <section style={{
           background:"linear-gradient(135deg,#fffbeb 0%,#fef3c7 55%,#fde68a 100%)",
           borderBottom:"1px solid #f0c96a",
-          padding:"clamp(28px,4vw,48px) clamp(16px,4vw,28px)",
+          padding:"clamp(18px,3vw,30px) clamp(14px,4vw,28px)",
           textAlign:"center", position:"relative", overflow:"hidden",
         }}>
           <div style={{ position:"absolute", inset:0, backgroundImage:"radial-gradient(circle,rgba(15,23,42,0.03) 1px,transparent 1px)", backgroundSize:"22px 22px", pointerEvents:"none" }}/>
-          <div style={{ maxWidth:680, margin:"0 auto", position:"relative", zIndex:1 }}>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(15,23,42,0.07)", border:"1px solid rgba(15,23,42,0.13)", borderRadius:24, padding:"4px 14px", fontSize:11, fontWeight:800, letterSpacing:".06em", textTransform:"uppercase", color:"#0f172a", marginBottom:16 }}>
+          <div style={{ maxWidth:620, margin:"0 auto", position:"relative", zIndex:1 }}>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(255,255,255,0.55)", border:"1px solid rgba(215,119,6,0.3)", borderRadius:24, padding:"4px 14px", fontSize:11, fontWeight:800, letterSpacing:".06em", textTransform:"uppercase", color:"#92400e", marginBottom:10 }}>
               📚 Free Study Resources
             </div>
-            <h1 style={{ margin:"0 0 10px", fontFamily:"'Playfair Display',serif", fontSize:"clamp(1.6rem,5vw,2.8rem)", fontWeight:900, color:"#0f172a", lineHeight:1.1, letterSpacing:"-.02em" }}>
+            <h1 style={{ margin:"0 0 8px", fontFamily:"'Playfair Display',serif", fontSize:"clamp(1.55rem,5vw,2.55rem)", fontWeight:900, color:"#0f172a", lineHeight:1.06 }}>
               Study Materials &amp; <em style={{ fontStyle:"italic", color:"#d97706" }}>Resources</em>
             </h1>
-            <p style={{ margin:"0 0 24px", fontSize:"clamp(13px,2.5vw,15px)", color:"rgba(15,23,42,0.65)", lineHeight:1.7, maxWidth:520, marginLeft:"auto", marginRight:"auto" }}>
+            <p style={{ margin:"0 0 16px", fontSize:"clamp(12px,2vw,14px)", color:"#475569", lineHeight:1.6, maxWidth:500, marginLeft:"auto", marginRight:"auto" }}>
               Notes, past papers, thesis, books — organized by subject, university and class level.
             </p>
-            <div style={{ position:"relative", maxWidth:540, margin:"0 auto 20px" }}>
+            <div style={{ position:"relative", maxWidth:500, margin:"0 auto 14px" }}>
               <div style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", fontSize:17, pointerEvents:"none" }}>🔍</div>
               <input
                 ref={searchInputRef}
                 defaultValue={filters.search}
                 onChange={e => handleSearch(e.target.value)}
                 placeholder="Search notes, books, past papers…"
-                style={{ width:"100%", padding:"13px 14px 13px 44px", border:"2px solid rgba(245,158,11,0.3)", borderRadius:12, fontSize:14, background:"#fff", color:"#0f172a", outline:"none", boxShadow:"0 4px 20px rgba(15,23,42,0.08)" }}
+                style={{ width:"100%", padding:"12px 14px 12px 42px", border:"1.5px solid rgba(215,119,6,0.25)", borderRadius:999, fontSize:14, background:"rgba(255,255,255,0.72)", color:"#0f172a", outline:"none", boxShadow:"0 4px 16px rgba(15,23,42,0.06)" }}
               />
               {filters.search && (
                 <button onClick={handleReset} style={{ position:"absolute", right:12, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", fontSize:17, color:"#94a3b8" }}>✕</button>
@@ -409,10 +409,10 @@ export default function ResourcesClient({ initialMaterials = [], initialTotal = 
                   <Link key={c.value} href={`/resources?${newParams.toString()}`} prefetch={false} style={{ textDecoration:"none" }}
                     onClick={e => { e.preventDefault(); handleFilterChange("category", isActive ? "" : c.value); }}>
                     <div className="cat-pill" style={{
-                      padding:"6px 12px", borderRadius:24, fontSize:11, fontWeight:700, cursor:"pointer", border:"1px solid",
-                      background:  isActive ? "#0f172a" : "rgba(15,23,42,0.07)",
-                      color:       isActive ? "#f59e0b" : "#0f172a",
-                      borderColor: isActive ? "#0f172a" : "rgba(15,23,42,0.15)",
+                      padding:"5px 11px", borderRadius:24, fontSize:11, fontWeight:700, cursor:"pointer", border:"1px solid",
+                      background:  isActive ? "#f59e0b" : "rgba(255,255,255,0.45)",
+                      color:       isActive ? "#0f172a" : "#0f172a",
+                      borderColor: isActive ? "#f59e0b" : "rgba(215,119,6,0.22)",
                       transition:"all 0.15s",
                     }}>
                       {c.icon} {c.label}

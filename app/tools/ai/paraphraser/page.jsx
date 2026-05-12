@@ -55,7 +55,7 @@ export async function generateMetadata({ searchParams }) {
     const langLabel = language === "Urdu (اردو)" ? "Urdu" : language === "Arabic (عربي)" ? "Arabic" : language;
     return {
       title: `Free ${langLabel} AI Paraphraser 2026 — Rewrite Text in ${langLabel} | AIDLA`,
-      description: `Rewrite and rephrase text in ${langLabel} with AI. 8 styles: Formal, Academic, Casual & more. ${langLabel === "Urdu" ? "Best for Pakistan students: HEC thesis, university assignments, Dawn/Geo writing." : langLabel === "Arabic" ? "UAE, Saudi Arabia, GCC business & academic writing." : ""} 100% free, no sign-up.`,
+      description: `Rewrite and rephrase text in ${langLabel} with AI. 8 styles: Formal, Academic, Casual & more. ${langLabel === "Urdu" ? "Best for students and professionals: HEC thesis, university assignments, Dawn/Geo writing." : langLabel === "Arabic" ? "UAE, Saudi Arabia, GCC business & academic writing." : ""} 100% free, no sign-up.`,
       keywords: [`${langLabel.toLowerCase()} paraphraser AI free 2026`, `paraphrase in ${langLabel.toLowerCase()}`, `${langLabel.toLowerCase()} text rewriter free`, "multilingual AI paraphraser", "free writing tool multilingual"].join(", "),
     };
   }
@@ -100,7 +100,7 @@ export async function generateMetadata({ searchParams }) {
     },
     openGraph: {
       title: "Free AI Paraphraser 2026 — Better Than QuillBot | 8 Styles, No Word Limit | AIDLA",
-      description: "Rewrite any text in 8 styles: Formal, Academic, Casual, Creative & more. No word limit, no sign-up, 100% free. Best for Pakistan, UAE & global students & professionals.",
+      description: "Rewrite any text in 8 styles: Formal, Academic, Casual, Creative & more. No word limit, no sign-up, 100% free. Best for global students and professionals.",
       type: "website",
       url: "https://www.aidla.online/tools/ai/paraphraser",
       images: [{ url: "https://www.aidla.online/og-paraphraser.jpg", width: 1200, height: 630, alt: "AIDLA Free AI Paraphraser 2026 — Better Than QuillBot, 8 Styles, No Word Limit", type: "image/jpeg" }],
@@ -120,8 +120,8 @@ export async function generateMetadata({ searchParams }) {
       "geo.placename": "Pakistan",
       "geo.position": "30.3753;69.3451",
       "ICBM": "30.3753, 69.3451",
-      "DC.title": "Free AI Paraphraser 2026 — Text Rewriter & Rephrase Tool | AIDLA Pakistan",
-      "DC.description": "AI paraphraser with 8 styles, no word limit, no sign-up. Best free QuillBot alternative for Pakistan, UAE & GCC students and professionals.",
+      "DC.title": "Free AI Paraphraser 2026 — Text Rewriter & Rephrase Tool | AIDLA",
+      "DC.description": "AI paraphraser with 8 styles, no word limit, no sign-up. Best free QuillBot alternative for global students and professionals.",
       "DC.subject": "AI paraphraser, text rewriter, rephrase tool, QuillBot alternative, academic writing Pakistan, UAE writing tool, free paraphrase generator 2026",
       "DC.language": "en",
       "DC.coverage": "Pakistan, UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman, GCC, UK, US, Canada, Worldwide",
@@ -147,7 +147,7 @@ function ParaphraserJsonLd() {
       "Free Paraphrase Tool Pakistan", "Academic Paraphraser HEC", "UAE Business Text Rewriter",
       "Free Rephrase Generator No Sign Up", "AI Sentence Rewriter Free", "Content Rewriter AI",
     ],
-    description: "AI-powered paraphraser that rewrites any text in 8 styles: Formal, Academic, Casual, Creative, Simplified, Professional, Concise and Fluent. No word limit, instant results, 100% free forever. Best free alternative to QuillBot ($19.95/mo), Grammarly ($12/mo), and WordAi ($57/mo). Trusted by 50,000+ students and professionals in Pakistan, UAE, GCC & worldwide. HEC-safe for Pakistani university assignments and thesis writing.",
+    description: "AI-powered paraphraser that rewrites any text in 8 styles: Formal, Academic, Casual, Creative, Simplified, Professional, Concise and Fluent. No word limit, instant results, 100% free forever. Best free alternative to QuillBot ($19.95/mo), Grammarly ($12/mo), and WordAi ($57/mo). Trusted by 50,000+ students and professionals in Pakistan, UAE, GCC & worldwide. HEC-safe for university assignments and thesis writing.",
     url: pageUrl,
     applicationCategory: "WritingApplication",
     operatingSystem: "Web Browser",

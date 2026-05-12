@@ -542,7 +542,7 @@ export default function BattlePage() {
                     {h.result==="won"?"🏆":h.result==="tie"?"🤝":"💔"}
                   </div>
                   <div style={{ flex:1 }}>
-                    <div style={{ fontWeight:700, fontSize:13 }}>{h.opponent_name} {h.is_bot ? "🤖" : ""}</div>
+                    <div style={{ fontWeight:700, fontSize:13 }}>{h.opponent_name} {h.is_bot ? "" : ""}</div>
                     <div style={{ fontSize:11, color:"#94a3b8" }}>{h.my_score} vs {h.opp_score} · {h.mode==="free"?"Free":h.mode+"🪙"}</div>
                   </div>
                   <div style={{ fontWeight:800, fontSize:13, color: h.coins_change>=0?"#059669":"#dc2626" }}>
@@ -567,10 +567,11 @@ export default function BattlePage() {
               {leaderboard.length === 0 ? <p style={S.empty}>No data yet.</p> : leaderboard.slice(0,20).map((l, i) => (
                 <div key={i} style={S.lbRow}>
                   <span style={{ fontWeight:800, width:28, color:i<3?["#f59e0b","#94a3b8","#92400e"][i]:"#475569" }}>#{i+1}</span>
-                  {l.avatar_url && <img src={l.avatar_url} alt="" style={S.avatar} />}
-                  <span style={{ flex:1, fontWeight:600, fontSize:13 }}>{l.full_name}</span>
-                  <span style={{ fontSize:12, color:"#64748b" }}>{l.wins}W</span>
-                  <span style={{ fontSize:12, fontWeight:700, color:"#059669", marginLeft:8 }}>+{l.coins_earned}🪙</span>
+                  {l.avatar_url
+  ? <img src={l.avatar_url} alt="" style={S.avatar} />
+  : <div style={{ width:28, height:28, borderRadius:"50%", background:l.is_bot?"#f1f5f9":"#e0e7ff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13 }}>{l.is_bot?"":"👤"}</div>}
+<span style={{ flex:1, fontWeight:600, fontSize:13 }}>{l.full_name}{l.is_bot?" ":""}</span>
+<span style={{ fontSize:12, color:"#64748b" }}>{l.wins} Wins</span>
                 </div>
               ))}
             </div>
@@ -604,7 +605,7 @@ export default function BattlePage() {
         <div style={{ padding:16 }}>
           <div style={{ ...S.card, background:"#f0f9ff", border:"1px solid #bae6fd", marginBottom:12, padding:14 }}>
             <div style={{ fontSize:13, fontWeight:700, color:"#0369a1" }}>
-              vs {opponentName} {room.is_bot ? "🤖" : ""}
+              vs {opponentName} {room.is_bot ? "" : ""}
             </div>
             <div style={{ fontSize:12, color:"#0284c7" }}>Round {currentRound} of 2</div>
           </div>
@@ -734,7 +735,7 @@ export default function BattlePage() {
             <div style={{ fontSize:22, fontWeight:800, marginBottom:4 }}>
               {result.tie ? "It's a Tie!" : result.won ? "You Won!" : "You Lost!"}
             </div>
-            <div style={{ fontSize:13, color:"#64748b", marginBottom:12 }}>vs {result.oppName} {result.isBot?"🤖":""}</div>
+            <div style={{ fontSize:13, color:"#64748b", marginBottom:12 }}>vs {result.oppName} {result.isBot?"":""}</div>
 
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:16 }}>
               <div style={S.statBox}><div style={S.statVal}>{result.myScore}</div><div style={S.statKey}>Your Score</div></div>

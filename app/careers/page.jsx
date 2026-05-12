@@ -4,17 +4,17 @@ import { SITE } from "@/lib/siteConfig";
 const SITE_URL = SITE.url;
 
 export const metadata = {
-  title: "Careers at AIDLA | Join Pakistan's #1 AI Learning Platform",
-  description: "Join the AIDLA team and help build Pakistan's leading free AI-powered digital learning academy. Opportunities in engineering, education, design, and growth.",
+  title: "Careers at AIDLA | Build AI Learning & Career Tools",
+  description: "Join AIDLA and help build Pakistan's #1 AI powered learning platform for global courses, career tools, mentoring, rewards, and professional growth.",
   alternates: { canonical: `${SITE_URL}/careers` },
 };
 
 const WHY = [
-  { icon: "🎯", title: "Real Impact", desc: "Your work directly helps thousands of Pakistani students access free education and career tools." },
+  { icon: "🎯", title: "Real Impact", desc: "Your work helps learners, freshers, professionals, and career switchers access free education and career tools." },
   { icon: "🚀", title: "Fast-Moving Team", desc: "We move quickly, ship often, and trust every team member to own their domain fully." },
   { icon: "🤖", title: "AI-First Culture", desc: "We use cutting-edge AI in everything we build — and we expect our team to think the same way." },
   { icon: "🪙", title: "Learn & Earn", desc: "We practice what we preach. Grow your skills, earn rewards, and grow with the platform." },
-  { icon: "📍", title: "Remote-Friendly", desc: "Work from anywhere in Pakistan. We care about output, not office hours." },
+  { icon: "📍", title: "Remote-Friendly", desc: "Work remotely with a team building from Pakistan for users worldwide. We care about output, not office hours." },
   { icon: "💡", title: "Mission-Driven", desc: "We're not just building a product — we're fixing education access for millions of people." },
 ];
 
@@ -30,12 +30,10 @@ export default function CareersPage() {
             <span className="cr-eyebrow">🚀 We&apos;re Growing</span>
             <h1 className="cr-title">
               Help Us Build the Future of<br />
-              <em>Free Education in Pakistan.</em>
+              <em>Free AI Learning.</em>
             </h1>
             <p className="cr-sub">
-              AIDLA is on a mission to give every Pakistani student access to
-              world-class AI-powered tools, courses, and real rewards — completely
-              free. We&apos;re looking for people who care deeply about that mission.
+              AIDLA is on a mission to give learners worldwide access to AI-powered tools, courses, career resources, mentoring, and real rewards. We&apos;re looking for people who care deeply about that mission.
             </p>
             <div className="cr-hero-ctas">
               <a href="mailto:ceo@aidla.online" className="cr-btn-primary">

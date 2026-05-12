@@ -1,4 +1,4 @@
-﻿// app/courses/[slug]/page.jsx
+// app/courses/[slug]/page.jsx
 import { notFound }    from "next/navigation";
 import { serverFetch } from "@/lib/supabaseServer";
 import CourseDetailClient from "./CourseDetailClient";
@@ -7,16 +7,16 @@ export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
 
-/* ─────────────────────────────────────────────
-   Slug utility — must match CoursesClient.toSlug
-───────────────────────────────────────────── */
+/* ---------------------------------------------
+   Slug utility � must match CoursesClient.toSlug
+--------------------------------------------- */
 function toSlug(title = "") {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    Server-side data helper
-───────────────────────────────────────────── */
+--------------------------------------------- */
 async function getAllCourses() {
   const { data } = await serverFetch("course_courses", {
     select:   "*",
@@ -30,9 +30,9 @@ export async function generateStaticParams() {
   return courses.map(c => ({ slug: toSlug(c.title) }));
 }
 
-/* ─────────────────────────────────────────────
-   Dynamic metadata — unique per course
-───────────────────────────────────────────── */
+/* ---------------------------------------------
+   Dynamic metadata � unique per course
+--------------------------------------------- */
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const courses  = await getAllCourses();
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }) {
 
   const desc =
     (c.description || "").slice(0, 155).replace(/\n/g, " ") +
-    " — Enroll free on AIDLA, Pakistan's #1 educational rewards platform.";
+    " � Learn on AIDLA with courses for students, professionals, freshers, career switchers, founders and lifelong learners.";
   const url   = `${SITE_URL}/courses/${slug}`;
   const image = c.thumbnail_url || `${SITE_URL}/og-home.jpg`;
   const title = `${c.title} | AIDLA Online Courses`;
@@ -56,11 +56,11 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description: desc,
-    keywords: `${c.title}, ${c.category || ""}, online course, AIDLA, free course, Pakistan`,
+    keywords: `${c.title}, ${c.category || ""}, online course, AIDLA, free course, career growth, professional skills, AI learning, certificates`,
     robots: { index: true, follow: true },
     alternates: { canonical: url },
     openGraph: {
-      title:       `${c.title} — AIDLA`,
+      title:       `${c.title} � AIDLA`,
       description: desc,
       type:        "article",
       url,
@@ -76,9 +76,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-/* ─────────────────────────────────────────────
+/* ---------------------------------------------
    Page component
-───────────────────────────────────────────── */
+--------------------------------------------- */
 export default async function CourseDetailPage({ params }) {
   const { slug }  = await params;
   const courses   = await getAllCourses();

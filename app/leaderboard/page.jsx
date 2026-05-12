@@ -1,4 +1,4 @@
-﻿import LeaderboardClient from "./LeaderboardClient";
+import LeaderboardClient from "./LeaderboardClient";
 import { supabase } from "@/lib/supabase";
 import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema, buildItemListSchema } from "@/lib/schemas";
 
@@ -11,18 +11,18 @@ function getDateKey(offsetDays = 0) {
 }
 
 export const metadata = {
-  title: "Leaderboard — Top Learners, Winners & Rankings | AIDLA",
+  title: "AIDLA Leaderboard � Quiz Winners, Battles & Rankings",
   description:
-    "See AIDLA's live leaderboards: top quiz scorers, lucky draw winners, lucky wheel results, and highest coin earners. Updated in real-time.",
+    "See AIDLA live rankings, daily quiz winners, battle leaders, test champions, lucky draw results, lucky wheel wins, rewards and learner achievements.",
   keywords: [
-    "AIDLA leaderboard", "top learners Pakistan", "quiz rankings", "lucky draw winners",
-    "coin earners", "AIDLA rankings", "education leaderboard",
+    "AIDLA leaderboard", "quiz winners", "battle leaderboard", "test rankings", "lucky draw winners",
+    "learning rewards", "AIDLA rankings", "online learning leaderboard",
   ],
   robots: { index: true, follow: true, "max-image-preview": "large" },
   alternates: { canonical: `${SITE_URL}/leaderboard` },
   openGraph: {
-    title: "AIDLA Leaderboard — Top Learners & Winners",
-    description: "Live rankings: quiz top scorers, lucky draw winners, and highest coin earners on AIDLA.",
+    title: "AIDLA Leaderboard � Quiz Winners, Battles & Rankings",
+    description: "Live rankings: daily quiz winners, battle leaders, test champions, lucky draw and wheel winners on AIDLA.",
     type: "website",
     url: `${SITE_URL}/leaderboard`,
     siteName: "AIDLA",
@@ -31,8 +31,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AIDLA Leaderboard — Top Learners & Winners",
-    description: "Live rankings of Pakistan's top quiz scorers and prize winners.",
+    title: "AIDLA Leaderboard � Quiz Winners, Battles & Rankings",
+    description: "Live AIDLA rankings for quizzes, battles, tests and prize winners.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
 };
@@ -47,8 +47,8 @@ export default async function LeaderboardPage() {
   const jsonLd = buildGraph(
     buildWebPageSchema({
       path: "/leaderboard",
-      name: "AIDLA Leaderboard — Top Learners & Winners",
-      description: "Live leaderboards showing top quiz scorers, lucky draw winners, and highest coin earners on AIDLA.",
+      name: "AIDLA Leaderboard � Quiz Winners, Battles & Rankings",
+      description: "Live leaderboards showing daily quiz winners, battle leaders, test champions, lucky draw results, lucky wheel wins and learner achievements.",
     }),
     buildBreadcrumbSchema(
       [{ name: "Home", url: "/" }, { name: "Leaderboard", url: "/leaderboard" }],

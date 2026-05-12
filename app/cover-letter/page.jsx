@@ -3,12 +3,12 @@ import CoverLetterClient from "./CoverLetterClient";
 const SITE_URL = "https://www.aidla.online";
 
 export const metadata = {
-  title: "Free AI Cover Letter Builder — AIDLA",
-  description: "Write a powerful, ATS-optimized cover letter in 3 minutes. AI-powered. Tailored to your role. Free forever.",
+  title: "Free AI Cover Letter Builder for Jobs & Career Switches | AIDLA",
+  description: "Write ATS-optimized cover letters for freshers, job seekers, professionals and career switchers. AI-powered, role-specific and free forever.",
   alternates: { canonical: `${SITE_URL}/tools/career/cover-letter-maker` },
   openGraph: {
-    title: "Free AI Cover Letter Builder — AIDLA",
-    description: "Write a powerful, ATS-optimized cover letter in 3 minutes. AI-powered. Tailored to your role. Free forever.",
+    title: "Free AI Cover Letter Builder for Jobs & Career Switches | AIDLA",
+    description: "Write ATS-optimized cover letters for freshers, job seekers, professionals and career switchers. AI-powered, role-specific and free forever.",
     type: "website",
     url: `${SITE_URL}/tools/career/cover-letter-maker`,
     siteName: "AIDLA",
@@ -17,8 +17,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free AI Cover Letter Builder — AIDLA",
-    description: "Write a powerful, ATS-optimized cover letter in 3 minutes. AI-powered. Tailored to your role.",
+    title: "Free AI Cover Letter Builder for Jobs & Career Switches | AIDLA",
+    description: "Write role-specific cover letters for freshers, professionals and career switchers with AI.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
 };

@@ -49,11 +49,11 @@ function LoginModal({ slug, onClose }) {
         </p>
         <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
           <button onClick={() => router.push(`/login?redirect=/resources/${slug}`)}
-            style={{ padding:"13px 0", background:"linear-gradient(135deg,#1a3a8f,#3b82f6)", color:"#fff", border:"none", borderRadius:12, fontWeight:700, fontSize:15, cursor:"pointer" }}>
+            style={{ padding:"13px 0", background:"#f59e0b", color:"#0f172a", border:"none", borderRadius:12, fontWeight:800, fontSize:15, cursor:"pointer" }}>
             🔑 Login
           </button>
           <button onClick={() => router.push(`/signup?redirect=/resources/${slug}`)}
-            style={{ padding:"13px 0", background:"rgba(26,58,143,0.06)", color:"#1a3a8f", border:"1px solid rgba(26,58,143,0.2)", borderRadius:12, fontWeight:700, fontSize:15, cursor:"pointer" }}>
+            style={{ padding:"13px 0", background:"#fffbeb", color:"#92400e", border:"1px solid rgba(245,158,11,0.3)", borderRadius:12, fontWeight:700, fontSize:15, cursor:"pointer" }}>
             ✨ Create Free Account
           </button>
           <button onClick={onClose} style={{ background:"none", border:"none", color:"#94a3b8", cursor:"pointer", fontSize:13, padding:"6px 0" }}>Cancel</button>
@@ -204,24 +204,24 @@ export default function ResourceDetailClient({ slug }) {
         .rd-share-btn:hover { opacity: 0.85; }
       `}</style>
 
-      <div style={{ minHeight:"100vh", background:"#f8fafc", fontFamily:"'DM Sans',sans-serif" }}>
+      <div style={{ minHeight:"100vh", background:"#fffbeb", fontFamily:"'DM Sans',sans-serif" }}>
 
         {/* ── Breadcrumb ── */}
-        <div style={{ background:"#fff", borderBottom:"1px solid #f1f5f9", padding:"10px 16px" }}>
+        <div style={{ background:"#fff", borderBottom:"1px solid #e2e8f0", padding:"10px 16px" }}>
           <div style={{ maxWidth:1200, margin:"0 auto", display:"flex", alignItems:"center", gap:6, fontSize:12, color:"#94a3b8", flexWrap:"wrap" }}>
-            <Link href="/" style={{ color:"#64748b", textDecoration:"none", fontWeight:600 }}>Home</Link>
+            <Link href="/" style={{ color:"#92400e", textDecoration:"none", fontWeight:600 }}>Home</Link>
             <span>›</span>
-            <Link href="/resources" style={{ color:"#64748b", textDecoration:"none", fontWeight:600 }}>Resources</Link>
+            <Link href="/resources" style={{ color:"#92400e", textDecoration:"none", fontWeight:600 }}>Resources</Link>
             <span>›</span>
             <span style={{ color:"#0f172a", fontWeight:600, maxWidth:200, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{m.title}</span>
           </div>
         </div>
 
         {/* ── Hero ── */}
-        <div style={{ background:"linear-gradient(135deg,#0b1437 0%,#1a3a8f 70%,#3b82f6 100%)", padding:"28px 16px 32px" }}>
+        <div style={{ background:"linear-gradient(135deg,#fffbeb 0%,#fef3c7 55%,#fde68a 100%)", borderBottom:"1px solid #f0c96a", padding:"24px 16px 28px" }}>
           <div style={{ maxWidth:1200, margin:"0 auto" }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12, flexWrap:"wrap" }}>
-              <span style={{ fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, background:"rgba(255,255,255,0.15)", color:"rgba(255,255,255,0.9)", border:"1px solid rgba(255,255,255,0.2)" }}>
+              <span style={{ fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, background:"rgba(255,255,255,0.55)", color:"#92400e", border:"1px solid rgba(215,119,6,0.3)" }}>
                 {cat.icon} {cat.label}
               </span>
               {m.file_type && (
@@ -229,19 +229,19 @@ export default function ResourceDetailClient({ slug }) {
                   {m.file_type.toUpperCase()}
                 </span>
               )}
-              <span style={{ fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, background:m.access==="free"?"rgba(22,163,74,0.2)":"rgba(139,92,246,0.2)", color:m.access==="free"?"#86efac":"#c4b5fd", border:`1px solid ${m.access==="free"?"rgba(22,163,74,0.3)":"rgba(139,92,246,0.3)"}` }}>
+              <span style={{ fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, background:m.access==="free"?"rgba(22,163,74,0.08)":"rgba(245,158,11,0.12)", color:m.access==="free"?"#15803d":"#92400e", border:`1px solid ${m.access==="free"?"rgba(22,163,74,0.25)":"rgba(245,158,11,0.3)"}` }}>
                 {m.access==="free" ? "🌐 Free Download" : "🔐 Login Required"}
               </span>
             </div>
-            <h1 style={{ margin:"0 0 10px", fontSize:"clamp(1.2rem,4vw,2rem)", fontWeight:900, color:"#fff", lineHeight:1.3 }}>{m.title}</h1>
-            <div style={{ display:"flex", flexWrap:"wrap", gap:14, fontSize:13, color:"rgba(255,255,255,0.7)" }}>
+            <h1 style={{ margin:"0 0 10px", fontSize:"clamp(1.25rem,4vw,2rem)", fontWeight:900, color:"#0f172a", lineHeight:1.25 }}>{m.title}</h1>
+            <div style={{ display:"flex", flexWrap:"wrap", gap:14, fontSize:13, color:"#475569" }}>
               {m.subject     && <span>📖 {m.subject}</span>}
               {m.university  && <span>🏛 {m.university}</span>}
               {m.class_level && <span>🎓 {m.class_level}</span>}
               {m.year        && <span>📅 {m.year}</span>}
               {m.language    && <span>🌐 {m.language==="ur"?"اردو":m.language==="en"?"English":"Multi-language"}</span>}
             </div>
-            <div style={{ display:"flex", gap:18, marginTop:12, fontSize:13, color:"rgba(255,255,255,0.6)" }}>
+            <div style={{ display:"flex", gap:18, marginTop:12, fontSize:13, color:"#64748b" }}>
               <span>⬇ {(m.download_count||0).toLocaleString()} downloads</span>
               <span>👁 {(m.view_count||0).toLocaleString()} views</span>
               {m.file_size_bytes && <span>💾 {formatBytes(m.file_size_bytes)}</span>}
@@ -263,7 +263,7 @@ export default function ResourceDetailClient({ slug }) {
                     <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginTop:14 }}>
                       {m.tags.map(t => (
                         <Link key={t} href={`/resources?q=${encodeURIComponent(t)}`}
-                          style={{ fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, background:"rgba(26,58,143,0.07)", color:"#1a3a8f", border:"1px solid rgba(26,58,143,0.15)", textDecoration:"none" }}>
+                          style={{ fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, background:"#fffbeb", color:"#92400e", border:"1px solid rgba(245,158,11,0.3)", textDecoration:"none" }}>
                           #{t}
                         </Link>
                       ))}
@@ -277,7 +277,7 @@ export default function ResourceDetailClient({ slug }) {
                   <div style={{ padding:"14px 18px", borderBottom:"1px solid #f1f5f9", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
                     <div style={{ fontSize:13, fontWeight:700, color:"#0f172a" }}>📄 Preview</div>
                     <button onClick={() => setShowPdf(v => !v)}
-                      style={{ fontSize:12, fontWeight:700, color:"#1a3a8f", background:"rgba(26,58,143,0.07)", border:"1px solid rgba(26,58,143,0.15)", borderRadius:8, padding:"5px 12px", cursor:"pointer" }}>
+                      style={{ fontSize:12, fontWeight:700, color:"#92400e", background:"#fffbeb", border:"1px solid rgba(245,158,11,0.3)", borderRadius:8, padding:"5px 12px", cursor:"pointer" }}>
                       {showPdf ? "Hide Preview" : "Show Preview"}
                     </button>
                   </div>
@@ -347,7 +347,7 @@ export default function ResourceDetailClient({ slug }) {
                   <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
                     {related.map(r => <RelatedCard key={r.id} item={r}/>)}
                   </div>
-                  <Link href="/resources" style={{ display:"block", textAlign:"center", marginTop:14, fontSize:13, fontWeight:700, color:"#1a3a8f", textDecoration:"none" }}>
+                  <Link href="/resources" style={{ display:"block", textAlign:"center", marginTop:14, fontSize:13, fontWeight:700, color:"#d97706", textDecoration:"none" }}>
                     Browse all materials →
                   </Link>
                 </div>
@@ -355,9 +355,9 @@ export default function ResourceDetailClient({ slug }) {
             </div>
 
             {/* Right sidebar */}
-            <div className="rd-sidebar">
-              <div style={{ background:"#fff", border:"1px solid #f1f5f9", borderRadius:16, padding:20, marginBottom:16, boxShadow:"0 1px 6px rgba(0,0,0,0.04)", position:"sticky", top:20 }}>
-                <div style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", background:"#f8fafc", borderRadius:10, marginBottom:16 }}>
+            <div className="rd-sidebar" style={{ position:"sticky", top:20, display:"flex", flexDirection:"column", gap:16 }}>
+              <div style={{ background:"#fff", border:"1px solid #f1f5f9", borderRadius:16, padding:20, boxShadow:"0 1px 6px rgba(0,0,0,0.04)" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 14px", background:"#fffbeb", border:"1px solid rgba(245,158,11,0.2)", borderRadius:10, marginBottom:16 }}>
                   <div style={{ width:44, height:44, borderRadius:10, background:ft.bg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{ft.icon}</div>
                   <div>
                     <div style={{ fontSize:13, fontWeight:700, color:"#0f172a" }}>{m.title}</div>
@@ -368,7 +368,7 @@ export default function ResourceDetailClient({ slug }) {
                 </div>
 
                 <button onClick={handleDownload} disabled={downloading}
-                  style={{ width:"100%", padding:"14px 0", background:downloaded?"linear-gradient(135deg,#16a34a,#22c55e)":"linear-gradient(135deg,#1a3a8f,#3b82f6)", color:"#fff", border:"none", borderRadius:12, fontWeight:800, fontSize:16, cursor:downloading?"not-allowed":"pointer", opacity:downloading?0.7:1, transition:"all 0.2s", marginBottom:10 }}>
+                  style={{ width:"100%", padding:"14px 0", background:downloaded?"#16a34a":"#f59e0b", color:downloaded?"#fff":"#0f172a", border:"none", borderRadius:12, fontWeight:800, fontSize:16, cursor:downloading?"not-allowed":"pointer", opacity:downloading?0.7:1, transition:"all 0.2s", marginBottom:10 }}>
                   {downloading ? "⏳ Preparing…" : downloaded ? "✅ Download Started!" : isVideo ? "▶ Watch Video" : isExternal ? "🔗 Open Link" : "⬇ Download Free"}
                 </button>
 
@@ -392,18 +392,18 @@ export default function ResourceDetailClient({ slug }) {
                     ))}
                   </div>
                   <button onClick={handleCopyLink}
-                    style={{ width:"100%", marginTop:8, padding:"9px 0", background:copied?"rgba(22,163,74,0.07)":"#f8fafc", color:copied?"#15803d":"#64748b", border:`1px solid ${copied?"rgba(22,163,74,0.25)":"#e2e8f0"}`, borderRadius:8, fontSize:12, fontWeight:700, cursor:"pointer", transition:"all 0.2s" }}>
+                    style={{ width:"100%", marginTop:8, padding:"9px 0", background:copied?"rgba(22,163,74,0.07)":"#fffbeb", color:copied?"#15803d":"#92400e", border:`1px solid ${copied?"rgba(22,163,74,0.25)":"rgba(245,158,11,0.3)"}`, borderRadius:8, fontSize:12, fontWeight:700, cursor:"pointer", transition:"all 0.2s" }}>
                     {copied ? "✅ Link Copied!" : "🔗 Copy Link"}
                   </button>
                 </div>
               </div>
 
-              <div style={{ background:"linear-gradient(135deg,#1a3a8f,#3b82f6)", borderRadius:16, padding:20, textAlign:"center" }}>
+              <div style={{ background:"linear-gradient(135deg,#f59e0b,#d97706)", borderRadius:16, padding:20, textAlign:"center" }}>
                 <div style={{ fontSize:28, marginBottom:8 }}>📚</div>
-                <div style={{ fontWeight:800, color:"#fff", fontSize:14, marginBottom:6 }}>Find More Resources</div>
-                <div style={{ fontSize:12, color:"rgba(255,255,255,0.75)", marginBottom:14, lineHeight:1.5 }}>Browse hundreds of free study materials</div>
+                <div style={{ fontWeight:800, color:"#0f172a", fontSize:14, marginBottom:6 }}>Find More Resources</div>
+                <div style={{ fontSize:12, color:"#78350f", marginBottom:14, lineHeight:1.5 }}>Browse hundreds of free study materials</div>
                 <Link href="/resources"
-                  style={{ display:"block", padding:"10px 0", background:"rgba(255,255,255,0.15)", color:"#fff", borderRadius:10, textDecoration:"none", fontWeight:700, fontSize:13, border:"1px solid rgba(255,255,255,0.25)" }}>
+                  style={{ display:"block", padding:"10px 0", background:"#0f172a", color:"#fff", borderRadius:10, textDecoration:"none", fontWeight:700, fontSize:13, border:"1px solid #0f172a" }}>
                   Browse Library →
                 </Link>
               </div>

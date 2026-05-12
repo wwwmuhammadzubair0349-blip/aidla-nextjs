@@ -3,14 +3,14 @@ import CvBuilderClient from "./CvBuilderClient";
 const SITE_URL = "https://www.aidla.online";
 
 export const metadata = {
-  title: "Free Professional CV Builder — AIDLA",
+  title: "Free AI CV Builder for Freshers & Professionals | AIDLA",
   description:
-    "Build a stunning, ATS-ready CV in 5 minutes. 17 premium templates, AI writing assistant, instant PDF download. Used by 50,000+ professionals. Free forever.",
+    "Build an ATS-ready CV for freshers, job seekers, professionals and career switchers. AI writing, 17 templates, instant PDF download. Free forever.",
   alternates: { canonical: `${SITE_URL}/tools/career/cv-maker` },
   openGraph: {
-    title: "Free Professional CV Builder — AIDLA",
+    title: "Free AI CV Builder for Freshers & Professionals | AIDLA",
     description:
-      "Step-by-step CV builder. AI-powered. 17 premium templates. Download instantly.",
+      "AI CV builder for freshers, professionals and career switchers. 17 templates. Download instantly.",
     type: "website",
     url: `${SITE_URL}/tools/career/cv-maker`,
     siteName: "AIDLA",
@@ -19,8 +19,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Professional CV Builder — AIDLA",
-    description: "Step-by-step CV builder. AI-powered. 17 premium templates. Download instantly.",
+    title: "Free AI CV Builder for Freshers & Professionals | AIDLA",
+    description: "AI CV builder for freshers, professionals and career switchers. 17 templates. Download instantly.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
 };

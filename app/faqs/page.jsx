@@ -1,4 +1,4 @@
-﻿// app/faqs/page.jsx
+// app/faqs/page.jsx
 import { serverFetch } from "@/lib/supabaseServer";
 import FaqsClient      from "./FaqsClient";
 import { buildGraph, buildFAQSchema, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
@@ -7,15 +7,15 @@ export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online"; // used in metadata only
 
-/* ── SEO Metadata ── */
+/* -- SEO Metadata -- */
 export const metadata = {
-  title:       "Frequently Asked Questions — AIDLA Pakistan Education Platform",
-  description: "Find answers to the most common questions about AIDLA — earn coins, tests, lucky draw, withdrawals, and Pakistan education system.",
-  keywords:    ["AIDLA FAQ", "AIDLA questions", "Pakistan education FAQ", "AIDLA coins help"],
+  title:       "AIDLA FAQs � Courses, AI Tools, Rewards & Career Help",
+  description: "Find answers about AIDLA courses, AI tools, career resources, quizzes, rewards, AIDLA Coins, accounts, withdrawals, learning and professional growth.",
+  keywords:    ["AIDLA FAQ", "AIDLA questions", "AI tools help", "online courses FAQ", "career tools FAQ", "AIDLA coins help"],
   robots:      { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1 } },
   alternates:  { canonical: `${SITE_URL}/faqs` },
   openGraph: {
-    title:       "FAQs — AIDLA",
+    title:       "FAQs � AIDLA",
     description: "Find answers to the most common questions about AIDLA.",
     url:         `${SITE_URL}/faqs`,
     siteName:    "AIDLA",
@@ -25,21 +25,21 @@ export const metadata = {
   },
   twitter: {
     card:        "summary_large_image",
-    title:       "FAQs — AIDLA",
+    title:       "FAQs � AIDLA",
     description: "Find answers to the most common questions about AIDLA.",
     images:      [`${SITE_URL}/og-home.jpg`],
   },
 };
 
 export default async function FAQsPage({ searchParams }) {
-  // ✅ FIXED: Safely handle searchParams — can be undefined when bots hit /faqs directly
+  // ? FIXED: Safely handle searchParams � can be undefined when bots hit /faqs directly
   let initialCat = "all";
-  
+
   try {
     const params = searchParams ? await searchParams : {};
     initialCat = params?.cat || "all";
   } catch (e) {
-    // If searchParams fails, use default — don't block the page
+    // If searchParams fails, use default � don't block the page
     console.warn("Failed to parse searchParams:", e);
     initialCat = "all";
   }
@@ -63,8 +63,8 @@ export default async function FAQsPage({ searchParams }) {
   const jsonLd = buildGraph(
     buildWebPageSchema({
       path: "/faqs",
-      name: "Frequently Asked Questions — AIDLA Pakistan Education Platform",
-      description: "Find answers to the most common questions about AIDLA — earn coins, tests, lucky draw, withdrawals, and Pakistan education system.",
+      name: "AIDLA FAQs � Courses, AI Tools, Rewards & Career Help",
+      description: "Find answers about AIDLA courses, AI tools, career resources, quizzes, rewards, AIDLA Coins, accounts, withdrawals, learning and professional growth.",
     }),
     buildBreadcrumbSchema(
       [{ name: "Home", url: "/" }, { name: "FAQs", url: "/faqs" }],

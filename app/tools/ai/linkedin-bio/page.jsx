@@ -68,8 +68,8 @@ export async function generateMetadata({ searchParams }) {
   }
 
   return {
-    title: "Free AI LinkedIn Bio Generator 2026 — Write a Powerful About Section | No Sign-Up | AIDLA Pakistan",
-    description: "AI LinkedIn bio generator that writes a powerful About section in 4 tones: Professional, Creative, Executive & Friendly. Keyword-optimized for recruiters. Gets 3x more profile views. Better than Resume Worded ($19/mo) & Teal — 100% free forever. No sign-up. Perfect for Pakistan, UAE, GCC & worldwide professionals.",
+    title: "Free AI LinkedIn Bio Generator 2026 — Write a Powerful About Section | No Sign-Up | AIDLA",
+    description: "AI LinkedIn bio generator that writes a powerful About section in 4 tones: Professional, Creative, Executive & Friendly. Keyword-optimized for recruiters. Gets 3x more profile views. Better than Resume Worded ($19/mo) & Teal — 100% free forever. No sign-up. Perfect for professionals worldwide.",
     keywords: [
       "free AI LinkedIn bio generator 2026", "LinkedIn About section writer free no sign up",
       "LinkedIn summary generator AI free 2026", "LinkedIn bio writer no login required",
@@ -120,8 +120,8 @@ export async function generateMetadata({ searchParams }) {
       "geo.placename": "Pakistan",
       "geo.position": "30.3753;69.3451",
       "ICBM": "30.3753, 69.3451",
-      "DC.title": "Free AI LinkedIn Bio Generator 2026 — LinkedIn About Section Writer | AIDLA Pakistan",
-      "DC.description": "AI LinkedIn bio generator with 4 tones, recruiter-optimized, no sign-up. Best free alternative to Resume Worded & Teal for Pakistan, UAE & GCC professionals.",
+      "DC.title": "Free AI LinkedIn Bio Generator 2026 — LinkedIn About Section Writer | AIDLA",
+      "DC.description": "AI LinkedIn bio generator with 4 tones, recruiter-optimized, no sign-up. Best free alternative to Resume Worded & Teal for global professionals.",
       "DC.subject": "LinkedIn bio generator, LinkedIn About section, LinkedIn summary writer, Pakistan LinkedIn, UAE LinkedIn profile, free career tools 2026, Rozee.pk, Bayt.com",
       "DC.language": "en",
       "DC.coverage": "Pakistan, UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman, GCC, UK, US, Canada, India, Worldwide",
@@ -148,7 +148,7 @@ function LinkedInBioJsonLd() {
       "Pakistan LinkedIn Bio Writer Rozee", "UAE LinkedIn Profile Creator Bayt",
       "Best Resume Worded Alternative Free", "Teal LinkedIn Alternative Free 2026",
     ],
-    description: "AI-powered LinkedIn bio generator that writes powerful About sections in 4 tones: Professional, Creative, Executive, and Friendly. Keyword-optimized for LinkedIn's algorithm and recruiter searches. Gets 3x more profile views. 100% free — better than Resume Worded ($19/mo), Teal, and LinkedIn Premium ($40/mo). No sign-up required. Optimized for Pakistan (Rozee.pk, LUMS, IBA, NUST) and UAE (Bayt.com, Naukrigulf) professional markets.",
+    description: "AI-powered LinkedIn bio generator that writes powerful About sections in 4 tones: Professional, Creative, Executive, and Friendly. Keyword-optimized for LinkedIn's algorithm and recruiter searches. Gets 3x more profile views. 100% free — better than Resume Worded ($19/mo), Teal, and LinkedIn Premium ($40/mo). No sign-up required. Optimized for global professional markets, recruiter search, and career growth.",
     url: pageUrl,
     applicationCategory: "ProductivityApplication",
     operatingSystem: "Web Browser",

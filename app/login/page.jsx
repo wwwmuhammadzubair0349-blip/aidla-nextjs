@@ -3,11 +3,11 @@ import LoginClient from "./LoginClient";
 import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 export const metadata = {
-  title: "Log In to your AIDLA Account | AIDLA",
-  description: "Sign in to your AIDLA account to continue learning, earning coins, and experiencing the future of AI.",
+  title: "Login to AIDLA — Courses, AI Tools, Rewards & Career Growth",
+  description: "Sign in to AIDLA to continue courses, AI tools, career resources, quizzes, certificates, AIDLA Coins, rewards and professional learning.",
   openGraph: {
-    title: "Log In to your AIDLA Account | AIDLA",
-    description: "Sign in to your AIDLA account to continue learning, earning coins, and experiencing the future of AI.",
+    title: "Login to AIDLA — Courses, AI Tools & Rewards",
+    description: "Sign in to continue learning, using AI tools, building career resources and earning rewards.",
     url: "https://www.aidla.online/login",
     siteName: "AIDLA",
     locale: "en_PK",
@@ -15,14 +15,14 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Log In to your AIDLA Account | AIDLA",
-    description: "Welcome back to the AIDLA ecosystem.",
+    title: "Login to AIDLA — Courses, AI Tools & Rewards",
+    description: "Welcome back to AIDLA.",
   },
   alternates: {
     canonical: "https://www.aidla.online/login",
   },
-  robots: { 
-    index: true, 
+  robots: {
+    index: true,
     follow: true,
     googleBot: {
       index: true,
@@ -37,8 +37,8 @@ export const metadata = {
 const schema = buildGraph(
   buildWebPageSchema({
     path: "/login",
-    name: "Log In to your AIDLA Account | AIDLA",
-    description: "Sign in to your AIDLA account to continue learning, earning coins, and experiencing the future of AI.",
+    name: "Login to AIDLA — Courses, AI Tools, Rewards & Career Growth",
+    description: "Sign in to AIDLA to continue courses, AI tools, career resources, quizzes, certificates, AIDLA Coins and rewards.",
   }),
   buildBreadcrumbSchema(
     [{ name: "Home", url: "/" }, { name: "Log In", url: "/login" }],

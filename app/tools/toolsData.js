@@ -45,7 +45,7 @@ export const CATEGORIES = [
     badge: "🇵🇰 Pakistan",
     badgeColor: "#0891b2",
     tools: [
-      { to: "/tools/education/cgpa-calculator",         emoji: "🧮", label: "CGPA / GPA Calculator",    desc: "Calculate CGPA for Pakistani universities — 4.0 & 5.0 scale."              },
+      { to: "/tools/education/cgpa-calculator",         emoji: "🧮", label: "CGPA / GPA Calculator",    desc: "Calculate CGPA for universities — 4.0 & 5.0 scale."              },
       { to: "/tools/education/mdcat-ecat-calculator",   emoji: "🏥", label: "MDCAT / ECAT Calculator",  desc: "Calculate medical & engineering admission aggregate in Pakistan."            },
       { to: "/tools/education/percentage-calculator",   emoji: "📊", label: "Percentage Calculator",    desc: "Marks to %, increase/decrease, what % of a number — all in one.",          badge: "New", badgeColor: "#059669" },
       { to: "/tools/education/grade-calculator",        emoji: "🅰️", label: "Grade Calculator",         desc: "Convert marks to letter grades — A+, A, B, C based on any grading scale.", badge: "New", badgeColor: "#059669" },

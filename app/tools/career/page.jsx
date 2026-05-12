@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Free Career Tools — CV Maker & Cover Letter Maker | AIDLA",
-  description: "Free AI-powered career tools: CV Maker with 17 ATS templates and Cover Letter Maker with 6 professional templates. No sign-up needed.",
+  title: "Free Career Tools for Freshers, Jobs & Career Switching | AIDLA",
+  description: "Free AI career tools for freshers, job seekers, professionals and career switchers: CV Maker, Cover Letter Maker, interview prep and job-ready resources.",
   robots: { index: true, follow: true },
   alternates: { canonical: "https://www.aidla.online/tools/career" },
 };

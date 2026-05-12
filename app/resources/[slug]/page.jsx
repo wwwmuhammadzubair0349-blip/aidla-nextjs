@@ -1,4 +1,4 @@
-﻿// app/resources/[slug]/page.jsx
+// app/resources/[slug]/page.jsx
 
 import { serverFetch } from "@/lib/supabaseServer";
 import ResourceDetailClient from "./ResourceDetailClient";
@@ -29,9 +29,9 @@ async function getMaterial(slug) {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const m    = await getMaterial(slug);
-  const title = m ? `${m.title} — Free Download | AIDLA` : "Study Material | AIDLA";
+  const title = m ? `${m.title} � Free Download | AIDLA` : "Study Material | AIDLA";
   const desc  = m?.description
-    || (m ? `Download ${m.title} free on AIDLA — study materials for Pakistani students.` : "Free study material on AIDLA.");
+    || (m ? `Download ${m.title} free on AIDLA � study materials for learners worldwide.` : "Free study material on AIDLA.");
   const url   = `${SITE_URL}/resources/${slug}`;
   const img   = { url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: title };
 

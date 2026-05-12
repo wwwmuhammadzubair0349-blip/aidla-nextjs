@@ -66,17 +66,17 @@ function TiltCard({ children, className = "" }) {
 
 /* ── Static data ── */
 const MILESTONES = [
-  { year: "2026", title: "The Spark", desc: "Identified Pakistan's massive digital education gap — millions of students with no access to premium tools." },
+  { year: "2026", title: "The Spark", desc: "Identified the global access gap learners, freshers, and professionals face when premium education and career tools are locked behind paywalls." },
   { year: "2026", title: "Platform Launched", desc: "AIDLA goes live with AI tools, CV maker, and daily quiz competitions — 100% free, no watermarks." },
-  { year: "2026", title: "Rewards Engine", desc: "AIDLA Coins system activated — real learn-to-earn rewards for Pakistani learners." },
-  { year: "Now",  title: "500+ Learners", desc: "Pakistan's fastest-growing free AI-powered digital learning academy." },
+  { year: "2026", title: "Rewards Engine", desc: "AIDLA Coins system activated - real learn-to-earn rewards for active learners worldwide." },
+  { year: "Now",  title: "500+ Learners", desc: "Pakistan's #1 AI-powered learning platform with global access." },
 ];
 
 const VALUES = [
-  { icon: "🤝", title: "Inclusivity",    desc: "Education is a right, not a privilege. We build for every learner in Pakistan regardless of background or income." },
-  { icon: "💡", title: "Innovation",     desc: "Leveraging cutting-edge AI to solve real educational challenges Pakistani students face every single day." },
+  { icon: "🤝", title: "Inclusivity",    desc: "Education and career growth should be accessible to students, professionals, freshers, and self-learners everywhere." },
+  { icon: "💡", title: "Innovation",     desc: "Leveraging cutting-edge AI to solve real learning, productivity, career, and skill-building challenges." },
   { icon: "🔍", title: "Transparency",   desc: "From lucky draws to coin withdrawals — everything on AIDLA is openly tracked and verified." },
-  { icon: "🚀", title: "Accessibility",  desc: "Every tool, every course, every reward — designed to work on any device, anywhere in Pakistan." },
+  { icon: "🚀", title: "Accessibility",  desc: "Every tool, course, and reward is designed to work on any device for users worldwide." },
 ];
 
 const IMPACT_STATS = [
@@ -136,17 +136,15 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
               <span aria-current="page">About Us</span>
             </nav>
 
-            <span className="ab-eyebrow">🇵🇰 Pakistan&apos;s #1 AI Learning Platform</span>
+            <span className="ab-eyebrow">🇵🇰 Pakistan&apos;s #1 AI Powered Learning Platform</span>
 
             <h1 id="ab-hero-heading" className="ab-hero-title">
-              Empowering Pakistan&apos;s<br />
+              Empowering Global<br />
               <em>Digital Learners.</em>
             </h1>
 
             <p className="ab-hero-sub">
-              AIDLA is on a mission to give every Pakistani student free access
-              to AI-powered education, career tools, and real rewards. Built in
-              Peshawar. 100% free, forever.
+              AIDLA gives students, professionals, freshers, career switchers, founders, and lifelong learners free access to AI education, career tools, courses, resources, and real rewards. Built in Pakistan for the world.
             </p>
 
             <div className="ab-hero-ctas">
@@ -178,7 +176,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
             <div className="ab-hero-img-wrap">
               <Image
                 src="/student-hero.png"
-                alt="Pakistani student learning on AIDLA"
+                alt="Global learner using AIDLA"
                 fill
                 style={{ objectFit: "cover", objectPosition: "top center" }}
                 priority
@@ -318,7 +316,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
                 <p className="ab-founder-location">📍 Peshawar, KPK, Pakistan</p>
 
                 <blockquote className="ab-founder-message">
-                  <p>&ldquo;Building AIDLA is my personal mission — to ensure no Pakistani student is left behind because of financial barriers. This platform is free, and always will be.&rdquo;</p>
+                  <p>&ldquo;Building AIDLA is my personal mission — to ensure no learner is left behind because of financial barriers. This platform is free, and always will be.&rdquo;</p>
                 </blockquote>
 
                 {/* Social icons — icon only circles */}
@@ -384,7 +382,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
                   <strong>Gold Medalist Electrical Engineer Muhammad Zubair Afridi</strong> decided
                   to challenge that reality. Instead of another paid platform, he
                   envisioned something radically different — an all-in-one AI-powered
-                  educational ecosystem, free for every Pakistani learner. That
+                  educational ecosystem, free for learners worldwide. That
                   vision became <strong>AIDLA</strong>.
                 </p>
               </div>
@@ -517,7 +515,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
             <div className="ab-careers-left">
               <p className="ab-careers-dateline">AIDLA · Peshawar, Pakistan · 2026</p>
               <h2 id="ab-careers-heading">Build the Future<br /><em>of Free Education.</em></h2>
-              <p>We need builders, educators, designers &amp; dreamers to help us give every Pakistani student the tools they deserve — free.</p>
+              <p>We need builders, educators, designers &amp; dreamers to help us give learners worldwide the tools they deserve — free.</p>
             </div>
 
             {/* Right — roles + CTA */}
@@ -537,7 +535,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
           {/* Bottom rule */}
           <div className="ab-careers-footer-rule" aria-hidden="true">
             <span />
-            <p>AIDLA Careers — Pakistan&apos;s #1 Free AI Learning Platform</p>
+            <p>AIDLA Careers — Pakistan&apos;s #1 AI Powered Learning Platform</p>
             <span />
           </div>
         </div>

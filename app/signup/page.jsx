@@ -3,11 +3,11 @@ import SignupClient from "./SignupClient";
 import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 export const metadata = {
-  title: "Create Account and Join thousands of Students | AIDLA",
-  description: "Join the AIDLA ecosystem. Create your free account to start learning, earn rewards, and experience the future of AI.",
+  title: "Create Free AIDLA Account — Learn, Use AI Tools & Earn Rewards",
+  description: "Join AIDLA for free to access courses, AI tools, career resources, CVs, cover letters, quizzes, certificates, AIDLA Coins and rewards.",
   openGraph: {
-    title: "Create Account and Join thousands of Students | AIDLA",
-    description: "Join the AIDLA ecosystem. Create your free account to start learning, earn rewards, and experience the future of AI.",
+    title: "Create Free AIDLA Account — Courses, AI Tools & Rewards",
+    description: "Join AIDLA to access courses, AI tools, career resources, quizzes, certificates and rewards.",
     url: "https://www.aidla.online/signup",
     siteName: "AIDLA",
     locale: "en_PK",
@@ -15,14 +15,14 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Create Account and Join thousands of Students | AIDLA",
-    description: "Join the AIDLA ecosystem today.",
+    title: "Create Free AIDLA Account — Courses, AI Tools & Rewards",
+    description: "Join AIDLA free today.",
   },
   alternates: {
     canonical: "https://www.aidla.online/signup",
   },
-  robots: { 
-    index: true, 
+  robots: {
+    index: true,
     follow: true,
     googleBot: {
       index: true,
@@ -37,8 +37,8 @@ export const metadata = {
 const schema = buildGraph(
   buildWebPageSchema({
     path: "/signup",
-    name: "Create Account and Join thousands of Students | AIDLA",
-    description: "Join the AIDLA ecosystem. Create your free account to start learning, earn rewards, and experience the future of AI.",
+    name: "Create Free AIDLA Account — Learn, Use AI Tools & Earn Rewards",
+    description: "Join AIDLA for free to access courses, AI tools, career resources, CVs, cover letters, quizzes, certificates, AIDLA Coins and rewards.",
   }),
   buildBreadcrumbSchema(
     [{ name: "Home", url: "/" }, { name: "Sign Up", url: "/signup" }],

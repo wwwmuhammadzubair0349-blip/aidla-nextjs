@@ -5,13 +5,13 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase"; // Ensure this matches your Next.js path
 
 // Import professional icons
-import { 
-  FaFacebookF, 
-  FaTwitter, 
-  FaLinkedinIn, 
-  FaTiktok, 
-  FaInstagram, 
-  FaWhatsappSquare 
+import {
+  FaFacebookF,
+  FaTwitter,
+  FaLinkedinIn,
+  FaTiktok,
+  FaInstagram,
+  FaWhatsappSquare
 } from "react-icons/fa";
 
 export default function Footer() {
@@ -25,12 +25,12 @@ export default function Footer() {
       const { error } = await supabase
         .from("newsletter_subscribers")
         .insert({ email: val });
-        
+
       if (error?.code === "23505") setStatus("exists");
       else if (error) setStatus("err");
       else { setStatus("ok"); setEmail(""); }
-    } catch { 
-      setStatus("err"); 
+    } catch {
+      setStatus("err");
     }
     setTimeout(() => setStatus(null), 4000);
   };
@@ -69,8 +69,8 @@ export default function Footer() {
       --ft-bg:       #0d1117;
       --ft-surface:  #13181f;
       --ft-border:   rgba(255,255,255,0.06);
-      --ft-text:     rgba(255,255,255,0.75); 
-      --ft-text-md:  rgba(255,255,255,0.85); 
+      --ft-text:     rgba(255,255,255,0.75);
+      --ft-text-md:  rgba(255,255,255,0.85);
       --ft-white:    #ffffff;
       --ft-gold:     #f59e0b;
       --ft-gold-dim: rgba(245,158,11,0.12);
@@ -167,7 +167,7 @@ export default function Footer() {
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: rgba(255,255,255,0.75); 
+      color: rgba(255,255,255,0.75);
       margin-bottom: 7px;
     }
 
@@ -180,7 +180,7 @@ export default function Footer() {
     .ft-nl-row input {
       flex: 1;
       background: var(--ft-surface);
-      border: 1px solid rgba(255,255,255,0.2); 
+      border: 1px solid rgba(255,255,255,0.2);
       border-right: none;
       border-radius: 4px 0 0 4px;
       padding: 10px 12px;
@@ -192,8 +192,8 @@ export default function Footer() {
       min-width: 0;
     }
 
-    .ft-nl-row input::placeholder { color: rgba(255,255,255,0.6); } 
-    
+    .ft-nl-row input::placeholder { color: rgba(255,255,255,0.6); }
+
     /* 🟡 RESTORED YELLOW BORDER FOCUS */
     .ft-nl-row input:focus { border-color: var(--ft-gold); }
 
@@ -246,7 +246,7 @@ export default function Footer() {
       text-decoration: none;
       font-size: 0.85rem;
       font-weight: 400;
-      padding: 8px 0; 
+      padding: 8px 0;
       transition: color 0.18s, padding-left 0.18s;
       display: flex;
       align-items: center;
@@ -299,7 +299,7 @@ export default function Footer() {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 44px; 
+      width: 44px;
       height: 44px;
       background: var(--ft-surface);
       border: 1px solid rgba(255,255,255,0.15);
@@ -323,7 +323,7 @@ export default function Footer() {
       gap: 12px;
       padding: 16px 0;
       font-size: 0.75rem;
-      color: var(--ft-text); 
+      color: var(--ft-text);
     }
 
     .ft-bottom strong { color: var(--ft-gold); } /* 🟡 RESTORED YELLOW */
@@ -338,7 +338,7 @@ export default function Footer() {
       color: var(--ft-text);
       text-decoration: none;
       font-size: 0.75rem;
-      padding: 12px 14px; 
+      padding: 12px 14px;
       transition: color 0.2s;
       border-right: 1px solid rgba(255,255,255,0.15);
     }
@@ -386,7 +386,7 @@ export default function Footer() {
   return (
     <>
       <style>{css}</style>
-      
+
 
       <footer className="ft-root">
         <div className="ft-accent" aria-hidden="true" />
@@ -405,9 +405,9 @@ export default function Footer() {
                 AIDLA
               </div>
               <p className="ft-tagline">
-                Pakistan's #1 education platform. Learn, earn coins &amp; win real prizes.
+                Pakistan's #1 AI powered learning platform for global learners, professionals, freshers and career switchers.
               </p>
-              <div className="ft-badge">🇵🇰 Made in Pakistan</div>
+              <div className="ft-badge">🇵🇰 Built in Pakistan · Global access</div>
 
               <div className="ft-nl-label">Newsletter</div>
               {status === "ok" ? (
@@ -495,7 +495,7 @@ export default function Footer() {
 
           {/* Bottom bar */}
           <div className="ft-bottom">
-            <span>© {new Date().getFullYear()} <strong>AIDLA</strong>. All Rights Reserved. Made with ❤️ in Pakistan.</span>
+            <span>© {new Date().getFullYear()} <strong>AIDLA</strong>. All Rights Reserved. Built in Pakistan for the world.</span>
             <div className="ft-bottom-links">
               <Link href="/privacy-policy">Privacy Policy</Link>
               <Link href="/terms">Terms &amp; Conditions</Link>

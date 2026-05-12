@@ -17,13 +17,12 @@ export const revalidate = 3600;
 export const metadata = {
   title: "AIDLA - Pakistan #1 AI Powered Learning Platform",
   description:
-    "AIDLA is Pakistan #1 AI powered learning platform for free quizzes, courses, AI tools, daily quiz winners, AIDLA Coins, and learner rewards.",
+    "AIDLA is Pakistan's #1 AI powered learning platform for global learners, students, professionals, freshers, career switchers, AI tools, courses, quizzes, rewards, CVs and cover letters.",
   keywords: [
-    "AIDLA","free learning platform Pakistan","Pakistan #1 AI powered learning platform",
-    "AI learning Pakistan","online quizzes Pakistan","AIDLA coins",
-    "free education app Pakistan","student rewards Pakistan","daily quiz Pakistan",
-    "learn and earn Pakistan","KPK learning platform","Peshawar education",
-    "AI digital learning academy",
+    "AIDLA","Pakistan #1 AI powered learning platform","global AI learning platform",
+    "online courses","AI tools","career tools","career switching","freshers CV builder",
+    "cover letter maker","data analytics courses","AI for beginners","AI engineer courses",
+    "startup advice","career mentoring","AIDLA coins","learn and earn",
   ],
   authors: [{ name: "AIDLA", url: SITE_URL }],
   creator: "AIDLA",
@@ -39,13 +38,13 @@ export const metadata = {
   openGraph: {
     type: "website", siteName: "AIDLA", locale: "en_PK", url: `${SITE_URL}/`,
     title: "AIDLA - Pakistan #1 AI Powered Learning Platform",
-    description: "Free quizzes, courses, AI tools, daily quiz winners, AIDLA Coins, and real rewards for Pakistani learners.",
+    description: "Free courses, AI tools, career resources, quizzes, AIDLA Coins and rewards for learners, professionals, freshers and career switchers worldwide.",
     images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA free AI learning and rewards platform", type: "image/jpeg" }],
   },
   twitter: {
     card: "summary_large_image", site: "@AIDLA_online", creator: "@AIDLA_online",
     title: "AIDLA - Pakistan #1 AI Powered Learning Platform",
-    description: "Study with free quizzes, AI tools, courses, daily quiz competitions, and AIDLA Coins.",
+    description: "Learn with free courses, AI tools, career resources, quizzes, daily competitions and AIDLA Coins.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
 };
@@ -56,7 +55,7 @@ const PLATFORM_STATS = [
   { value: "500+",    label: "Registered Learners",  icon: "👨‍🎓" },
   { value: "10,000+", label: "AIDLA Coins Distributed", icon: "🪙" },
   { value: "100%",    label: "Free to Join",          icon: "🎁" },
-  { value: "#1",      label: "AI Platform in Pakistan", icon: "🏆" },
+  { value: "#1",      label: "AI Platform from Pakistan", icon: "🏆" },
 ];
 
 const TRUST_ITEMS = [
@@ -67,14 +66,14 @@ const TRUST_ITEMS = [
   "✦ Wallet & Shop",
   "✦ Mobile Friendly",
   "✦ 100% Free",
-  "✦ Built for Pakistan",
+  "✦ Global Access",
 ];
 
 const STEPS = [
   {
     num: "01",
     title: "Learn",
-    text: "Take short quizzes, courses, and practice activities made for Pakistani learners.",
+    text: "Take quizzes, courses, and practice activities built for learners, professionals, freshers, and career switchers worldwide.",
     icon: "📖",
     color: "#f59e0b",
   },
@@ -106,11 +105,11 @@ const FEATURES = [
 const FALLBACK_FAQS = [
   { question: "Is AIDLA free?", answer: "Yes. AIDLA is free to join and gives learners access to quizzes, tools, and rewards-focused learning features.", slug: "is-aidla-free" },
   { question: "How do AIDLA Coins work?", answer: "Learners earn coins by completing learning activities. Coins are designed to unlock rewards and keep students motivated.", slug: "how-aidla-coins-work" },
-  { question: "Who is AIDLA for?", answer: "AIDLA is built for students, job seekers, and self-learners in Pakistan who want free digital learning support.", slug: "who-is-aidla-for" },
+  { question: "Who is AIDLA for?", answer: "AIDLA is built for students, professionals, freshers, job seekers, career switchers, startup builders, and self-learners worldwide.", slug: "who-is-aidla-for" },
 ];
 
 const FALLBACK_REVIEWS = [
-  { id: "r1", full_name: "Ahmed Khan", rating: 5, review_text: "AIDLA changed how I study. The daily quizzes kept me consistent and the AIDLA Coins made it fun. Best free platform in Pakistan!", created_at: "2026-04-12T00:00:00Z" },
+  { id: "r1", full_name: "Ahmed Khan", rating: 5, review_text: "AIDLA changed how I study. The daily quizzes kept me consistent and the AIDLA Coins made it fun. Best free platform for learning and career growth!", created_at: "2026-04-12T00:00:00Z" },
   { id: "r2", full_name: "Fatima Malik", rating: 5, review_text: "The AI career tools helped me write my CV and prepare for interviews. I got my first job offer after using the tools here. Highly recommend!", created_at: "2026-04-06T00:00:00Z" },
   { id: "r3", full_name: "Bilal Hussain", rating: 5, review_text: "I never thought a completely free platform could offer so much. AIDLA has real courses, AI tools, and daily competitions. Absolutely love it.", created_at: "2026-03-30T00:00:00Z" },
 ];
@@ -181,7 +180,7 @@ export default async function Home() {
     buildWebPageSchema({
       path: "/",
       name: "AIDLA - Pakistan #1 AI Powered Learning Platform",
-      description: "AIDLA helps Pakistani learners study with free quizzes, AI tools, courses, daily quiz competitions, AIDLA Coins, and rewards.",
+      description: "AIDLA helps global learners, students, professionals, freshers, and career switchers grow with courses, AI tools, quizzes, AIDLA Coins, and rewards.",
       dateModified: LAST_MODIFIED,
       speakableSelectors: ["#hero-heading", "#how-heading", "#faq-heading"],
     }),
@@ -193,14 +192,6 @@ export default async function Home() {
   return (
     <div className="hp-root">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
-      {/* SEO: Founder social links — visually hidden, crawler visible */}
-      <nav className="hp-founder-links" aria-label="Founder social profiles">
-        <a href="https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/" rel="author noopener noreferrer" tabIndex={-1}>Engineer Muhammad Zubair Afridi on LinkedIn</a>
-        <a href="https://www.facebook.com/engrzubairafridi/" rel="author noopener noreferrer" tabIndex={-1}>Engineer Muhammad Zubair Afridi on Facebook</a>
-        <a href="https://www.instagram.com/muhammad.zubair.afridi/" rel="author noopener noreferrer" tabIndex={-1}>Engineer Muhammad Zubair Afridi on Instagram</a>
-      </nav>
-
       <main id="main-content" className="hp-main">
 
         {/* ══════════════════════════════════════════════════
@@ -222,7 +213,7 @@ export default async function Home() {
               <p className="hp-hero-sub">
                 AIDLA brings courses, daily quiz competitions, AI career tools,
                 resources, wallets, rewards, and learner leaderboards into one
-                free platform for Pakistan.
+                free platform for learners worldwide.
               </p>
 
               <div className="hp-hero-ctas">
@@ -371,7 +362,7 @@ export default async function Home() {
         <section className="hp-section hp-section-alt" aria-labelledby="features-heading">
           <div className="hp-section-head center">
             <span className="hp-eyebrow-dark">AIDLA Ecosystem</span>
-            <h2 id="features-heading">Everything a Pakistani Learner Needs</h2>
+            <h2 id="features-heading">Everything Learners and Professionals Need</h2>
             <p>Public discovery plus a complete learner dashboard — all in one free platform.</p>
           </div>
 
@@ -397,7 +388,7 @@ export default async function Home() {
             <div>
               <span className="hp-eyebrow-dark">Learn Something New</span>
               <h2 id="courses-heading">Featured Courses</h2>
-              <p>Expert-led, free courses built for Pakistani students and professionals.</p>
+              <p>Expert-led courses for students, professionals, freshers, career switchers and founders.</p>
             </div>
             <Link href="/courses" className="hp-link-btn">Browse All Courses →</Link>
           </div>

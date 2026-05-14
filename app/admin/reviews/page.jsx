@@ -4,7 +4,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 
-const BUCKET = "reviews";
 const STARS = [1, 2, 3, 4, 5];
 
 const EMPTY_FORM = {
@@ -71,20 +70,32 @@ export default function AdminReviewsPage() {
 
   async function handleAvatarUpload(e) {
     const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) { setError("Please select an image file."); return; }
-    if (file.size > 2 * 1024 * 1024) { setError("Image must be under 2 MB."); return; }
+    if (!file || !file.type.startsWith("image/")) return;
     setUploading(true);
     setError("");
     try {
-      const ext = file.name.split(".").pop();
-      const path = `avatars/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true });
-      if (upErr) throw upErr;
-      const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
-      setForm(f => ({ ...f, avatar_url: pub.publicUrl }));
-    } catch (e) {
-      setError("Upload failed: " + e.message);
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = new Image();
+          img.onload = () => {
+            const MAX = 120;
+            const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL("image/jpeg", 0.82));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      setForm(f => ({ ...f, avatar_url: dataUrl }));
+    } catch (err) {
+      setError("Image processing failed: " + err.message);
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";

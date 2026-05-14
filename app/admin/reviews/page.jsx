@@ -103,17 +103,18 @@ export default function AdminReviewsPage() {
   }
 
   async function handleSave() {
-    if (!form.full_name.trim() || !form.email.trim() || !form.review_text.trim()) {
-      setError("Name, email, and review text are required.");
+    if (!form.full_name.trim() || !form.email.trim()) {
+      setError("Name and email are required.");
       return;
     }
     setSaving(true);
     setError("");
+    const payload = { ...form, review_text: form.review_text.trim(), full_name: form.full_name.trim() };
     let err;
     if (editId) {
-      ({ error: err } = await supabase.from("user_reviews").update(form).eq("id", editId));
+      ({ error: err } = await supabase.from("user_reviews").update(payload).eq("id", editId));
     } else {
-      ({ error: err } = await supabase.from("user_reviews").insert(form));
+      ({ error: err } = await supabase.from("user_reviews").insert(payload));
     }
     setSaving(false);
     if (err) { setError(err.message); return; }

@@ -8,6 +8,7 @@
 
 import { Suspense } from "react";
 import LinkedInBioClient from "./LinkedInBioClient";
+import { fetchReviews } from "@/lib/reviewsHelper";
 
 /* ================================================================
    DYNAMIC METADATA — Industry × Tone × Role × Region combinations
@@ -133,7 +134,7 @@ export async function generateMetadata({ searchParams }) {
 /* ================================================================
    JSON-LD — 6 SCHEMAS for maximum entity & rich result coverage
 ================================================================ */
-function LinkedInBioJsonLd() {
+function LinkedInBioJsonLd({ aggregateRating }) {
   const baseUrl = "https://www.aidla.online";
   const pageUrl = `${baseUrl}/tools/ai/linkedin-bio`;
 
@@ -156,7 +157,7 @@ function LinkedInBioJsonLd() {
     datePublished: "2024-04-01T00:00:00+05:00",
     dateModified: new Date().toISOString(),
     offers: { "@type": "Offer", price: "0", priceCurrency: "PKR", availability: "https://schema.org/InStock", priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0] },
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", ratingCount: "2156", bestRating: "5", worstRating: "1" },
+    ...(aggregateRating ? { aggregateRating } : {}),
     featureList: [
       "4 tones: Professional, Creative, Executive, Friendly",
       "Industry-specific keyword optimization for LinkedIn search",
@@ -245,10 +246,11 @@ function LinkedInBioJsonLd() {
   );
 }
 
-export default function LinkedInBioPage() {
+export default async function LinkedInBioPage() {
+  const { aggregateRating } = await fetchReviews({ revalidate: 3600 });
   return (
     <>
-      <LinkedInBioJsonLd />
+      <LinkedInBioJsonLd aggregateRating={aggregateRating} />
       <Suspense fallback={<div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#f0f4ff 0%,#fffbf0 55%,#e8f4fd 100%)" }} />}>
         <LinkedInBioClient />
       </Suspense>

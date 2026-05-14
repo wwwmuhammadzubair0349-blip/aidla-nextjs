@@ -87,7 +87,7 @@ export default async function ProjectsPage({ searchParams }) {
       { title: "Search project ideas", text: "Use AIDLA Projects to search free FYP, mini project, semester, and research ideas." },
       { title: "Filter by requirements", text: "Filter ideas by domain, difficulty, tech stack, subject, university, and education level." },
       { title: "Generate custom recommendations", text: "Use the AIDLA AI Project Idea Generator to get tailored project recommendations." },
-    ]),
+    ], "/projects"),
     buildItemListSchema({
       id: "project-ideas-list",
       name: "AIDLA Project Ideas",
@@ -95,12 +95,25 @@ export default async function ProjectsPage({ searchParams }) {
     })
   );
 
+  const safeIdeas = ideas || [];
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+        <h1>Project Ideas, FYP Topics &amp; AI Recommendations — AIDLA</h1>
+        <p>Browse free FYP, mini project, semester project, research, and AI-powered project recommendations on AIDLA. Filter by domain, difficulty, tech stack, subject, and university.</p>
+        <ul>
+          {safeIdeas.map(idea => (
+            <li key={idea.id || idea.slug}>
+              <a href={`/projects/${idea.slug}`}>{idea.title}</a>
+              {idea.description && <p>{idea.description}</p>}
+            </li>
+          ))}
+        </ul>
+      </div>
       <ProjectsClient
-        initialIdeas={ideas || []}
-        initialTotal={ideas?.[0]?.total_count || 0}
+        initialIdeas={safeIdeas}
+        initialTotal={safeIdeas?.[0]?.total_count || 0}
         initialOptions={options || { subjects: [], courses: [], educational_levels: [], universities: [], tech_stacks: [] }}
       />
     </>

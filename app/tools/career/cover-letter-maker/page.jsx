@@ -8,6 +8,7 @@
 
 import { Suspense } from "react";
 import CoverLetterClient from "./CoverLetterClient";
+import { fetchReviews } from "@/lib/reviewsHelper";
 
 /* ================================================================
    DYNAMIC METADATA � Context-aware, long-tail keyword maximization
@@ -190,7 +191,7 @@ export async function generateMetadata({ searchParams }) {
    SoftwareApp + FAQPage + BreadcrumbList + HowTo + Organization
    + LocalBusiness (city-level) + Reviews
 ================================================================ */
-function CoverLetterJsonLd() {
+function CoverLetterJsonLd({ aggregateRating, reviews }) {
   const baseUrl = "https://www.aidla.online";
   const pageUrl = `${baseUrl}/tools/career/cover-letter-maker`;
 
@@ -249,39 +250,9 @@ function CoverLetterJsonLd() {
       name: "AIDLA",
       url: baseUrl,
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.7",
-      reviewCount: "890",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Person", name: "Zainab Hassan" },
-        reviewBody:
-          "The AI Fill All feature saved me hours. Created a perfect cover letter for my Dubai marketing role in 3 minutes. Better than Enhancv's paid cover letter tool � completely free with no watermarks. The Professional template printed beautifully.",
-        datePublished: "2025-10-20",
-      },
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Person", name: "Omar Farooq" },
-        reviewBody:
-          "Used this for my Pakistan banking job application. The tone control is excellent � switched from professional to confident and the AI rewrote everything perfectly. Got the interview! Beats Google Docs templates by miles. Highly recommend for anyone job hunting in Lahore or Karachi.",
-        datePublished: "2025-12-08",
-      },
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "4", bestRating: "5" },
-        author: { "@type": "Person", name: "Priya Sharma" },
-        reviewBody:
-          "Great tool for quick cover letters. Used the Corporate template for a Saudi Arabia application and it looked very professional. Wish there were more GCC-specific templates, but the existing ones work well after customization. AI writing is surprisingly good � incorporated engineering terminology from my job description.",
-        datePublished: "2026-01-15",
-      },
-    ],
+    ...(aggregateRating ? { aggregateRating } : {}),
+    ...(reviews && reviews.length > 0 ? { review: reviews } : {}),
+
   };
 
   const faqSchema = {
@@ -1010,11 +981,12 @@ const REGIONS_SERVED = [
 /* ================================================================
    PAGE COMPONENT
 ================================================================ */
-export default function CoverLetterMakerPage() {
+export default async function CoverLetterMakerPage() {
+  const { aggregateRating, reviews } = await fetchReviews({ revalidate: 3600 });
   return (
     <>
       {/* 7 JSON-LD schemas � server-rendered for maximum entity clarity */}
-      <CoverLetterJsonLd />
+      <CoverLetterJsonLd aggregateRating={aggregateRating} reviews={reviews} />
 
       {/* Client-side interactive tool with SSR skeleton fallback */}
       <Suspense fallback={<Skeleton />}>

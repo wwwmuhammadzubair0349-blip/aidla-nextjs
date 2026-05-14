@@ -8,6 +8,7 @@
 
 import { Suspense } from "react";
 import SummarizerClient from "./SummarizerClient";
+import { fetchReviews } from "@/lib/reviewsHelper";
 
 /* ================================================================
    DYNAMIC METADATA — Mode × Language × Domain × Region combinations
@@ -135,7 +136,7 @@ export async function generateMetadata({ searchParams }) {
 /* ================================================================
    JSON-LD — 6 SCHEMAS for maximum entity & rich result coverage
 ================================================================ */
-function SummarizerJsonLd() {
+function SummarizerJsonLd({ aggregateRating }) {
   const baseUrl = "https://www.aidla.online";
   const pageUrl = `${baseUrl}/tools/ai/summarizer`;
 
@@ -158,7 +159,7 @@ function SummarizerJsonLd() {
     datePublished: "2024-02-01T00:00:00+05:00",
     dateModified: new Date().toISOString(),
     offers: { "@type": "Offer", price: "0", priceCurrency: "PKR", availability: "https://schema.org/InStock", priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0] },
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", ratingCount: "4102", bestRating: "5", worstRating: "1" },
+    ...(aggregateRating ? { aggregateRating } : {}),
     featureList: [
       "4 summary formats: Short (TL;DR), Medium (key points), Long (detailed), Bullet Points",
       "No word limit — summarize any length text for free",
@@ -246,10 +247,11 @@ function SummarizerJsonLd() {
   );
 }
 
-export default function SummarizerPage() {
+export default async function SummarizerPage() {
+  const { aggregateRating } = await fetchReviews({ revalidate: 3600 });
   return (
     <>
-      <SummarizerJsonLd />
+      <SummarizerJsonLd aggregateRating={aggregateRating} />
       <Suspense fallback={<div style={{ minHeight: "100vh", background: "#f8fafc" }} />}>
         <SummarizerClient />
       </Suspense>

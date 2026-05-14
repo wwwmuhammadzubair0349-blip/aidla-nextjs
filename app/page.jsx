@@ -17,7 +17,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: "AIDLA - AI Powered Learning Platform in Pakistan",
   description:
-    "AIDLA is a Pakistan-based AI learning platform. Free courses, AI tools, quizzes, AIDLA Coins, rewards, CV builder and cover letter maker for global learners.",
+    "AIDLA: free courses, AI tools, quizzes, CV builder & cover letter maker. Earn AIDLA Coins, win rewards, and grow your career — for learners worldwide.",
   keywords: [
     "AIDLA","Pakistan AI powered learning platform","global AI learning platform",
     "online courses","AI tools","career tools","career switching","freshers CV builder",
@@ -102,12 +102,6 @@ const FEATURES = [
   { emoji: "🤝", title: "Community Learning", text: "Forum, social learning, lucky draw, lucky wheel, referrals, and learner milestones.", href: "/user", label: "Go to dashboard" },
 ];
 
-const FALLBACK_FAQS = [
-  { question: "Is AIDLA free?", answer: "Yes. AIDLA is free to join and gives learners access to quizzes, tools, and rewards-focused learning features.", slug: "is-aidla-free" },
-  { question: "How do AIDLA Coins work?", answer: "Learners earn coins by completing learning activities. Coins are designed to unlock rewards and keep students motivated.", slug: "how-aidla-coins-work" },
-  { question: "Who is AIDLA for?", answer: "AIDLA is built for students, professionals, freshers, job seekers, career switchers, startup builders, and self-learners worldwide.", slug: "who-is-aidla-for" },
-];
-
 const FALLBACK_REVIEWS = [];
 
 /* ─── Helpers ─────────────────────────────────────────── */
@@ -151,12 +145,12 @@ async function getHomeData() {
     ...(newsRes.data || []).map((item) => ({ ...item, type: "News", href: `/news/${item.slug}` })),
   ].sort((a, b) => new Date(b.published_at || 0) - new Date(a.published_at || 0)).slice(0, 3);
 
-  const faqs = (faqsRes.data || FALLBACK_FAQS).map((faq) => ({ ...faq, answer: stripHtml(faq.answer) }));
+  const faqs = (faqsRes.data || []).map((faq) => ({ ...faq, answer: stripHtml(faq.answer) }));
 
   return {
     posts,
     reviews: reviewsRes.data?.length ? reviewsRes.data : FALLBACK_REVIEWS,
-    faqs: faqs.length ? faqs : FALLBACK_FAQS,
+    faqs,
     dailyWinners: (dailyQuizRes.data?.winners || []).slice(0, 3),
     winnerDate,
     featuredCourses: coursesRes.data || [],
@@ -177,7 +171,7 @@ export default async function Home() {
       speakableSelectors: ["#hero-heading", "#how-heading", "#faq-heading"],
     }),
     buildBreadcrumbSchema([{ name: "Home", url: "/" }], "/"),
-    buildHowToSchema(STEPS.map((s) => ({ title: s.title, text: s.text }))),
+    buildHowToSchema(STEPS.map((s) => ({ title: s.title, text: s.text })), "/"),
     buildEducationalOrgSchema(),
   );
 

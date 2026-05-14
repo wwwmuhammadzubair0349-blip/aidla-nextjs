@@ -24,7 +24,7 @@ export default function GenerateIdeaPage() {
       { title: "Choose project requirements", text: "Select domain, project type, difficulty, team size, duration, and preferred tech stack." },
       { title: "Generate ideas", text: "AIDLA creates three AI-powered project recommendations." },
       { title: "Use or submit your idea", text: "Copy the generated idea or submit it to the AIDLA projects community." },
-    ])
+    ], "/projects/generate")
   );
 
   return (

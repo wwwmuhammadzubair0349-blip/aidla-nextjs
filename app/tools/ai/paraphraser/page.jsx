@@ -8,6 +8,7 @@
 
 import { Suspense } from "react";
 import ParaphraserClient from "./ParaphraserClient";
+import { fetchReviews } from "@/lib/reviewsHelper";
 
 /* ================================================================
    DYNAMIC METADATA — Style × Language × Region combinations
@@ -133,7 +134,7 @@ export async function generateMetadata({ searchParams }) {
 /* ================================================================
    JSON-LD — 6 SCHEMAS for maximum entity & rich result coverage
 ================================================================ */
-function ParaphraserJsonLd() {
+function ParaphraserJsonLd({ aggregateRating }) {
   const baseUrl = "https://www.aidla.online";
   const pageUrl = `${baseUrl}/tools/ai/paraphraser`;
 
@@ -162,7 +163,7 @@ function ParaphraserJsonLd() {
       availability: "https://schema.org/InStock",
       priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
     },
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", ratingCount: "3247", bestRating: "5", worstRating: "1" },
+    ...(aggregateRating ? { aggregateRating } : {}),
     featureList: [
       "8 rewriting styles: Formal, Academic, Casual, Creative, Simplified, Professional, Concise, Fluent",
       "No word limit — rewrite unlimited text for free",
@@ -251,10 +252,11 @@ function ParaphraserJsonLd() {
   );
 }
 
-export default function ParaphraserPage() {
+export default async function ParaphraserPage() {
+  const { aggregateRating } = await fetchReviews({ revalidate: 3600 });
   return (
     <>
-      <ParaphraserJsonLd />
+      <ParaphraserJsonLd aggregateRating={aggregateRating} />
       <Suspense fallback={<div style={{ minHeight: "100vh", background: "#f8fafc" }} />}>
         <ParaphraserClient />
       </Suspense>

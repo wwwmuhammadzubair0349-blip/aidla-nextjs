@@ -8,6 +8,7 @@
 
 import { Suspense } from "react";
 import InterviewPrepClient from "./InterviewPrepClient";
+import { fetchReviews } from "@/lib/reviewsHelper";
 
 /* ================================================================
    DYNAMIC METADATA — Role × Industry × Type × Region combinations
@@ -133,7 +134,7 @@ export async function generateMetadata({ searchParams }) {
 /* ================================================================
    JSON-LD — 6 SCHEMAS for maximum entity & rich result coverage
 ================================================================ */
-function InterviewPrepJsonLd() {
+function InterviewPrepJsonLd({ aggregateRating }) {
   const baseUrl = "https://www.aidla.online";
   const pageUrl = `${baseUrl}/tools/ai/interview-prep`;
 
@@ -156,7 +157,7 @@ function InterviewPrepJsonLd() {
     datePublished: "2024-06-01T00:00:00+05:00",
     dateModified: new Date().toISOString(),
     offers: { "@type": "Offer", price: "0", priceCurrency: "PKR", availability: "https://schema.org/InStock", priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0] },
-    aggregateRating: { "@type": "AggregateRating", ratingValue: "4.8", ratingCount: "2891", bestRating: "5", worstRating: "1" },
+    ...(aggregateRating ? { aggregateRating } : {}),
     featureList: [
       "AI-generated questions + model answers for any job role and industry",
       "4 interview rounds: Technical, Behavioral (STAR), HR, Situational",
@@ -244,10 +245,11 @@ function InterviewPrepJsonLd() {
   );
 }
 
-export default function InterviewPrepPage() {
+export default async function InterviewPrepPage() {
+  const { aggregateRating } = await fetchReviews({ revalidate: 3600 });
   return (
     <>
-      <InterviewPrepJsonLd />
+      <InterviewPrepJsonLd aggregateRating={aggregateRating} />
       <Suspense fallback={<div style={{ minHeight: "100vh", background: "linear-gradient(160deg,#f0f4ff 0%,#fffbf0 55%,#e8f4fd 100%)" }} />}>
         <InterviewPrepClient />
       </Suspense>

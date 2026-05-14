@@ -70,13 +70,26 @@ export default async function NewsPage() {
     ],
   };
 
+  const safePosts = posts || [];
   return (
     <>
       <script
         type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <NewsClient initialPosts={posts} fetchError={fetchError} />
+      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+        <h1>AIDLA News — Latest Updates, Announcements &amp; Events</h1>
+        <p>Read the latest news from AIDLA: platform updates, community events, educational tips, winner announcements, and breaking education news from Pakistan.</p>
+        <ul>
+          {safePosts.map(post => (
+            <li key={post.id}>
+              <a href={`/news/${post.slug}`}>{post.title}</a>
+              {post.excerpt && <p>{post.excerpt}</p>}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <NewsClient initialPosts={safePosts} fetchError={fetchError} />
     </>
   );
 }

@@ -1,6 +1,8 @@
 import LeaderboardClient from "./LeaderboardClient";
-import { supabase } from "@/lib/supabase";
+import { serverRpc } from "@/lib/supabaseServer";
 import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema, buildItemListSchema } from "@/lib/schemas";
+
+export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
 
@@ -38,11 +40,8 @@ export const metadata = {
 };
 
 export default async function LeaderboardPage() {
-  let topUsers = [];
-  if (supabase) {
-    const { data } = await supabase.rpc("daily_quiz_leaderboard", { p_date: getDateKey(-1) });
-    topUsers = (data?.winners || []).slice(0, 10);
-  }
+  const { data } = await serverRpc("daily_quiz_leaderboard", { p_date: getDateKey(-1) }, { revalidate: 60 });
+  const topUsers = (data?.winners || []).slice(0, 10);
 
   const jsonLd = buildGraph(
     buildWebPageSchema({
@@ -69,6 +68,17 @@ export default async function LeaderboardPage() {
   return (
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+        <h1>AIDLA Leaderboard — Quiz Winners, Battles &amp; Rankings</h1>
+        <p>Live rankings for AIDLA daily quiz winners, battle leaders, test champions, lucky draw results, lucky wheel wins, and learner achievements. Updated every 60 seconds.</p>
+        {topUsers.length > 0 && (
+          <ol>
+            {topUsers.map((u, i) => (
+              <li key={i}>{u.full_name || "AIDLA Learner"} — Score: {u.score ?? ""}</li>
+            ))}
+          </ol>
+        )}
+      </div>
       <LeaderboardClient />
     </>
   );

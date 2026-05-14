@@ -55,7 +55,8 @@ export default async function FAQsPage() {
       safeFaqs.map(f => ({
         question: f.question,
         answer:   f.answer.replace(/<[^>]+>/g, "").trim(),
-      }))
+      })),
+      "/faqs",
     ),
   );
 

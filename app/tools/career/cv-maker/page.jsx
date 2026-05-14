@@ -9,6 +9,7 @@
 
 import { Suspense } from "react";
 import CvMakerClient from "./CvMakerClient";
+import { fetchReviews } from "@/lib/reviewsHelper";
 
 /* ================================================================
    DYNAMIC METADATA � Context-aware, long-tail keyword maximization
@@ -152,7 +153,7 @@ export async function generateMetadata({ searchParams }) {
    SoftwareApp + FAQPage + BreadcrumbList + HowTo + Organization
    + LocalBusiness (city-level Wikipedia links) + Article + Reviews
 ================================================================ */
-function CvMakerJsonLd() {
+function CvMakerJsonLd({ aggregateRating, reviews }) {
   const baseUrl = "https://www.aidla.online";
   const pageUrl = `${baseUrl}/tools/career/cv-maker`;
 
@@ -211,36 +212,8 @@ function CvMakerJsonLd() {
       name: "AIDLA",
       url: baseUrl,
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "1250",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Organization", name: "AIDLA" },
-        reviewBody: "Best free CV maker I've used � genuinely no hidden fees unlike Zety which charged me PKR 2,500. The AI writing feature helped me create a professional resume for Dubai jobs. Got interview calls within a week! The Gulf Premium template was perfect for UAE applications with visa status and nationality fields.",
-        datePublished: "2025-11-15",
-      },
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Person", name: "Fatima Ali" },
-        reviewBody: "As a fresh graduate in Lahore, I needed a CV that would stand out. AIDLA's AI suggested skills I hadn't thought to include. The HEC-compliant format with CNIC and FSc fields gave me confidence applying to government positions. Downloaded unlimited PDFs with zero watermarks. Completely free.",
-        datePublished: "2025-12-03",
-      },
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Person", name: "Mohammed Al-Rashid" },
-        reviewBody: "Created my CV for Saudi Aramco using the engineering template. ATS score went from 45 to 92 after following the suggestions. Better than Enhancv and Resume.io for GCC jobs � the templates include all the visa and nationality fields Gulf employers expect. Highly recommend for anyone job hunting in Saudi Arabia or Qatar.",
-        datePublished: "2026-01-20",
-      },
-    ],
+    ...(aggregateRating ? { aggregateRating } : {}),
+    ...(reviews && reviews.length > 0 ? { review: reviews } : {}),
   };
 
   const faqSchema = {
@@ -754,11 +727,12 @@ const REGIONS_SERVED = [
 /* ================================================================
    PAGE COMPONENT
 ================================================================ */
-export default function CvMakerPage() {
+export default async function CvMakerPage() {
+  const { aggregateRating, reviews } = await fetchReviews({ revalidate: 3600 });
   return (
     <>
-      {/* 7 JSON-LD schemas � server-rendered for maximum entity clarity */}
-      <CvMakerJsonLd />
+      {/* 7 JSON-LD schemas — server-rendered for maximum entity clarity */}
+      <CvMakerJsonLd aggregateRating={aggregateRating} reviews={reviews} />
 
       {/* Client-side interactive tool with SSR skeleton fallback */}
       <Suspense fallback={<CvMakerSkeleton />}>
@@ -850,9 +824,6 @@ export default function CvMakerPage() {
                   <p itemProp="text" style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
                     {block.answer}
                   </p>
-                </div>
-                <div style={{ fontSize: "0.7rem", color: "#94a3b8", marginTop: 4 }}>
-                  ?? Keywords: {block.targetKeywords}
                 </div>
               </div>
             ))}

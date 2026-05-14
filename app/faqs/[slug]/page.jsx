@@ -131,7 +131,7 @@ export default async function FAQSlugPage({ params }) {
       [{ name: "Home", url: "/" }, { name: "FAQs", url: "/faqs" }, { name: faq.question, url: `/faqs/${faq.slug}` }],
       `/faqs/${faq.slug}`,
     ),
-    buildFAQSchema([{ question: faq.question, answer: plainAnswer }]),
+    buildFAQSchema([{ question: faq.question, answer: plainAnswer }], `/faqs/${faq.slug}`),
     qaSchema,
     buildFounderSchema(),
   );

@@ -9,6 +9,7 @@
 
 import { Suspense } from "react";
 import EmailWriterClient from "./EmailWriterClient";
+import { fetchReviews } from "@/lib/reviewsHelper";
 
 /* ================================================================
    DYNAMIC METADATA � Context-aware, long-tail keyword capture
@@ -198,7 +199,7 @@ export async function generateMetadata({ searchParams }) {
    SoftwareApplication + FAQPage + BreadcrumbList + HowTo + Organization
    + LocalBusiness + Review + ComparisonTable
 ================================================================ */
-function EmailWriterJsonLd() {
+function EmailWriterJsonLd({ aggregateRating, reviews }) {
   const baseUrl = "https://www.aidla.online";
   const pageUrl = `${baseUrl}/tools/ai/email-writer`;
 
@@ -255,36 +256,8 @@ function EmailWriterJsonLd() {
         "https://www.facebook.com/aidla.online",
       ],
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: "680",
-      bestRating: "5",
-      worstRating: "1",
-    },
-    review: [
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Person", name: "Aisha Mahmood" },
-        reviewBody: "Generated a perfect job application email for a Dubai role in 30 seconds. Better than Grammarly for career emails � Grammarly fixed grammar but AIDLA wrote the whole email. The Professional tone was spot-on, and I opened it directly in Gmail. Completely free � saved me $12/month.",
-        datePublished: "2025-09-12",
-      },
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Person", name: "Usman Tariq" },
-        reviewBody: "Used the Urdu language option to write a business email in Karachi. The AI got formal Urdu business communication perfectly � way beyond what Google Translate or Grammarly offers. The regional templates for Pakistan (HEC follow-up, Rozee.pk job email) are invaluable. 100% free � no subscription traps.",
-        datePublished: "2025-11-28",
-      },
-      {
-        "@type": "Review",
-        reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Person", name: "Noura Al-Mansouri" },
-        reviewBody: "Perfect for GCC business communication. Generated a partnership proposal in Arabic that impressed my Saudi client. The MOHRE compliance template for UAE emails is something Grammarly doesn't offer. Regeneration feature let me refine until perfect. Free forever � no enterprise pricing.",
-        datePublished: "2026-02-03",
-      },
-    ],
+    ...(aggregateRating ? { aggregateRating } : {}),
+    ...(reviews && reviews.length > 0 ? { review: reviews } : {}),
   };
 
   const faqSchema = {
@@ -693,10 +666,11 @@ const TRUST_STATS = [
 /* ================================================================
    PAGE COMPONENT � Server-rendered with all static content
 ================================================================ */
-export default function EmailWriterPage() {
+export default async function EmailWriterPage() {
+  const { aggregateRating, reviews } = await fetchReviews({ revalidate: 3600 });
   return (
     <>
-      <EmailWriterJsonLd />
+      <EmailWriterJsonLd aggregateRating={aggregateRating} reviews={reviews} />
       <Suspense fallback={<Skeleton />}>
         <EmailWriterClient />
       </Suspense>
@@ -806,9 +780,6 @@ export default function EmailWriterPage() {
                   <p itemProp="text" style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
                     {block.answer}
                   </p>
-                </div>
-                <div style={{ fontSize: "0.7rem", color: "#94a3b8", marginTop: 4 }}>
-                  ?? Keywords: {block.targetKeywords}
                 </div>
               </div>
             ))}

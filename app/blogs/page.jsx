@@ -85,6 +85,19 @@ export default async function BlogsPage() {
         type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      {/* Bot-crawlable static HTML — visually hidden, fully readable by Googlebot and AI crawlers */}
+      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+        <h1>AIDLA Blog — AI Learning, Career Tips &amp; Platform Updates</h1>
+        <p>Explore AIDLA&apos;s blog for learning strategies, AI tips, platform updates, and guides to earn more AIDLA Coins. Stay informed and grow your skills today.</p>
+        <ul>
+          {safePosts.map(post => (
+            <li key={post.id}>
+              <a href={`/blogs/${post.slug}`}>{post.title}</a>
+              {post.excerpt && <p>{post.excerpt}</p>}
+            </li>
+          ))}
+        </ul>
+      </div>
       <BlogsClient initialPosts={safePosts} fetchError={fetchError} />
     </>
   );

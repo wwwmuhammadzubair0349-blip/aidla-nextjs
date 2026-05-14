@@ -235,6 +235,7 @@ export default function AdminLayout({ children }) {
             <Tab to="/admin/battle"               label="Battle Arena"      />
             <Tab to="/admin/AdminProjects"             label="Projects"          />
             <Tab to="/admin/reviews"                  label="Reviews"           />
+            <Tab to="/admin/email-blast"              label="Email Blast"       />
           </nav>
         </div>
       </header>

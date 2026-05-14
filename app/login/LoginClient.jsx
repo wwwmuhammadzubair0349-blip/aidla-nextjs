@@ -589,7 +589,7 @@ export default function LoginClient() {
           <div className="ln-foot" aria-hidden="true" />
         </div>
 
-        <p className="ln-tagline" aria-hidden="true">Pakistan's #1 AI Powered Learning Platform 🇵🇰</p>
+        <p className="ln-tagline" aria-hidden="true">AI Powered Learning Platform in Pakistan 🇵🇰</p>
       </div>
     </>
   );

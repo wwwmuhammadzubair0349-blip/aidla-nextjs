@@ -69,7 +69,7 @@ const MILESTONES = [
   { year: "2026", title: "The Spark", desc: "Identified the global access gap learners, freshers, and professionals face when premium education and career tools are locked behind paywalls." },
   { year: "2026", title: "Platform Launched", desc: "AIDLA goes live with AI tools, CV maker, and daily quiz competitions — 100% free, no watermarks." },
   { year: "2026", title: "Rewards Engine", desc: "AIDLA Coins system activated - real learn-to-earn rewards for active learners worldwide." },
-  { year: "Now",  title: "500+ Learners", desc: "Pakistan's #1 AI-powered learning platform with global access." },
+  { year: "Now",  title: "500+ Learners", desc: "Pakistan-based AI-powered learning platform with global access." },
 ];
 
 const VALUES = [
@@ -96,21 +96,10 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
   ];
 
   /* Fallback reviews when DB is empty */
-  const displayReviews = reviews.length > 0 ? reviews : [
-    { id: "r1", full_name: "Ahmed Khan",    rating: 5, review_text: "AIDLA completely changed how I study. The daily quizzes kept me consistent and the coins made it genuinely exciting.", created_at: "2026-04-12T00:00:00Z", avatar_url: null },
-    { id: "r2", full_name: "Fatima Malik",  rating: 5, review_text: "The AI career tools helped me write my CV and prepare for interviews. I got my first job offer after using AIDLA.", created_at: "2026-04-06T00:00:00Z", avatar_url: null },
-    { id: "r3", full_name: "Bilal Hussain", rating: 5, review_text: "I never thought a completely free platform could offer this much. Real courses, AI tools, competitions. Absolutely love it.", created_at: "2026-03-30T00:00:00Z", avatar_url: null },
-  ];
+  const displayReviews = reviews;
 
   /* Fallback featured in */
-  const displayFeaturedIn = featuredIn.length > 0 ? featuredIn : [
-    { id: "f1", name: "Dawn News",       logo_url: null, url: "https://www.dawn.com" },
-    { id: "f2", name: "ARY News",        logo_url: null, url: "https://arynews.tv" },
-    { id: "f3", name: "The News",        logo_url: null, url: "https://www.thenews.com.pk" },
-    { id: "f4", name: "Geo News",        logo_url: null, url: "https://www.geo.tv" },
-    { id: "f5", name: "Tribune Express", logo_url: null, url: "https://tribune.com.pk" },
-    { id: "f6", name: "TechJuice",       logo_url: null, url: "https://www.techjuice.pk" },
-  ];
+  const displayFeaturedIn = featuredIn.filter((item) => item.url && item.url !== "#");
 
   function formatDate(iso) {
     if (!iso) return "";

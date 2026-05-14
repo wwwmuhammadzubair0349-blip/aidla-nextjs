@@ -7,7 +7,7 @@ import {
 import { SITE } from "@/lib/siteConfig";
 import Image from "next/image";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
+import { serverFetch, serverRpc } from "@/lib/supabaseServer";
 import ReviewsSection from "@/components/ReviewsSection";
 
 const SITE_URL = SITE.url;
@@ -15,11 +15,11 @@ const LAST_MODIFIED = "2026-05-09";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "AIDLA - Pakistan #1 AI Powered Learning Platform",
+  title: "AIDLA - AI Powered Learning Platform in Pakistan",
   description:
-    "AIDLA is Pakistan's #1 AI learning platform. Free courses, AI tools, quizzes, AIDLA Coins, rewards, CV builder and cover letter maker for global learners.",
+    "AIDLA is a Pakistan-based AI learning platform. Free courses, AI tools, quizzes, AIDLA Coins, rewards, CV builder and cover letter maker for global learners.",
   keywords: [
-    "AIDLA","Pakistan #1 AI powered learning platform","global AI learning platform",
+    "AIDLA","Pakistan AI powered learning platform","global AI learning platform",
     "online courses","AI tools","career tools","career switching","freshers CV builder",
     "cover letter maker","data analytics courses","AI for beginners","AI engineer courses",
     "startup advice","career mentoring","AIDLA coins","learn and earn",
@@ -37,13 +37,13 @@ export const metadata = {
   },
   openGraph: {
     type: "website", siteName: "AIDLA", locale: "en_PK", url: `${SITE_URL}/`,
-    title: "AIDLA - Pakistan #1 AI Powered Learning Platform",
+    title: "AIDLA - AI Powered Learning Platform in Pakistan",
     description: "Free courses, AI tools, career resources, quizzes, AIDLA Coins and rewards for learners, professionals, freshers and career switchers worldwide.",
     images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA free AI learning and rewards platform", type: "image/jpeg" }],
   },
   twitter: {
     card: "summary_large_image", site: "@AIDLA_online", creator: "@AIDLA_online",
-    title: "AIDLA - Pakistan #1 AI Powered Learning Platform",
+    title: "AIDLA - AI Powered Learning Platform in Pakistan",
     description: "Learn with free courses, AI tools, career resources, quizzes, daily competitions and AIDLA Coins.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
@@ -94,7 +94,7 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { emoji: "🎯", title: "Daily Quizz", text: "Compete every day, see yesterday's winners, and earn coins for consistent learning.", href: "/user/dailyquizz", label: "Play daily quiz" },
+  { emoji: "🎯", title: "Daily Quiz", text: "Compete every day, see yesterday's winners, and earn coins for consistent learning.", href: "/user/dailyquizz", label: "Play daily quiz" },
   { emoji: "📚", title: "Courses & Resources", text: "Structured courses and study resources for learners who want clear next steps.", href: "/courses", label: "Browse courses" },
   { emoji: "🤖", title: "AI Career Tools", text: "CV, cover letter, summarizer, paraphraser, interview prep, email writer, and more.", href: "/tools", label: "Open tools" },
   { emoji: "🪙", title: "Rewards, Wallet & Shop", text: "Earn AIDLA Coins, track wallet activity, redeem products, and manage withdrawals.", href: "/user/shop", label: "See rewards" },
@@ -108,11 +108,7 @@ const FALLBACK_FAQS = [
   { question: "Who is AIDLA for?", answer: "AIDLA is built for students, professionals, freshers, job seekers, career switchers, startup builders, and self-learners worldwide.", slug: "who-is-aidla-for" },
 ];
 
-const FALLBACK_REVIEWS = [
-  { id: "r1", full_name: "Ahmed Khan", rating: 5, review_text: "AIDLA changed how I study. The daily quizzes kept me consistent and the AIDLA Coins made it fun. Best free platform for learning and career growth!", created_at: "2026-04-12T00:00:00Z" },
-  { id: "r2", full_name: "Fatima Malik", rating: 5, review_text: "The AI career tools helped me write my CV and prepare for interviews. I got my first job offer after using the tools here. Highly recommend!", created_at: "2026-04-06T00:00:00Z" },
-  { id: "r3", full_name: "Bilal Hussain", rating: 5, review_text: "I never thought a completely free platform could offer so much. AIDLA has real courses, AI tools, and daily competitions. Absolutely love it.", created_at: "2026-03-30T00:00:00Z" },
-];
+const FALLBACK_REVIEWS = [];
 
 /* ─── Helpers ─────────────────────────────────────────── */
 
@@ -141,17 +137,13 @@ function formatDateKey(dateKey) {
 async function getHomeData() {
   const winnerDate = getDateKey(-1);
 
-  if (!supabase) {
-    return { posts: [], reviews: FALLBACK_REVIEWS, faqs: FALLBACK_FAQS, dailyWinners: [], winnerDate, featuredCourses: [] };
-  }
-
   const [blogsRes, newsRes, reviewsRes, faqsRes, dailyQuizRes, coursesRes] = await Promise.all([
-    supabase.from("blogs_posts").select("id,title,excerpt,published_at,slug,view_count").is("deleted_at", null).eq("status", "published").order("published_at", { ascending: false }).limit(2),
-    supabase.from("news_posts").select("id,title,excerpt,published_at,slug,view_count").is("deleted_at", null).eq("status", "published").order("published_at", { ascending: false }).limit(2),
-    supabase.from("user_reviews").select("id,full_name,rating,review_text,created_at,avatar_url").eq("is_approved", true).order("created_at", { ascending: false }).limit(6),
-    supabase.from("faqs").select("id,question,answer,slug").eq("status", "published").eq("is_visible", true).order("helpful_yes", { ascending: false }).limit(4),
-    supabase.rpc("daily_quiz_leaderboard", { p_date: winnerDate }),
-    supabase.from("course_courses").select("id,title,description,category,slug").eq("status", "published").order("created_at", { ascending: false }).limit(6),
+    serverFetch("blogs_posts", { select: "id,title,excerpt,published_at,slug,view_count", deleted_at: "is.null", status: "eq.published", order: "published_at.desc", limit: "2" }, { revalidate: 3600 }),
+    serverFetch("news_posts", { select: "id,title,excerpt,published_at,slug,view_count", deleted_at: "is.null", status: "eq.published", order: "published_at.desc", limit: "2" }, { revalidate: 3600 }),
+    serverFetch("user_reviews", { select: "id,full_name,rating,review_text,created_at,avatar_url", is_approved: "eq.true", order: "created_at.desc", limit: "6" }, { revalidate: 3600 }),
+    serverFetch("faqs", { select: "id,question,answer,slug", status: "eq.published", is_visible: "eq.true", order: "helpful_yes.desc", limit: "4" }, { revalidate: 3600 }),
+    serverRpc("daily_quiz_leaderboard", { p_date: winnerDate }, { revalidate: 3600 }),
+    serverFetch("course_courses", { select: "id,title,description,category,slug", status: "eq.published", order: "created_at.desc", limit: "6" }, { revalidate: 3600 }),
   ]);
 
   const posts = [
@@ -179,7 +171,7 @@ export default async function Home() {
   const jsonLd = buildGraph(
     buildWebPageSchema({
       path: "/",
-      name: "AIDLA - Pakistan #1 AI Powered Learning Platform",
+      name: "AIDLA - AI Powered Learning Platform in Pakistan",
       description: "AIDLA helps global learners, students, professionals, freshers, and career switchers grow with courses, AI tools, quizzes, AIDLA Coins, and rewards.",
       dateModified: LAST_MODIFIED,
       speakableSelectors: ["#hero-heading", "#how-heading", "#faq-heading"],
@@ -222,7 +214,7 @@ export default async function Home() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </Link>
                 <Link href="/user/dailyquizz" className="hp-btn-ghost">
-                  Play Daily Quizz →
+                  Play Daily Quiz →
                 </Link>
               </div>
 
@@ -517,7 +509,7 @@ export default async function Home() {
                 Create Free Account
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </Link>
-              <Link href="/user/dailyquizz" className="hp-cta-ghost-btn">Play Daily Quizz →</Link>
+              <Link href="/user/dailyquizz" className="hp-cta-ghost-btn">Play Daily Quiz →</Link>
             </div>
           </div>
         </section>

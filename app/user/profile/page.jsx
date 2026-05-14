@@ -896,7 +896,7 @@ export default function ProfilePage() {
   const inviteLink = profile?.my_refer_code && typeof window !== "undefined"
     ? `${window.location.origin}/signup?ref=${encodeURIComponent(profile.my_refer_code)}`
     : "";
-  const shareCaption = `I am building my future with AIDLA, Pakistan's #1 AI learning platform.\n\nJoin through my invite link and start learning AI, skills, and career-ready projects:\n${inviteLink}`;
+  const shareCaption = `I am building my future with AIDLA, an AI learning platform in Pakistan.\n\nJoin through my invite link and start learning AI, skills, and career-ready projects:\n${inviteLink}`;
 
   async function copyShare(text, key) {
     await navigator.clipboard.writeText(text);

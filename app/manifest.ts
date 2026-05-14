@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "AIDLA — Free Learning, Earn Coins & Win Prizes",
     short_name: "AIDLA",
-    description: "Pakistan's #1 free education and rewards platform. Learn, earn coins, win real prizes.",
+    description: "Pakistan-based free education and rewards platform. Learn, earn coins, win real prizes.",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",

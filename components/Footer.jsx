@@ -405,7 +405,7 @@ export default function Footer() {
                 AIDLA
               </div>
               <p className="ft-tagline">
-                Pakistan's #1 AI powered learning platform for global learners, professionals, freshers and career switchers.
+                Pakistan-based AI powered learning platform for global learners, professionals, freshers and career switchers.
               </p>
               <div className="ft-badge">🇵🇰 Built in Pakistan · Global access</div>
 

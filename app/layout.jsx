@@ -6,7 +6,7 @@
 import PublicShell from "@/components/PublicShell";
 import localFont from "next/font/local";
 import "@/app/globals.css";
-import { buildGraph, buildFounderSchema, buildOrganizationSchema, buildWebSiteSchema, buildSoftwareSchema, buildSyedSolarSchema } from "@/lib/schemas";
+import { buildGraph, buildFounderSchema, buildOrganizationSchema, buildWebSiteSchema, buildSoftwareSchema } from "@/lib/schemas";
 
 const SITE_URL = "https://www.aidla.online";
 
@@ -51,11 +51,11 @@ const notoUrdu = localFont({
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "AIDLA - Pakistan's #1 AI Powered Learning Platform",
+    default: "AIDLA - AI Powered Learning Platform in Pakistan",
     template: "%s | AIDLA",
   },
   description:
-    "AIDLA is Pakistan's #1 AI powered learning platform for global courses, AI tools, career resources, quizzes, AIDLA Coins, rewards, and professional growth.",
+    "AIDLA is a Pakistan-based AI powered learning platform for global courses, AI tools, career resources, quizzes, AIDLA Coins, rewards, and professional growth.",
   keywords: [
     "AIDLA",
     "AI learning platform",
@@ -66,7 +66,7 @@ export const metadata = {
     "global education platform",
     "free online education",
     "AIDLA coins",
-    "Pakistan #1 AI powered learning platform",
+    "Pakistan AI powered learning platform",
     "earn money learning",
     "AI learning platform",
   ],
@@ -104,14 +104,14 @@ export const metadata = {
         url: `${SITE_URL}/og-home.jpg`,
         width: 1200,
         height: 630,
-        alt: "AIDLA - Pakistan's #1 AI Powered Learning Platform",
+        alt: "AIDLA - AI Powered Learning Platform in Pakistan",
         type: "image/jpeg",
       },
       {
         url: `${SITE_URL}/og-home-square.jpg`,
         width: 1200,
         height: 1200,
-        alt: "AIDLA - Pakistan's #1 AI Powered Learning Platform",
+        alt: "AIDLA - AI Powered Learning Platform in Pakistan",
         type: "image/jpeg",
       },
     ],
@@ -152,7 +152,6 @@ const GLOBAL_SCHEMA = buildGraph(
   buildOrganizationSchema(),
   buildWebSiteSchema(),
   buildSoftwareSchema(),
-  buildSyedSolarSchema(),
 );
 
 export default function RootLayout({ children }) {

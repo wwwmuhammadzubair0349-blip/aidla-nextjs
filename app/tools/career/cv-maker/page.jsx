@@ -222,7 +222,7 @@ function CvMakerJsonLd() {
       {
         "@type": "Review",
         reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-        author: { "@type": "Person", name: "Ahmed Khan" },
+        author: { "@type": "Organization", name: "AIDLA" },
         reviewBody: "Best free CV maker I've used � genuinely no hidden fees unlike Zety which charged me PKR 2,500. The AI writing feature helped me create a professional resume for Dubai jobs. Got interview calls within a week! The Gulf Premium template was perfect for UAE applications with visa status and nationality fields.",
         datePublished: "2025-11-15",
       },

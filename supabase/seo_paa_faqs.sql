@@ -1,0 +1,19 @@
+insert into public.faqs (question, answer, slug, category, status, sort_order, is_visible)
+values
+('What is AIDLA?', 'AIDLA is a Pakistan-based online learning platform that offers free courses, AI tools, study resources, quizzes, AIDLA Coins, rewards, CV tools, cover letters, and career support for students, freshers, job seekers, and lifelong learners.', 'what-is-aidla', 'general', 'published', 100, true),
+('Is AIDLA free for students in Pakistan?', 'Yes. AIDLA is free for students in Pakistan and learners worldwide. Users can access learning content, quizzes, AI tools, career resources, and account features without a paid subscription.', 'is-aidla-free-for-students-in-pakistan', 'general', 'published', 101, true),
+('How do AIDLA Coins work?', 'AIDLA Coins are reward points learners earn by completing activities such as quizzes, learning tasks, referrals, and platform challenges. Coins help motivate consistent learning and can be used for platform rewards when eligible.', 'how-do-aidla-coins-work', 'rewards', 'published', 102, true),
+('Can I earn rewards by learning on AIDLA?', 'Yes. AIDLA is designed around reward-based learning. Learners can complete quizzes and platform activities, earn AIDLA Coins, track progress, join leaderboards, and become eligible for rewards based on platform rules.', 'can-i-earn-rewards-by-learning-on-aidla', 'rewards', 'published', 103, true),
+('Who founded AIDLA?', 'AIDLA was founded by Engineer Muhammad Zubair Afridi, a Gold Medalist Electrical Engineer, PEC registered Electrical Engineer, and alumnus of Sarhad University Peshawar. He created AIDLA to make education and AI career tools more accessible.', 'who-founded-aidla', 'founder', 'published', 104, true),
+('Does AIDLA offer free AI tools?', 'Yes. AIDLA offers free AI tools for writing, summarizing, paraphrasing, email writing, LinkedIn bios, interview preparation, CV building, and cover letters. These tools are built for students, freshers, job seekers, and professionals.', 'does-aidla-offer-free-ai-tools', 'tools', 'published', 105, true),
+('Are AIDLA courses suitable for beginners?', 'Yes. AIDLA courses are suitable for beginners because they are organized for learners who need clear, practical steps. The platform supports students, freshers, career switchers, and professionals building skills from the basics.', 'are-aidla-courses-suitable-for-beginners', 'courses', 'published', 106, true),
+('Can AIDLA help freshers make a CV?', 'Yes. AIDLA includes free career tools that help freshers create CVs, cover letters, LinkedIn bios, and interview preparation answers. These tools are useful for job applications in Pakistan, the Gulf, and global markets.', 'can-aidla-help-freshers-make-a-cv', 'career', 'published', 107, true),
+('Does AIDLA support Urdu learners?', 'AIDLA is built for learners in Pakistan and supports English and Urdu audience needs. The platform currently focuses on accessible learning, AI tools, FAQs, and career support, with Urdu expansion as an important growth opportunity.', 'does-aidla-support-urdu-learners', 'general', 'published', 108, true),
+('How can Pakistani students use AI for learning?', 'Pakistani students can use AI to summarize notes, practice writing, prepare CVs, generate study plans, improve English, understand difficult topics, and prepare for interviews. AIDLA provides free tools that support these practical learning tasks.', 'how-can-pakistani-students-use-ai-for-learning', 'tools', 'published', 109, true)
+on conflict (slug) do update set
+  question = excluded.question,
+  answer = excluded.answer,
+  category = excluded.category,
+  status = excluded.status,
+  sort_order = excluded.sort_order,
+  is_visible = excluded.is_visible;

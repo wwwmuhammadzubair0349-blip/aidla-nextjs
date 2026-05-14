@@ -1,5 +1,5 @@
 // app/about/page.jsx � SERVER COMPONENT
-import { supabase } from "@/lib/supabase";
+import { serverFetch } from "@/lib/supabaseServer";
 import { SITE } from "@/lib/siteConfig";
 import AboutClient from "./about-client";
 
@@ -8,11 +8,11 @@ const SITE_URL = SITE.url;
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "About AIDLA | Pakistan's #1 AI Powered Learning Platform",
+  title: "About AIDLA | AI Powered Learning Platform in Pakistan",
   description:
-    "Discover AIDLA's story and mission – Pakistan's#1 AI learning platform helping learners access free courses, AI tools, resources and rewards.",
+    "Discover AIDLA's story and mission: a Pakistan-based AI learning platform helping learners access free courses, AI tools, resources and rewards.",
   keywords: [
-    "About AIDLA", "Pakistan #1 AI powered learning platform",
+    "About AIDLA", "Pakistan AI powered learning platform",
     "global AI learning platform", "AI courses", "career tools",
     "career switching", "startup advice", "career mentoring", "AIDLA rewards",
   ],
@@ -21,13 +21,13 @@ export const metadata = {
   openGraph: {
     type: "website", siteName: "AIDLA", locale: "en_PK",
     url: `${SITE_URL}/about`,
-    title: "About AIDLA | Pakistan's #1 AI Powered Learning Platform",
+    title: "About AIDLA | AI Powered Learning Platform in Pakistan",
     description: "Free courses, AI tools, career resources, AIDLA Coins and rewards for learners and professionals worldwide.",
     images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "About AIDLA", type: "image/jpeg" }],
   },
   twitter: {
     card: "summary_large_image", site: "@AIDLA_online", creator: "@AIDLA_online",
-    title: "About AIDLA | Pakistan's #1 AI Powered Learning Platform",
+    title: "About AIDLA | AI Powered Learning Platform in Pakistan",
     description: "Free courses, AI tools, AIDLA Coins, career resources and rewards for global learners.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
@@ -38,29 +38,25 @@ function stripHtml(v = "") {
 }
 
 async function getAboutData() {
-  if (!supabase) {
-    return { reviews: [], faqs: [], featuredIn: [] };
-  }
-
   const [reviewsRes, faqsRes, featuredInRes] = await Promise.all([
-    supabase
-      .from("user_reviews")
-      .select("id,full_name,rating,review_text,created_at,avatar_url")
-      .eq("is_approved", true)
-      .order("created_at", { ascending: false })
-      .limit(3),
-    supabase
-      .from("faqs")
-      .select("id,question,answer,slug")
-      .eq("status", "published")
-      .eq("is_visible", true)
-      .order("helpful_yes", { ascending: false })
-      .limit(4),
-    supabase
-      .from("featured_in")
-      .select("id,name,logo_url,url,sort_order")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true }),
+    serverFetch("user_reviews", {
+      select: "id,full_name,rating,review_text,created_at,avatar_url",
+      is_approved: "eq.true",
+      order: "created_at.desc",
+      limit: "3",
+    }, { revalidate: 3600 }),
+    serverFetch("faqs", {
+      select: "id,question,answer,slug",
+      status: "eq.published",
+      is_visible: "eq.true",
+      order: "helpful_yes.desc",
+      limit: "4",
+    }, { revalidate: 3600 }),
+    serverFetch("featured_in", {
+      select: "id,name,logo_url,url,sort_order",
+      is_active: "eq.true",
+      order: "sort_order.asc",
+    }, { revalidate: 3600 }),
   ]);
 
   const faqs = (faqsRes.data || []).map((f) => ({ ...f, answer: stripHtml(f.answer) }));
@@ -85,7 +81,7 @@ export default async function AboutPage() {
     url: SITE_URL,
     logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
     foundingDate: "2026",
-    description: "Pakistan's #1 AI-powered digital learning academy offering global courses, AI career tools, daily quiz competitions, AIDLA Coins rewards, and a Learn-to-Earn system.",
+    description: "Pakistan-based AI-powered digital learning academy offering global courses, AI career tools, daily quiz competitions, AIDLA Coins rewards, and a Learn-to-Earn system.",
     areaServed: [
       { "@type": "Country", name: "Pakistan" },
       { "@type": "Place", name: "Worldwide" },
@@ -108,7 +104,7 @@ export default async function AboutPage() {
       "@id": `${SITE_URL}/#founder`,
       name: "Engineer Muhammad Zubair Afridi",
       jobTitle: "Founder & CEO",
-      description: "Gold Medalist Electrical Engineer and founder of AIDLA � Pakistan's #1 free AI-powered learning platform.",
+      description: "Gold Medalist Electrical Engineer and founder of AIDLA, a Pakistan-based free AI-powered learning platform.",
       url: `${SITE_URL}/about`,
       sameAs: [
         "https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/",
@@ -140,7 +136,7 @@ export default async function AboutPage() {
     familyName: "Afridi",
     honorificPrefix: "Engineer",
     jobTitle: "Founder & CEO",
-    description: "Gold Medalist Electrical Engineer from Peshawar, KPK. Founder of AIDLA, Pakistan's #1 free AI-powered digital learning academy.",
+    description: "Gold Medalist Electrical Engineer from Peshawar, KPK. Founder of AIDLA, a Pakistan-based free AI-powered digital learning academy.",
     worksFor: { "@id": `${SITE_URL}/#organization` },
     email: "ceo@aidla.online",
     address: {
@@ -151,7 +147,7 @@ export default async function AboutPage() {
     },
     alumniOf: {
       "@type": "EducationalOrganization",
-      name: "University of Engineering and Technology Peshawar",
+      name: "Sarhad University Peshawar",
       address: { "@type": "PostalAddress", addressLocality: "Peshawar", addressCountry: "PK" },
     },
     award: "Gold Medal � Electrical Engineering",
@@ -167,7 +163,7 @@ export default async function AboutPage() {
     "@type": "AboutPage",
     "@id": `${SITE_URL}/about`,
     url: `${SITE_URL}/about`,
-    name: "About AIDLA � Pakistan's #1 AI Powered Learning Platform",
+    name: "About AIDLA - AI Powered Learning Platform in Pakistan",
     description: "Learn about AIDLA's mission, AI tools, courses, career resources, rewards, and how AIDLA supports learners and professionals worldwide.",
     inLanguage: "en",
     isPartOf: { "@id": `${SITE_URL}/#website` },

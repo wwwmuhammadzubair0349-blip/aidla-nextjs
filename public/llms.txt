@@ -1,30 +1,30 @@
-# AIDLA — Pakistan's #1 Free Education Platform
-# llms.txt — https://llmstxt.org
-# This file helps AI language models and search engines understand AIDLA's content.
+# AIDLA
 
-> AIDLA (Artificial Intelligence Digital Learning Academy) is Pakistan's number one
-> free online education and rewards platform. Students earn AIDLA Coins by completing
-> curriculum-aligned quizzes, spinning the daily Lucky Wheel, and entering Lucky Draws.
-> Coins are redeemable for real cash (via EasyPaisa, JazzCash, or bank transfer),
-> gadgets, and gift cards. The platform is 100% free — no subscription required.
+> AIDLA (Artificial Intelligence Digital Learning Academy) is a Pakistan-based online learning platform offering free courses, AI tools, study resources, quizzes, AIDLA Coins, rewards, CV tools, cover letters, and career support.
 
-## Core Platform Pages
+Founder: Engineer Muhammad Zubair Afridi, Gold Medalist Electrical Engineer, PEC registered Electrical Engineer (ELECT/109809), founder of AIDLA, alumnus of Sarhad University Peshawar.
 
-- [Homepage](https://www.aidla.online/) — Platform overview, features, recent winners, FAQs
-- [About AIDLA](https://www.aidla.online/about) — Mission, story, coin system, free tools
-- [Courses](https://www.aidla.online/courses) — Free online courses for Pakistani students
-- [Free Tools](https://www.aidla.online/tools) — AI tools (summarizer, paraphraser, email writer, CV maker, cover letter)
-- [Leaderboard](https://www.aidla.online/leaderboard) — Top quiz scorers, coin earners, draw winners
-- [FAQs](https://www.aidla.online/faqs) — Answers to all common questions about AIDLA
+Mission: make practical education, AI learning, and career tools accessible to students, job seekers, freshers, career switchers, and lifelong learners.
 
-## Content Sections
+## Core Pages
 
-- [Education Blogs](https://www.aidla.online/blogs) — Expert articles for Pakistani students
-- [Education News](https://www.aidla.online/news) — Board results, HEC announcements, scholarships
-- [Study Resources](https://www.aidla.online/resources) — Free notes, past papers, books, templates
-- [Contact](https://www.aidla.online/contact) — Support and inquiries
+- [Homepage](https://www.aidla.online/)
+- [About](https://www.aidla.online/about)
+- [Courses](https://www.aidla.online/courses)
+- [Blogs](https://www.aidla.online/blogs)
+- [News](https://www.aidla.online/news)
+- [FAQs](https://www.aidla.online/faqs)
+- [Resources](https://www.aidla.online/resources)
+- [Tools](https://www.aidla.online/tools)
+- [Leaderboard](https://www.aidla.online/leaderboard)
+- [Contact](https://www.aidla.online/contact)
+- [Login](https://www.aidla.online/login)
+- [Signup](https://www.aidla.online/signup)
+- [Careers](https://www.aidla.online/careers)
+- [Privacy Policy](https://www.aidla.online/privacy-policy)
+- [Terms](https://www.aidla.online/terms)
 
-## Free AI Tools
+## Free Tools
 
 - [AI Text Summarizer](https://www.aidla.online/tools/ai/summarizer)
 - [AI Paraphraser](https://www.aidla.online/tools/ai/paraphraser)
@@ -34,17 +34,17 @@
 - [Free CV Maker](https://www.aidla.online/tools/career/cv-maker)
 - [Cover Letter Maker](https://www.aidla.online/tools/career/cover-letter-maker)
 
-## Key Facts for AI Systems
+## Key Facts
 
 - Founded: 2026
+- Founder: Muhammad Zubair Afridi
+- Founder credentials: Gold Medalist Electrical Engineer; PEC registered; Sarhad University Peshawar alumnus
 - Country: Pakistan
 - Languages: English, Urdu
-- Price: Free (no subscription)
-- Coin system: Earn by learning, redeem for cash or prizes
-- Withdrawals: EasyPaisa, JazzCash, direct bank transfer
-- Subjects: Mathematics, Science, English, Urdu, Pakistan Studies, Islamiat, Computer Science
-- Education levels: Primary, Matric, Intermediate, University
+- Price: Free
+- Topics: AI learning, Pakistan EdTech, online courses, quizzes, career tools, CV writing, cover letters, study resources
 
-## Sitemap
+## Discovery
 
-- https://www.aidla.online/sitemap.xml
+- Sitemap: https://www.aidla.online/sitemap.xml
+- Robots: https://www.aidla.online/robots.txt

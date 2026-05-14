@@ -28,7 +28,7 @@ const pageSchema = buildGraph(
     "@type": "ItemList",
     "@id": "https://www.aidla.online/tools#tool-list",
     name: "AIDLA Free AI & Career Tools",
-    numberOfItems: 10,
+    numberOfItems: 7,
     itemListElement: [
       { "@type": "ListItem", position: 1,  name: "AI Email Writer",     url: "https://www.aidla.online/tools/ai/email-writer"           },
       { "@type": "ListItem", position: 2,  name: "AI Text Summarizer",  url: "https://www.aidla.online/tools/ai/summarizer"             },
@@ -37,9 +37,6 @@ const pageSchema = buildGraph(
       { "@type": "ListItem", position: 5,  name: "AI Interview Prep",   url: "https://www.aidla.online/tools/ai/interview-prep"         },
       { "@type": "ListItem", position: 6,  name: "CV Maker",            url: "https://www.aidla.online/tools/career/cv-maker"           },
       { "@type": "ListItem", position: 7,  name: "Cover Letter Maker",  url: "https://www.aidla.online/tools/career/cover-letter-maker" },
-      { "@type": "ListItem", position: 8,  name: "Image to PDF",        url: "https://www.aidla.online/tools/pdf/image-to-pdf"          },
-      { "@type": "ListItem", position: 9,  name: "Word to PDF",         url: "https://www.aidla.online/tools/pdf/word-to-pdf"           },
-      { "@type": "ListItem", position: 10, name: "JPG to PNG",          url: "https://www.aidla.online/tools/image/jpg-to-png"          },
     ],
   },
 );

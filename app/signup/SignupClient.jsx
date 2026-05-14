@@ -537,7 +537,7 @@ export default function SignupClient() {
 
                 {/* Subtitle */}
                 <p className="sn-subtitle">
-                  Join <span>Pakistan's #1</span> AI powered learning platform
+                  Join <span>AIDLA</span>, an AI powered learning platform
                 </p>
 
                 {/* Google */}

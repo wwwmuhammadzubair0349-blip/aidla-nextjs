@@ -6,12 +6,12 @@ const SITE_URL = SITE.url;
 
 export const metadata = {
   title: "Careers at AIDLA | Build AI Learning & Career Tools",
-  description: "Join AIDLA and help build Pakistan's #1 AI learning platform. Work on courses, AI tools, career resources, rewards and mentoring. Apply now.",
+  description: "Join AIDLA and help build a Pakistan-based AI learning platform. Work on courses, AI tools, career resources, rewards and mentoring. Apply now.",
   robots: { index: true, follow: true },
   alternates: { canonical: `${SITE_URL}/careers` },
   openGraph: {
     title: "Careers at AIDLA – Build the Future of Free AI Learning",
-    description: "Join AIDLA and help build Pakistan's #1 AI learning platform. Work on courses, AI tools, career resources and rewards.",
+    description: "Join AIDLA and help build a Pakistan-based AI learning platform. Work on courses, AI tools, career resources and rewards.",
     type: "website",
     url: `${SITE_URL}/careers`,
     siteName: "AIDLA",
@@ -29,7 +29,7 @@ const schema = buildGraph(
   buildWebPageSchema({
     path: "/careers",
     name: "Careers at AIDLA | Build AI Learning & Career Tools",
-    description: "Join AIDLA and help build Pakistan's #1 AI learning platform. Work on courses, AI tools, career resources, rewards and mentoring. Apply now.",
+    description: "Join AIDLA and help build a Pakistan-based AI learning platform. Work on courses, AI tools, career resources, rewards and mentoring. Apply now.",
   }),
   buildBreadcrumbSchema(
     [{ name: "Home", url: "/" }, { name: "Careers", url: "/careers" }],

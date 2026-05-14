@@ -17,13 +17,18 @@ async function fetchTable(table, select, filters = []) {
   params.set("select", select);
   filters.forEach(([key, value]) => params.set(key, value));
 
-  const res = await fetch(`${baseUrl}/rest/v1/${table}?${params}`, {
-    headers: {
-      apikey: anonKey,
-      Authorization: `Bearer ${anonKey}`,
-    },
-    next: { revalidate: 3600 },
-  });
+  let res;
+  try {
+    res = await fetch(`${baseUrl}/rest/v1/${table}?${params}`, {
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+      },
+      next: { revalidate: 3600 },
+    });
+  } catch {
+    return [];
+  }
 
   if (!res.ok) return [];
 
@@ -94,6 +99,18 @@ export default async function sitemap() {
       lastModified: now,
     },
     {
+      url: `${base}/projects`,
+      priority: 0.8,
+      changefreq: "weekly",
+      lastModified: now,
+    },
+    {
+      url: `${base}/projects/generate`,
+      priority: 0.75,
+      changefreq: "monthly",
+      lastModified: now,
+    },
+    {
       url: `${base}/leaderboard`,
       priority: 0.7,
       changefreq: "hourly",
@@ -149,6 +166,24 @@ export default async function sitemap() {
       lastModified: new Date("2025-01-01"),
     },
     {
+      url: `${base}/tools/career`,
+      priority: 0.55,
+      changefreq: "monthly",
+      lastModified: new Date("2025-01-01"),
+    },
+    {
+      url: `${base}/cv-builder`,
+      priority: 0.5,
+      changefreq: "monthly",
+      lastModified: new Date("2025-01-01"),
+    },
+    {
+      url: `${base}/cover-letter`,
+      priority: 0.5,
+      changefreq: "monthly",
+      lastModified: new Date("2025-01-01"),
+    },
+    {
       url: `${base}/courses`,
       priority: 0.9,
       changefreq: "daily",
@@ -159,6 +194,24 @@ export default async function sitemap() {
       priority: 0.6,
       changefreq: "monthly",
       lastModified: new Date("2026-01-01"),
+    },
+    {
+      url: `${base}/login`,
+      priority: 0.45,
+      changefreq: "monthly",
+      lastModified: now,
+    },
+    {
+      url: `${base}/signup`,
+      priority: 0.75,
+      changefreq: "monthly",
+      lastModified: now,
+    },
+    {
+      url: `${base}/careers`,
+      priority: 0.55,
+      changefreq: "monthly",
+      lastModified: now,
     },
     {
       url: `${base}/privacy-policy`,

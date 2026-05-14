@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-05-08T16:21:35.609Z",
-  "totalPages": 57,
+  "generatedAt": "2026-05-14T16:59:34.828Z",
+  "totalPages": 65,
   "categories": {
-    "public": 35,
-    "user": 22
+    "public": 40,
+    "user": 25
   },
   "pages": [
     {
@@ -19,6 +19,12 @@
       "description": null
     },
     {
+      "route": "/auth/callback",
+      "category": "public",
+      "title": "Callback",
+      "description": null
+    },
+    {
       "route": "/blogs",
       "category": "public",
       "title": "Blogs",
@@ -28,6 +34,12 @@
       "route": "/blogs/[slug]",
       "category": "public",
       "title": "Blogs Detail",
+      "description": null
+    },
+    {
+      "route": "/careers",
+      "category": "public",
+      "title": "Careers",
       "description": null
     },
     {
@@ -112,6 +124,24 @@
       "route": "/privacy-policy",
       "category": "public",
       "title": "Privacy policy",
+      "description": null
+    },
+    {
+      "route": "/projects",
+      "category": "public",
+      "title": "Projects",
+      "description": null
+    },
+    {
+      "route": "/projects/[slug]",
+      "category": "public",
+      "title": "Projects Detail",
+      "description": null
+    },
+    {
+      "route": "/projects/generate",
+      "category": "public",
+      "title": "Generate",
       "description": null
     },
     {
@@ -223,6 +253,12 @@
       "description": null
     },
     {
+      "route": "/user/battle",
+      "category": "user",
+      "title": "Battle",
+      "description": null
+    },
+    {
       "route": "/user/certificate/[certId]",
       "category": "user",
       "title": "Certificate Detail",
@@ -292,6 +328,18 @@
       "route": "/user/profile",
       "category": "user",
       "title": "Profile",
+      "description": null
+    },
+    {
+      "route": "/user/profile/[userId]",
+      "category": "user",
+      "title": "Profile Detail",
+      "description": null
+    },
+    {
+      "route": "/user/projects",
+      "category": "user",
+      "title": "Projects",
       "description": null
     },
     {

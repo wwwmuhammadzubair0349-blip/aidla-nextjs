@@ -1,6 +1,6 @@
 ﻿// app/news/[slug]/page.jsx
 import { notFound }        from "next/navigation";
-import { supabase }        from "@/lib/supabase";
+import { serverFetch }     from "@/lib/supabaseServer";
 import NewsPageClient      from "./NewsPageClient";
 import { buildGraph, buildArticleSchema, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
@@ -15,16 +15,13 @@ const OG_IMAGE = `${SITE_URL}/og-home.jpg`;
 
 /* Pre-build the 50 most-viewed slugs at deploy time */
 export async function generateStaticParams() {
-  // Handle build-time scenario where supabase is not initialized
-  if (!supabase) return [];
-  
-  const { data } = await supabase
-    .from("news_posts")
-    .select("slug")
-    .is("deleted_at", null)
-    .eq("status", "published")
-    .order("view_count", { ascending: false })
-    .limit(50);
+  const { data } = await serverFetch("news_posts", {
+    select: "slug",
+    deleted_at: "is.null",
+    status: "eq.published",
+    order: "view_count.desc",
+    limit: "50",
+  });
 
   return (data || []).map(p => ({ slug: p.slug }));
 }
@@ -36,21 +33,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }) {
     const { slug } = await params;
   
-  // Handle build-time scenario where supabase is not initialized
-  if (!supabase) {
-    return {
-      title:       "News Not Found — AIDLA",
-      description: "This article could not be found.",
-    };
-  }
-  
-  const { data: post } = await supabase
-    .from("news_posts")
-    .select("title,excerpt,cover_image_url,published_at,tags,slug")
-    .eq("slug", slug)
-    .eq("status", "published")
-    .is("deleted_at", null)
-    .single();
+  const { data: posts } = await serverFetch("news_posts", {
+    select: "title,excerpt,cover_image_url,published_at,updated_at,tags,slug",
+    slug: `eq.${slug}`,
+    status: "eq.published",
+    deleted_at: "is.null",
+    limit: "1",
+  });
+  const post = posts?.[0] || null;
 
   if (!post) {
     return {
@@ -100,54 +90,55 @@ export default async function NewsArticlePage({ params }) {
      const { slug } = await params;
   /* Parallel fetch: article + all published for related */
   const [{ data: post, error }, { data: allPosts }] = await Promise.all([
-    supabase
-      .from("news_posts")
-      .select("*")
-      .eq("slug", slug) 
-      .eq("status", "published")
-      .is("deleted_at", null)
-      .single(),
-    supabase
-      .from("news_posts")
-      .select("id,title,slug,cover_image_url,published_at,tags,view_count")
-      .is("deleted_at", null)
-      .eq("status", "published")
-      .order("published_at", { ascending: false })
-      .limit(20),
+    serverFetch("news_posts", {
+      select: "*",
+      slug: `eq.${slug}`,
+      status: "eq.published",
+      deleted_at: "is.null",
+      limit: "1",
+    }),
+    serverFetch("news_posts", {
+      select: "id,title,slug,cover_image_url,published_at,tags,view_count",
+      deleted_at: "is.null",
+      status: "eq.published",
+      order: "published_at.desc",
+      limit: "20",
+    }),
   ]);
 
-  if (error || !post) notFound();
+  const article = post?.[0] || null;
+  if (error || !article) notFound();
 
   /* Related: same-tag posts, exclude current, max 4 */
-  const postTags   = post.tags || [];
+  const postTags   = article.tags || [];
   const relatedRaw = (allPosts || []).filter(p =>
-    p.slug !== post.slug &&
+    p.slug !== article.slug &&
     (p.tags || []).some(t => postTags.includes(t))
   ).slice(0, 4);
 
   /* Fallback: recents if no tag overlap */
   const related = relatedRaw.length >= 2
     ? relatedRaw
-    : (allPosts || []).filter(p => p.slug !== post.slug).slice(0, 4);
+    : (allPosts || []).filter(p => p.slug !== article.slug).slice(0, 4);
 
   const canonical = `${SITE_URL}/news/${slug}`;
 
   const jsonLd = buildGraph(
-    buildWebPageSchema({ path: `/news/${slug}`, name: post.title, description: post.excerpt || "" }),
+    buildWebPageSchema({ path: `/news/${slug}`, name: article.title, description: article.excerpt || "" }),
     buildBreadcrumbSchema(
-      [{ name: "Home", url: "/" }, { name: "News", url: "/news" }, { name: post.title, url: `/news/${slug}` }],
+      [{ name: "Home", url: "/" }, { name: "News", url: "/news" }, { name: article.title, url: `/news/${slug}` }],
       `/news/${slug}`,
     ),
     buildArticleSchema({
       slug,
       type:        "NewsArticle",
       basePath:    "news",
-      title:       post.title,
-      description: post.excerpt || "",
-      image:       post.cover_image_url || undefined,
-      datePublished:   post.published_at,
-      dateModified:    post.updated_at || post.published_at,
-      keywords:        (post.tags || []).join(", ") || undefined,
+      title:       article.title,
+      description: article.excerpt || "",
+      image:       article.cover_image_url || undefined,
+      datePublished:   article.published_at,
+      dateModified:    article.updated_at || article.published_at,
+      keywords:        (article.tags || []).join(", ") || undefined,
     }),
   );
 
@@ -157,7 +148,7 @@ export default async function NewsArticlePage({ params }) {
         type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <NewsPageClient post={post} related={related} />
+      <NewsPageClient post={article} related={related} />
     </>
   );
 }

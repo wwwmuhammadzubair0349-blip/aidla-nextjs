@@ -941,7 +941,7 @@ export default function BlogPostClient({ initialPost, relatedPosts, slug }) {
               <div className="bp-meta">
                 <div className="bp-author">
                   <span className="bp-author-icon" aria-hidden="true">✍️</span>
-                  <span itemProp="author">{post.author_name || "AIDLA Team"}</span>
+                  <span itemProp="author">{post.author_name || "AIDLA Team"} · AIDLA Education Team</span>
                 </div>
                 <span className="bp-dot" aria-hidden="true" />
                 {post.published_at && (

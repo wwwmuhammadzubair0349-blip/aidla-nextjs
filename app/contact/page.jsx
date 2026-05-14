@@ -29,17 +29,37 @@ export const metadata = {
 
 const JSON_LD = {
   "@context": "https://schema.org",
-  "@type": "ContactPage",
-  url: `${SITE_URL}/contact`,
-  name: "Contact AIDLA",
-  description: "Contact AIDLA support for help, questions, or partnership inquiries.",
-  breadcrumb: {
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Contact", item: `${SITE_URL}/contact` },
-    ],
-  },
+  "@graph": [
+    {
+      "@type": "ContactPage",
+      "@id": `${SITE_URL}/contact#webpage`,
+      url: `${SITE_URL}/contact`,
+      name: "Contact AIDLA",
+      description: "Contact AIDLA support for help, questions, or partnership inquiries.",
+    },
+    {
+      "@type": ["LocalBusiness", "EducationalOrganization"],
+      "@id": `${SITE_URL}/#localbusiness`,
+      name: "AIDLA",
+      url: SITE_URL,
+      email: "ceo@aidla.online",
+      telephone: "+923044678929",
+      priceRange: "Free",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Peshawar",
+        addressRegion: "Khyber Pakhtunkhwa",
+        addressCountry: "PK",
+      },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+        { "@type": "ListItem", position: 2, name: "Contact", item: `${SITE_URL}/contact` },
+      ],
+    },
+  ],
 };
 
 export default function ContactPage() {

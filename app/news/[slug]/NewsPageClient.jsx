@@ -994,7 +994,7 @@ export default function NewsPageClient({ post, related }) {
               <div className="np-meta">
                 <div className="np-author">
                   <div className="np-author-icon" aria-hidden="true">✍</div>
-                  <span itemProp="author">AIDLA News Desk</span>
+                  <span itemProp="author">AIDLA News Desk · Education updates team</span>
                 </div>
                 <div className="np-dot" aria-hidden="true" />
                 {post.published_at && (

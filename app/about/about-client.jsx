@@ -424,7 +424,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
       {/* ══════════════════════════════════════════════
           6. LEARNER REVIEWS — portrait layout
       ══════════════════════════════════════════════ */}
-      <section className="ab-rv-section" aria-labelledby="ab-rv-heading">
+      {displayReviews.length > 0 && <section className="ab-rv-section" aria-labelledby="ab-rv-heading">
         <div className="ab-rv-inner">
           <h2 id="ab-rv-heading" className="ab-rv-heading">Our Successful Learners Say</h2>
 
@@ -483,7 +483,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ══════════════════════════════════════════════
           7. CAREERS TEASER — bulletin board job posting

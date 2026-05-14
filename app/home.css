@@ -1442,8 +1442,8 @@
 .hp-final-cta {
   position: relative;
   overflow: hidden;
-  background: #0d1117;
-  padding: clamp(28px, 4vw, 52px) var(--hp-pad-x);
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #d97706 100%);
+  padding: clamp(48px, 6vw, 72px) var(--hp-pad-x);
   text-align: center;
 }
 
@@ -1451,7 +1451,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(255,255,255,0.18) 1px, transparent 1px);
   background-size: 28px 28px;
   pointer-events: none;
 }
@@ -1464,7 +1464,9 @@
 }
 
 .hp-final-cta .hp-eyebrow-light {
-  color: rgba(255,255,255,0.45);
+  color: rgba(15,23,42,0.55);
+  font-weight: 800;
+  letter-spacing: 0.12em;
 }
 
 .hp-final-cta h2 {
@@ -1472,14 +1474,14 @@
   font-family: var(--hp-font-head);
   font-size: clamp(2rem, 5.5vw, 3.4rem);
   font-weight: 900;
-  color: #ffffff;
+  color: #0f172a;
   line-height: 1.08;
   letter-spacing: -0.025em;
 }
 
 .hp-final-cta p {
   margin: 0 0 32px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(15,23,42,0.65);
   font-size: clamp(0.97rem, 2.2vw, 1.08rem);
   line-height: 1.65;
 }
@@ -1492,11 +1494,11 @@
 }
 
 .hp-final-cta .hp-btn-primary {
-  background: var(--hp-yellow);
-  color: var(--hp-dark);
-  box-shadow: 0 6px 24px rgba(245,158,11,0.3);
+  background: #0f172a;
+  color: #fff;
+  box-shadow: 0 6px 24px rgba(15,23,42,0.3);
 }
-.hp-final-cta .hp-btn-primary:hover { background: var(--hp-yellow-dark); transform: translateY(-2px); }
+.hp-final-cta .hp-btn-primary:hover { background: #1e293b; transform: translateY(-2px); box-shadow: 0 10px 32px rgba(15,23,42,0.4); }
 
 .hp-cta-ghost-btn {
   display: inline-flex;
@@ -1504,14 +1506,14 @@
   padding: 0 26px;
   min-height: 58px;
   border-radius: 999px;
-  border: 2px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.85);
+  border: 2.5px solid rgba(15,23,42,0.3);
+  color: #0f172a;
   font-size: 0.97rem;
   font-weight: 700;
   text-decoration: none;
   transition: border-color 0.18s, background 0.18s;
 }
-.hp-cta-ghost-btn:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.06); }
+.hp-cta-ghost-btn:hover { border-color: #0f172a; background: rgba(15,23,42,0.08); }
 
 /* ============================================================
    RESPONSIVE — 480px+

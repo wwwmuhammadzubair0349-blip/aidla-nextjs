@@ -134,7 +134,7 @@ async function getHomeData() {
   const [blogsRes, newsRes, reviewsRes, faqsRes, dailyQuizRes, coursesRes] = await Promise.all([
     serverFetch("blogs_posts", { select: "id,title,excerpt,published_at,slug,view_count", deleted_at: "is.null", status: "eq.published", order: "published_at.desc", limit: "2" }, { revalidate: 3600 }),
     serverFetch("news_posts", { select: "id,title,excerpt,published_at,slug,view_count", deleted_at: "is.null", status: "eq.published", order: "published_at.desc", limit: "2" }, { revalidate: 3600 }),
-    serverFetch("user_reviews", { select: "id,full_name,rating,review_text,created_at,avatar_url", is_approved: "eq.true", order: "created_at.desc", limit: "6" }, { revalidate: 3600 }),
+    serverFetch("user_reviews", { select: "id,full_name,rating,review_text,created_at,avatar_url", is_approved: "eq.true", order: "created_at.desc", limit: "6" }, { revalidate: 300 }),
     serverFetch("faqs", { select: "id,question,answer,slug", status: "eq.published", is_visible: "eq.true", order: "helpful_yes.desc", limit: "4" }, { revalidate: 3600 }),
     serverRpc("daily_quiz_leaderboard", { p_date: winnerDate }, { revalidate: 3600 }),
     serverFetch("course_courses", { select: "id,title,description,category,slug", status: "eq.published", order: "created_at.desc", limit: "6" }, { revalidate: 3600 }),

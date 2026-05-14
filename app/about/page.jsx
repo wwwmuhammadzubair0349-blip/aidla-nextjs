@@ -44,7 +44,7 @@ async function getAboutData() {
       is_approved: "eq.true",
       order: "created_at.desc",
       limit: "3",
-    }, { revalidate: 3600 }),
+    }, { revalidate: 300 }),
     serverFetch("faqs", {
       select: "id,question,answer,slug",
       status: "eq.published",

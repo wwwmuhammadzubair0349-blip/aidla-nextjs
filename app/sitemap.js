@@ -39,7 +39,7 @@ export default async function sitemap() {
   const base = "https://www.aidla.online";
   const now  = new Date();
 
-  const [blogs, news, faqs, studyMaterials, courses] = await Promise.all([
+  const [blogs, news, faqs, studyMaterials, courses, projects] = await Promise.all([
     fetchTable("blogs_posts", "slug,updated_at,created_at", [
       ["status", "eq.published"],
       ["deleted_at", "is.null"],
@@ -58,6 +58,11 @@ export default async function sitemap() {
     ]),
     fetchTable("course_courses", "slug,updated_at,created_at", [
       ["status", "eq.published"],
+    ]),
+    fetchTable("project_ideas", "slug,updated_at,created_at", [
+      ["status", "eq.published"],
+      ["approval_status", "eq.approved"],
+      ["deleted_at", "is.null"],
     ]),
   ]);
 
@@ -268,6 +273,13 @@ export default async function sitemap() {
     lastModified: toDate(c.updated_at || c.created_at),
   }));
 
+  const projectPages = projects.map(p => ({
+    url: `${base}/projects/${p.slug}`,
+    priority: 0.7,
+    changefreq: "monthly",
+    lastModified: toDate(p.updated_at || p.created_at),
+  }));
+
   return [
     ...staticPages,
     ...blogPages,
@@ -275,5 +287,6 @@ export default async function sitemap() {
     ...faqPages,
     ...resourcePages,
     ...coursePages,
+    ...projectPages,
   ];
 }

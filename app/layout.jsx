@@ -184,6 +184,13 @@ export default function RootLayout({ children }) {
         <meta name="MobileOptimized" content="320" />
         <meta name="pinterest" content="nopin" />
 
+        {/* ── Trustpilot Widget Script ── */}
+        <script
+          type="text/javascript"
+          src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
+          async
+        />
+
         {/* ── Global JSON-LD ── */}
         <script
           type="application/ld+json"

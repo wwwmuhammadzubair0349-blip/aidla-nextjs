@@ -11,7 +11,8 @@ import {
   FaLinkedinIn,
   FaTiktok,
   FaInstagram,
-  FaWhatsappSquare
+  FaWhatsappSquare,
+  FaGoogle,
 } from "react-icons/fa";
 
 export default function Footer() {
@@ -347,6 +348,39 @@ export default function Footer() {
     .ft-bottom-links a:last-child  { border-right: none; }
     .ft-bottom-links a:hover       { color: var(--ft-gold); } /* 🟡 RESTORED YELLOW */
 
+    /* ── Google Review Button ── */
+    .ft-review-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 9px 16px;
+      background: var(--ft-gold-dim);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: 6px;
+      color: var(--ft-gold);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-decoration: none;
+      font-family: 'Syne', system-ui, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: background 0.2s, border-color 0.2s;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+    }
+    .ft-review-btn:hover {
+      background: rgba(245,158,11,0.2);
+      border-color: var(--ft-gold);
+    }
+    .ft-review-stars {
+      color: var(--ft-gold);
+      font-size: 0.75rem;
+      margin-top: 6px;
+      display: block;
+    }
+
     /* ── Desktop ── */
     @media (min-width: 768px) {
       .ft-inner { padding: 44px 40px 0; }
@@ -476,6 +510,9 @@ export default function Footer() {
                 <a href="https://whatsapp.com/channel/0029VbC6yju0rGiV5JaCqj42" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" title="Join our WhatsApp Channel">
                   <FaWhatsappSquare />
                 </a>
+                <a href="https://g.page/r/CfiEd2AW-Y_fEBI" target="_blank" rel="noopener noreferrer" aria-label="Google Business" title="Find us on Google">
+                  <FaGoogle />
+                </a>
               </div>
             </nav>
 
@@ -489,8 +526,35 @@ export default function Footer() {
                   </li>
                 ))}
               </ul>
+              <a
+                href="https://g.page/r/CfiEd2AW-Y_fEBI/review"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ft-review-btn"
+                aria-label="Leave a review on Google"
+              >
+                <FaGoogle style={{ fontSize: "0.9rem" }} />
+                Leave a Review
+              </a>
+              <span className="ft-review-stars" aria-hidden="true">★★★★★ Rate us on Google</span>
             </nav>
 
+          </div>
+
+          {/* Trustpilot Widget */}
+          <div style={{ padding: "16px 0 0", borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: 0 }}>
+            <div
+              className="trustpilot-widget"
+              data-locale="en-US"
+              data-template-id="56278e9abfbbba0bdcd568bc"
+              data-businessunit-id="6a0e068b42bff4b0040af60e"
+              data-style-height="52px"
+              data-style-width="100%"
+              data-token="7aa9e4ac-cdbe-4809-a9f0-12b6b164ae19"
+              data-theme="dark"
+            >
+              <a href="https://www.trustpilot.com/review/aidla.online" target="_blank" rel="noopener noreferrer">Trustpilot</a>
+            </div>
           </div>
 
           {/* Bottom bar */}

@@ -99,17 +99,22 @@ export default async function ProjectsPage({ searchParams }) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+      <div id="projects-heading" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>
         <h1>Project Ideas, FYP Topics &amp; AI Recommendations — AIDLA</h1>
-        <p>Browse free FYP, mini project, semester project, research, and AI-powered project recommendations on AIDLA. Filter by domain, difficulty, tech stack, subject, and university.</p>
-        <ul>
-          {safeIdeas.map(idea => (
-            <li key={idea.id || idea.slug}>
-              <a href={`/projects/${idea.slug}`}>{idea.title}</a>
-              {idea.description && <p>{idea.description}</p>}
-            </li>
-          ))}
-        </ul>
+        <p id="projects-description">Browse free FYP, mini project, semester project, research, and AI-powered project recommendations on AIDLA. Filter by domain, difficulty, tech stack, subject, and university.</p>
+        {safeIdeas.length > 0 && (
+          <ul>
+            {safeIdeas.map(idea => (
+              <li key={idea.id || idea.slug}>
+                <a href={`/projects/${idea.slug}`}>{idea.title}</a>
+                {idea.description && <p>{idea.description}</p>}
+              </li>
+            ))}
+          </ul>
+        )}
+        {safeIdeas.length === 0 && (
+          <p>Explore hundreds of free project ideas for FYP, mini projects, semester projects, and research on AIDLA. Use filters to find ideas by domain, difficulty, tech stack, subject, and university level.</p>
+        )}
       </div>
       <ProjectsClient
         initialIdeas={safeIdeas}

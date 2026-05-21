@@ -443,20 +443,27 @@ export default function BattlePage() {
       await supabase.rpc("battle_finish_round", { p_room_id: room.id, p_round: currentRound, p_is_bot: false });
       if (room.is_bot) await supabase.rpc("battle_finish_round", { p_room_id: room.id, p_round: currentRound, p_is_bot: true });
       if (currentRound === 1) {
-        // Round 1 done - go to round 2 selection
-        setView("selecting");
         setSelCategory(null);
         setQIndex(0);
         setFeedback(null);
         setSelected(null);
         submitLock.current = false;
-        // Poll for round 2 questions
+
+        // Check if opponent already finished round 1
+        const { data: latestRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
+        if (latestRoom) setRoom(latestRoom);
+        const bothDone = latestRoom?.player1_round1_done && latestRoom?.player2_round1_done;
+        setView(bothDone ? "selecting" : "waiting_round");
+
+        // Poll: once both done → selecting; then watch for round 2 to start
         pollRef.current = setInterval(async () => {
           const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
           if (!r) return;
           setRoom(r);
+          if (viewRef.current === "waiting_round" && r.player1_round1_done && r.player2_round1_done) {
+            setView("selecting");
+          }
           if (r.round2_category && r.status === "in_progress" && !completedRoundsRef.current.has(2)) {
-            // Check questions cached
             const { data: qd } = await supabase.rpc("battle_get_questions", { p_room_id: r.id, p_round: 2 });
             if (qd?.questions?.length) {
               clearInterval(pollRef.current);
@@ -961,46 +968,45 @@ export default function BattlePage() {
           </div>
 
           {isMySelectorTurn() ? (
-            <div style={S.card}>
-              <div style={S.cardTitle}>You Pick Round {currentRound}</div>
+            <div style={{ ...S.card, padding: 14 }}>
+              <div style={{ ...S.cardTitle, marginBottom: 8 }}>Pick Round {currentRound}</div>
 
-              <div style={{ marginBottom:12 }}>
-                <div style={S.label}>Category</div>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
-                  {categories.map(c => (
-                    <button key={c.id} style={{ ...S.catBtn, ...(selCategory?.id===c.id ? S.catBtnActive : {}) }}
-                      onClick={() => setSelCategory(c)}>
-                      {c.icon} {c.name}
-                    </button>
-                  ))}
+              {/* Category grid — scrollable, compact */}
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 5 }}>Category</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, maxHeight: 168, overflowY: "auto", marginBottom: 10, paddingRight: 2 }}>
+                {categories.map(c => (
+                  <button key={c.id}
+                    style={{ padding: "5px 4px", border: selCategory?.id === c.id ? "2px solid #6366f1" : "1px solid #e2e8f0", borderRadius: 7, background: selCategory?.id === c.id ? "#eef2ff" : "white", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: selCategory?.id === c.id ? "#4338ca" : "#334155", textAlign: "center", lineHeight: 1.3, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}
+                    onClick={() => setSelCategory(c)}>
+                    <span style={{ fontSize: 14 }}>{c.icon}</span>
+                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%", textAlign: "center" }}>{c.name}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Difficulty + Questions in one row */}
+              <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 4 }}>Difficulty</div>
+                  <div style={{ display: "flex", gap: 3 }}>
+                    {["easy","medium","hard"].map(d => (
+                      <button key={d} style={{ flex: 1, padding: "6px 2px", border: "1px solid #e2e8f0", borderRadius: 7, background: selDifficulty === d ? "#6366f1" : "white", color: selDifficulty === d ? "white" : "#334155", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", textTransform: "capitalize" }}
+                        onClick={() => setSelDifficulty(d)}>{d}</button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 4 }}>Questions</div>
+                  <div style={{ display: "flex", gap: 3 }}>
+                    {[5,10,15,20].map(n => (
+                      <button key={n} style={{ flex: 1, padding: "6px 2px", border: "1px solid #e2e8f0", borderRadius: 7, background: selQuestions === n ? "#6366f1" : "white", color: selQuestions === n ? "white" : "#334155", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
+                        onClick={() => setSelQuestions(n)}>{n}</button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div style={{ marginBottom:12 }}>
-                <div style={S.label}>Difficulty</div>
-                <div style={{ display:"flex", gap:8 }}>
-                  {["easy","medium","hard"].map(d => (
-                    <button key={d} style={{ ...S.smBtn, flex:1, ...(selDifficulty===d?{background:"#6366f1",color:"white"}:{}) }}
-                      onClick={() => setSelDifficulty(d)}>
-                      {d}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ marginBottom:16 }}>
-                <div style={S.label}>Questions</div>
-                <div style={{ display:"flex", gap:8 }}>
-                  {[5,10,15,20].map(n => (
-                    <button key={n} style={{ ...S.smBtn, flex:1, ...(selQuestions===n?{background:"#6366f1",color:"white"}:{}) }}
-                      onClick={() => setSelQuestions(n)}>
-                      {n}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <button style={S.btn} onClick={submitSelection} disabled={!selCategory || submittingSelection}>
+              <button style={{ ...S.btn, padding: 11 }} onClick={submitSelection} disabled={!selCategory || submittingSelection}>
                 {generatingQ ? "Generating..." : submittingSelection ? "Submitting..." : "Confirm Selection"}
               </button>
             </div>
@@ -1015,6 +1021,29 @@ export default function BattlePage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* WAITING FOR OPPONENT TO FINISH ROUND */}
+      {view === "waiting_round" && (
+        <div style={{ padding: 16 }}>
+          <div style={{ ...S.card, textAlign: "center", padding: "48px 24px" }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", marginBottom: 8 }}>
+              Round 1 Complete!
+            </div>
+            <div style={{ fontSize: 14, color: "#64748b", marginBottom: 24 }}>
+              Waiting for <strong>{opponentName}</strong> to finish Round 1...
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", gap: 6, marginBottom: 24 }}>
+              {[0, 1, 2, 3, 4].map(i => (
+                <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: "#6366f1", animation: `bounce 1.2s ease-in-out ${i * 0.15}s infinite` }} />
+              ))}
+            </div>
+            <div style={{ fontSize: 12, color: "#94a3b8" }}>
+              Round 2 category selection will begin once both players are done.
+            </div>
+          </div>
         </div>
       )}
 
@@ -1079,34 +1108,126 @@ export default function BattlePage() {
 
       {/* RESULT */}
       {view === "result" && result && (
-        <div style={{ padding:16 }}>
-          <div style={{ ...S.card, textAlign:"center" }}>
-            <div style={{ fontSize:56 }}>{result.tie?"TIE":result.won?"WIN":"LOSS"}</div>
-            <div style={{ fontSize:22, fontWeight:800, marginBottom:4 }}>
-              {result.tie ? "It's a Tie!" : result.won ? "You Won!" : "You Lost!"}
-            </div>
-            <div style={{ fontSize:13, color:"#64748b", marginBottom:12 }}>vs {result.oppName} {result.isBot?"":""}</div>
+        <div style={{ padding: 16 }}>
+          <style>{`
+            @keyframes hbPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
+            @keyframes hbFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+            @keyframes confettiFall { 0%{transform:translateY(-10px) rotate(0deg);opacity:1} 100%{transform:translateY(80px) rotate(360deg);opacity:0} }
+          `}</style>
 
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:16 }}>
-              <div style={S.statBox}><div style={S.statVal}>{result.myScore}</div><div style={S.statKey}>Your Score</div></div>
-              <div style={S.statBox}><div style={S.statVal}>{result.oppScore}</div><div style={S.statKey}>Their Score</div></div>
-              <div style={{ ...S.statBox, background: result.coinsChange>=0?"#dcfce7":"#fee2e2" }}>
-                <div style={{ ...S.statVal, color:result.coinsChange>=0?"#059669":"#dc2626" }}>
-                  {result.coinsChange>=0?"+":""}{result.coinsChange}
+          {/* ── WIN ── */}
+          {result.won && (
+            <div style={{ background:"linear-gradient(135deg,#064e3b,#065f46,#047857)", borderRadius:16, padding:"28px 20px", textAlign:"center", position:"relative", overflow:"hidden" }}>
+              <div style={{ position:"absolute", top:-16, right:-16, width:90, height:90, borderRadius:"50%", background:"rgba(52,211,153,0.18)" }} />
+              <div style={{ position:"absolute", bottom:-12, left:-12, width:70, height:70, borderRadius:"50%", background:"rgba(16,185,129,0.15)" }} />
+              <div style={{ fontSize:56, marginBottom:6, animation:"hbFloat 2s ease-in-out infinite" }}>🏆</div>
+              <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.03em" }}>You Won!</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.75)", marginBottom:20 }}>vs {result.oppName}{result.isBot ? " 🤖" : ""}</div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:20 }}>
+                <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.myScore}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Your Score</div>
                 </div>
-                <div style={S.statKey}>Coins</div>
+                <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.oppScore}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Their Score</div>
+                </div>
+                <div style={{ background:"rgba(52,211,153,0.25)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#6ee7b7" }}>+{result.coinsChange}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Coins</div>
+                </div>
               </div>
-            </div>
-
-            {result.won && (
-              <button style={{ ...S.btn, background:"#059669", marginBottom:10 }} onClick={() => setShowShare(true)}>
-                Share Victory
+              <button style={{ ...S.btn, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)", color:"#fff", marginBottom:8 }} onClick={() => setShowShare(true)}>
+                Share Victory 🎉
               </button>
-            )}
-            <button style={S.btnGhost} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
-              Back to Lobby
-            </button>
-          </div>
+              <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.8)", border:"none" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
+                Back to Lobby
+              </button>
+            </div>
+          )}
+
+          {/* ── LOSE ── */}
+          {!result.won && !result.tie && (
+            <div style={{ background:"linear-gradient(145deg,#1a0533 0%,#4a044e 35%,#7f1d1d 70%,#1e1b4b 100%)", borderRadius:16, padding:"28px 20px", textAlign:"center", position:"relative", overflow:"hidden" }}>
+              {/* Decorative blobs */}
+              <div style={{ position:"absolute", top:-20, left:-20, width:100, height:100, borderRadius:"50%", background:"rgba(220,38,38,0.18)" }} />
+              <div style={{ position:"absolute", top:10, right:-10, width:60, height:60, borderRadius:"50%", background:"rgba(167,139,250,0.2)" }} />
+              <div style={{ position:"absolute", bottom:-15, left:"40%", width:80, height:80, borderRadius:"50%", background:"rgba(236,72,153,0.15)" }} />
+              <div style={{ position:"absolute", bottom:-10, right:-20, width:70, height:70, borderRadius:"50%", background:"rgba(239,68,68,0.12)" }} />
+
+              {/* Falling pieces */}
+              {[...Array(6)].map((_,i) => (
+                <div key={i} style={{ position:"absolute", top:0, left:`${10+i*15}%`, width:6, height:6, borderRadius:2, background:["#f87171","#c084fc","#fb923c","#e879f9","#f472b6","#a78bfa"][i], animation:`confettiFall ${1.5+i*0.3}s ease-in ${i*0.2}s infinite`, opacity:0 }} />
+              ))}
+
+              <div style={{ fontSize:60, marginBottom:6, animation:"hbPulse 1.4s ease-in-out infinite" }}>💔</div>
+              <div style={{ fontSize:28, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.03em" }}>You Lost</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:6 }}>vs {result.oppName}{result.isBot ? " 🤖" : ""}</div>
+
+              <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:12, padding:"10px 14px", marginBottom:16, border:"1px solid rgba(255,255,255,0.1)" }}>
+                <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", fontStyle:"italic", lineHeight:1.5 }}>
+                  {[
+                    "Every champion was once a challenger. Get back up! 🔥",
+                    "The road to victory is paved with losses. Keep going! 💪",
+                    "Defeat is just a detour, not a dead end. Try again! ⚡",
+                    "Your next battle starts now. Don't stop! 🚀",
+                  ][Math.floor(Math.random() * 4)]}
+                </div>
+              </div>
+
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:20 }}>
+                <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.myScore}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", marginTop:2 }}>Your Score</div>
+                </div>
+                <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.oppScore}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", marginTop:2 }}>Their Score</div>
+                </div>
+                <div style={{ background:"rgba(239,68,68,0.25)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#fca5a5" }}>{result.coinsChange}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", marginTop:2 }}>Coins</div>
+                </div>
+              </div>
+
+              <button style={{ ...S.btn, background:"linear-gradient(135deg,#7c3aed,#db2777)", border:"none", marginBottom:8, fontSize:14 }}
+                onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
+                Try Again 🔁
+              </button>
+              <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.07)", color:"rgba(255,255,255,0.6)", border:"1px solid rgba(255,255,255,0.12)", fontSize:13 }}
+                onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
+                Back to Lobby
+              </button>
+            </div>
+          )}
+
+          {/* ── TIE ── */}
+          {result.tie && (
+            <div style={{ background:"linear-gradient(135deg,#1e3a5f,#1e40af,#0369a1)", borderRadius:16, padding:"28px 20px", textAlign:"center", position:"relative", overflow:"hidden" }}>
+              <div style={{ position:"absolute", top:-15, right:-15, width:80, height:80, borderRadius:"50%", background:"rgba(96,165,250,0.2)" }} />
+              <div style={{ position:"absolute", bottom:-10, left:-10, width:65, height:65, borderRadius:"50%", background:"rgba(147,197,253,0.15)" }} />
+              <div style={{ fontSize:52, marginBottom:6 }}>🤝</div>
+              <div style={{ fontSize:28, fontWeight:900, color:"#fff", marginBottom:4 }}>It's a Tie!</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.7)", marginBottom:20 }}>vs {result.oppName}{result.isBot ? " 🤖" : ""}</div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:20 }}>
+                <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.myScore}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Your Score</div>
+                </div>
+                <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.oppScore}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Their Score</div>
+                </div>
+                <div style={{ background:"rgba(251,191,36,0.2)", borderRadius:10, padding:"10px 6px" }}>
+                  <div style={{ fontWeight:800, fontSize:18, color:"#fcd34d" }}>{result.coinsChange < 0 ? result.coinsChange : `+${result.coinsChange}`}</div>
+                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Coins</div>
+                </div>
+              </div>
+              <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.12)", color:"#fff", border:"1px solid rgba(255,255,255,0.2)" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
+                Back to Lobby
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

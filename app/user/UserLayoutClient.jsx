@@ -11,9 +11,10 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 
 const TABS = [
-  { to: "/user",         label: "Home",    icon: "⚡" },
-  { to: "/user/forum",   label: "Forum",   icon: "💬" },
-  { to: "/user/profile", label: "Profile", icon: "👤" },
+  { to: "/user",           label: "Home",    icon: "⚡" },
+  { to: "/user/forum",     label: "Forum",   icon: "💬" },
+  { to: "/user/aidla-ai",  label: "AI",      icon: "🤖" },
+  { to: "/user/profile",   label: "Profile", icon: "👤" },
 ];
 
 function LogoutIcon() {

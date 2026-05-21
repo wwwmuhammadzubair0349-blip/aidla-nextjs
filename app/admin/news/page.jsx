@@ -1,7 +1,7 @@
 // app/admin/news/page.jsx
 "use client";
 
-import { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
 function slugify(str) {
@@ -37,575 +37,29 @@ const CAT_COLORS = {
 };
 
 /* ══════════════════════════════════════════════════════════════
-   PASTE CLEANER (same as blogs version, no RTL)
+   HTML PREVIEW (editable rendered view)
    ══════════════════════════════════════════════════════════════ */
-function cleanPastedHtml(html) {
-  const tmp = document.createElement("div");
-  tmp.innerHTML = html;
-
-  ["script","style","meta","link","head","o:p","w:sdt","xml"].forEach(tag =>
-    tmp.querySelectorAll(tag).forEach(el => el.remove())
-  );
-
-  tmp.querySelectorAll("*").forEach(el => {
-    el.removeAttribute("style");
-    el.removeAttribute("class");
-    el.removeAttribute("id");
-    el.removeAttribute("lang");
-    el.removeAttribute("dir");
-    el.removeAttribute("data-pm-slice");
-    el.removeAttribute("data-contrast");
-
-    const tag = el.tagName.toLowerCase();
-
-    if (tag === "a") {
-      const href = el.getAttribute("href") || "";
-      el.removeAttribute("title");
-      el.removeAttribute("target");
-      if (href) { el.setAttribute("href", href); el.setAttribute("target","_blank"); el.setAttribute("rel","noopener noreferrer"); }
-    }
-
-    if (tag === "img") {
-      const src = el.getAttribute("src") || "";
-      Array.from(el.attributes).forEach(a => el.removeAttribute(a.name));
-      if (src) el.setAttribute("src", src);
-      el.style.maxWidth = "100%";
-    }
-
-    if (tag === "b") {
-      const strong = document.createElement("strong");
-      strong.innerHTML = el.innerHTML;
-      el.replaceWith(strong);
-    }
-    if (tag === "i") {
-      const em = document.createElement("em");
-      em.innerHTML = el.innerHTML;
-      el.replaceWith(em);
-    }
-
-    if (tag === "span" || tag === "font") {
-      if (!el.childNodes.length) {
-        el.remove();
-      } else {
-        const frag = document.createDocumentFragment();
-        while (el.firstChild) frag.appendChild(el.firstChild);
-        el.replaceWith(frag);
-      }
-    }
-  });
-
-  tmp.querySelectorAll("div").forEach(div => {
-    const hasBlockChild = Array.from(div.children).some(c =>
-      ["p","h1","h2","h3","h4","h5","h6","ul","ol","li","blockquote","table","div"].includes(c.tagName.toLowerCase())
-    );
-    if (!hasBlockChild) {
-      const p = document.createElement("p");
-      while (div.firstChild) p.appendChild(div.firstChild);
-      div.replaceWith(p);
-    }
-  });
-
-  let result = tmp.innerHTML;
-  result = result.replace(/(<br\s*\/?>){3,}/gi, "<br><br>");
-  result = result.replace(/(<p[^>]*>\s*<\/p>){2,}/gi, "<p></p>");
-  result = result.replace(/&nbsp;/gi, " ");
-
-  return result.trim();
-}
-
-/* ══════════════════════════════════════════════════════════════
-   AUTO-STRUCTURE (same as blogs version, no RTL)
-   ══════════════════════════════════════════════════════════════ */
-function autoStructureHtml(html) {
-  const tmp = document.createElement("div");
-  tmp.innerHTML = html;
-
-  let prev = null;
-  Array.from(tmp.children).forEach(el => {
-    const isEmpty = el.tagName === "P" && !(el.innerText || el.textContent || "").trim();
-    if (isEmpty && prev && prev.tagName === "P" && !(prev.innerText || prev.textContent || "").trim()) {
-      el.remove();
-    } else {
-      prev = el;
-    }
-  });
-
-  Array.from(tmp.childNodes).forEach(node => {
-    if (node.nodeType === 3 && node.textContent.trim()) {
-      const p = document.createElement("p");
-      p.textContent = node.textContent;
-      tmp.replaceChild(p, node);
-    }
-  });
-
-  const hasHeadings = tmp.querySelectorAll("h1,h2,h3,h4").length > 0;
-  if (!hasHeadings) {
-    Array.from(tmp.querySelectorAll("p")).forEach(p => {
-      const text = (p.innerText || p.textContent || "").trim();
-      if (
-        text.length > 0 && text.length <= 80 &&
-        !text.endsWith(".") && !text.endsWith("،") &&
-        /^[A-Z\u0600-\u06FF]/.test(text) &&
-        p.innerHTML === p.textContent
-      ) {
-        const h2 = document.createElement("h2");
-        h2.textContent = text;
-        p.replaceWith(h2);
-      }
-    });
-  }
-
-  return tmp.innerHTML;
-}
-
-/* ══════════════════════════════════════════════════════════════
-   RICH EDITOR (identical to blogs version, news colour scheme)
-   ══════════════════════════════════════════════════════════════ */
-function RichEditor({ value, onChange }) {
-  const editorRef = useRef(null);
-  const wrapperRef = useRef(null);
-  const [showLinkModal, setShowLinkModal]       = useState(false);
-  const [linkUrl, setLinkUrl]                   = useState("");
-  const [linkText, setLinkText]                 = useState("");
-  const [showSourceModal, setShowSourceModal]   = useState(false);
-  const [sourceHtml, setSourceHtml]             = useState("");
-  const [showFontSizeDropdown, setShowFontSizeDropdown]     = useState(false);
-  const [showFontFamilyDropdown, setShowFontFamilyDropdown] = useState(false);
-  const [showHeadingDropdown, setShowHeadingDropdown]       = useState(false);
-  const [showColorPicker, setShowColorPicker]   = useState(false);
-  const [showBgColorPicker, setShowBgColorPicker] = useState(false);
-  const [currentColor, setCurrentColor]         = useState("#000000");
-  const [currentBgColor, setCurrentBgColor]     = useState("#ffff00");
-  const [quickEditPos, setQuickEditPos]         = useState(null);
-
-  const isInternalUpdate = useRef(false);
-
-  const FONT_FAMILIES = [
-    { label: "Default",           value: "" },
-    { label: "Georgia",           value: "Georgia, serif" },
-    { label: "Playfair Display",  value: "'Playfair Display', serif" },
-    { label: "DM Sans",           value: "'DM Sans', sans-serif" },
-    { label: "Merriweather",      value: "Merriweather, serif" },
-    { label: "Lato",              value: "Lato, sans-serif" },
-    { label: "Courier New",       value: "'Courier New', monospace" },
-    { label: "Trebuchet MS",      value: "'Trebuchet MS', sans-serif" },
-    { label: "Arial",             value: "Arial, sans-serif" },
-  ];
-  const FONT_SIZES = ["10","12","14","16","18","20","22","24","28","32","36","48","64"];
-  const PRESET_COLORS = [
-    "#000000","#374151","#6B7280","#9CA3AF","#FFFFFF",
-    "#EF4444","#F97316","#F59E0B","#10B981","#3B82F6",
-    "#8B5CF6","#EC4899","#06B6D4","#84CC16","#1E40AF",
-    "#7C3AED","#0F766E","#9A3412","#1D4ED8","#065F46",
-  ];
+function HtmlPreview({ value, onChange }) {
+  const ref = useRef(null);
+  const skipUpdate = useRef(false);
 
   useEffect(() => {
-    const el = editorRef.current; if (!el) return;
-    if (isInternalUpdate.current) { isInternalUpdate.current = false; return; }
-    if (el.innerHTML !== value) el.innerHTML = value || "";
+    if (!ref.current || skipUpdate.current) return;
+    if (ref.current.innerHTML !== (value || "")) ref.current.innerHTML = value || "";
   }, [value]);
 
-  // Floating quick toolbar
-  const handleSelection = useCallback(() => {
-    const sel = window.getSelection();
-    if (!sel || sel.isCollapsed || !sel.rangeCount) {
-      setQuickEditPos(null);
-      return;
-    }
-    const range = sel.getRangeAt(0);
-    if (editorRef.current && wrapperRef.current && editorRef.current.contains(range.commonAncestorContainer)) {
-      const text = sel.toString().trim();
-      if (!text) {
-        setQuickEditPos(null);
-        return;
-      }
-      const rect = range.getBoundingClientRect();
-      const wrapperRect = wrapperRef.current.getBoundingClientRect();
-      setQuickEditPos({
-        top: rect.top - wrapperRect.top,
-        left: (rect.left - wrapperRect.left) + (rect.width / 2)
-      });
-    } else {
-      setQuickEditPos(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("selectionchange", handleSelection);
-    return () => document.removeEventListener("selectionchange", handleSelection);
-  }, [handleSelection]);
-
-  const handleInput = useCallback(() => {
-    isInternalUpdate.current = true;
-    onChange(editorRef.current?.innerHTML || "");
-  }, [onChange]);
-
-  const exec = useCallback((cmd, val = null) => {
-    editorRef.current?.focus();
-    document.execCommand(cmd, false, val);
-    handleInput();
-  }, [handleInput]);
-
-  const autoLinkUrls = (html) => {
-    const tmp = document.createElement("div");
-    tmp.innerHTML = html;
-    const walk = (node) => {
-      if (node.nodeType === 3) {
-        const urlRegex = /(https?:\/\/[^\s<>"']+)/g;
-        if (urlRegex.test(node.textContent)) {
-          const span = document.createElement("span");
-          span.innerHTML = node.textContent.replace(
-            urlRegex,
-            '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-          );
-          const frag = document.createDocumentFragment();
-          while (span.firstChild) frag.appendChild(span.firstChild);
-          node.replaceWith(frag);
-        }
-      } else if (node.nodeType === 1 && node.tagName !== "A") {
-        Array.from(node.childNodes).forEach(walk);
-      }
-    };
-    Array.from(tmp.childNodes).forEach(walk);
-    return tmp.innerHTML;
-  };
-
-  const handlePaste = useCallback((e) => {
-    e.preventDefault();
-    const cd = e.clipboardData || window.clipboardData;
-    if (!cd) return;
-
-    const html = cd.getData("text/html");
-    const plain = cd.getData("text/plain");
-
-    let cleaned = "";
-
-    try {
-      if (html && html.trim()) {
-        cleaned = autoLinkUrls(cleanPastedHtml(html));
-      }
-    } catch (err) {
-      console.error("Paste cleaning failed", err);
-    }
-
-    if (!cleaned && plain) {
-      const withLinks = plain.replace(
-        /(https?:\/\/[^\s]+)/g,
-        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
-      );
-      cleaned = withLinks
-        .split(/\n{2,}/)
-        .map(para => para.trim())
-        .filter(Boolean)
-        .map(para => `<p>${para.replace(/\n/g, "<br>")}</p>`)
-        .join("");
-    }
-
-    if (!cleaned) return;
-
-    const el = editorRef.current;
-    if (!el) return;
-    el.focus();
-    document.execCommand("insertHTML", false, cleaned);
-    isInternalUpdate.current = true;
-    onChange(el.innerHTML || "");
-  }, [onChange]);
-
-  const handleAutoStructure = () => {
-    const current = editorRef.current?.innerHTML || "";
-    const structured = autoStructureHtml(current);
-    if (editorRef.current) {
-      editorRef.current.innerHTML = structured;
-      handleInput();
-    }
-  };
-
-  const insertLink = () => {
-    const sel = window.getSelection();
-    const selText = sel?.toString();
-    const text = linkText || selText || linkUrl;
-    const url = linkUrl.startsWith("http") ? linkUrl : `https://${linkUrl}`;
-    if (!selText) {
-      exec("insertHTML", `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`);
-    } else {
-      exec("createLink", url);
-      setTimeout(() => {
-        editorRef.current?.querySelectorAll("a").forEach(a => {
-          if (a.href === url) { a.target = "_blank"; a.rel = "noopener noreferrer"; }
-        });
-        handleInput();
-      }, 10);
-    }
-    setShowLinkModal(false); setLinkUrl(""); setLinkText("");
-  };
-
-  const openLinkModal = () => {
-    const sel = window.getSelection();
-    setLinkText(sel?.toString() || "");
-    setLinkUrl("");
-    setShowLinkModal(true);
-  };
-
-  const openSourceModal = () => {
-    setSourceHtml(editorRef.current?.innerHTML || "");
-    setShowSourceModal(true);
-  };
-  const applySource = () => {
-    if (editorRef.current) { editorRef.current.innerHTML = sourceHtml; handleInput(); }
-    setShowSourceModal(false);
-  };
-
-  const insertImage   = () => { const url = prompt("Enter image URL:"); if (url) exec("insertHTML", `<img src="${url}" alt="" style="max-width:100%;border-radius:8px;margin:8px 0;" />`); };
-  const insertHR      = () => exec("insertHTML", "<hr style='border:none;border-top:2px solid #e2e8f0;margin:24px 0;' />");
-  const insertBlockquote = () => { const sel = window.getSelection(); const text = sel?.toString() || "Quote text here"; exec("insertHTML", `<blockquote style="border-left:4px solid #f59e0b;padding:12px 18px;background:rgba(245,158,11,0.06);border-radius:0 10px 10px 0;font-style:italic;color:#64748b;margin:16px 0;">${text}</blockquote>`); };
-  const insertCallout = () => exec("insertHTML", `<div style="background:rgba(59,130,246,0.07);border-left:4px solid #3b82f6;border-radius:0 12px 12px 0;padding:14px 18px;margin:16px 0;font-size:0.95em;"><strong>💡 Note:</strong> Write your callout here.</div>`);
-  const insertTable   = () => exec("insertHTML", `<table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9em;"><thead><tr><th style="background:#d97706;color:#fff;padding:10px 14px;text-align:left;">Header 1</th><th style="background:#d97706;color:#fff;padding:10px 14px;text-align:left;">Header 2</th><th style="background:#d97706;color:#fff;padding:10px 14px;text-align:left;">Header 3</th></tr></thead><tbody><tr><td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;">Cell</td><td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;">Cell</td><td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;">Cell</td></tr></tbody></table>`);
-
-  const applyHeading     = (tag)  => { exec("formatBlock", tag); setShowHeadingDropdown(false); };
-  const applyFontSize    = (size) => { exec("insertHTML", `<span style="font-size:${size}px">${window.getSelection()?.toString() || ""}</span>`); setShowFontSizeDropdown(false); };
-  const applyFontFamily  = (ff)   => { if (ff) exec("fontName", ff); setShowFontFamilyDropdown(false); };
-  const applyTextColor   = (c)    => { setCurrentColor(c); exec("foreColor", c); setShowColorPicker(false); };
-  const applyBgColor     = (c)    => { setCurrentBgColor(c); exec("hiliteColor", c); setShowBgColorPicker(false); };
-
-  const closeAllDropdowns = () => { setShowHeadingDropdown(false); setShowFontSizeDropdown(false); setShowFontFamilyDropdown(false); setShowColorPicker(false); setShowBgColorPicker(false); };
-
-  const ToolBtn = ({ onClick, title, children, active }) => (
-    <button type="button" onMouseDown={e => { e.preventDefault(); onClick(); }} title={title}
-      style={{ padding:"5px 8px", border:"none", background: active ? "rgba(217,119,6,0.12)" : "transparent", borderRadius:6, cursor:"pointer", fontSize:"13px", color:"#334155", display:"inline-flex", alignItems:"center", justifyContent:"center", minWidth:28, transition:"background 0.15s" }}
-      onMouseEnter={e=>e.currentTarget.style.background="rgba(217,119,6,0.08)"}
-      onMouseLeave={e=>e.currentTarget.style.background=active?"rgba(217,119,6,0.12)":"transparent"}
-    >{children}</button>
-  );
-
-  const ToolBtnDark = ({ onClick, title, children }) => (
-    <button type="button" onMouseDown={e => { e.preventDefault(); onClick(); }} title={title}
-      style={{ padding:"6px 10px", border:"none", background:"transparent", borderRadius:6, cursor:"pointer", fontSize:"13px", color:"#f8fafc", fontWeight:700, transition:"background 0.15s" }}
-      onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.15)"}
-      onMouseLeave={e=>e.currentTarget.style.background="transparent"}
-    >{children}</button>
-  );
-
-  const Divider = () => <span style={{ width:1, height:20, background:"rgba(0,0,0,0.1)", margin:"0 4px", display:"inline-block", verticalAlign:"middle" }} />;
-  const DividerDark = () => <span style={{ width:1, height:18, background:"rgba(255,255,255,0.2)", margin:"0 4px", display:"inline-block", verticalAlign:"middle" }} />;
-
-  const DropdownBtn = ({ label, isOpen, onToggle, children }) => (
-    <div style={{ position:"relative", display:"inline-block" }}>
-      <button type="button" onMouseDown={e => { e.preventDefault(); closeAllDropdowns(); onToggle(); }}
-        style={{ padding:"5px 8px", border:"1px solid rgba(0,0,0,0.1)", background:"#fff", borderRadius:6, cursor:"pointer", fontSize:"12px", color:"#334155", display:"inline-flex", alignItems:"center", gap:3, whiteSpace:"nowrap" }}
-      >{label} <span style={{ fontSize:9, opacity:0.5 }}>▼</span></button>
-      {isOpen && (
-        <div style={{ position:"absolute", top:"100%", left:0, zIndex:1000, background:"#fff", border:"1px solid rgba(0,0,0,0.1)", borderRadius:10, boxShadow:"0 8px 24px rgba(0,0,0,0.12)", minWidth:140, padding:"4px 0", maxHeight:220, overflowY:"auto" }}>
-          {children}
-        </div>
-      )}
-    </div>
-  );
-
-  const DropItem = ({ label, onClick, style = {} }) => (
-    <button type="button" onMouseDown={e => { e.preventDefault(); onClick(); }}
-      style={{ display:"block", width:"100%", padding:"7px 14px", border:"none", background:"transparent", cursor:"pointer", textAlign:"left", fontSize:"13px", color:"#334155", ...style }}
-      onMouseEnter={e=>e.currentTarget.style.background="#f1f5f9"}
-      onMouseLeave={e=>e.currentTarget.style.background="transparent"}
-    >{label}</button>
-  );
-
   return (
-    <div ref={wrapperRef} style={{ border:"1px solid rgba(217,119,6,0.25)", borderRadius:12, overflow:"hidden", background:"#fff", position:"relative" }}>
-      
-      <style>{`
-        @keyframes qeIn { from { opacity: 0; transform: translate(-50%, -80%) scale(0.95); } to { opacity: 1; transform: translate(-50%, -100%) scale(1); } }
-      `}</style>
-
-      {/* Quick Editor Floating Popup */}
-      {quickEditPos && (
-        <div style={{
-          position: "absolute",
-          top: Math.max(8, quickEditPos.top - 8),
-          left: quickEditPos.left,
-          transform: "translate(-50%, -100%)",
-          background: "#0f172a",
-          border: "1px solid rgba(255,255,255,0.1)",
-          padding: "5px 6px",
-          borderRadius: "10px",
-          display: "flex",
-          gap: "2px",
-          zIndex: 99,
-          boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-          alignItems: "center",
-          animation: "qeIn 0.15s cubic-bezier(0.16,1,0.3,1) forwards",
-          pointerEvents: "auto"
-        }} onMouseDown={e => e.preventDefault()}>
-          <ToolBtnDark onClick={()=>exec("bold")} title="Bold">B</ToolBtnDark>
-          <ToolBtnDark onClick={()=>exec("italic")} title="Italic">I</ToolBtnDark>
-          <ToolBtnDark onClick={()=>exec("underline")} title="Underline">U</ToolBtnDark>
-          <DividerDark />
-          <ToolBtnDark onClick={()=>applyHeading("h2")} title="Heading 2">H2</ToolBtnDark>
-          <ToolBtnDark onClick={()=>applyHeading("h3")} title="Heading 3">H3</ToolBtnDark>
-          <ToolBtnDark onClick={insertBlockquote} title="Quote">❝</ToolBtnDark>
-          <DividerDark />
-          <ToolBtnDark onClick={openLinkModal} title="Insert Link">🔗</ToolBtnDark>
-        </div>
-      )}
-
-      {/* Toolbar */}
-      <div style={{ background:"linear-gradient(135deg,#fefce8,#fef9c3)", borderBottom:"1px solid rgba(217,119,6,0.15)", padding:"6px 10px", display:"flex", flexWrap:"wrap", gap:3, alignItems:"center" }}>
-
-        <DropdownBtn label="Heading" isOpen={showHeadingDropdown} onToggle={()=>setShowHeadingDropdown(v=>!v)}>
-          <DropItem label="Paragraph"   onClick={()=>applyHeading("p")} />
-          <DropItem label="Heading 1"   onClick={()=>applyHeading("h1")} style={{ fontFamily:"serif", fontSize:18, fontWeight:900 }} />
-          <DropItem label="Heading 2"   onClick={()=>applyHeading("h2")} style={{ fontFamily:"serif", fontSize:16, fontWeight:800 }} />
-          <DropItem label="Heading 3"   onClick={()=>applyHeading("h3")} style={{ fontSize:14, fontWeight:700 }} />
-          <DropItem label="Heading 4"   onClick={()=>applyHeading("h4")} style={{ fontSize:13, fontWeight:700 }} />
-          <DropItem label="Preformatted" onClick={()=>applyHeading("pre")} style={{ fontFamily:"monospace" }} />
-        </DropdownBtn>
-
-        <DropdownBtn label="Font" isOpen={showFontFamilyDropdown} onToggle={()=>setShowFontFamilyDropdown(v=>!v)}>
-          {FONT_FAMILIES.map(ff => <DropItem key={ff.value} label={ff.label} onClick={()=>applyFontFamily(ff.value)} style={{ fontFamily:ff.value||"inherit" }} />)}
-        </DropdownBtn>
-
-        <DropdownBtn label="Size" isOpen={showFontSizeDropdown} onToggle={()=>setShowFontSizeDropdown(v=>!v)}>
-          {FONT_SIZES.map(sz => <DropItem key={sz} label={`${sz}px`} onClick={()=>applyFontSize(sz)} style={{ fontSize:Math.min(parseInt(sz),16) }} />)}
-        </DropdownBtn>
-
-        <Divider />
-
-        <ToolBtn onClick={()=>exec("bold")}          title="Bold">          <strong>B</strong></ToolBtn>
-        <ToolBtn onClick={()=>exec("italic")}        title="Italic">        <em>I</em></ToolBtn>
-        <ToolBtn onClick={()=>exec("underline")}     title="Underline">     <u>U</u></ToolBtn>
-        <ToolBtn onClick={()=>exec("strikeThrough")} title="Strikethrough"> <s>S</s></ToolBtn>
-        <ToolBtn onClick={()=>exec("superscript")}   title="Superscript">   x²</ToolBtn>
-        <ToolBtn onClick={()=>exec("subscript")}     title="Subscript">     x₂</ToolBtn>
-
-        <Divider />
-
-        {/* Text Color */}
-        <div style={{ position:"relative" }}>
-          <button type="button" onMouseDown={e=>{e.preventDefault();setShowColorPicker(v=>!v);setShowBgColorPicker(false);closeAllDropdowns();}} title="Text Color"
-            style={{ padding:"5px 8px", border:"1px solid rgba(0,0,0,0.1)", background:"#fff", borderRadius:6, cursor:"pointer", fontSize:12, display:"flex", alignItems:"center", gap:3 }}>
-            <span style={{ fontWeight:700, color:currentColor }}>A</span>
-            <span style={{ width:14, height:3, background:currentColor, borderRadius:2, display:"block" }} />
-          </button>
-          {showColorPicker && (
-            <div style={{ position:"absolute", top:"100%", left:0, zIndex:1000, background:"#fff", border:"1px solid rgba(0,0,0,0.1)", borderRadius:10, boxShadow:"0 8px 24px rgba(0,0,0,0.12)", padding:10, width:150 }}>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:5, marginBottom:8 }}>
-                {PRESET_COLORS.map(c=><button key={c} type="button" onMouseDown={e=>{e.preventDefault();applyTextColor(c);}} style={{ width:22, height:22, background:c, border:"2px solid rgba(0,0,0,0.1)", borderRadius:4, cursor:"pointer" }}/>)}
-              </div>
-              <input type="color" value={currentColor} onChange={e=>setCurrentColor(e.target.value)} onBlur={e=>applyTextColor(e.target.value)} style={{ width:"100%", height:28, cursor:"pointer", border:"1px solid #e2e8f0", borderRadius:6 }}/>
-            </div>
-          )}
-        </div>
-
-        {/* Highlight */}
-        <div style={{ position:"relative" }}>
-          <button type="button" onMouseDown={e=>{e.preventDefault();setShowBgColorPicker(v=>!v);setShowColorPicker(false);closeAllDropdowns();}} title="Highlight Color"
-            style={{ padding:"5px 8px", border:"1px solid rgba(0,0,0,0.1)", background:"#fff", borderRadius:6, cursor:"pointer", fontSize:12, display:"flex", alignItems:"center", gap:3 }}>
-            <span style={{ fontWeight:700, background:currentBgColor, padding:"0 3px" }}>H</span>
-          </button>
-          {showBgColorPicker && (
-            <div style={{ position:"absolute", top:"100%", left:0, zIndex:1000, background:"#fff", border:"1px solid rgba(0,0,0,0.1)", borderRadius:10, boxShadow:"0 8px 24px rgba(0,0,0,0.12)", padding:10, width:150 }}>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:5, marginBottom:8 }}>
-                {PRESET_COLORS.map(c=><button key={c} type="button" onMouseDown={e=>{e.preventDefault();applyBgColor(c);}} style={{ width:22, height:22, background:c, border:"2px solid rgba(0,0,0,0.1)", borderRadius:4, cursor:"pointer" }}/>)}
-              </div>
-              <input type="color" value={currentBgColor} onChange={e=>setCurrentBgColor(e.target.value)} onBlur={e=>applyBgColor(e.target.value)} style={{ width:"100%", height:28, cursor:"pointer", border:"1px solid #e2e8f0", borderRadius:6 }}/>
-            </div>
-          )}
-        </div>
-
-        <Divider />
-
-        <ToolBtn onClick={()=>exec("justifyLeft")}   title="Align Left">⬜◀</ToolBtn>
-        <ToolBtn onClick={()=>exec("justifyCenter")} title="Center">≡</ToolBtn>
-        <ToolBtn onClick={()=>exec("justifyRight")}  title="Align Right">▶⬜</ToolBtn>
-        <ToolBtn onClick={()=>exec("justifyFull")}   title="Justify">☰</ToolBtn>
-
-        <Divider />
-
-        <ToolBtn onClick={()=>exec("insertUnorderedList")} title="Bullet List">• ≡</ToolBtn>
-        <ToolBtn onClick={()=>exec("insertOrderedList")}   title="Numbered List">1. ≡</ToolBtn>
-        <ToolBtn onClick={()=>exec("outdent")}             title="Decrease Indent">⇤</ToolBtn>
-        <ToolBtn onClick={()=>exec("indent")}              title="Increase Indent">⇥</ToolBtn>
-
-        <Divider />
-
-        <ToolBtn onClick={openLinkModal}          title="Insert Link">🔗</ToolBtn>
-        <ToolBtn onClick={()=>exec("unlink")}     title="Remove Link">🚫🔗</ToolBtn>
-        <ToolBtn onClick={insertImage}            title="Insert Image">🖼</ToolBtn>
-
-        <Divider />
-
-        <ToolBtn onClick={insertBlockquote} title="Blockquote">❝</ToolBtn>
-        <ToolBtn onClick={insertCallout}    title="Callout Box">💡</ToolBtn>
-        <ToolBtn onClick={insertTable}      title="Insert Table">⊞</ToolBtn>
-        <ToolBtn onClick={insertHR}         title="Horizontal Rule">─</ToolBtn>
-
-        <Divider />
-
-        <ToolBtn onClick={()=>exec("removeFormat")} title="Clear Formatting">✕ fmt</ToolBtn>
-        <ToolBtn onClick={openSourceModal}          title="HTML Source">{"</>"}</ToolBtn>
-
-        <Divider />
-
-        <ToolBtn onClick={()=>exec("undo")} title="Undo">↩</ToolBtn>
-        <ToolBtn onClick={()=>exec("redo")} title="Redo">↪</ToolBtn>
-
-        <Divider />
-
-        {/* Auto-Structure button */}
-        <button type="button" onMouseDown={e=>{e.preventDefault();handleAutoStructure();}} title="Auto-fix spacing and detect headings"
-          style={{ padding:"5px 10px", border:"1px solid rgba(16,185,129,0.3)", background:"rgba(16,185,129,0.07)", borderRadius:6, cursor:"pointer", fontSize:"12px", color:"#065f46", fontWeight:700, display:"inline-flex", alignItems:"center", gap:4 }}>
-          ✨ Auto-Fix
-        </button>
-      </div>
-
-      {/* Editable Area */}
-      <div
-        ref={editorRef}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={handleInput}
-        onBlur={handleInput}
-        onPaste={handlePaste}
-        onScroll={handleSelection}
-        style={{ minHeight:320, padding:"18px 20px", outline:"none", fontSize:15, lineHeight:1.8, color:"#1e293b", fontFamily:"'DM Sans',sans-serif", overflowY:"auto", maxHeight:540 }}
-      />
-
-      {/* Word Count */}
-      <div style={{ padding:"6px 14px", borderTop:"1px solid rgba(0,0,0,0.05)", fontSize:11, color:"#94a3b8", background:"#fafafa", display:"flex", justifyContent:"space-between" }}>
-        <span>Rich Text · Select text for Quick Formatting · Paste from Word/ChatGPT supported</span>
-        <span>{(()=>{ const txt=editorRef.current?.innerText||""; const words=txt.trim().split(/\s+/).filter(Boolean).length; const mins=Math.max(1,Math.round(words/200)); return words>0?`${words.toLocaleString()} words · ~${mins} min read`:"Start writing…"; })()}</span>
-      </div>
-
-      {/* Link Modal */}
-      {showLinkModal && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.4)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <div style={{ background:"#fff", borderRadius:16, padding:24, width:"min(420px,90vw)", boxShadow:"0 20px 60px rgba(0,0,0,0.2)" }}>
-            <h3 style={{ margin:"0 0 16px", fontSize:15, fontWeight:800, color:"#0b1437" }}>🔗 Insert Hyperlink</h3>
-            <label style={{ fontSize:12, fontWeight:700, color:"#64748b", display:"block", marginBottom:4 }}>Link Text (optional)</label>
-            <input value={linkText} onChange={e=>setLinkText(e.target.value)} placeholder="Display text" style={{ width:"100%", padding:"9px 12px", border:"1px solid #e2e8f0", borderRadius:8, marginBottom:12, fontSize:14, boxSizing:"border-box" }}/>
-            <label style={{ fontSize:12, fontWeight:700, color:"#64748b", display:"block", marginBottom:4 }}>URL *</label>
-            <input value={linkUrl} onChange={e=>setLinkUrl(e.target.value)} placeholder="https://example.com" autoFocus style={{ width:"100%", padding:"9px 12px", border:"1px solid #e2e8f0", borderRadius:8, marginBottom:16, fontSize:14, boxSizing:"border-box" }} onKeyDown={e=>e.key==="Enter"&&insertLink()}/>
-            <div style={{ display:"flex", gap:8, justifyContent:"flex-end" }}>
-              <button onClick={()=>{setShowLinkModal(false);setLinkUrl("");setLinkText("");}} style={{ padding:"8px 16px", border:"1px solid #e2e8f0", borderRadius:8, background:"#f8fafc", cursor:"pointer", fontWeight:600 }}>Cancel</button>
-              <button onClick={insertLink} style={{ padding:"8px 20px", border:"none", borderRadius:8, background:"linear-gradient(135deg,#d97706,#f59e0b)", color:"#fff", cursor:"pointer", fontWeight:700 }}>Insert Link</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Source Modal */}
-      {showSourceModal && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <div style={{ background:"#fff", borderRadius:16, padding:24, width:"min(700px,95vw)", boxShadow:"0 20px 60px rgba(0,0,0,0.2)" }}>
-            <h3 style={{ margin:"0 0 12px", fontSize:15, fontWeight:800, color:"#0b1437" }}>{"</> HTML Source"}</h3>
-            <textarea value={sourceHtml} onChange={e=>setSourceHtml(e.target.value)} style={{ width:"100%", height:320, fontFamily:"monospace", fontSize:12, padding:12, border:"1px solid #e2e8f0", borderRadius:8, resize:"vertical", boxSizing:"border-box", lineHeight:1.5 }}/>
-            <div style={{ display:"flex", gap:8, justifyContent:"flex-end", marginTop:12 }}>
-              <button onClick={()=>setShowSourceModal(false)} style={{ padding:"8px 16px", border:"1px solid #e2e8f0", borderRadius:8, background:"#f8fafc", cursor:"pointer", fontWeight:600 }}>Cancel</button>
-              <button onClick={applySource} style={{ padding:"8px 20px", border:"none", borderRadius:8, background:"linear-gradient(135deg,#0f766e,#14b8a6)", color:"#fff", cursor:"pointer", fontWeight:700 }}>Apply HTML</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    <div
+      ref={ref}
+      contentEditable
+      suppressContentEditableWarning
+      onInput={() => {
+        skipUpdate.current = true;
+        onChange(ref.current?.innerHTML || "");
+        skipUpdate.current = false;
+      }}
+      style={{ minHeight: 400, maxHeight: 600, padding: "18px 20px", border: "1px solid rgba(217,119,6,0.25)", borderRadius: 12, outline: "none", fontSize: 15, lineHeight: 1.8, color: "#1e293b", fontFamily: "'DM Sans', sans-serif", overflowY: "auto" }}
+    />
   );
 }
 
@@ -622,7 +76,6 @@ export default function AdminNews() {
   const [editing, setEditing]           = useState(null);
   const [mobileView, setMobileView]     = useState("list");
 
-  // Form fields
   const [title, setTitle]               = useState("");
   const [authorName, setAuthorName]     = useState("");
   const [slug, setSlug]                 = useState("");
@@ -641,12 +94,11 @@ export default function AdminNews() {
   const [isBreaking, setIsBreaking]     = useState(false);
   const [activeTab, setActiveTab]       = useState("content");
 
-  // Comments
   const [comments, setComments]         = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [showComments, setShowComments] = useState(false);
 
-  const showMsg = (text, type = "info") => { setMsg(text); setMsgType(type); setTimeout(()=>setMsg(""),4000); };
+  const showMsg = (text, type = "info") => { setMsg(text); setMsgType(type); setTimeout(() => setMsg(""), 4000); };
 
   const resetForm = () => {
     setEditing(null);
@@ -696,7 +148,7 @@ export default function AdminNews() {
     setCanonicalUrl(data.canonical_url || ""); setCoverUrl(data.cover_image_url || "");
     setCoverPath(data.cover_image_path || "");
     const tagArr = data.tags || [];
-    const catTag = tagArr.find(t => CATEGORIES.map(c=>c.value).includes(t));
+    const catTag = tagArr.find(t => CATEGORIES.map(c => c.value).includes(t));
     setCategory(catTag || "");
     setIsBreaking(tagArr.includes("breaking"));
     setTags(tagArr.filter(t => t !== catTag && t !== "breaking").join(", "));
@@ -706,7 +158,7 @@ export default function AdminNews() {
   };
 
   const buildTagsArray = () => {
-    const base = tags.split(",").map(t=>t.trim().toLowerCase()).filter(Boolean);
+    const base = tags.split(",").map(t => t.trim().toLowerCase()).filter(Boolean);
     if (category) base.unshift(category);
     if (isBreaking && !base.includes("breaking")) base.push("breaking");
     return [...new Set(base)];
@@ -823,9 +275,9 @@ export default function AdminNews() {
     finally { setUploading(false); }
   };
 
-  const onPinComment  = async (id) => { const {error} = await supabase.rpc("news_pin_comment", {p_comment_id:id, p_post_id:editing?.id}); if(!error){ await loadComments(editing.id); showMsg("Pinned 📌","success"); } };
-  const onUnpinComment= async ()  => { await supabase.from("news_comments").update({is_pinned:false}).eq("post_id", editing?.id); await loadComments(editing.id); showMsg("Unpinned","success"); };
-  const onDeleteComment=async(id) => { if(!confirm("Delete comment?")) return; await supabase.from("news_comments").delete().eq("id",id); await loadComments(editing.id); showMsg("Comment deleted","success"); };
+  const onPinComment   = async (id) => { const {error} = await supabase.rpc("news_pin_comment", {p_comment_id:id, p_post_id:editing?.id}); if(!error){ await loadComments(editing.id); showMsg("Pinned 📌","success"); } };
+  const onUnpinComment = async ()   => { await supabase.from("news_comments").update({is_pinned:false}).eq("post_id", editing?.id); await loadComments(editing.id); showMsg("Unpinned","success"); };
+  const onDeleteComment= async (id) => { if(!confirm("Delete comment?")) return; await supabase.from("news_comments").delete().eq("id",id); await loadComments(editing.id); showMsg("Comment deleted","success"); };
 
   const filteredPosts = useMemo(() => {
     let r = posts;
@@ -849,7 +301,7 @@ export default function AdminNews() {
   const scheduledDisplay = (dt) => dt ? new Date(dt).toLocaleString("en-US", { month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" }) : "";
 
   const TabBtn = ({ id, label }) => (
-    <button onClick={()=>setActiveTab(id)}
+    <button onClick={() => setActiveTab(id)}
       style={{ padding:"7px 16px", border:"none", borderRadius:8, background:activeTab===id?"linear-gradient(135deg,#d97706,#f59e0b)":"transparent", color:activeTab===id?"#fff":"#64748b", fontWeight:700, fontSize:"0.78rem", cursor:"pointer", transition:"all 0.2s" }}>
       {label}
     </button>
@@ -859,7 +311,6 @@ export default function AdminNews() {
     <div style={{ padding:16, maxWidth:1400, margin:"0 auto" }}>
       <style>{css}</style>
 
-      {/* Header */}
       <div className="an-header">
         <div className="an-header-icon">📰</div>
         <div>
@@ -868,47 +319,43 @@ export default function AdminNews() {
         </div>
       </div>
 
-      {/* Toast */}
       {msg && (
         <div className={`an-msg an-msg-${msgType}`}>
           <span>{msg}</span>
-          <button className="an-msg-close" onClick={()=>setMsg("")}>×</button>
+          <button className="an-msg-close" onClick={() => setMsg("")}>×</button>
         </div>
       )}
 
-      {/* Mobile tab bar */}
       <div className="an-mobile-tabs">
-        <button className={`an-mtab${mobileView==="list"?" an-mtab-active":""}`} onClick={()=>setMobileView("list")}>📋 Articles ({posts.length})</button>
-        <button className={`an-mtab${mobileView==="editor"?" an-mtab-active":""}`} onClick={()=>setMobileView("editor")}>✏️ Editor</button>
+        <button className={`an-mtab${mobileView==="list"?" an-mtab-active":""}`} onClick={() => setMobileView("list")}>📋 Articles ({posts.length})</button>
+        <button className={`an-mtab${mobileView==="editor"?" an-mtab-active":""}`} onClick={() => setMobileView("editor")}>✏️ Editor</button>
       </div>
 
       <div className="an-grid">
         {/* ── LEFT: LIST ── */}
         <div className={`an-card an-list-card${mobileView==="editor"?" an-hide":""}`}>
-          {/* Stats bar */}
           <div className="an-stats-bar">
             {[["All", stats.total, "all", "#64748b"],
               ["Published", stats.published, "published", "#15803d"],
               ["Draft", stats.draft, "draft", "#475569"],
               ["Scheduled", stats.scheduled, "scheduled", "#b45309"]].map(([label, count, filter, color]) => (
-              <button key={filter} onClick={()=>setListFilter(filter)} className={`an-stat-btn${listFilter===filter?" an-stat-btn-active":""}`} style={{"--sc": color}}>
+              <button key={filter} onClick={() => setListFilter(filter)} className={`an-stat-btn${listFilter===filter?" an-stat-btn-active":""}`} style={{"--sc": color}}>
                 <span className="an-stat-n" style={{color: listFilter===filter ? color : "#64748b"}}>{count}</span>
                 <span className="an-stat-l">{label}</span>
               </button>
             ))}
           </div>
 
-          {/* Search */}
           <div className="an-list-search-wrap">
-            <input className="an-list-search" placeholder="Search articles…" value={listSearch} onChange={e=>setListSearch(e.target.value)}/>
-            {listSearch ? <button className="an-list-search-clear" onClick={()=>setListSearch("")}>✕</button> : <span className="an-list-search-icon">🔍</span>}
+            <input className="an-list-search" placeholder="Search articles…" value={listSearch} onChange={e => setListSearch(e.target.value)}/>
+            {listSearch ? <button className="an-list-search-clear" onClick={() => setListSearch("")}>✕</button> : <span className="an-list-search-icon">🔍</span>}
           </div>
 
           <div className="an-list-header">
             <span className="an-card-title">Articles <span className="an-count">{filteredPosts.length}</span></span>
             <div style={{display:"flex", gap:6}}>
               <button onClick={load} className="an-btn an-btn-ghost" title="Refresh">↻</button>
-              <button onClick={()=>{resetForm(); setMobileView("editor");}} className="an-btn an-btn-primary">+ New</button>
+              <button onClick={() => { resetForm(); setMobileView("editor"); }} className="an-btn an-btn-primary">+ New</button>
             </div>
           </div>
 
@@ -920,10 +367,10 @@ export default function AdminNews() {
             <div className="an-list-scroll">
               {filteredPosts.map(p => {
                 const psc = statusColors[p.status] || statusColors.draft;
-                const pCat = (p.tags || []).find(t => CATEGORIES.map(c=>c.value).filter(Boolean).includes(t));
+                const pCat = (p.tags || []).find(t => CATEGORIES.map(c => c.value).filter(Boolean).includes(t));
                 const pBreaking = (p.tags || []).includes("breaking");
                 return (
-                  <div key={p.id} className={`an-post-item${editing?.id===p.id?" an-post-item-active":""}`} onClick={()=>onPickEdit(p)}>
+                  <div key={p.id} className={`an-post-item${editing?.id===p.id?" an-post-item-active":""}`} onClick={() => onPickEdit(p)}>
                     {p.cover_image_url && <div className="an-post-thumb"><img src={p.cover_image_url} alt=""/></div>}
                     <div className="an-post-body">
                       <div className="an-post-top">
@@ -939,15 +386,14 @@ export default function AdminNews() {
                       <div className="an-post-slug">/news/{p.slug}</div>
                       {p.status==="scheduled" && p.scheduled_at && <div style={{fontSize:10, color:"#b45309", fontWeight:700, marginTop:3}}>🕐 {scheduledDisplay(p.scheduled_at)}</div>}
                       {(p.view_count||0)>0 && <div style={{fontSize:10, color:"#94a3b8", marginTop:2}}>👁 {p.view_count.toLocaleString()} views</div>}
-                      {/* Quick status toggle */}
                       {p.status==="draft" && (
-                        <button onClick={e=>{e.stopPropagation(); onQuickStatus(p, "published");}}
+                        <button onClick={e => { e.stopPropagation(); onQuickStatus(p, "published"); }}
                           style={{marginTop:6, padding:"3px 10px", border:"1px solid rgba(22,163,74,0.3)", borderRadius:20, background:"rgba(22,163,74,0.07)", color:"#15803d", fontSize:"0.62rem", fontWeight:800, cursor:"pointer"}}>
                           ⚡ Quick Publish
                         </button>
                       )}
                       {p.status==="published" && (
-                        <button onClick={e=>{e.stopPropagation(); onQuickStatus(p, "draft");}}
+                        <button onClick={e => { e.stopPropagation(); onQuickStatus(p, "draft"); }}
                           style={{marginTop:6, padding:"3px 10px", border:"1px solid rgba(100,116,139,0.2)", borderRadius:20, background:"rgba(100,116,139,0.07)", color:"#475569", fontSize:"0.62rem", fontWeight:800, cursor:"pointer"}}>
                           ↩ Move to Draft
                         </button>
@@ -973,10 +419,10 @@ export default function AdminNews() {
                 <>
                   <button className="an-btn an-btn-ghost" onClick={onDuplicate}>⧉ Duplicate</button>
                   <button className="an-btn" style={{background:"rgba(245,158,11,0.1)", color:"#b45309", border:"1px solid rgba(245,158,11,0.25)"}}
-                    onClick={()=>setShowComments(v=>!v)}>
+                    onClick={() => setShowComments(v => !v)}>
                     💬 Comments{comments.length>0 ? ` (${comments.length})` : ""}
                   </button>
-                  <button className="an-btn an-btn-danger" onClick={()=>onDelete(editing)}>🗑 Delete</button>
+                  <button className="an-btn an-btn-danger" onClick={() => onDelete(editing)}>🗑 Delete</button>
                 </>
               )}
               <button className="an-btn an-btn-save" onClick={onSave} disabled={uploading}>
@@ -985,7 +431,6 @@ export default function AdminNews() {
             </div>
           </div>
 
-          {/* Comments Panel */}
           {showComments && editing && (
             <div style={{background:"rgba(245,158,11,0.04)", border:"1px solid rgba(245,158,11,0.2)", borderRadius:14, padding:16, marginBottom:16}}>
               <div style={{fontSize:"0.72rem", fontWeight:800, color:"#92400e", textTransform:"uppercase", letterSpacing:"1.5px", marginBottom:12}}>📌 Comment Management</div>
@@ -1011,10 +456,10 @@ export default function AdminNews() {
                         </div>
                         <div style={{display:"flex", gap:5, flexShrink:0}}>
                           {!c.is_pinned
-                            ? <button onClick={()=>onPinComment(c.id)} style={{padding:"3px 10px", border:"1px solid rgba(245,158,11,0.25)", borderRadius:20, background:"rgba(245,158,11,0.07)", color:"#92400e", fontSize:"0.65rem", fontWeight:800, cursor:"pointer"}}>📌 Pin</button>
+                            ? <button onClick={() => onPinComment(c.id)} style={{padding:"3px 10px", border:"1px solid rgba(245,158,11,0.25)", borderRadius:20, background:"rgba(245,158,11,0.07)", color:"#92400e", fontSize:"0.65rem", fontWeight:800, cursor:"pointer"}}>📌 Pin</button>
                             : <button onClick={onUnpinComment} style={{padding:"3px 10px", border:"1px solid rgba(100,116,139,0.2)", borderRadius:20, background:"rgba(100,116,139,0.07)", color:"#475569", fontSize:"0.65rem", fontWeight:800, cursor:"pointer"}}>Unpin</button>
                           }
-                          <button onClick={()=>onDeleteComment(c.id)} style={{padding:"3px 10px", border:"1px solid rgba(239,68,68,0.2)", borderRadius:20, background:"rgba(239,68,68,0.07)", color:"#dc2626", fontSize:"0.65rem", fontWeight:800, cursor:"pointer"}}>🗑</button>
+                          <button onClick={() => onDeleteComment(c.id)} style={{padding:"3px 10px", border:"1px solid rgba(239,68,68,0.2)", borderRadius:20, background:"rgba(239,68,68,0.07)", color:"#dc2626", fontSize:"0.65rem", fontWeight:800, cursor:"pointer"}}>🗑</button>
                         </div>
                       </div>
                       <p style={{margin:0, fontSize:"0.85rem", color:"#374151", lineHeight:1.6}}>{c.body}</p>
@@ -1029,27 +474,26 @@ export default function AdminNews() {
             </div>
           )}
 
-          {/* Form */}
           <div className="an-form">
             <div className="an-section-title">📝 Basic Info</div>
             <div className="an-grid2">
               <div className="an-field">
                 <label className="an-label">Title *</label>
-                <input className="an-input" value={title} onChange={e=>setTitle(e.target.value)} placeholder="Enter article title…"/>
+                <input className="an-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter article title…"/>
               </div>
               <div className="an-field">
                 <label className="an-label">Author Name <span className="an-label-opt">(optional)</span></label>
-                <input className="an-input" value={authorName} onChange={e=>setAuthorName(e.target.value)} placeholder="e.g., Muhammad Zubair Afridi"/>
+                <input className="an-input" value={authorName} onChange={e => setAuthorName(e.target.value)} placeholder="e.g., Muhammad Zubair Afridi"/>
               </div>
               <div className="an-field">
                 <label className="an-label">Slug (SEO URL)</label>
-                <input className="an-input" value={slug} onChange={e=>setSlug(e.target.value)}/>
+                <input className="an-input" value={slug} onChange={e => setSlug(e.target.value)}/>
                 {previewUrl && <div className="an-hint">Preview: <strong>{previewUrl}</strong></div>}
               </div>
               <div className="an-field">
                 <label className="an-label">Status</label>
                 <div style={{display:"flex", alignItems:"center", gap:8}}>
-                  <select className="an-input" value={status} onChange={e=>setStatus(e.target.value)} style={{flex:1}}>
+                  <select className="an-input" value={status} onChange={e => setStatus(e.target.value)} style={{flex:1}}>
                     <option value="draft">📝 Draft</option>
                     <option value="published">✅ Published</option>
                     <option value="scheduled">🕐 Scheduled</option>
@@ -1059,81 +503,92 @@ export default function AdminNews() {
                 {status === "scheduled" && (
                   <div style={{marginTop:10}}>
                     <label className="an-label">📅 Publish Date & Time *</label>
-                    <input type="datetime-local" className="an-input" value={scheduledAt} onChange={e=>setScheduledAt(e.target.value)}
+                    <input type="datetime-local" className="an-input" value={scheduledAt} onChange={e => setScheduledAt(e.target.value)}
                       min={new Date(Date.now()+60000).toISOString().slice(0,16)}/>
                     {scheduledAt && <div className="an-hint" style={{color:"#b45309", fontWeight:700}}>🕐 Will publish: {scheduledDisplay(scheduledAt)}</div>}
                   </div>
                 )}
               </div>
-              {/* Category */}
               <div className="an-field">
                 <label className="an-label">Category</label>
-                <select className="an-input" value={category} onChange={e=>setCategory(e.target.value)}>
+                <select className="an-input" value={category} onChange={e => setCategory(e.target.value)}>
                   {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                 </select>
               </div>
-              {/* Breaking News */}
               <div className="an-field" style={{justifyContent:"flex-end"}}>
                 <label className="an-label">Breaking News</label>
                 <label style={{display:"flex", alignItems:"center", gap:10, padding:"9px 12px", border:`1.5px solid ${isBreaking?"rgba(239,68,68,0.4)":"rgba(217,119,6,0.15)"}`, borderRadius:10, background:isBreaking?"rgba(239,68,68,0.05)":"#fff", cursor:"pointer", transition:"all 0.2s"}}>
-                  <input type="checkbox" checked={isBreaking} onChange={e=>setIsBreaking(e.target.checked)} style={{width:16, height:16, accentColor:"#ef4444", cursor:"pointer"}}/>
+                  <input type="checkbox" checked={isBreaking} onChange={e => setIsBreaking(e.target.checked)} style={{width:16, height:16, accentColor:"#ef4444", cursor:"pointer"}}/>
                   <span style={{fontSize:"0.85rem", fontWeight:700, color:isBreaking?"#dc2626":"#64748b"}}>
                     {isBreaking ? "🔴 Breaking News Active" : "Mark as Breaking News"}
                   </span>
                 </label>
               </div>
-              {/* Tags */}
               <div className="an-field an-col-2">
                 <label className="an-label">Tags <span className="an-label-opt">(comma separated)</span></label>
-                <input className="an-input" value={tags} onChange={e=>setTags(e.target.value)} placeholder="election, policy, update…"/>
+                <input className="an-input" value={tags} onChange={e => setTags(e.target.value)} placeholder="election, policy, update…"/>
                 {tags && (
                   <div style={{display:"flex", flexWrap:"wrap", gap:5, marginTop:6}}>
-                    {tags.split(",").map(t=>t.trim()).filter(Boolean).map(t=>(
+                    {tags.split(",").map(t => t.trim()).filter(Boolean).map(t => (
                       <span key={t} style={{background:"rgba(217,119,6,0.08)", color:"#92400e", border:"1px solid rgba(217,119,6,0.2)", padding:"2px 9px", borderRadius:20, fontSize:11, fontWeight:700}}>#{t}</span>
                     ))}
                   </div>
                 )}
               </div>
-              {/* Excerpt */}
               <div className="an-field an-col-2">
                 <label className="an-label">Excerpt <span className="an-label-opt">(short preview)</span></label>
-                <textarea className="an-input an-textarea" value={excerpt} onChange={e=>setExcerpt(e.target.value)} rows={2} placeholder="Brief summary for listings…"/>
+                <textarea className="an-input an-textarea" value={excerpt} onChange={e => setExcerpt(e.target.value)} rows={2} placeholder="Brief summary for listings…"/>
               </div>
             </div>
 
             {/* Tabs */}
             <div style={{display:"flex", gap:4, margin:"20px 0 12px", padding:"4px", background:"#fef3c7", borderRadius:10, width:"fit-content"}}>
-              <TabBtn id="content" label="📝 Content"/>
+              <TabBtn id="content" label="📝 HTML"/>
+              <TabBtn id="preview" label="👁 Preview"/>
               <TabBtn id="seo"     label="🔍 SEO"/>
               <TabBtn id="cover"   label="🖼 Cover"/>
             </div>
 
-            {/* Content Tab */}
+            {/* ── Content (HTML) Tab ── */}
             {activeTab === "content" && (
               <div>
-                <div className="an-section-title">Rich Text Content *</div>
-                <RichEditor value={contentHtml} onChange={setContentHtml}/>
+                <div className="an-section-title">HTML Content *</div>
+                <textarea
+                  className="an-input an-textarea"
+                  value={contentHtml}
+                  onChange={e => setContentHtml(e.target.value)}
+                  placeholder="<p>Write your content in HTML…</p>"
+                  style={{ minHeight: 400, fontFamily: "monospace", fontSize: 13, lineHeight: 1.6, resize: "vertical" }}
+                />
               </div>
             )}
 
-            {/* SEO Tab */}
+            {/* ── Preview Tab ── */}
+            {activeTab === "preview" && (
+              <div>
+                <div className="an-section-title">👁 Preview (editable — changes sync back to HTML)</div>
+                <HtmlPreview value={contentHtml} onChange={setContentHtml} />
+              </div>
+            )}
+
+            {/* ── SEO Tab ── */}
             {activeTab === "seo" && (
               <div>
                 <div className="an-section-title">🔍 SEO Settings</div>
                 <div className="an-grid2">
                   <div className="an-field">
                     <label className="an-label">Meta Title <span className="an-label-opt">(optional)</span></label>
-                    <input className="an-input" value={metaTitle} onChange={e=>setMetaTitle(e.target.value)} placeholder="Defaults to article title"/>
+                    <input className="an-input" value={metaTitle} onChange={e => setMetaTitle(e.target.value)} placeholder="Defaults to article title"/>
                     <div className="an-hint">{metaTitle.length}/60 chars recommended</div>
                   </div>
                   <div className="an-field">
                     <label className="an-label">Meta Description <span className="an-label-opt">(optional)</span></label>
-                    <textarea className="an-input an-textarea" value={metaDescription} onChange={e=>setMetaDescription(e.target.value)} rows={3} placeholder="Defaults to excerpt (160 chars ideal)"/>
+                    <textarea className="an-input an-textarea" value={metaDescription} onChange={e => setMetaDescription(e.target.value)} rows={3} placeholder="Defaults to excerpt (160 chars ideal)"/>
                     <div className="an-hint">{metaDescription.length}/160 chars recommended</div>
                   </div>
                   <div className="an-field an-col-2">
                     <label className="an-label">Canonical URL <span className="an-label-opt">(optional)</span></label>
-                    <input className="an-input" value={canonicalUrl} onChange={e=>setCanonicalUrl(e.target.value)} placeholder="https://…"/>
+                    <input className="an-input" value={canonicalUrl} onChange={e => setCanonicalUrl(e.target.value)} placeholder="https://…"/>
                   </div>
                 </div>
                 <div style={{marginTop:16, padding:16, background:"#fff", border:"1px solid #e2e8f0", borderRadius:12}}>
@@ -1145,7 +600,7 @@ export default function AdminNews() {
               </div>
             )}
 
-            {/* Cover Tab */}
+            {/* ── Cover Tab ── */}
             {activeTab === "cover" && (
               <div>
                 <div className="an-section-title">🖼 Cover Image</div>
@@ -1156,9 +611,9 @@ export default function AdminNews() {
                       <div className="an-cover-actions">
                         <label className="an-btn an-btn-ghost" style={{cursor:"pointer"}}>
                           ↑ Replace
-                          <input type="file" accept="image/*" disabled={uploading} style={{display:"none"}} onChange={e=>onUploadCover(e.target.files?.[0])}/>
+                          <input type="file" accept="image/*" disabled={uploading} style={{display:"none"}} onChange={e => onUploadCover(e.target.files?.[0])}/>
                         </label>
-                        <button className="an-btn an-btn-danger" onClick={()=>{setCoverUrl(""); setCoverPath("");}}>✕ Remove</button>
+                        <button className="an-btn an-btn-danger" onClick={() => { setCoverUrl(""); setCoverPath(""); }}>✕ Remove</button>
                       </div>
                     </div>
                   ) : (
@@ -1166,13 +621,13 @@ export default function AdminNews() {
                       <div className="an-upload-icon">📷</div>
                       <div className="an-upload-text">{uploading?"Uploading…":"Click to upload cover image"}</div>
                       <div className="an-upload-hint">JPG, PNG, WebP · Recommended 1200×630px</div>
-                      <input type="file" accept="image/*" disabled={uploading} style={{display:"none"}} onChange={e=>onUploadCover(e.target.files?.[0])}/>
+                      <input type="file" accept="image/*" disabled={uploading} style={{display:"none"}} onChange={e => onUploadCover(e.target.files?.[0])}/>
                     </label>
                   )}
                   {!coverUrl && (
                     <div style={{marginTop:12}}>
                       <label className="an-label">Or enter URL directly</label>
-                      <input className="an-input" value={coverUrl} onChange={e=>setCoverUrl(e.target.value)} placeholder="https://…"/>
+                      <input className="an-input" value={coverUrl} onChange={e => setCoverUrl(e.target.value)} placeholder="https://…"/>
                     </div>
                   )}
                 </div>

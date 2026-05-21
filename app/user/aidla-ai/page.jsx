@@ -229,12 +229,11 @@ const CSS = `
 
 .aai{
   display:flex;width:100%;
-  height:calc(100dvh - 56px);
+  height:100%;
   background:${C.bg};color:${C.text};overflow:hidden;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
   font-size:14px;line-height:1.6;
 }
-@media(min-width:768px){.aai{height:calc(100dvh - 64px);}}
 
 /* ── Sidebar ── */
 .aai-sb{
@@ -273,11 +272,13 @@ const CSS = `
 }
 .aai-hist-item{
   position:relative;width:100%;border:none;background:transparent;
-  color:${C.text};border-radius:6px;padding:6px 24px 6px 8px;
-  text-align:left;cursor:pointer;transition:background .15s;margin-bottom:1px;
+  color:${C.text};border-radius:0;padding:7px 24px 7px 8px;
+  text-align:left;cursor:pointer;transition:background .15s;
+  border-bottom:1px solid ${C.border};
 }
-.aai-hist-item:hover{background:${C.hoverMed};}
-.aai-hist-item.active{background:${C.hover};}
+.aai-hist-item:last-child{border-bottom:none;}
+.aai-hist-item:hover{background:${C.hoverMed};border-radius:6px;}
+.aai-hist-item.active{background:${C.hover};border-radius:6px;}
 .aai-hist-title{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .aai-hist-meta{font-size:10px;color:${C.mute};margin-top:1px;}
 .aai-hist-del{
@@ -309,41 +310,19 @@ const CSS = `
 .aai-menu-btn:hover{background:${C.hover};}
 .aai-topbar-title{font-size:13px;font-weight:700;color:${C.text};flex:1;min-width:0;}
 
-/* Model selector in topbar */
-.aai-model-select-wrap{position:relative;flex-shrink:0;}
-.aai-model-btn{
-  display:flex;align-items:center;gap:5px;
-  height:28px;padding:0 10px;border-radius:7px;
+/* Model pills in composer */
+.aai-model-pills{display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.aai-model-pill{
+  height:22px;padding:0 9px;border-radius:999px;
   border:1px solid ${C.border};background:transparent;
-  font-size:11px;font-weight:600;color:${C.text};cursor:pointer;
-  transition:background .15s;font-family:inherit;
+  font-size:10.5px;font-weight:600;color:${C.mute};
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+  display:flex;align-items:center;gap:4px;font-family:inherit;
 }
-.aai-model-btn:hover{background:${C.hover};}
-.aai-model-btn svg{color:${C.mute};}
-.aai-model-drop{
-  position:absolute;top:calc(100% + 6px);right:0;
-  background:#fff;border:1px solid ${C.borderMed};border-radius:10px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.1);padding:5px;z-index:200;
-  min-width:200px;
-}
-.aai-model-opt{
-  display:flex;align-items:center;gap:10px;width:100%;
-  border:none;background:transparent;border-radius:7px;
-  padding:7px 9px;cursor:pointer;transition:background .15s;text-align:left;
-}
-.aai-model-opt:hover{background:${C.hover};}
-.aai-model-opt.active{background:${C.hover};}
-.aai-model-opt-label{font-size:12px;font-weight:700;color:${C.text};}
-.aai-model-opt-desc{font-size:10px;color:${C.mute};margin-top:1px;}
-.aai-model-dot{
-  width:8px;height:8px;border-radius:50%;flex-shrink:0;
-  background:${C.mute};
-}
-.aai-model-dot.active{background:#22c55e;}
-.aai-vision-badge{
-  font-size:9px;font-weight:700;color:#7c3aed;
-  background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.15);
-  border-radius:4px;padding:1px 5px;
+.aai-model-pill:hover{background:${C.hover};color:${C.text};}
+.aai-model-pill.active{background:${C.accent};color:#fff;border-color:${C.accent};}
+.aai-vision-dot{
+  width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;
 }
 
 /* ── Content ── */
@@ -550,14 +529,14 @@ const CSS = `
 /* ── Overlay / mobile sidebar ── */
 .aai-overlay{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.36);
-  z-index:70;opacity:0;transition:opacity .2s;pointer-events:none;
+  z-index:105;opacity:0;transition:opacity .2s;pointer-events:none;
 }
 @media(max-width:767px){
   .aai-menu-btn{display:flex;}
   .aai-sb{
     position:fixed;top:0;left:0;bottom:0;
     width:min(245px,80vw);min-width:min(245px,80vw);
-    z-index:80;transform:translateX(-100%);
+    z-index:110;transform:translateX(-100%);
     box-shadow:4px 0 18px rgba(0,0,0,.1);
   }
   .aai-sb.open{transform:translateX(0);}
@@ -598,17 +577,15 @@ export default function AidlaAI() {
   const [modelKey,   setModelKey]   = useState("smart");
   const [research,   setResearch]   = useState(false);
   const [sidebarOpen, setSidebar]   = useState(false);
-  const [modelOpen,   setModelOpen] = useState(false);
 
   const [loading,     setLoading]    = useState(true);
   const [sending,     setSending]    = useState(false);
   const [streamText,  setStreamText] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
 
-  const textareaRef   = useRef(null);
-  const contentRef    = useRef(null);
-  const streamTimer   = useRef(null);
-  const modelDropRef  = useRef(null);
+  const textareaRef = useRef(null);
+  const contentRef  = useRef(null);
+  const streamTimer = useRef(null);
 
   const currentModel = MODELS.find(m => m.key === modelKey) || MODELS[1];
 
@@ -663,14 +640,6 @@ export default function AidlaAI() {
     if (!el) return;
     requestAnimationFrame(() => el.scrollTo({ top: el.scrollHeight, behavior: "smooth" }));
   }, [messages, sending, streamText]);
-
-  // Close model dropdown on outside click
-  useEffect(() => {
-    if (!modelOpen) return;
-    const h = (e) => { if (modelDropRef.current && !modelDropRef.current.contains(e.target)) setModelOpen(false); };
-    document.addEventListener("mousedown", h);
-    return () => document.removeEventListener("mousedown", h);
-  }, [modelOpen]);
 
   async function loadSessions(uid) {
     const { data, error } = await supabase
@@ -803,10 +772,15 @@ export default function AidlaAI() {
       research ? "\nResearch mode: provide in-depth, well-structured, comprehensive answers." : "",
     ].filter(Boolean).join("\n");
 
+    const controller = new AbortController();
+    const timeoutMs  = modelData.key === "vision" ? 40000 : 28000;
+    const timer      = setTimeout(() => controller.abort(), timeoutMs);
+
     try {
       const res = await fetch(EDGE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${ANON_KEY}` },
+        signal: controller.signal,
         body: JSON.stringify({
           messages:     tempMsgs.map(m => ({ role: m.role, content: m.content })),
           mode:         "chat",
@@ -816,6 +790,7 @@ export default function AidlaAI() {
           max_tokens:   modelData.tokens,
         }),
       });
+      clearTimeout(timer);
       const data  = await res.json();
       const reply = data?.choices?.[0]?.message?.content || "⚠️ Something went wrong. Please try again.";
 
@@ -824,17 +799,24 @@ export default function AidlaAI() {
       const assistantMsg = { role: "assistant", content: reply, created_at: new Date().toISOString() };
 
       animateStream(reply, async () => {
-        const allMsgs  = [...tempMsgs, assistantMsg];
+        const allMsgs = [...tempMsgs, assistantMsg];
         setMessages(allMsgs);
-        const savedId  = await saveSession(allMsgs, sessionId, firstText);
+        const savedId = await saveSession(allMsgs, sessionId, firstText);
         if (!sessionId && savedId) setSessionId(savedId);
       });
-    } catch {
+    } catch (err) {
+      clearTimeout(timer);
       setSending(false);
-      const errMsg   = { role: "assistant", content: "⚠️ Connection error. Please check your internet and try again.", created_at: new Date().toISOString() };
-      const allMsgs  = [...tempMsgs, errMsg];
+      const isTimeout = err?.name === "AbortError";
+      const errText   = isTimeout
+        ? modelData.key === "vision"
+          ? "⚠️ Vision model timed out — it can be slow with complex images. Try a smaller image or switch to Smart model."
+          : "⚠️ Request timed out. Please try again."
+        : "⚠️ Connection error. Please check your internet and try again.";
+      const errMsg  = { role: "assistant", content: errText, created_at: new Date().toISOString() };
+      const allMsgs = [...tempMsgs, errMsg];
       setMessages(allMsgs);
-      const savedId  = await saveSession(allMsgs, sessionId, firstText);
+      const savedId = await saveSession(allMsgs, sessionId, firstText);
       if (!sessionId && savedId) setSessionId(savedId);
     }
   }, [input, images, sending, isStreaming, messages, modelKey, research, sessionId, profile, currentModel]);
@@ -895,36 +877,6 @@ export default function AidlaAI() {
             <button className="aai-menu-btn" onClick={() => setSidebar(true)}>☰</button>
             <div className="aai-topbar-title">
               {profile?.full_name ? `${profile.full_name.split(" ")[0]}'s AIDLA AI` : "AIDLA AI"}
-            </div>
-
-            {/* Model selector */}
-            <div className="aai-model-select-wrap" ref={modelDropRef}>
-              <button className="aai-model-btn" onClick={() => setModelOpen(v => !v)}>
-                <span>{currentModel.label}</span>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="6 9 12 15 18 9"/>
-                </svg>
-              </button>
-              {modelOpen && (
-                <div className="aai-model-drop">
-                  {MODELS.map(m => (
-                    <button
-                      key={m.key}
-                      className={`aai-model-opt${modelKey === m.key ? " active" : ""}`}
-                      onClick={() => { setModelKey(m.key); setModelOpen(false); }}
-                    >
-                      <div className={`aai-model-dot${modelKey === m.key ? " active" : ""}`} />
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                          <span className="aai-model-opt-label">{m.label}</span>
-                          {m.supportsImages && <span className="aai-vision-badge">Vision</span>}
-                        </div>
-                        <div className="aai-model-opt-desc">{m.desc}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
@@ -1067,7 +1019,19 @@ export default function AidlaAI() {
               </div>
 
               <div className="aai-composer-foot">
-                <span className="aai-hint">↵ send · ⇧↵ new line</span>
+                <div className="aai-model-pills">
+                  {MODELS.map(m => (
+                    <button
+                      key={m.key}
+                      className={`aai-model-pill${modelKey === m.key ? " active" : ""}`}
+                      onClick={() => setModelKey(m.key)}
+                      title={m.desc}
+                    >
+                      {m.supportsImages && <span className="aai-vision-dot" />}
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
                 <button className={`aai-research-btn${research ? " on" : ""}`} onClick={() => setResearch(v => !v)}>
                   <span className="aai-research-dot" />
                   {research ? "Research ON" : "Research"}

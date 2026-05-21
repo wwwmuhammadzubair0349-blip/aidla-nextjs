@@ -94,8 +94,8 @@ begin
     from public.battle_questions
     where is_active = true
       and difficulty = v_difficulty
-      and (category = v_category or category = 'General')
-    order by case when category = v_category then 0 else 1 end, random()
+      and category = v_category
+    order by random()
     limit v_needed
   ) q;
 

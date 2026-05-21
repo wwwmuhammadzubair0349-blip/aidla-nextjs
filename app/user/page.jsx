@@ -13,7 +13,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import FloatingAssistant from "@/components/FloatingAssistant";
 
 /* ── Floating AIDLA Bot Bubble ── */
 function BotBubble({ onClick, onClose, isOpen }) {
@@ -343,7 +342,6 @@ const CSS = `
 
 export default function UserDashboard() {
   const router = useRouter();
-  const [isBotOpen, setIsBotOpen] = useState(false); // ← ADD THIS LINE
 
   return (
     <div className="dashboard">
@@ -403,14 +401,6 @@ export default function UserDashboard() {
         <RegCard title="Follow Us" subtitle="Join our social media channels"    icon="📱" to="/user/social"         iconClass="ic-coral"  />
       </Section>
 
-      {/* Floating Bot Button */}
-      <BotBubble onClick={() => setIsBotOpen(true)} onClose={() => setIsBotOpen(false)} isOpen={isBotOpen} />
-      
-      {/* Floating Assistant Panel */}
-      <FloatingAssistant 
-        isOpen={isBotOpen} 
-        onClose={() => setIsBotOpen(false)} 
-      />
     </div>
   );
 }

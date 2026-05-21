@@ -710,10 +710,25 @@ textarea.pf-input { resize: vertical; min-height: 80px; }
   .pf-tab { flex:0 0 auto; padding:7px 11px; font-size:.72rem; }
   .pf-public-card { padding:22px 20px; }
 }
+/* Fix action buttons overlapping avatar at small screens */
+@media (max-width: 480px) {
+  .pf-public-actions {
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .pf-public-card {
+    padding-top: 14px;
+  }
+}
 @media (max-width: 360px) {
   .pf-tabs { gap: 2px; }
   .pf-tab  { padding: 7px 8px; font-size: 0.68rem; }
   .pf-rank-grid { grid-template-columns: repeat(3,1fr); }
+  .pf-public-edit { font-size: 0.65rem; padding: 5px 9px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pf-root *, .pf-root *::before, .pf-root *::after {

@@ -969,12 +969,11 @@ const CSS = `
 
 .ls {
   display: flex; width: 100%;
-  height: calc(100dvh - 56px);
+  height: 100%;
   background: ${C.bg}; color: ${C.text}; overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 14px; line-height: 1.6;
 }
-@media (min-width: 768px) { .ls { height: calc(100dvh - 64px); } }
 
 /* SIDEBAR */
 .ls-sidebar {

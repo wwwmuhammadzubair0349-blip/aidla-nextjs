@@ -7,10 +7,15 @@
 // - Wraps the existing CvMakerClient via a key-based remount pattern
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
-import CvMakerClient from "@/app/tools/career/cv-maker/CvMakerClient";
+
+const CvMakerClient = dynamic(() => import("@/app/tools/career/cv-maker/CvMakerClient"), {
+  ssr: false,
+  loading: () => null,
+});
 
 const STORAGE_KEY = "cvmk_v12_apex";
 

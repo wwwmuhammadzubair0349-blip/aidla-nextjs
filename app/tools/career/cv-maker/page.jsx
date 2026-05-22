@@ -658,7 +658,7 @@ const TRUST_STATS = [
   { value: "50,000+", label: "CVs Created" },
   { value: "17", label: "Premium Templates" },
   { value: "100%", label: "Free Forever" },
-  { value: "4.8?", label: "User Rating" },
+  { value: "4.8/5", label: "User Rating" },
   { value: "ATS-Optimized", label: "Parseable PDF" },
   { value: "No Sign-Up", label: "Instant Access" },
 ];
@@ -675,33 +675,27 @@ const CV_TEMPLATES = [
 
 const CV_FEATURES = [
   {
-    icon: "??",
     title: "AI Writing Assistant",
-    desc: "Describe your experience in plain words � AI transforms it into professional, ATS-optimized bullet points using the CAR formula (Context-Action-Result) with quantified achievements and industry-specific keywords. Saves 45+ minutes versus manual writing."
+    desc: "Turn plain experience into professional, ATS-friendly summaries and bullet points."
   },
   {
-    icon: "??",
     title: "17 Premium Templates",
-    desc: "Professional designs for every market: Gulf Premium & Dubai Pro (MOHRE-optimized for GCC), Compact ATS (95%+ parseability), Navy Executive (engineering), Modern Stack (tech). All 100% free � no watermarks, no trial limits, no premium tier."
+    desc: "Choose ATS, Gulf, executive, academic, creative, and modern CV layouts."
   },
   {
-    icon: "?",
     title: "ATS Score Checker",
-    desc: "Real-time ATS compatibility scoring across 10+ criteria. Validates against major parsers used by Workday, Taleo, Greenhouse, Bayt.com, Naukrigulf, and Rozee.pk. Target 85+ score before applying � free and unlimited checks."
+    desc: "Check missing sections, skills, summaries, contact details, and parseability."
   },
   {
-    icon: "??",
     title: "Free PDF Download",
-    desc: "High-quality PDF with real selectable text � fully parseable by all ATS systems. Print-ready with proper margins and typography. No watermarks, no download limits. Better than Zety (PKR 2,500+) and Enhancv ($14.99/mo). Completely free forever."
+    desc: "Download a clean, selectable-text PDF with no watermark."
   },
   {
-    icon: "??",
     title: "Multi-Region Support",
-    desc: "Auto-adjusts fields for Pakistan (CNIC, HEC, FSc/Matric, domicile), UAE/GCC (visa status, nationality, photo, driving license), UK (right-to-work), US/Canada (achievement focus, no photo). Language support: English, Arabic, Urdu."
+    desc: "Supports Pakistan, UAE/GCC, UK, US, Canada, and global CV expectations."
   },
   {
-    icon: "??",
-    title: "100% Free � No Catches",
+    title: "100% Free",
     desc: "No subscriptions, no credit cards, no trial periods, no watermarks, no download limits, no sign-up required. All 17 templates included. Unlike competitors that trap you behind paywalls, AIDLA is genuinely free. Career tools should be a right, not a subscription."
   },
 ];
@@ -714,15 +708,17 @@ const TARGET_AUDIENCES = [
 ];
 
 const REGIONS_SERVED = [
-  "Pakistan � Karachi, Lahore, Islamabad, Faisalabad, Multan, Peshawar, Rawalpindi, Sialkot",
-  "UAE � Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah, Al Ain",
-  "Saudi Arabia � Riyadh, Jeddah, Dammam, Mecca, Medina, Khobar",
-  "Qatar � Doha, Al Wakrah", "Kuwait � Kuwait City", "Bahrain � Manama", "Oman � Muscat",
-  "United Kingdom � London, Manchester, Birmingham, Glasgow, Edinburgh",
-  "United States � New York, San Francisco, Chicago, Houston, Seattle, Austin",
-  "Canada � Toronto, Vancouver, Calgary, Montreal, Ottawa",
-  "India � Mumbai, Delhi NCR, Bangalore, Hyderabad, Chennai, Pune",
+  "Pakistan - Karachi, Lahore, Islamabad, Faisalabad, Multan, Peshawar",
+  "UAE - Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah",
+  "Saudi Arabia - Riyadh, Jeddah, Dammam, Mecca, Medina, Khobar",
+  "Qatar - Doha, Al Wakrah", "Kuwait - Kuwait City", "Bahrain - Manama", "Oman - Muscat",
+  "United Kingdom - London, Manchester, Birmingham, Glasgow, Edinburgh",
+  "United States - New York, San Francisco, Chicago, Houston, Seattle, Austin",
+  "Canada - Toronto, Vancouver, Calgary, Montreal, Ottawa",
+  "India - Mumbai, Delhi NCR, Bangalore, Hyderabad, Chennai, Pune",
 ];
+
+const cleanCopy = v => String(v || "").replaceAll("\uFFFD", "-").replaceAll("�", "-").replace(/\?+/g, "").replace(/\s+/g, " ").trim();
 
 /* ================================================================
    PAGE COMPONENT
@@ -749,126 +745,130 @@ export default async function CvMakerPage() {
 
       {/* Static Helpful Content Section � 1,500+ words, EEAT-optimized, AI-readable */}
       <section
+        className="cv-public-guide"
         aria-label="CV writing guide, ATS optimization, and career resources"
         style={{
-          maxWidth: 960,
+          maxWidth: 1180,
           margin: "0 auto",
-          padding: "48px 20px 64px",
+          padding: "24px 20px 40px",
           fontFamily: "'DM Sans','Outfit',sans-serif",
           color: "#0b1437",
         }}
       >
-        <article itemScope itemType="https://schema.org/Article">
+        <style>{`body[data-cv-maker-started="1"] .cv-public-guide{display:none!important}`}</style>
+        <article
+          itemScope
+          itemType="https://schema.org/Article"
+          style={{
+            background: "rgba(255,255,255,.78)",
+            border: "1px solid rgba(37,99,235,.12)",
+            borderRadius: 18,
+            boxShadow: "0 14px 50px rgba(15,23,42,.07)",
+            padding: "clamp(18px,3vw,30px)",
+          }}
+        >
           <meta itemProp="headline" content="The Complete 2026 Guide to Creating ATS-Friendly CVs for Pakistan, UAE, GCC & Global Jobs" />
           <meta itemProp="author" content="AIDLA" />
           <meta itemProp="datePublished" content="2025-01-15T00:00:00+05:00" />
           <meta itemProp="dateModified" content={new Date().toISOString()} />
 
           {/* Introduction */}
-          <h2 style={{ fontSize: "clamp(1.3rem, 4vw, 1.8rem)", fontWeight: 800, marginBottom: 12, lineHeight: 1.3 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#eff6ff", color: "#1e3a8a", border: "1px solid #bfdbfe", borderRadius: 999, padding: "6px 12px", fontSize: ".72rem", fontWeight: 800, marginBottom: 12 }}>
+            CV Guide 2026
+          </div>
+          <h2 style={{ fontSize: "clamp(1.25rem, 3vw, 2rem)", fontWeight: 900, marginBottom: 10, lineHeight: 1.2, maxWidth: 760 }}>
             Your Complete 2026 Guide to ATS-Friendly CVs for Pakistan, UAE, GCC & Global Jobs
           </h2>
-          <p style={{ color: "#64748b", marginBottom: 24, maxWidth: 700, fontSize: "1rem", lineHeight: 1.7 }}>
+          <p style={{ color: "#64748b", marginBottom: 22, maxWidth: 780, fontSize: ".92rem", lineHeight: 1.7 }}>
             In 2026, over <strong>75% of CVs are rejected by ATS algorithms</strong> before a human recruiter sees them. This comprehensive guide covers
             ATS parsing mechanics, the CAR achievement formula, industry-specific keywords, and regional formatting requirements for Pakistan
             (HEC-compliant, CNIC, FSc/Matric), UAE (MOHRE-compliant, visa status), GCC, UK, US, and Canada. Use our free AI CV maker to implement
-            these strategies instantly � no sign-up, no watermarks, genuinely free.
+            these strategies instantly with no sign-up, no watermarks, and no hidden fees.
           </p>
 
           {/* Features Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16, marginBottom: 40 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))", gap: 10, marginBottom: 22 }}>
             {CV_FEATURES.map(f => (
-              <div key={f.title} style={{ background: "#fff", borderRadius: 14, padding: "24px 22px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-                <div style={{ fontSize: "2rem", marginBottom: 10 }} aria-hidden="true">{f.icon}</div>
-                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0b1437", marginBottom: 8 }}>{f.title}</h3>
-                <p style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.6 }}>{f.desc}</p>
+              <div key={f.title} style={{ background: "linear-gradient(180deg,#fff,#f8fafc)", borderRadius: 12, padding: "14px 15px", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(15,23,42,.04)" }}>
+                <h3 style={{ fontSize: ".88rem", fontWeight: 800, color: "#0b1437", marginBottom: 6 }}>{f.title}</h3>
+                <p style={{ fontSize: ".78rem", color: "#64748b", lineHeight: 1.55 }}>{f.desc}</p>
               </div>
             ))}
           </div>
 
           {/* Trust Statistics Bar */}
-          <div style={{ background: "linear-gradient(135deg, #f0f9ff, #fef3c7)", borderRadius: 14, padding: "28px 24px", border: "1px solid rgba(37,99,235,0.12)", marginBottom: 40, display: "flex", flexWrap: "wrap", justifyContent: "space-around", gap: 16, textAlign: "center" }}>
+          <div style={{ background: "linear-gradient(135deg, #eff6ff, #fff7d6)", borderRadius: 14, padding: "16px 18px", border: "1px solid rgba(37,99,235,0.12)", marginBottom: 26, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 12, textAlign: "center" }}>
             {TRUST_STATS.map(stat => (
               <div key={stat.label}>
-                <div style={{ fontSize: "1.8rem", fontWeight: 900, color: "#1e3a8a", marginBottom: 4 }}>{stat.value}</div>
-                <div style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>{stat.label}</div>
+                <div style={{ fontSize: "clamp(1.1rem,2vw,1.55rem)", fontWeight: 900, color: "#1e3a8a", marginBottom: 2 }}>{stat.value}</div>
+                <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>{stat.label}</div>
               </div>
             ))}
           </div>
 
-          {/* Helpful Content Sections */}
-          {HELPFUL_CONTENT_SECTIONS.map(section => (
-            <div key={section.id} style={{ marginBottom: 36 }}>
-              <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
-                <span aria-hidden="true">{section.icon}</span>
-                {section.title}
-              </h2>
-              <div style={{ fontSize: "0.92rem", color: "#475569", lineHeight: 1.8, maxWidth: 800 }}>
-                {section.content}
-              </div>
-            </div>
-          ))}
-
-          {/* 24 Answer Blocks � AEO-optimized for PAA, Featured Snippets, AI Overviews */}
-          <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 20 }}>
-            ? Frequently Asked Questions � CV Writing, ATS Optimization & Career Tips
+          {/* Key FAQ */}
+          <h2 style={{ fontSize: "1.05rem", fontWeight: 900, color: "#0b1437", marginBottom: 12 }}>
+            Frequently Asked Questions
           </h2>
-          <div style={{ marginBottom: 40 }}>
-            {ANSWER_BLOCKS.map((block, i) => (
-              <div key={i} style={{ borderBottom: "1px solid #e2e8f0", padding: "14px 0" }}
+          <div style={{ marginBottom: 26, display: "grid", gap: 8 }}>
+            {ANSWER_BLOCKS.slice(0, 6).map((block, i) => (
+              <details key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "12px 14px" }}
                 itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-                <h3 itemProp="name" style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: 6, color: "#0b1437", cursor: "default" }}>
-                  {block.question}
-                </h3>
+                <summary itemProp="name" style={{ fontSize: ".86rem", fontWeight: 800, color: "#0b1437", cursor: "pointer" }}>
+                  {cleanCopy(block.question)}
+                </summary>
                 <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                  <p itemProp="text" style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
-                    {block.answer}
+                  <p itemProp="text" style={{ fontSize: ".8rem", color: "#64748b", lineHeight: 1.65, marginTop: 8 }}>
+                    {cleanCopy(block.answer)}
                   </p>
                 </div>
+              </details>
+            ))}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 14 }}>
+            <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 14, padding: 16 }}>
+              <h3 style={{ fontSize: ".98rem", fontWeight: 900, color: "#0b1437", marginBottom: 12 }}>Available CV Templates</h3>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+                {CV_TEMPLATES.map(t => (
+                  <span key={t} style={{ background: "#f8fafc", color: "#1e3a8a", borderRadius: 999, padding: "5px 11px", fontSize: ".74rem", fontWeight: 800, border: "1px solid #dbeafe" }}>
+                    {t}
+                  </span>
+                ))}
               </div>
-            ))}
-          </div>
+            </section>
 
-          {/* Templates Showcase */}
-          <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 16 }}>
-            ?? Available CV Templates � All 100% Free
-          </h3>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 36 }}>
-            {CV_TEMPLATES.map(t => (
-              <span key={t} style={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", color: "#1e3a8a", borderRadius: 20, padding: "6px 16px", fontSize: "0.82rem", fontWeight: 600, border: "1px solid rgba(37,99,235,0.12)" }}>
-                {t}
-              </span>
-            ))}
-          </div>
-
-          {/* Target Audiences */}
-          <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 16 }}>
-            ?? Who Uses Our Free CV Maker?
-          </h3>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 36 }}>
-            {TARGET_AUDIENCES.map(a => (
-              <span key={a} style={{ background: "#fef3c7", color: "#78350f", borderRadius: 20, padding: "6px 16px", fontSize: "0.8rem", fontWeight: 600 }}>
-                {a}
-              </span>
-            ))}
-          </div>
-
-          {/* Regions Served */}
-          <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 16 }}>
-            ?? Optimized for Regional Job Markets Worldwide
-          </h3>
-          <p style={{ color: "#64748b", marginBottom: 16, maxWidth: 700 }}>
-            Our CV templates are tailored for specific regional requirements and employer expectations across Pakistan, the Middle East, South Asia, and Western markets.
-          </p>
-          <div style={{ columns: "2 280px", gap: 16, marginBottom: 40 }}>
-            {REGIONS_SERVED.map(r => (
-              <div key={r} style={{ breakInside: "avoid", marginBottom: 8, padding: "8px 0", fontSize: "0.85rem", color: "#334155" }}>
-                ? {r}
+            <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 14, padding: 16 }}>
+              <h3 style={{ fontSize: ".98rem", fontWeight: 900, color: "#0b1437", marginBottom: 12 }}>Who Uses Our Free CV Maker</h3>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
+                {TARGET_AUDIENCES.map(a => (
+                  <span key={a} style={{ background: "#fff7d6", color: "#78350f", borderRadius: 999, padding: "5px 11px", fontSize: ".74rem", fontWeight: 800 }}>
+                    {a}
+                  </span>
+                ))}
               </div>
-            ))}
+            </section>
+
+            <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 14, padding: 16, gridColumn: "1 / -1" }}>
+              <h3 style={{ fontSize: ".98rem", fontWeight: 900, color: "#0b1437", marginBottom: 6 }}>Optimized for Regional Job Markets</h3>
+              <p style={{ color: "#64748b", marginBottom: 12, maxWidth: 760, fontSize: ".82rem", lineHeight: 1.6 }}>
+                Tailored fields and formatting for Pakistan, GCC, Western, and global hiring expectations.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 8 }}>
+                {REGIONS_SERVED.map(r => (
+                  <div key={r} style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "9px 11px", fontSize: ".78rem", color: "#334155", fontWeight: 650 }}>
+                    {r}
+                  </div>
+                ))}
+              </div>
+            </section>
           </div>
         </article>
       </section>
     </>
   );
 }
+
+
+
+

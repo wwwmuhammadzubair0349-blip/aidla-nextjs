@@ -8,31 +8,31 @@ const TEMPLATES_CSS = `
   background: rgba(255,255,255,.82);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid rgba(255,255,255,.6);
   box-shadow: 0 10px 40px -10px rgba(15,23,42,.08);
-  padding: 16px;
+  padding: 12px;
   width: 100%;
 }
-@media (min-width: 640px) { .cv-tmpl-panel { padding: 20px; } }
+@media (min-width: 640px) { .cv-tmpl-panel { padding: 14px; } }
 
 .cv-panel-h {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   gap: 8px;
   flex-wrap: wrap;
 }
 .cv-panel-t {
   font-family: 'Sora', sans-serif;
-  font-size: .95rem;
+  font-size: .82rem;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -.02em;
 }
 .cv-cur-lbl {
-  font-size: .72rem;
+  font-size: .66rem;
   font-weight: 800;
   color: #fff;
   background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
@@ -46,19 +46,19 @@ const TEMPLATES_CSS = `
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 .cv-cat-btn {
-  padding: 5px 13px;
+  padding: 4px 11px;
   border-radius: 99px;
   border: 1px solid rgba(15,23,42,.1);
   background: #fff;
   color: #475569;
-  font-size: .72rem;
+  font-size: .66rem;
   font-weight: 700;
   transition: all .18s;
   cursor: pointer;
-  min-height: 32px;
+  min-height: 28px;
   -webkit-tap-highlight-color: transparent;
 }
 .cv-cat-btn:hover { background: #f8fafc; transform: translateY(-1px); }
@@ -72,11 +72,11 @@ const TEMPLATES_CSS = `
 
 .cv-tmpl-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+  gap: 8px;
 }
 @media (min-width: 400px) {
-  .cv-tmpl-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+  .cv-tmpl-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 9px; }
 }
 
 .cv-tmpl-card {
@@ -84,9 +84,9 @@ const TEMPLATES_CSS = `
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 14px 10px;
-  border-radius: 14px;
+  gap: 7px;
+  padding: 10px 8px;
+  border-radius: 12px;
   border: 2px solid transparent;
   background: linear-gradient(to bottom, #fff, #f8fafc);
   box-shadow: 0 4px 15px rgba(0,0,0,.04);
@@ -108,14 +108,14 @@ const TEMPLATES_CSS = `
 .cv-tmpl-card:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
 .cv-tmpl-thumb svg {
   display: block;
-  height: 62px;
+  height: 48px;
   width: auto;
   filter: drop-shadow(0 3px 5px rgba(0,0,0,.06));
   transition: transform .28s ease;
 }
 .cv-tmpl-card:hover .cv-tmpl-thumb svg { transform: scale(1.07); }
 .cv-tmpl-lbl {
-  font-size: .66rem;
+  font-size: .6rem;
   font-weight: 800;
   color: #1e293b;
   text-align: center;

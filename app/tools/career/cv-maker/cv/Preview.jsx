@@ -11,20 +11,20 @@ const PREVIEW_CSS = `
   background: rgba(255,255,255,.94);
   border: 1px solid var(--border);
   border-radius: var(--r) var(--r) 0 0;
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .cv-ctrl-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 .cv-ctrl-lbl {
-  font-size: .6rem;
+  font-size: .55rem;
   font-weight: 800;
   color: #475569;
   text-transform: uppercase;
@@ -35,7 +35,7 @@ const PREVIEW_CSS = `
 
 .cv-dots { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
 .cv-dot {
-  width: 22px; height: 22px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   border: 2px solid #fff;
   box-shadow: 0 2px 5px rgba(0,0,0,.15);
@@ -50,16 +50,16 @@ const PREVIEW_CSS = `
 
 .cv-tog-g { display: flex; gap: 5px; flex-wrap: wrap; }
 .cv-tog {
-  padding: 5px 11px;
+  padding: 4px 9px;
   background: #f1f5f9;
   border: 1px solid transparent;
   border-radius: 8px;
-  font-size: .68rem;
+  font-size: .62rem;
   font-weight: 700;
   color: #475569;
   cursor: pointer;
   transition: .16s;
-  min-height: 30px;
+  min-height: 26px;
   -webkit-tap-highlight-color: transparent;
 }
 .cv-tog:hover { background: #e2e8f0; }
@@ -70,14 +70,20 @@ const PREVIEW_CSS = `
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 11px;
+  padding: 6px 10px;
   background: rgba(255,255,255,.92);
   border: 1px solid var(--border);
   border-top: none;
   border-bottom: none;
-  font-size: .7rem;
+  font-size: .65rem;
   font-weight: 700;
   color: #1e3a8a;
+}
+.cv-edit-hint { color:#64748b;font-size:.6rem;font-weight:700; }
+#cv-paper[contenteditable="true"] { cursor:text; }
+#cv-paper[contenteditable="true"]:focus {
+  outline:2px solid #2563eb;
+  outline-offset:4px;
 }
 .cv-prev-zoom {
   display: flex;
@@ -92,7 +98,7 @@ const PREVIEW_CSS = `
   color: #0f172a;
 }
 .cv-zoom-btn {
-  width: 28px; height: 28px;
+  width: 26px; height: 26px;
   border-radius: 7px;
   border: 1px solid var(--border);
   background: #fff;
@@ -110,12 +116,12 @@ const PREVIEW_CSS = `
 
 .cv-prev-scroll {
   background: #c5cfe0;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid var(--border);
   border-top: none;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  max-height: 52vh;
+  max-height: 44vh;
   width: 100%;
   min-width: 0;
   scrollbar-width: thin;
@@ -145,7 +151,7 @@ const PREVIEW_CSS = `
   border: 1px solid var(--border);
   border-top: none;
   border-radius: 0 0 var(--r) var(--r);
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -279,7 +285,7 @@ export default function Preview({
 
       {/* Zoom bar */}
       <div className="cv-prev-header">
-        <span>Live Preview</span>
+        <span>Live Preview <span className="cv-edit-hint">· click text to edit</span></span>
         <div className="cv-prev-zoom">
           <button
             className="cv-zoom-btn"
@@ -313,9 +319,15 @@ export default function Preview({
           <div
             id="cv-paper"
             ref={paperRef}
+            contentEditable
+            suppressContentEditableWarning
             style={{ transform: `scale(${zoom})`, transformOrigin: "top left" }}
             dangerouslySetInnerHTML={{ __html: cvHtml }}
             aria-label="CV document preview"
+            onPaste={e => {
+              e.preventDefault();
+              document.execCommand("insertText", false, e.clipboardData.getData("text/plain"));
+            }}
           />
         </div>
       </div>

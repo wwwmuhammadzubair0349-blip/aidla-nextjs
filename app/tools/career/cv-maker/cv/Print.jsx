@@ -39,10 +39,19 @@ function buildPrintWindowCss(paper) {
     
     .cv-doc {
       width: ${mm_w}mm !important;
-      min-height: ${mm_h}mm !important;
+      min-height: auto !important;
       margin: 0 !important; padding: 0 8mm !important;
       box-shadow: none !important; border-radius: 0 !important;
       overflow: visible !important;
+    }
+    .cv-doc.layout-executive-split {
+      padding: 6mm 9mm !important;
+      min-height: auto !important;
+      height: auto !important;
+      page-break-after: avoid !important;
+      break-after: avoid !important;
+      font-size: 8.8pt !important;
+      line-height: 1.22 !important;
     }
     
     /* Template-specific print padding overrides */
@@ -56,6 +65,7 @@ function buildPrintWindowCss(paper) {
     .layout-bold-header .cv-doc,
     .layout-coral-modern .cv-doc,
     .layout-navy-exec .cv-doc,
+    .layout-executive-split .cv-doc,
     .layout-apex-pro .cv-doc { 
       padding: 0 !important; 
     }

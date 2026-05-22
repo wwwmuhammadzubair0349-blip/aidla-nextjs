@@ -29,9 +29,9 @@ const APP_CSS = `
   --sh:     0 1px 6px rgba(11,20,55,.07);
   --sh-md:  0 3px 14px rgba(11,20,55,.10);
   --sh-lg:  0 6px 28px rgba(11,20,55,.14);
-  --r:      12px;
+  --r:      10px;
   --r-sm:   8px;
-  --touch:  44px;
+  --touch:  38px;
 }
 
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,7 +47,7 @@ html {
 body {
   font-family: 'Outfit', sans-serif;
   color: var(--navy);
-  background: #eef2fb;
+  background: linear-gradient(160deg,#eef2fb 0%,#fefdf7 55%,#edf7f4 100%);
   min-height: 100dvh;
   overflow-x: hidden;
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -59,7 +59,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 img    { display: block; max-width: 100%; }
 
 .cv-bg {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(160deg,#eef2fb 0%,#fefdf7 55%,#edf7f4 100%);
 }
 .cv-bg::before {
@@ -78,11 +78,11 @@ img    { display: block; max-width: 100%; }
 
 .cv-wrap {
   width: 100%; max-width: 100vw; margin: 0 auto;
-  padding: 12px 12px 24px;
+  padding: 10px clamp(8px,3vw,12px) 22px;
   overflow-x: hidden;
 }
-@media (min-width: 640px) { .cv-wrap { padding: 16px 16px 24px; } }
-@media (min-width: 960px) { .cv-wrap { max-width: 1320px; padding: 24px 20px 28px; } }
+@media (min-width: 640px) { .cv-wrap { padding: 14px 16px 22px; } }
+@media (min-width: 960px) { .cv-wrap { max-width: 1240px; padding: 18px 20px 26px; } }
 
 .cv-toasts {
   position: fixed; top: 10px; right: 10px; z-index: 9999;
@@ -112,7 +112,7 @@ img    { display: block; max-width: 100%; }
 .cv-hero {
   display: flex; align-items: flex-start;
   justify-content: space-between; gap: 10px;
-  margin-bottom: 12px; flex-wrap: wrap;
+  margin-bottom: 8px; flex-wrap: wrap;
   width: 100%; overflow: hidden;
 }
 .cv-hero-l { flex: 1; min-width: 0; }
@@ -128,7 +128,7 @@ img    { display: block; max-width: 100%; }
 }
 .cv-hero h1 {
   font-family: 'Sora', sans-serif;
-  font-size: clamp(1.2rem,5.5vw,2.3rem);
+  font-size: clamp(1rem,3.8vw,1.75rem);
   font-weight: 900; line-height: 1.1; margin-bottom: 4px;
   word-break: break-word;
 }
@@ -138,7 +138,7 @@ img    { display: block; max-width: 100%; }
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.cv-hero-sub { color: var(--slate); font-size: clamp(.74rem,2.2vw,.86rem); line-height: 1.6; margin-bottom: 8px; }
+.cv-hero-sub { color: var(--slate); font-size: clamp(.68rem,1.8vw,.78rem); line-height: 1.35; margin-bottom: 6px; }
 .cv-pills { display: flex; flex-wrap: wrap; gap: 4px; }
 .cv-pill {
   background: rgba(37,99,235,.07); border: 1px solid rgba(37,99,235,.18);
@@ -148,38 +148,38 @@ img    { display: block; max-width: 100%; }
 
 .cv-ats-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .cv-ats-ring {
-  width: 72px; height: 72px; border-radius: 50%;
+  width: 58px; height: 58px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   transition: background .5s;
   box-shadow: 0 2px 10px rgba(217,119,6,.18);
 }
 .cv-ats-inner {
-  width: 56px; height: 56px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 50%;
   background: #fff;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   box-shadow: inset 0 2px 5px rgba(0,0,0,.07);
 }
-.cv-ats-score { font-family:'Sora',sans-serif; font-size: 1.25rem; font-weight: 900; line-height: 1; }
-.cv-ats-lbl { font-size: .44rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: .06em; }
+.cv-ats-score { font-family:'Sora',sans-serif; font-size: 1rem; font-weight: 900; line-height: 1; }
+.cv-ats-lbl { font-size: .36rem; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: .06em; }
 .cv-ats-btn {
   background: none; border: none; font-size: .65rem; font-weight: 700; color: var(--sky);
   min-height: var(--touch); display: flex; align-items: center;
 }
 .cv-ats-panel {
   display: none;
-  grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
+  grid-template-columns: repeat(auto-fill, minmax(145px,1fr));
   gap: 4px; margin-bottom: 10px;
   background: #fff; border: 1px solid var(--border);
   border-radius: 10px; padding: 10px;
 }
 .cv-ats-panel.open { display: grid; }
-.cv-ck { display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:7px;font-size:.68rem;font-weight:600; }
+.cv-ck { display:flex;align-items:center;gap:5px;padding:5px 7px;border-radius:7px;font-size:.62rem;font-weight:700; }
 .cv-ck.ok   { background:rgba(4,120,87,.08); color:#064e3b; }
 .cv-ck.fail { background:rgba(185,28,28,.07); color:#7f1d1d; }
 
 .cv-toolbar {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 8px; margin-bottom: 10px; flex-wrap: wrap; width: 100%;
+  gap: 6px; margin-bottom: 8px; flex-wrap: wrap; width: 100%;
 }
 .cv-tbr { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 
@@ -215,14 +215,14 @@ img    { display: block; max-width: 100%; }
 .cv-ftabs {
   display: flex; gap: 2px; overflow-x: auto;
   -webkit-overflow-scrolling: touch; scrollbar-width: none;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   background: rgba(255,255,255,.85);
   border-radius: 10px; padding: 4px;
   border: 1px solid var(--border); width: 100%;
 }
 .cv-ftabs::-webkit-scrollbar { display: none; }
 .cv-ftab {
-  flex: 1; min-width: 44px; height: 46px; padding: 0 4px;
+  flex: 1; min-width: 38px; height: 38px; padding: 0 4px;
   border-radius: 8px; border: none; background: transparent;
   font-size: clamp(.52rem,1.8vw,.64rem);
   font-weight: 700; color: var(--slate); transition: .12s;
@@ -237,25 +237,106 @@ img    { display: block; max-width: 100%; }
 .cv-card {
   background: rgba(255,255,255,.94);
   border-radius: var(--r); border: 1px solid var(--border);
-  box-shadow: var(--sh); padding: 13px; margin-bottom: 10px;
+  box-shadow: var(--sh); padding: 9px; margin-bottom: 8px;
   width: 100%; overflow: hidden; word-break: break-word;
 }
-@media (min-width: 640px) { .cv-card { padding: 16px; } }
-.cv-card-h { display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap; }
-.cv-card-t { font-family:'Sora',sans-serif;font-size:clamp(.8rem,2.8vw,.88rem);font-weight:700;color:var(--navy);margin:0; }
+@media (min-width: 640px) { .cv-card { padding: 11px; } }
+.cv-start { display:grid; grid-template-columns:1fr; gap:18px; align-items:center; padding:22px 0 28px; }
+@media (min-width:900px) { .cv-start { grid-template-columns:1.08fr .92fr; padding:28px 0 34px; } }
+.cv-start h1 { font-family:'Sora',sans-serif; font-size:clamp(1.9rem,5vw,3.7rem); line-height:1.08; letter-spacing:0; margin-bottom:12px; max-width:760px; animation:cvRise .55s ease both; }
+.cv-start p { color:#374151; font-size:clamp(.86rem,1.6vw,1.05rem); line-height:1.65; max-width:650px; margin-bottom:20px; animation:cvRise .55s .08s ease both; }
+.cv-start-actions { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:18px; }
+.cv-start-actions .cv-btn { border-radius:7px; min-height:46px; font-size:.9rem; padding:0 18px; animation:cvRise .55s .14s ease both; }
+@media (max-width:360px) { .cv-start-actions .cv-btn { width:100%; } }
+.cv-start-proof { display:flex; flex-wrap:wrap; gap:16px; color:#374151; font-weight:700; font-size:.82rem; animation:cvRise .55s .2s ease both; }
+.cv-stars { color:#10b981; letter-spacing:2px; }
+.cv-start-art { display:none; justify-content:center; position:relative; }
+@media (min-width:900px) { .cv-start-art { display:flex; } }
+.cv-resume-shot { width:min(292px,90%); min-height:360px; background:#fff; border-radius:12px; box-shadow:0 24px 58px rgba(11,20,55,.16); transform:rotate(4deg); padding:20px; animation:cvFloat 4.8s ease-in-out infinite; }
+.cv-resume-shot h3 { font-size:1rem; margin-bottom:6px; }
+.cv-resume-line { height:6px; border-radius:99px; background:#dbeafe; margin:9px 0; }
+.cv-resume-line.dark { background:#111827; width:62%; }
+.cv-resume-line.green { background:#10b981; width:42%; }
+.cv-ai-float { position:absolute; right:8%; bottom:2%; background:#fff; border-radius:12px; box-shadow:var(--sh-lg); padding:12px; min-width:190px; font-size:.72rem; font-weight:700; animation:cvRise .7s .22s ease both; }
+.cv-scan { position:fixed; inset:0; z-index:9998; display:grid; place-items:center; background:rgba(238,242,251,.78); backdrop-filter:blur(12px); }
+.cv-scan-box { width:min(420px,calc(100vw - 32px)); background:#fff; border:1px solid var(--border); border-radius:16px; box-shadow:var(--sh-lg); padding:22px; text-align:center; }
+.cv-scan-doc { height:210px; border-radius:12px; background:linear-gradient(#fff,#f8fafc); border:1px solid #dbeafe; margin-bottom:16px; position:relative; overflow:hidden; padding:24px; }
+.cv-scan-doc::after { content:""; position:absolute; left:0; right:0; top:-35%; height:34%; background:linear-gradient(180deg,transparent,rgba(16,185,129,.35),transparent); animation:cvScan 1.25s linear infinite; }
+.cv-scan-title { font-family:'Sora',sans-serif; font-weight:800; font-size:1rem; margin-bottom:6px; }
+.cv-scan-sub { color:var(--slate); font-size:.78rem; }
+@keyframes cvRise { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+@keyframes cvFloat { 0%,100%{transform:rotate(4deg) translateY(0)} 50%{transform:rotate(3deg) translateY(-10px)} }
+@keyframes cvScan { to{top:105%} }
+.cv-report {
+  display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px;align-items:start;
+  background:linear-gradient(135deg,#f8fbff,#fff);
+  border:1px solid rgba(37,99,235,.16);border-radius:18px;
+  padding:14px;box-shadow:0 18px 50px rgba(15,23,42,.08);
+}
+@media (min-width:920px){.cv-report{grid-template-columns:260px minmax(0,1fr);padding:18px;}}
+.cv-report-side{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:14px;text-align:center;box-shadow:var(--sh);}
+.cv-report-score{font-family:'Sora',sans-serif;font-size:2.45rem;font-weight:900;color:#f59e0b;line-height:1;margin:8px 0 4px;}
+.cv-report-meter{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:16px 0;}
+.cv-report-fill{height:100%;background:linear-gradient(90deg,#ef4444,#f59e0b,#10b981);border-radius:99px;transition:width .6s ease;}
+.cv-report-pill{display:inline-flex;align-items:center;justify-content:center;border-radius:99px;padding:5px 10px;font-size:.68rem;font-weight:800;background:#eff6ff;color:#1e3a8a;border:1px solid #bfdbfe;}
+.cv-report-main{background:#eaf0fb;border-radius:18px;padding:clamp(8px,3vw,14px);align-self:start;min-width:0;}
+.cv-report-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.cv-report-title{font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:900;color:#0f172a;letter-spacing:0;}
+.cv-report-count{background:#fff;border-radius:99px;padding:8px 14px;font-size:.76rem;font-weight:800;color:#0f172a;}
+.cv-report-top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.cv-report-top-actions .cv-btn{min-height:36px;border-radius:99px;font-size:.72rem;padding:0 14px;}
+.cv-report-print [data-print-ignore] button{min-height:36px!important;padding:0 14px!important;border-radius:99px!important;font-size:.72rem!important;box-shadow:var(--sh)!important;white-space:nowrap!important;}
+.cv-audit-print-src{position:absolute;left:-99999px;top:0;width:794px;pointer-events:none;opacity:0;}
+.cv-report-grid{display:grid;gap:10px;}
+.cv-report-section{background:#fff;border:1px solid #dbeafe;border-radius:14px;padding:14px;}
+.cv-report-section h3{font-size:.88rem;font-weight:900;color:#0f172a;margin-bottom:10px;text-transform:uppercase;letter-spacing:.03em;}
+.cv-report-row{display:flex;gap:8px;align-items:flex-start;padding:8px 9px;border-radius:10px;margin-top:7px;font-size:.72rem;line-height:1.35;color:#334155;background:#f8fafc;}
+.cv-report-row.bad{background:#fff1f2;color:#7f1d1d;}
+.cv-report-row.good{background:#ecfdf5;color:#064e3b;}
+.cv-report-row.fix{background:#eff6ff;color:#1e3a8a;}
+.cv-report-icon{font-weight:900;flex:0 0 auto;}
+.cv-report-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.cv-compare{--cmp-scale:.35;position:relative;height:421px;background:#fff;border:1px solid #dbeafe;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,.08);}
+@media (min-width:360px){.cv-compare{--cmp-scale:.4;height:477px;}}
+@media (min-width:440px){.cv-compare{--cmp-scale:.5;height:590px;}}
+@media (min-width:560px){.cv-compare{--cmp-scale:.62;height:724px;}}
+@media (min-width:700px){.cv-compare{--cmp-scale:.76;height:880px;}}
+.cv-compare-page{position:absolute;inset:0;background:#fff;border-radius:16px;overflow:hidden;display:flex;align-items:flex-start;justify-content:center;padding:14px;}
+.cv-compare-paper{width:794px;height:1123px;overflow:hidden;background:#fff;transform:scale(var(--cmp-scale));transform-origin:top center;box-shadow:0 6px 22px rgba(15,23,42,.12);}
+.cv-compare-paper .cv-doc{width:794px!important;min-height:1123px!important;}
+.cv-compare-old{padding:22px;color:#334155;font-size:.58rem;line-height:1.35;white-space:pre-wrap;font-family:Arial,sans-serif;}
+.cv-compare-old.has-image{padding:12px;}
+.cv-compare-old img{width:100%;height:100%;object-fit:contain;display:block;background:#fff;}
+.cv-compare-old h4{font-size:1rem;color:#0f172a;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;}
+.cv-compare-old .line{height:5px;background:#e2e8f0;border-radius:99px;margin:7px 0;}
+.cv-compare-old .dark{background:#0f172a;width:55%;}
+.cv-compare-old .blue{background:#2563eb;width:35%;}
+.cv-compare-new{clip-path:inset(0 0 0 var(--split,50%));transition:clip-path .9s cubic-bezier(.2,.8,.2,1);}
+.cv-compare-new #cv-paper{box-shadow:none!important;}
+.cv-compare-label{position:absolute;top:14px;z-index:4;background:#0f172a;color:#fff;border-radius:99px;padding:5px 10px;font-size:.65rem;font-weight:900;box-shadow:var(--sh);}
+.cv-compare-label.old{left:18px;background:#64748b;}
+.cv-compare-label.new{right:18px;background:#1e3a8a;}
+.cv-compare-line{position:absolute;top:0;bottom:0;left:var(--split,50%);width:2px;background:#2563eb;z-index:5;box-shadow:0 0 0 9999px transparent;transition:left .9s cubic-bezier(.2,.8,.2,1);}
+.cv-compare-knob{position:absolute;top:50%;left:var(--split,50%);z-index:6;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;background:#fff;border:2px solid #2563eb;display:grid;place-items:center;font-weight:900;color:#1e3a8a;box-shadow:var(--sh-lg);pointer-events:none;transition:left .9s cubic-bezier(.2,.8,.2,1);}
+.cv-compare-range{position:absolute;inset:0;z-index:7;opacity:0;cursor:ew-resize;}
+.cv-compare-note{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;color:#475569;font-size:.76rem;font-weight:700;}
+.cv-compare-ai{display:inline-flex;align-items:center;gap:6px;background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;border-radius:99px;padding:5px 10px;font-size:.68rem;font-weight:900;}
+@media (max-width:360px){.cv-compare-note{align-items:flex-start;flex-direction:column}.cv-compare-label{font-size:.58rem;padding:4px 7px}.cv-compare-knob{width:32px;height:32px}}
+.cv-card-h { display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:6px;flex-wrap:wrap; }
+.cv-card-t { font-family:'Sora',sans-serif;font-size:clamp(.72rem,2.3vw,.8rem);font-weight:800;color:var(--navy);margin:0; }
 
-.cv-g2 { display:grid;grid-template-columns:1fr;gap:8px; }
+.cv-g2 { display:grid;grid-template-columns:1fr;gap:6px; }
 @media (min-width:380px) { .cv-g2 { grid-template-columns:repeat(2,1fr); } }
 .cv-span2 { grid-column:1/-1; }
 
 .cv-field { display:flex;flex-direction:column;gap:4px;min-width:0; }
-.cv-lbl { font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#374151; }
+.cv-lbl { font-size:.52rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#374151; }
 .cv-inp {
   width:100%;min-width:0;
-  padding:0 11px;height:var(--touch);
+  padding:0 9px;height:34px;
   border-radius:var(--r-sm);
   border:1.5px solid rgba(37,99,235,.2);
-  background:#fff;font-size:.85rem;font-weight:500;
+  background:#fff;font-size:.72rem;font-weight:500;
   outline:none;transition:border-color .15s,box-shadow .15s;color:var(--navy);
   -webkit-appearance:none;appearance:none;max-width:100%;
 }
@@ -266,16 +347,17 @@ select.cv-inp {
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234b5563' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
 }
-textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;line-height:1.6; }
+textarea.cv-inp { height:auto;min-height:64px;padding:8px 9px;resize:vertical;line-height:1.45; }
 
-.cv-phone-row { display:grid;grid-template-columns:95px 1fr;gap:6px; }
+.cv-phone-row { display:grid;grid-template-columns:88px 1fr;gap:6px; }
+@media (max-width:340px) { .cv-phone-row { grid-template-columns:1fr; } }
 
 .cv-photo-row {
-  display:flex;align-items:center;gap:11px;margin-top:10px;padding:11px;
+  display:flex;align-items:center;gap:9px;margin-top:8px;padding:9px;
   background:#f8fafc;border-radius:10px;border:1px solid var(--border);flex-wrap:wrap;
 }
 .cv-photo-thumb {
-  width:52px;height:52px;border-radius:50%;border:2px solid var(--border);
+  width:44px;height:44px;border-radius:50%;border:2px solid var(--border);
   overflow:hidden;background:#f1f5f9;
   display:flex;align-items:center;justify-content:center;
   font-size:1.3rem;flex-shrink:0;
@@ -291,7 +373,7 @@ textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;
 }
 
 .cv-shell {
-  margin-top:8px;padding:12px;
+  margin-top:6px;padding:8px;
   background:#f8fafc;border-radius:10px;border:1px solid var(--border);
   transition:box-shadow .15s;width:100%;overflow:hidden;word-break:break-word;
 }
@@ -299,17 +381,18 @@ textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;
 .cv-shell-h { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px; }
 .cv-shell-t { font-size:.72rem;font-weight:700;color:var(--slate);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0; }
 .cv-empty {
-  display:flex;align-items:center;gap:8px;padding:13px;color:var(--slate);
-  font-size:.76rem;font-weight:600;border-radius:10px;background:#f8fafc;
+  display:flex;align-items:center;gap:8px;padding:9px;color:var(--slate);
+  font-size:.68rem;font-weight:600;border-radius:10px;background:#f8fafc;
   border:1.5px dashed rgba(37,99,235,.18);
 }
 
 .cv-btn {
   display:inline-flex;align-items:center;justify-content:center;gap:5px;
-  min-height:var(--touch);padding:0 16px;
-  border-radius:99px;border:none;font-size:.8rem;font-weight:800;
+  min-height:34px;padding:0 11px;
+  border-radius:8px;border:none;font-size:.68rem;font-weight:800;
   cursor:pointer;transition:transform .12s,box-shadow .12s,background .1s;
   white-space:nowrap;-webkit-tap-highlight-color:transparent;text-decoration:none;
+  max-width:100%;
 }
 .cv-btn:disabled { opacity:.4;cursor:not-allowed;transform:none!important; }
 .cv-btn-primary {
@@ -323,12 +406,12 @@ textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;
 .cv-btn-ghost:hover:not(:disabled) { background:rgba(37,99,235,.06); }
 .cv-btn-danger {
   background:rgba(185,28,28,.07);border:1px solid rgba(185,28,28,.22);color:#7f1d1d;
-  font-size:.72rem;padding:0 11px;min-height:36px;
+  font-size:.66rem;padding:0 9px;min-height:32px;
 }
-.cv-btn-sm { font-size:.75rem;padding:0 12px;min-height:36px; }
+.cv-btn-sm { font-size:.68rem;padding:0 10px;min-height:32px; }
 .cv-btn-add {
   display:inline-flex;align-items:center;gap:4px;
-  min-height:36px;padding:0 12px;border-radius:99px;border:none;
+  min-height:32px;padding:0 10px;border-radius:99px;border:none;
   background:linear-gradient(135deg,var(--gold),var(--gold-l));
   color:#1c1917;font-size:.68rem;font-weight:800;
   cursor:pointer;box-shadow:0 2px 7px rgba(217,119,6,.22);
@@ -337,7 +420,7 @@ textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;
 .cv-btn-add:hover { transform:scale(1.04); }
 .cv-btn-rm {
   display:inline-flex;align-items:center;justify-content:center;
-  min-height:32px;min-width:32px;padding:0 7px;
+  min-height:28px;min-width:28px;padding:0 6px;
   background:#fff;border:1px solid rgba(185,28,28,.25);color:#7f1d1d;
   border-radius:7px;font-size:.67rem;font-weight:700;
   cursor:pointer;flex-shrink:0;transition:background .1s;
@@ -346,7 +429,7 @@ textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;
 .cv-btn-rm:hover { background:rgba(185,28,28,.07); }
 .cv-ai-btn {
   display:inline-flex;align-items:center;gap:4px;
-  min-height:32px;padding:0 10px;border-radius:99px;
+  min-height:30px;padding:0 9px;border-radius:99px;
   border:1.5px solid rgba(217,119,6,.35);
   background:rgba(217,119,6,.07);color:#78350f;
   font-size:.68rem;font-weight:700;cursor:pointer;transition:background .12s;
@@ -367,8 +450,9 @@ textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;
 @media (min-width:960px) {
   .cv-main-tabs { display:none; }
   .cv-panel { display:block!important; }
-  .cv-grid { display:grid;grid-template-columns:440px 1fr;gap:14px;align-items:start; }
-  .cv-col-prev { min-width: 500px; }
+  .cv-grid { display:grid;grid-template-columns:350px minmax(0,1fr);gap:10px;align-items:start;overflow:visible; }
+  .cv-col-form,.cv-col-prev{height:auto;overflow:visible;padding-right:0;}
+  .cv-col-prev { min-width: 0; }
   .cv-desktop-only { display:block!important; }
 }
 @media (max-width:959px) {
@@ -389,6 +473,16 @@ textarea.cv-inp { height:auto;min-height:80px;padding:10px 11px;resize:vertical;
   box-shadow:0 -6px 28px rgba(0,0,0,.18);
 }
 @media (min-width:560px) { .cv-modal { border-radius:16px;max-width:420px;margin:0 auto;animation:fadeScl .18s ease; } }
+.cv-drop {
+  display:grid;place-items:center;gap:8px;text-align:center;
+  min-height:180px;margin:14px 0;padding:24px;border-radius:18px;
+  border:2px dashed #bfdbfe;background:linear-gradient(180deg,#f8fbff,#eef6ff);
+  color:#1e3a8a;cursor:pointer;transition:.16s;
+}
+.cv-drop.drag { border-color:#2563eb;background:#eff6ff;transform:scale(1.01); }
+.cv-drop input { display:none; }
+.cv-drop strong { font-size:1rem;font-weight:900;color:#0f172a; }
+.cv-drop span { font-size:.75rem;font-weight:700;color:#64748b; }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:none} }
 @keyframes fadeScl { from{opacity:0;transform:scale(.95)} to{opacity:1;transform:none} }
 `;
@@ -466,6 +560,65 @@ const DRIVING_LIC    = ["","UAE Light Vehicle","UAE Heavy Vehicle","Saudi Arabia
 
 const uid   = () => Math.random().toString(36).slice(2, 9);
 const lines = v  => String(v || "").split("\n").map(s => s.trim()).filter(Boolean);
+const jsonFromAi = v => JSON.parse(String(v || "").replace(/^```(?:json)?|```$/g, "").trim());
+const txt = v => Array.isArray(v) ? v.join("\n") : String(v || "");
+const skills10 = v => txt(v).split(/[\n,]+/).map(s => s.trim()).filter(Boolean).slice(0, 10).join(", ");
+const score100 = (v, fallback = 0) => {
+  let n = Number(v);
+  if (!Number.isFinite(n)) n = fallback;
+  if (n > 0 && n <= 10) n *= 10;
+  return Math.max(0, Math.min(100, Math.round(n)));
+};
+const auditPrompt = text => `Audit this CV honestly and rewrite it into a premium, full, ATS-friendly CV.
+
+Return ONLY valid JSON:
+{
+  "data": {
+    "fullName": "", "title": "", "email": "", "phone": "", "location": "",
+    "linkedin": "", "summary": "", "skills": "",
+    "experience": [{ "role": "", "company": "", "city": "", "start": "", "end": "", "bullets": "" }],
+    "education": [{ "degree": "", "school": "", "city": "", "start": "", "end": "", "notes": "" }],
+    "projects": [{ "name": "", "tech": "", "status": "", "bullets": "" }],
+    "certifications": [{ "name": "", "issuer": "", "year": "" }]
+  },
+  "audit": {
+    "score": 0,
+    "level": "",
+    "issues": [],
+    "strengths": [],
+    "fixes": []
+  },
+  "recommended": { "template": "executive-split" }
+}
+
+Scoring rules:
+- 90-100 exceptional, quantified, targeted, ATS-safe
+- 75-89 strong but needs small fixes
+- 55-74 average/generic/missing proof
+- 35-54 weak structure or missing core sections
+- 0-34 unreadable, very incomplete, or non-CV
+Never give the same score by default. Base score on actual CV quality, keyword depth, metrics, gaps, formatting, and recruiter risk.
+Rewrite rules:
+- Preserve EVERY real job, project, education item, award, certification, tool, city, date, and metric from the uploaded CV.
+- Do NOT compress a detailed CV into a short CV.
+- If the uploaded CV is too long, tighten wording to a professional 1-2 page limit while keeping all important evidence.
+- If the uploaded CV is short, expand only from the user's real context; do not invent employers, degrees, dates, tools, awards, or metrics.
+- Summary must be 3-4 strong lines.
+- Each experience role must have 4-6 ATS bullet lines when source detail exists.
+- Each project must have 2-3 ATS bullet lines when source detail exists.
+- Keep achievements specific: scope, tools, standards, systems, numbers, locations, and outcomes.
+- Limit skills to the best 10 comma-separated ATS skills.
+- Use human senior CV writing, not generic two-line summaries.
+
+CV:
+${text}`;
+const normalizeAudit = (audit = {}, fallbackScore = 0) => ({
+  score: score100(audit.score, fallbackScore),
+  level: audit.level || "",
+  issues: Array.isArray(audit.issues) ? audit.issues.filter(Boolean) : [],
+  strengths: Array.isArray(audit.strengths) ? audit.strengths.filter(Boolean) : [],
+  fixes: Array.isArray(audit.fixes) ? audit.fixes.filter(Boolean) : [],
+});
 
 const INIT_DATA = () => ({
   fullName:"", title:"", email:"", phoneCode:"+971", phoneNum:"",
@@ -653,9 +806,18 @@ export default function CvMakerClient({
   const [atsOpen,   setAtsOpen]   = useState(false);
   const [toasts,    setToasts]    = useState([]);
   const [aiLoading, setAiLoading] = useState({});
+  const [started,   setStarted]   = useState(false);
+  const [aiAudit,   setAiAudit]   = useState(null);
+  const [auditView, setAuditView] = useState(false);
+  const [comparePos, setComparePos] = useState(88);
+  const [originalCvText, setOriginalCvText] = useState("");
+  const [originalCvImage, setOriginalCvImage] = useState("");
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [draggingCv, setDraggingCv] = useState(false);
 
   const prevScrollRef = useRef(null);
   const paperRef      = useRef(null);
+  const auditPaperRef = useRef(null);
   const saveTimer     = useRef(null);
 
   const toast = useCallback((msg, type = "inf", dur = 3200) => {
@@ -664,6 +826,17 @@ export default function CvMakerClient({
     setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), dur);
   }, []);
   const dismissToast = id => setToasts(t => t.filter(x => x.id !== id));
+
+  useEffect(() => {
+    document.body.dataset.cvMakerStarted = started ? "1" : "0";
+    return () => { delete document.body.dataset.cvMakerStarted; };
+  }, [started]);
+  useEffect(() => {
+    if (!auditView || !aiAudit) return;
+    setComparePos(88);
+    const t = setTimeout(() => setComparePos(12), 350);
+    return () => clearTimeout(t);
+  }, [auditView, aiAudit]);
 
   useEffect(() => {
     try {
@@ -785,13 +958,102 @@ export default function CvMakerClient({
     toast("Reset complete ✅", "ok");
   };
 
-  const callClaude = async (prompt) => {
+  const callClaude = async (prompt, mode, max_tokens = 2400) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/cv-ai`,
-      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt }) }
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt, mode, max_tokens }) }
     );
     const json = await res.json();
     return json.result || "";
+  };
+
+  const extractCvText = async (file) => {
+    if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+      const pdfjs = await import("pdfjs-dist");
+      pdfjs.GlobalWorkerOptions.workerSrc ||= new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
+      const pdf = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+      const first = await pdf.getPage(1);
+      const viewport = first.getViewport({ scale: 1.25 });
+      const canvas = document.createElement("canvas");
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        await first.render({ canvasContext: ctx, viewport }).promise;
+        setOriginalCvImage(canvas.toDataURL("image/jpeg", 0.88));
+      }
+      const out = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const text = await page.getTextContent();
+        out.push(text.items.map(x => x.str).join(" "));
+      }
+      return out.join("\n");
+    }
+    if (file.name.toLowerCase().endsWith(".docx")) {
+      const mammoth = await import("mammoth/mammoth.browser");
+      const r = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+      return r.value || "";
+    }
+    return file.text();
+  };
+
+  const hydrateCvData = (src = {}) => {
+    const p = String(src.phone || "").match(/^(\+\d{1,4})?\s*(.*)$/) || [];
+    return {
+      ...INIT_DATA(),
+      ...src,
+      phoneCode: p[1] || data.phoneCode || "+971",
+      phoneNum: src.phoneNum || p[2] || src.phone || "",
+      skills: skills10(src.skills),
+      experience: (src.experience || []).map(x => ({
+        id: uid(), role: x.role || "", company: x.company || "", city: x.city || "",
+        start: x.start || x.startDate || "", end: x.end || x.endDate || "",
+        current: /present|current/i.test(x.end || x.endDate || ""), empType: x.empType || "Full-time",
+        industry: x.industry || "", bullets: txt(x.bullets),
+      })),
+      education: (src.education || []).map(x => ({
+        id: uid(), degType: x.degType || "Bachelor's Degree", degree: x.degree || x.subject || "",
+        school: x.school || x.institution || "", city: x.city || "", gpa: x.gpa || "",
+        start: x.start || x.startYear || "", end: x.end || x.endYear || "", notes: x.notes || "",
+      })),
+      projects: (src.projects || []).map(x => ({ id: uid(), name: x.name || "", tech: x.tech || "", url: x.url || "", status: x.status || "Completed", bullets: txt(x.bullets || x.description) })),
+      certifications: (src.certifications || []).map(x => ({ id: uid(), name: x.name || "", issuer: x.issuer || "", year: x.year || "", credId: x.credId || "", expiry: x.expiry || "" })),
+      languages: (src.languages || []).map(x => ({ id: uid(), lang: x.lang || x.language || "", level: x.level || "Professional" })),
+    };
+  };
+
+  const handleCvFile = async (file) => {
+    if (!file) return;
+    setAiLoading(l => ({ ...l, upload: true }));
+    setOriginalCvImage("");
+    toast("Reading CV…", "inf", 8000);
+    try {
+      const text = await extractCvText(file);
+      if (text.trim().length < 80) throw new Error("Could not read enough text");
+      setOriginalCvText(text);
+      toast("AI auditing CV…", "inf", 12000);
+      const parsed = jsonFromAi(await callClaude(auditPrompt(text.slice(0, 48000)), "parse_audit", 4500));
+      const nextData = hydrateCvData(parsed.data || parsed);
+      setData(nextData);
+      setAiAudit(normalizeAudit(parsed.audit, 0));
+      if (parsed.recommended?.template) setTmpl(parsed.recommended.template);
+      setStarted(true);
+      setAuditView(true);
+      setAtsOpen(true);
+      setUploadOpen(false);
+      toast("CV imported and audited", "ok");
+    } catch (err) {
+      toast(err?.message || "CV upload failed", "err");
+    } finally {
+      setAiLoading(l => ({ ...l, upload: false }));
+    }
+  };
+
+  const uploadCv = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    await handleCvFile(file);
   };
 
   const aiSummary = async () => {
@@ -846,18 +1108,18 @@ Rules:
     try {
       const expLine = (data.experience || []).slice(0, 3).map(e => `${e.role} at ${e.company}`).join(", ");
       const text = await callClaude(
-        `You are an expert CV writer. Generate exactly 12 ATS-optimized professional skills for:
+        `You are an expert CV writer. Generate exactly 10 ATS-optimized professional skills for:
 Name: ${data.fullName || "Professional"}
 Job Title: ${data.title || "Professional"}
 Experience: ${expLine || "Not specified"}
 Summary: ${data.summary || "Not specified"}
 Rules:
-- One skill per line
+- Comma-separated on one line
 - Mix technical and soft skills relevant to their role
 - No bullets, numbers, or preamble
-- Just the skill names, one per line`
+- Just the skill names`
       );
-      if (text) { sf("skills", text); toast("Skills added ✅", "ok"); }
+      if (text) { sf("skills", skills10(text)); toast("Skills added ✅", "ok"); }
     } catch { toast("AI error", "err"); }
     finally   { setAiLoading(l => ({ ...l, skills: false })); }
   };
@@ -948,7 +1210,7 @@ Rules:
     ck((d.education || []).filter(x => (x.degree || x.school || "").trim()).length >= 1, "Education section",             10);
     ck(d.linkedin?.trim(),                                                            "LinkedIn URL added",                5);
     ck((d.certifications || []).filter(x => x.name?.trim()).length >= 1,              "Certifications added",             5);
-    ck((d.experience || []).some(x => (x.bullets || "").trim().length > 10),         "Achievement bullets in experience", 9);
+    ck((d.experience || []).some(x => txt(x.bullets).trim().length > 10),         "Achievement bullets in experience", 9);
 
     return { score: Math.min(sc, 100), checks };
   }, [data]);
@@ -959,6 +1221,12 @@ Rules:
     () => buildCvHtml(data, tmpl, accent, fontId, fontSize, paper, FONTS, FSIZES, PAPERS),
     [data, tmpl, accent, fontId, fontSize, paper]
   );
+  const compareCvHtml = useMemo(
+    () => buildCvHtml(data, "executive-split", "#1683ff", fontId, fontSize, paper, FONTS, FSIZES, PAPERS),
+    [data, fontId, fontSize, paper]
+  );
+  const reportScore = score100(aiAudit?.score, 0);
+  const originalPreview = useMemo(() => lines(originalCvText).slice(0, 20), [originalCvText]);
 
   return (
     <>
@@ -966,11 +1234,46 @@ Rules:
 
       <div className="cv-bg" aria-hidden="true" />
       <Toasts toasts={toasts} onDismiss={dismissToast} />
+      {uploadOpen && (
+        <div className="cv-modal-backdrop" role="dialog" aria-modal="true" onClick={() => setUploadOpen(false)}>
+          <div className="cv-modal" onClick={e => e.stopPropagation()}>
+            <h2 style={{ margin: 0, fontSize: "1.15rem", color: "#0f172a" }}>Upload CV</h2>
+            <label
+              className={`cv-drop${draggingCv ? " drag" : ""}`}
+              onDragOver={e => { e.preventDefault(); setDraggingCv(true); }}
+              onDragLeave={() => setDraggingCv(false)}
+              onDrop={e => {
+                e.preventDefault();
+                setDraggingCv(false);
+                handleCvFile(e.dataTransfer.files?.[0]);
+              }}
+            >
+              <input type="file" accept=".pdf,.docx,.txt" onChange={uploadCv} disabled={!!aiLoading.upload} />
+              <strong>{aiLoading.upload ? "Reading CV..." : "Drop your CV here"}</strong>
+              <span>PDF, DOCX, or TXT - or select from device</span>
+            </label>
+            <button className="cv-btn cv-btn-ghost" style={{ width: "100%" }} onClick={() => setUploadOpen(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+      {aiLoading.upload && (
+        <div className="cv-scan" role="status" aria-live="polite">
+          <div className="cv-scan-box">
+            <div className="cv-scan-doc">
+              <div className="cv-resume-line dark" />
+              <div className="cv-resume-line green" />
+              {Array.from({ length: 10 }).map((_, i) => <div key={i} className="cv-resume-line" style={{ width: `${50 + (i % 4) * 10}%` }} />)}
+            </div>
+            <div className="cv-scan-title">Building your job-winning CV</div>
+            <div className="cv-scan-sub">AI is preserving your details, rewriting weak sections, and fitting a full ATS CV into AIDLA templates.</div>
+          </div>
+        </div>
+      )}
 
       <div className="cvapp">
         <div className="cv-wrap">
 
-          <header className="cv-hero">
+          {started && !auditView && <header className="cv-hero">
             <div className="cv-hero-l">
               <nav aria-label="Breadcrumb" style={{ fontSize: ".65rem", color: "#94a3b8", marginBottom: 6, display: "flex", gap: 4, alignItems: "center" }}>
                 <Link href="/" style={{ color: "#1a3a8f", textDecoration: "none", fontWeight: 600 }}>Home</Link>
@@ -1013,8 +1316,128 @@ Rules:
                 {atsOpen ? "Hide ↑" : "Checks ↓"}
               </button>
             </div>
-          </header>
+          </header>}
 
+          {!started && (
+            <section className="cv-start" aria-label="Start CV maker">
+              <div>
+                <h1>Land more interviews with AIDLA's <span className="cv-grad">CV Maker</span></h1>
+                <p>ATS check, AI writing, and one-click template fitting help your CV stand out to recruiters.</p>
+                <div className="cv-start-actions">
+                  <button className="cv-btn cv-btn-primary" type="button" onClick={() => setStarted(true)}>Start From Scratch</button>
+                  <button className="cv-btn cv-btn-ghost" type="button" onClick={() => setUploadOpen(true)} disabled={!!aiLoading.upload}>
+                    {aiLoading.upload ? "Reading CV…" : "Upload Existing CV"}
+                  </button>
+                  <button className="cv-btn cv-btn-ghost" type="button" onClick={() => setUploadOpen(true)} disabled={!!aiLoading.upload}>
+                    Check ATS Score
+                  </button>
+                </div>
+                <div className="cv-start-proof">
+                  <span><span className="cv-stars">★★★★★</span> 5,247 Reviews</span>
+                  <span>28,452 users improved CVs last month</span>
+                </div>
+              </div>
+              <div className="cv-start-art" aria-hidden="true">
+                <div className="cv-resume-shot">
+                  <h3>ETHAN SMITH</h3>
+                  <div className="cv-resume-line green" />
+                  <div className="cv-resume-line dark" />
+                  {Array.from({ length: 15 }).map((_, i) => <div key={i} className="cv-resume-line" style={{ width: `${45 + (i % 5) * 10}%` }} />)}
+                </div>
+                <div className="cv-ai-float">AI ASSISTANT<br />Generate Skills from Job<br />Improve my bullets</div>
+              </div>
+            </section>
+          )}
+
+          {started && (
+            <>
+          {auditView && aiAudit && (
+            <section className="cv-report" aria-label="AI CV audit report">
+              <aside className="cv-report-side">
+                <div style={{ fontSize: ".82rem", fontWeight: 900, color: "#0f172a" }}>Your CV Score</div>
+                <div className="cv-report-score">{reportScore}<span style={{ fontSize: "1rem", color: "#64748b" }}>/100</span></div>
+                <div className="cv-report-pill">{aiAudit.level || (reportScore >= 80 ? "Excellent" : reportScore >= 55 ? "Good" : "Needs work")}</div>
+                <div className="cv-report-meter"><div className="cv-report-fill" style={{ width: `${reportScore}%` }} /></div>
+                <div style={{ display: "grid", gap: 8, textAlign: "left", marginTop: 14 }}>
+                  <div className="cv-report-row bad"><span className="cv-report-icon">x</span><span>{aiAudit.issues?.length || 0} issues found</span></div>
+                  <div className="cv-report-row good"><span className="cv-report-icon">✓</span><span>{aiAudit.strengths?.length || 0} strong areas</span></div>
+                  <div className="cv-report-row fix"><span className="cv-report-icon">+</span><span>{aiAudit.fixes?.length || 0} suggested fixes</span></div>
+                </div>
+                {!!aiAudit.issues?.length && (
+                  <div style={{ marginTop: 14, textAlign: "left" }}>
+                    <div style={{ fontSize: ".72rem", fontWeight: 900, color: "#7f1d1d", marginBottom: 6, textTransform: "uppercase" }}>Critical Issues</div>
+                    {aiAudit.issues.slice(0, 5).map((x, i) => <div key={`side-i${i}`} className="cv-report-row bad"><span className="cv-report-icon">x</span><span>{x}</span></div>)}
+                  </div>
+                )}
+                <div className="cv-report-grid" style={{ marginTop: 14, textAlign: "left" }}>
+                  {!!aiAudit.fixes?.length && (
+                    <div className="cv-report-section">
+                      <h3>Recommended Fixes</h3>
+                      {aiAudit.fixes.slice(0, 5).map((x, i) => <div key={`rf${i}`} className="cv-report-row fix"><span className="cv-report-icon">+</span><span>{x}</span></div>)}
+                    </div>
+                  )}
+                  {!!aiAudit.strengths?.length && (
+                    <div className="cv-report-section">
+                      <h3>Strong Areas</h3>
+                      {aiAudit.strengths.slice(0, 4).map((x, i) => <div key={`rs${i}`} className="cv-report-row good"><span className="cv-report-icon">✓</span><span>{x}</span></div>)}
+                    </div>
+                  )}
+                </div>
+                <div className="cv-report-actions">
+                  <button className="cv-btn cv-btn-primary" onClick={() => { setAuditView(false); setMainTab("templates"); setTmpl("executive-split"); setAtsOpen(false); }}>
+                    Get your AIDLA Job Winning CV
+                  </button>
+                  <button className="cv-btn cv-btn-ghost" type="button" onClick={() => setUploadOpen(true)} disabled={!!aiLoading.upload}>
+                    Upload Another CV
+                  </button>
+                </div>
+              </aside>
+
+              <div className="cv-report-main">
+                <div className="cv-report-head">
+                  <div>
+                    <div className="cv-report-title">Resume Check Report</div>
+                    <div style={{ color: "#475569", fontSize: ".82rem", marginTop: 4 }}>AI reviewed your uploaded CV and prepared it for AIDLA templates.</div>
+                  </div>
+                  <div className="cv-report-top-actions">
+                    <div className="cv-report-print">
+                      <Print paperRef={auditPaperRef} paper={paper} fullName={data.fullName} toast={toast} />
+                    </div>
+                    <button className="cv-btn cv-btn-ghost" onClick={() => { setAuditView(false); setMainTab("templates"); setTmpl("executive-split"); setAtsOpen(false); }}>
+                      More Templates
+                    </button>
+                    <span className="cv-report-count">{(aiAudit.issues?.length || 0) + (aiAudit.fixes?.length || 0)} findings</span>
+                  </div>
+                </div>
+                <div className="cv-audit-print-src" ref={auditPaperRef} dangerouslySetInnerHTML={{ __html: compareCvHtml }} />
+
+                <div className="cv-compare-note">
+                  <span>Drag to compare uploaded CV with AIDLA's rewritten template</span>
+                  <span className="cv-compare-ai">AI filled gaps + rewrote weak sections</span>
+                </div>
+                <div className="cv-compare" style={{ "--split": `${comparePos}%` }}>
+                  <span className="cv-compare-label old">Uploaded CV</span>
+                  <span className="cv-compare-label new">AIDLA CV</span>
+                  <div className={`cv-compare-page cv-compare-old ${originalCvImage ? "has-image" : ""}`}>
+                    {originalCvImage ? <div className="cv-compare-paper"><img src={originalCvImage} alt="Uploaded CV first page" /></div> : <div className="cv-compare-paper">
+                      <h4>{data.fullName || "Uploaded CV"}</h4>
+                      <div className="line dark" />
+                      <div className="line blue" />
+                      {(originalPreview.length ? originalPreview : ["Uploaded CV preview"]).map((x, i) => (
+                        <div key={i} style={{ marginTop: i < 2 ? 8 : 6 }}>{x}</div>
+                      ))}
+                    </div>}
+                  </div>
+                  <div className="cv-compare-page cv-compare-new"><div className="cv-compare-paper" dangerouslySetInnerHTML={{ __html: compareCvHtml }} /></div>
+                  <div className="cv-compare-line" />
+                  <div className="cv-compare-knob">↔</div>
+                  <input className="cv-compare-range" type="range" min="12" max="88" value={comparePos} onChange={e => setComparePos(Number(e.target.value))} aria-label="Compare old and new CV" />
+                </div></div>
+            </section>
+          )}
+
+          {!auditView && (
+            <>
           <div
             id="ats-panel"
             className={`cv-ats-panel${atsOpen ? " open" : ""}`}
@@ -1029,13 +1452,15 @@ Rules:
               </div>
             ))}
           </div>
-
           <nav className="cv-toolbar" aria-label="CV file actions">
             <div className="cv-tbr">
               <label className="cv-btn cv-btn-ghost cv-btn-sm cv-file-btn" title="Load saved CV">
                 <span aria-hidden="true">📂</span> Load
                 <input type="file" accept=".json" onChange={importJSON} aria-label="Load CV from JSON file" />
               </label>
+              <button className="cv-btn cv-btn-ghost cv-btn-sm" type="button" title="Import CV" onClick={() => setUploadOpen(true)} disabled={!!aiLoading.upload}>
+                <span aria-hidden="true">+</span> Import CV
+              </button>
               <button className="cv-btn cv-btn-ghost cv-btn-sm" onClick={exportJSON}>
                 <span aria-hidden="true">💾</span> Save
               </button>
@@ -1219,56 +1644,6 @@ Rules:
                   <textarea id="p-compass" className="cv-inp" rows={3}
                     placeholder="A data-driven transformation leader with a 14-year compass pointing from engineering deep dives to C-suite strategy…"
                     value={data.compass || ""} onChange={e => sf("compass", e.target.value)} />
-                </div>
-
-                <div className="cv-card">
-                  <h2 className="cv-card-t" style={{ marginBottom: 10 }}>📊 KPI Highlights</h2>
-                  <p style={{ fontSize: ".7rem", color: "#4b5563", marginBottom: 8 }}>
-                    Add 2-4 key metrics that showcase your impact at a glance.
-                  </p>
-                  {(data.kpis || []).map(item => (
-                    <SItem key={item.id} item={item}
-                      onUpdate={u => updateItem("kpis", u)}
-                      onRemove={() => removeItem("kpis", item.id)}>
-                      {(L, upd, rm) => (
-                        <div className="cv-shell" style={{ padding: "10px 11px", marginTop: 6 }}>
-                          <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
-                            <input className="cv-inp" value={L.value} placeholder="e.g. $2.4M"
-                              style={{ flex: 1 }} aria-label="KPI value"
-                              onChange={e => upd("value", e.target.value)} />
-                            <input className="cv-inp" value={L.label} placeholder="e.g. Revenue Generated"
-                              style={{ flex: 2 }} aria-label="KPI label"
-                              onChange={e => upd("label", e.target.value)} />
-                            <button className="cv-btn-rm" onClick={rm} aria-label="Remove KPI">✕</button>
-                          </div>
-                        </div>
-                      )}
-                    </SItem>
-                  ))}
-                  <button className="cv-btn-add" style={{ marginTop: 9 }}
-                    onClick={() => addItem("kpis", { value: "", label: "" })}>
-                    + Add KPI
-                  </button>
-                </div>
-
-                <div className="cv-card">
-                  <h2 className="cv-card-t" style={{ marginBottom: 10 }}>🔲 QR Code (Portfolio Link)</h2>
-                  <div className="cv-photo-row">
-                    <div className="cv-photo-thumb" aria-hidden="true" style={{ borderRadius: 8 }}>
-                      {data.qrDataUrl ? <img src={data.qrDataUrl} alt="QR preview" /> : "🔲"}
-                    </div>
-                    <div className="cv-photo-btns">
-                      <label className="cv-btn cv-btn-ghost cv-btn-sm cv-file-btn">
-                        <span aria-hidden="true">📱</span> Upload QR
-                        <input type="file" accept="image/*" onChange={uploadQR} aria-label="Upload QR code" />
-                      </label>
-                      {data.qrDataUrl && (
-                        <button className="cv-btn cv-btn-danger" onClick={() => sf("qrDataUrl", "")}>
-                          ✕ Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -1488,14 +1863,14 @@ Rules:
                     </button>
                   </div>
                   <p style={{ fontSize: ".7rem", color: "#4b5563", marginBottom: 6 }}>
-                    One skill per line — ATS reads each keyword individually
+                    Separate skills with commas.
                   </p>
                   <label className="cv-lbl" htmlFor="p-skills" style={{ marginBottom: 4 }}>Skills list</label>
                   <textarea id="p-skills" className="cv-inp" rows={9}
-                    placeholder={"AutoCAD\nProject Management\nPython\nMS Excel\nLeadership\nHVAC Design"}
+                    placeholder={"AutoCAD, Project Management, Python, MS Excel, Leadership, HVAC Design"}
                     value={data.skills || ""} onChange={e => sf("skills", e.target.value)} />
                   <div className="cv-chips" aria-label="Skill chips preview">
-                    {lines(data.skills).map((s, i) => <span key={i} className="cv-chip">{s}</span>)}
+                    {txt(data.skills).split(/[\n,]+/).map(s => s.trim()).filter(Boolean).map((s, i) => <span key={i} className="cv-chip">{s}</span>)}
                   </div>
                 </div>
 
@@ -1700,8 +2075,14 @@ Rules:
             </section>
 
           </div>
+            </>
+          )}
+            </>
+          )}
         </div>
       </div>
     </>
   );
 }
+
+

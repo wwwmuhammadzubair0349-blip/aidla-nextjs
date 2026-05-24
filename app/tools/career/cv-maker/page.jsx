@@ -11,6 +11,9 @@ import { Suspense } from "react";
 import CvMakerClient from "./CvMakerClientOnly";
 import { fetchReviews } from "@/lib/reviewsHelper";
 
+export const dynamic = "force-static";
+export const revalidate = 3600;
+
 /* ================================================================
    DYNAMIC METADATA � Context-aware, long-tail keyword maximization
    Template � Region � Industry combinations

@@ -739,7 +739,6 @@ export default async function CvMakerPage() {
           features={CV_FEATURES}
           audiences={TARGET_AUDIENCES}
           regions={REGIONS_SERVED}
-          helpfulContent={HELPFUL_CONTENT_SECTIONS}
         />
       </Suspense>
 

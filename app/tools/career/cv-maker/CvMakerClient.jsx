@@ -791,7 +791,7 @@ function SItem({ item, onUpdate, onRemove, onAiDesc, onAiNotes, children }) {
 }
 
 export default function CvMakerClient({
-  answerBlocks, trustStats, templates, features, audiences, regions, helpfulContent
+  answerBlocks, trustStats, templates, features, audiences, regions
 }) {
   const [data,      setData]      = useState(INIT_DATA);
   const [tmpl,      setTmpl]      = useState("modern-stack");

@@ -251,23 +251,6 @@ const THUMBS = {
     <rect x="8" y="59" width="46" height="1.5" rx="0.75" fill="#e2e8f0"/>
     <rect x="8" y="63" width="30" height="1.5" rx="0.75" fill="#e2e8f0"/>
   `,
-  executiveSplit: (c) => `
-    <rect width="62" height="82" rx="4" fill="#fff"/>
-    <rect x="8" y="8" width="26" height="4" rx="1" fill="#0f172a"/>
-    <rect x="8" y="15" width="18" height="2" rx="1" fill="${c}"/>
-    <rect x="8" y="21" width="42" height="1.5" rx=".75" fill="#334155"/>
-    <rect x="8" y="28" width="31" height="1.2" fill="#0f172a"/>
-    <rect x="42" y="28" width="12" height="1.2" fill="#0f172a"/>
-    <rect x="8" y="34" width="30" height="1.4" rx=".7" fill="#e2e8f0"/>
-    <rect x="8" y="38" width="30" height="1.4" rx=".7" fill="#e2e8f0"/>
-    <rect x="8" y="42" width="28" height="1.4" rx=".7" fill="#e2e8f0"/>
-    <rect x="42" y="34" width="14" height="1.4" rx=".7" fill="#e2e8f0"/>
-    <rect x="42" y="39" width="11" height="1.4" rx=".7" fill="${c}"/>
-    <rect x="42" y="48" width="14" height="1.2" fill="#0f172a"/>
-    <rect x="42" y="55" width="9" height="1.4" rx=".7" fill="${c}"/>
-    <rect x="8" y="60" width="31" height="1.2" fill="#0f172a"/>
-    <rect x="8" y="66" width="25" height="1.4" rx=".7" fill="#e2e8f0"/>
-  `,
 };
 
 export const PREMIUM_TEMPLATES = [
@@ -289,7 +272,6 @@ export const PREMIUM_TEMPLATES = [
   { id: 'bold-header', l: 'Bold Header', cat: 'Premium', thumb: THUMBS.boldHeader },
   { id: 'dubai-pro', l: 'Dubai Pro', cat: 'Premium', thumb: THUMBS.dubaiPro },
   { id: 'apex-pro', l: 'Apex Pro', cat: 'Executive', thumb: THUMBS.apexPro },
-  { id: 'executive-split', l: 'Executive Split', cat: 'Executive', thumb: THUMBS.executiveSplit },
 ];
 
 export const PREMIUM_CATS = ['All', ...new Set(PREMIUM_TEMPLATES.map(t => t.cat))];
@@ -338,7 +320,7 @@ const BUILT_IN_LAYOUTS = {
   },
   'double-col': {
     header: ['profile', 'photo'],
-    main: ['summary', 'exp', 'edu', 'projects'],
+    main: ['kpi', 'summary', 'exp', 'edu', 'projects'],
     right: ['skills', 'langs', 'certs', 'awards', 'refs', 'hobbies']
   },
   'navy-exec': {
@@ -367,19 +349,14 @@ const BUILT_IN_LAYOUTS = {
     main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'refs', 'hobbies']
   },
   'dubai-pro': {
-    header: ['profile', 'photo'],
+    header: ['profile', 'photo', 'qr'],
     main: ['summary', 'exp', 'edu', 'projects', 'awards'],
     right: ['skills', 'langs', 'certs', 'refs', 'hobbies']
   },
   'apex-pro': {
     header: ['photo', 'profile'],
-    main: ['compass', 'exp', 'edu', 'caseStudy', 'projects'],
+    main: ['kpi', 'compass', 'exp', 'edu', 'caseStudy', 'projects'],
     right: ['skills', 'certs', 'langs', 'awards']
-  },
-  'executive-split': {
-    header: ['profile'],
-    main: ['exp', 'projects'],
-    right: ['summary', 'edu', 'certs', 'skills', 'langs', 'awards', 'refs']
   },
 };
 
@@ -653,34 +630,6 @@ const BUILT_IN_CSS = {
     .cv-skills-list li { padding: 2px 8px; background: rgba(var(--ac-rgb), 0.06); color: var(--ac); font-weight: 700; font-size: 0.78em; }
     .cv-bullets { font-size: 0.9em; color: #334155; }
   `,
-  'executive-split': `
-    .cv-doc { padding: 34px 44px 28px; font-size: 0.9em; }
-    .cv-header { margin-bottom: 18px; }
-    .cv-name { font-size: 2.55em; font-weight: 900; letter-spacing: -0.03em; color: #050505; line-height: 1; }
-    .cv-role { color: var(--ac); font-weight: 800; font-size: 1.05em; margin-top: 6px; text-transform: none; letter-spacing: 0; }
-    .cv-contact-row { margin-top: 10px; gap: 5px 13px; font-size: 0.78em; color: #333; font-weight: 700; }
-    .cv-body.has-right { display: grid; grid-template-columns: 1.55fr 0.95fr; gap: 30px; align-items: start; }
-    .cv-main, .cv-right { padding: 0; }
-    .cv-section { margin-bottom: 18px; }
-    .cv-sec-title { font-size: 1.35em; font-weight: 900; letter-spacing: 0; text-transform: uppercase; color: #050505; border-bottom: 3px solid #111; padding-bottom: 4px; margin-bottom: 8px; }
-    .cv-right .cv-section { margin-bottom: 18px; }
-    .cv-summary { font-size: 0.92em; line-height: 1.35; color: #444; }
-    .cv-item { margin-bottom: 12px; }
-    .cv-item-title { font-size: 1.1em; font-weight: 900; color: #050505; line-height: 1.15; }
-    .cv-item-sub { color: var(--ac); font-weight: 900; font-size: 1em; line-height: 1.2; }
-    .cv-item-date, .cv-item-loc { font-size: 0.78em; color: #555; font-weight: 600; }
-    .cv-item-header { gap: 8px; margin-bottom: 2px; }
-    .cv-bullets { margin-top: 4px; padding-left: 18px; font-size: 0.88em; line-height: 1.28; color: #444; }
-    .cv-bullets li { margin-bottom: 2px; line-height: 1.28; }
-    .cv-skills-list { display: block; list-style: none; padding: 0; margin: 0; line-height: 1.45; }
-    .cv-skills-list li { display: inline; background: transparent; border: 0; color: #444; font-weight: 800; font-size: 0.9em; padding: 0; }
-    .cv-skills-list li::after { content: ", "; }
-    .cv-skills-list li:last-child::after { content: ""; }
-    .cv-cert-list { gap: 7px; }
-    .cv-cert-item { background: transparent; border-left: 0; border-bottom: 1px solid #ddd; border-radius: 0; padding: 0 0 5px; font-weight: 800; }
-    .cv-lang-item { margin-bottom: 8px; }
-    .cv-lang-bar { height: 3px; }
-  `,
 };
 
 export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS, FSIZES, PAPERS, customConfig = null) {
@@ -735,7 +684,7 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
   const langs = arr(d.languages).filter(x => has(x.lang));
   const awards = arr(d.awards).filter(x => has(x.title));
   const refs = arr(d.references).filter(x => has(x.name));
-  const skills = String(d.skills || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  const skills = lines(d.skills);
   const hobbies = lines(d.hobbies);
   const kpis = arr(d.kpis).filter(x => has(x.value));
   const caseStudies = arr(d.caseStudies).filter(x => has(x.name));

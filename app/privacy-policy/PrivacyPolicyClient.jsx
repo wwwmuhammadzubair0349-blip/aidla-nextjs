@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "@/components/framerMotionLite";
+import { motion } from "framer-motion";
 
 import styles from "./privacy.module.css";
 

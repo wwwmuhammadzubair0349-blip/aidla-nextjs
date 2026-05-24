@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "@/components/framerMotionLite";
+import { motion } from "framer-motion";
 import "./terms.css"; // Import regular CSS, not CSS module
 
 // You can set this dynamically from a CMS or environment variable

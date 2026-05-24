@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-05-22T18:33:15.566Z",
-  "totalPages": 66,
+  "generatedAt": "2026-05-14T17:25:43.242Z",
+  "totalPages": 65,
   "categories": {
     "public": 40,
-    "user": 26
+    "user": 25
   },
   "pages": [
     {
@@ -250,12 +250,6 @@
       "route": "/user",
       "category": "user",
       "title": "User",
-      "description": null
-    },
-    {
-      "route": "/user/aidla-ai",
-      "category": "user",
-      "title": "Aidla ai",
       "description": null
     },
     {

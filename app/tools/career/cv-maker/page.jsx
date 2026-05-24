@@ -11,17 +11,75 @@ import { Suspense } from "react";
 import CvMakerClient from "./CvMakerClient";
 import { fetchReviews } from "@/lib/reviewsHelper";
 
-export const dynamic = "force-static";
-export const revalidate = 3600;
-
 /* ================================================================
-   STATIC METADATA - no searchParams, keeps route static/ISR
+   DYNAMIC METADATA � Context-aware, long-tail keyword maximization
+   Template � Region � Industry combinations
 ================================================================ */
-export function generateMetadata() {
+export async function generateMetadata({ searchParams }) {
+  const params = await searchParams;
+  const template = params?.template || "";
+  const region = params?.region || "";
+  const industry = params?.industry || "";
+
+  if (template && region) {
+    return {
+      title: `${template} CV Template for ${region} � Free ATS Resume Builder 2026 | AIDLA`,
+      description: `Create a professional ${template} CV for ${region} jobs. AI writing, ATS score checker, 17 templates, PDF download. , 100% free, no sign-up.`,
+      keywords: [
+        `${template.toLowerCase()} CV template ${region.toLowerCase()} free 2026`,
+        `${region.toLowerCase()} resume builder free no sign up`,
+        `free CV maker ${region.toLowerCase()}`,
+        "ATS resume builder", "professional CV maker", "free PDF resume download"
+      ].join(", "),
+    };
+  }
+
+  if (industry) {
+    return {
+      title: `Free ${industry} CV Maker 2026 � ATS Resume Builder for ${industry} Jobs | AIDLA`,
+      description: `Build an ATS-optimized ${industry} CV with AI writing assistant. Industry-specific keywords, 17 premium templates, real-time ATS checker, PDF download. Perfect for ${industry.toLowerCase()} jobs in Pakistan, UAE, GCC & globally. 100% free, no sign-up, no watermarks.`,
+      keywords: [
+        `${industry.toLowerCase()} CV maker free 2026`,
+        `${industry.toLowerCase()} resume builder online free`,
+        `ATS ${industry.toLowerCase()} resume`,
+        `professional ${industry.toLowerCase()} CV template free`,
+        "free resume maker no hidden fees", "AI CV builder", "career tools Pakistan"
+      ].join(", "),
+    };
+  }
+
+  if (template) {
+    return {
+      title: `${template} CV Template � Free ${template} Resume Builder 2026 | AIDLA`,
+      description: `Create a ${template} CV with AI writing assistant. ATS-friendly, instant PDF, 17 templates. ${template === "Gulf Premium" || template === "Dubai Pro" ? "MOHRE-optimized for UAE, Dubai & GCC jobs with visa status fields." : template === "Compact ATS" ? "Engineered for 95%+ ATS parseability on Workday, Taleo, Greenhouse." : "Perfect for global job markets."} 100% free, no sign-up needed.`,
+      keywords: [
+        `${template.toLowerCase()} CV template free 2026`,
+        `${template.toLowerCase()} resume builder online free`,
+        `free ${template.toLowerCase()} CV maker no sign up`,
+        "ATS resume builder", "CV maker Pakistan", "UAE CV format", "professional resume builder free"
+      ].join(", "),
+    };
+  }
+
+  if (region) {
+    return {
+      title: `Free CV Maker for ${region} Jobs 2026 � ATS Resume Builder | AIDLA`,
+      description: `Create ATS-optimized CVs for ${region} job applications. ${region === "Pakistan" ? "HEC-compliant with CNIC, domicile, FSc/Matric fields, city targeting (Karachi, Lahore, Islamabad)." : region === "Dubai" || region === "UAE" ? "MOHRE-compliant with visa status, nationality, photo, and GCC driving license fields." : "Professional templates for global recruitment standards."} AI writing, ATS checker, PDF. 100% free.`,
+      keywords: [
+        `CV maker ${region.toLowerCase()} 2026`,
+        `resume builder ${region.toLowerCase()} free no sign up`,
+        `${region.toLowerCase()} CV format professional`,
+        `free CV maker for ${region.toLowerCase()} jobs`,
+        "ATS resume checker", "professional CV templates", "online resume builder free"
+      ].join(", "),
+    };
+  }
+
+  // Fallback � maximum keyword coverage
   return {
-    title: "Free CV Maker 2026 - AI-Powered ATS Resume Builder | Premium Templates",
+    title: "Free CV Maker 2026 � AI-Powered ATS Resume Builder | Premium Templates",
     description:
-      "Create ATS-friendly CVs & resumes free. AI assistant & instant download. Best CV maker for Asia, GCC, UK, US & worldwide. Better than Zety, Enhancv, Resume.io - 100% free forever.",
+      "Create ATS-friendly CVs & resumes free. AI assistant & instant download. Best CV maker for Asia, GCC, UK, US & worldwide. Better than Zety, Enhancv, Resume.io � 100% free forever.",
     keywords: [
       "free CV maker 2026", "ATS resume builder online free", "CV maker Pakistan free",
       "resume builder no sign up", "AI CV builder free", "create CV online free",
@@ -53,7 +111,7 @@ export function generateMetadata() {
       },
     },
     openGraph: {
-      title: "Free AI CV Maker 2026 - ATS Resume Builder | 17 Templates | No Sign-Up | AIDLA",
+      title: "Free AI CV Maker 2026 � ATS Resume Builder | 17 Templates | No Sign-Up | AIDLA",
       description: "Build professional ATS-compatible CVs in minutes with AI writing. 17 templates for Pakistan, UAE, Dubai & GCC. Free PDF download. No sign-up, no watermarks. 100% free forever.",
       type: "website",
       url: "https://www.aidla.online/tools/career/cv-maker",
@@ -61,7 +119,7 @@ export function generateMetadata() {
         url: "https://www.aidla.online/og-cv-maker.jpg",
         width: 1200,
         height: 630,
-        alt: "AIDLA Free CV Maker 2026 - Professional ATS Resume Builder with 17 Templates",
+        alt: "AIDLA Free CV Maker 2026 � Professional ATS Resume Builder with 17 Templates",
         type: "image/jpeg",
       }],
       siteName: "AIDLA",
@@ -71,7 +129,7 @@ export function generateMetadata() {
       card: "summary_large_image",
       site: "@aidla_online",
       creator: "@aidla_online",
-      title: "Free CV Maker 2026 - ATS Resume Builder | No Sign-Up | AIDLA",
+      title: "Free CV Maker 2026 � ATS Resume Builder | No Sign-Up | AIDLA",
       description: "Build ATS-compatible CVs with AI writing. 17 templates, instant PDF, no watermarks. Free for global jobs.",
       images: ["https://www.aidla.online/og-cv-maker.jpg"],
     },
@@ -80,7 +138,7 @@ export function generateMetadata() {
       "geo.placename": "Pakistan",
       "geo.position": "30.3753;69.3451",
       "ICBM": "30.3753, 69.3451",
-      "DC.title": "Free CV Maker 2026 - AI Resume Builder for Pakistan & GCC | AIDLA",
+      "DC.title": "Free CV Maker 2026 � AI Resume Builder for Pakistan & GCC | AIDLA",
       "DC.description": "Professional AI-powered CV builder with 17 templates, ATS checker, PDF download. HEC-compliant for Pakistan, MOHRE-optimized for UAE & GCC. No sign-up, no watermarks. 100% free forever.",
       "DC.subject": "CV maker, resume builder, ATS resume, Pakistan jobs, UAE CV format, Dubai resume, free CV templates, cover letter examples, career tools 2026",
       "DC.language": "en",
@@ -490,6 +548,108 @@ const ANSWER_BLOCKS = [
   },
 ];
 
+/* ================================================================
+   HELPFUL CONTENT � 1,500+ words, EEAT-optimized
+================================================================ */
+const HELPFUL_CONTENT_SECTIONS = [
+  {
+    id: "ats-explained",
+    title: "How ATS (Applicant Tracking Systems) Parse Your CV � And Why 75% Get Rejected",
+    icon: "??",
+    content: (
+      <>
+        <p>
+          Applicant Tracking Systems process <strong>over 95% of Fortune 500 applications</strong> and approximately 75% of all online job applications globally. These systems extract keywords, check formatting compliance, and score your CV algorithmically before any human recruiter sees it. Research from Jobscan and Harvard Business Review shows that <strong>75% of CVs are rejected by ATS algorithms</strong> � primarily due to formatting errors and keyword mismatches, not candidate qualifications.
+        </p>
+        <p>
+          ATS software like <strong>Workday, Taleo, Greenhouse, iCIMS, SAP SuccessFactors, Bayt.com, Rozee.pk, and Naukrigulf</strong> uses natural language processing (NLP) to parse CVs. They extract five key data categories: personal information, work history, education, skills, and certifications. CVs saved as images, multi-column PDFs, or files with embedded text boxes result in <strong>garbled data extraction</strong>, causing qualified candidates to be automatically disqualified � often without ever knowing why they were never called for an interview.
+        </p>
+        <p>
+          <strong>Critical ATS compatibility rules for 2026:</strong> (1) Use single-column layouts only � multi-column designs confuse parsers and cause content merging errors; (2) Choose standard system fonts (Calibri, Arial, Georgia, Helvetica) at 11-12pt � decorative fonts fail OCR extraction; (3) Use standard section headings exactly as expected: &ldquo;Experience&rdquo; not &ldquo;Career Journey&rdquo;, &ldquo;Education&rdquo; not &ldquo;Academic Background&rdquo;; (4) Export as PDF with selectable text � never submit scanned images or flattened PDFs; (5) Include keyword variations � if the job description mentions &ldquo;project management&rdquo; and you have &ldquo;PM experience&rdquo;, include both forms.
+        </p>
+        <p>
+          <strong>Regional ATS differences:</strong> GCC job portals like <strong>Bayt.com, Naukrigulf, and GulfTalent</strong> have custom parsers that specifically extract nationality, visa status, and GCC driving license information. Pakistan government portals (FPSC, PPSC, NTS) verify HEC degree recognition and CNIC format. AIDLA&apos;s ATS score checker validates your CV against all major parsing engines used in Pakistan, UAE, and globally � giving you real-time, actionable feedback before you submit your application.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "car-formula",
+    title: "The CAR Formula: Turn Basic Duties into Interview-Winning Achievements",
+    icon: "??",
+    content: (
+      <>
+        <p>
+          Recruitment studies consistently show that CVs with quantified achievements receive <strong>40% more interview calls</strong> than those listing only responsibilities. The CAR formula � <strong>Context, Action, Result</strong> � transforms vague duty descriptions into compelling evidence of your professional impact. This framework is endorsed by career coaches at Harvard Business Review, LinkedIn Talent Solutions, and major global recruiting firms.
+        </p>
+        <p>
+          <strong>How to apply CAR:</strong> (1) <strong>Context:</strong> Set the scene � what was the situation, scale, or challenge? Include team size, budget (PKR/AED/SAR), timeframe, or problem scope. (2) <strong>Action:</strong> What specific actions did you take? Use strong past-tense verbs: directed, implemented, optimized, designed, negotiated, engineered. (3) <strong>Result:</strong> What measurable outcome did you achieve? Include percentages, currency amounts, time saved, or efficiency gains.
+        </p>
+        <p>
+          <strong>Before (duty-based):</strong> &ldquo;Responsible for managing the sales team and increasing revenue.&rdquo;<br />
+          <strong>After (CAR-based):</strong> &ldquo;Directed a 12-person sales team (Context) by implementing data-driven territory optimization and weekly coaching (Action), achieving 34% revenue growth from PKR 45M to PKR 60M within 8 months while reducing customer churn by 22% (Result).&rdquo;
+        </p>
+        <p>
+          <strong>Industry-specific CAR examples:</strong><br />
+          <strong>Engineering (GCC):</strong> &ldquo;Supervised AED 200M infrastructure project&rdquo; ? &ldquo;Delivered AED 200M highway project 3 weeks ahead of schedule, saving AED 8M through value engineering optimizations and reducing community disruption by 40%.&rdquo;<br />
+          <strong>Healthcare:</strong> &ldquo;Managed patient care unit&rdquo; ? &ldquo;Oversaw 45-bed ICU unit, implementing evidence-based protocols that reduced average patient stay by 2.3 days and improved post-discharge satisfaction scores from 78% to 94%.&rdquo;<br />
+          <strong>Marketing:</strong> &ldquo;Ran social media campaigns&rdquo; ? &ldquo;Executed multi-channel campaign reaching 2.1M impressions, generating 4,800 qualified leads at a CPQ 65% below industry benchmark while increasing brand awareness by 47%.&rdquo;
+        </p>
+        <p>
+          AIDLA&apos;s AI writing assistant automatically applies the CAR formula to your descriptions. Simply describe your experience in plain language, and the AI transforms it into professional, quantified bullet points with industry-specific keywords and regional currency formatting (PKR, AED, SAR, USD, GBP, EUR).
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "industry-keywords",
+    title: "Industry-Specific Keywords That Increase ATS Match Scores by 40+ Points",
+    icon: "??",
+    content: (
+      <>
+        <p>
+          Keyword optimization is the single highest-impact factor for ATS rankings, accounting for <strong>35-40% of your match score</strong>. Each industry has specific terminology, certifications, and technical vocabulary that ATS algorithms scan for. Research from Jobscan shows that the average successful CV contains <strong>60-75% keyword match</strong> with the target job description.
+        </p>
+        <p>
+          <strong>Information Technology & Software:</strong> Include programming languages (Python, Java, React, Node.js), frameworks (Django, Spring Boot, TensorFlow), cloud platforms (AWS, Azure, GCP), methodologies (Agile, Scrum, DevOps, CI/CD), and tools (Docker, Kubernetes, Git, Jira). Certifications: AWS Solutions Architect, Google Cloud Professional, PMP-ACP, CSM.
+        </p>
+        <p>
+          <strong>Engineering & Construction (GCC focus):</strong> Highlight project types (high-rise, infrastructure, industrial, oil & gas), software proficiency (AutoCAD, Revit, Primavera P6, STAAD.Pro, ETABS), codes and standards (ASHRAE, ASTM, BS, ISO, LEED), and GCC-specific experience (NEOM, Red Sea Project, Expo 2020 legacy, Qatar 2022). Certifications: PMP, LEED AP, NEBOSH, IOSH, Six Sigma Black Belt.
+        </p>
+        <p>
+          <strong>Banking & Finance (Pakistan & GCC):</strong> Include regulatory knowledge (SBP regulations for Pakistan, DFSA for DIFC, FCA for UK), reporting standards (IFRS, GAAP, Basel III), software (SAP, Oracle Financials, Bloomberg Terminal, Tally), and financial instruments (trade finance, sukuk, derivatives, treasury). Certifications: ACCA, CFA, CMA, FRM, CIA.
+        </p>
+        <p>
+          AIDLA&apos;s keyword database contains <strong>5,000+ industry-specific terms</strong> updated quarterly based on job market analysis across Pakistan, UAE, and global markets. The AI assistant suggests relevant keywords based on your selected industry, target job title, and pasted job description.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "regional-formats",
+    title: "Regional CV Formatting: Pakistan vs UAE/GCC vs UK vs US/Canada",
+    icon: "??",
+    content: (
+      <>
+        <p>
+          <strong>Pakistan Requirements:</strong> CVs should include CNIC for government positions, domicile for provincial jobs, HEC degree recognition status, and full educational history from Matric/FSc onward. Photos are common in private sector but avoided for federal government CSS/FPSC applications. Include exact board/university names with marks/grades. Length: 1-3 pages. Use &ldquo;CV&rdquo; terminology � this covers 95% of Pakistani job searches on Rozee.pk and LinkedIn Pakistan.
+        </p>
+        <p>
+          <strong>UAE & GCC Requirements:</strong> Include nationality, visa status (Visit Visa for immediate joiners, Employment Visa, Golden Visa, Spouse Visa), date of birth, and professional passport-style photo (white background). State &ldquo;Immediate Joiner&rdquo; if on Visit Visa � Dubai recruiters actively filter for this criterion. Include UAE/GCC driving license if held. Mention current location (e.g., &ldquo;Dubai, UAE&rdquo; or &ldquo;Presently in Karachi, willing to relocate&rdquo;). Length: 1-3 pages. Use A4 paper size. Major portals Bayt.com and Naukrigulf parse these fields specifically.
+        </p>
+        <p>
+          <strong>United Kingdom Requirements:</strong> No photo, no date of birth, no nationality (anti-discrimination laws). Focus on achievements with specific metrics. Include right-to-work status if you require visa sponsorship. Use &ldquo;CV&rdquo; terminology. Length: maximum 2 pages for most roles, 3+ for academic/scientific positions. British English spelling (colour, organise, programme). Sign off cover letters with &ldquo;Yours sincerely&rdquo; if named, &ldquo;Yours faithfully&rdquo; if &ldquo;Dear Sir/Madam.&rdquo;
+        </p>
+        <p>
+          <strong>United States & Canada Requirements:</strong> Use &ldquo;Resume&rdquo; terminology (not CV unless for academic/research roles). No photo, no date of birth, no marital status, no nationality. Maximum 1 page for entry-level, 2 pages for experienced professionals. Include link to LinkedIn profile and portfolio/GitHub. US Letter paper size. Action-verb heavy with quantified results. Remove &ldquo;References available upon request&rdquo; � this is assumed. Mention authorization to work if relevant (OPT, H1-B, Green Card, Canadian PR).
+        </p>
+        <p>
+          AIDLA&apos;s 17 templates automatically adjust field visibility and formatting based on your target region. Toggle between Pakistan, UAE/GCC, UK, US/Canada, and Global modes for instant region-specific optimization.
+        </p>
+      </>
+    ),
+  },
+];
 
 /* ================================================================
    TRUST STATS � Social proof bar
@@ -498,7 +658,7 @@ const TRUST_STATS = [
   { value: "50,000+", label: "CVs Created" },
   { value: "17", label: "Premium Templates" },
   { value: "100%", label: "Free Forever" },
-  { value: "4.8/5", label: "User Rating" },
+  { value: "4.8?", label: "User Rating" },
   { value: "ATS-Optimized", label: "Parseable PDF" },
   { value: "No Sign-Up", label: "Instant Access" },
 ];
@@ -515,27 +675,33 @@ const CV_TEMPLATES = [
 
 const CV_FEATURES = [
   {
+    icon: "??",
     title: "AI Writing Assistant",
-    desc: "Turn plain experience into professional, ATS-friendly summaries and bullet points."
+    desc: "Describe your experience in plain words � AI transforms it into professional, ATS-optimized bullet points using the CAR formula (Context-Action-Result) with quantified achievements and industry-specific keywords. Saves 45+ minutes versus manual writing."
   },
   {
+    icon: "??",
     title: "17 Premium Templates",
-    desc: "Choose ATS, Gulf, executive, academic, creative, and modern CV layouts."
+    desc: "Professional designs for every market: Gulf Premium & Dubai Pro (MOHRE-optimized for GCC), Compact ATS (95%+ parseability), Navy Executive (engineering), Modern Stack (tech). All 100% free � no watermarks, no trial limits, no premium tier."
   },
   {
+    icon: "?",
     title: "ATS Score Checker",
-    desc: "Check missing sections, skills, summaries, contact details, and parseability."
+    desc: "Real-time ATS compatibility scoring across 10+ criteria. Validates against major parsers used by Workday, Taleo, Greenhouse, Bayt.com, Naukrigulf, and Rozee.pk. Target 85+ score before applying � free and unlimited checks."
   },
   {
+    icon: "??",
     title: "Free PDF Download",
-    desc: "Download a clean, selectable-text PDF with no watermark."
+    desc: "High-quality PDF with real selectable text � fully parseable by all ATS systems. Print-ready with proper margins and typography. No watermarks, no download limits. Better than Zety (PKR 2,500+) and Enhancv ($14.99/mo). Completely free forever."
   },
   {
+    icon: "??",
     title: "Multi-Region Support",
-    desc: "Supports Pakistan, UAE/GCC, UK, US, Canada, and global CV expectations."
+    desc: "Auto-adjusts fields for Pakistan (CNIC, HEC, FSc/Matric, domicile), UAE/GCC (visa status, nationality, photo, driving license), UK (right-to-work), US/Canada (achievement focus, no photo). Language support: English, Arabic, Urdu."
   },
   {
-    title: "100% Free",
+    icon: "??",
+    title: "100% Free � No Catches",
     desc: "No subscriptions, no credit cards, no trial periods, no watermarks, no download limits, no sign-up required. All 17 templates included. Unlike competitors that trap you behind paywalls, AIDLA is genuinely free. Career tools should be a right, not a subscription."
   },
 ];
@@ -548,17 +714,15 @@ const TARGET_AUDIENCES = [
 ];
 
 const REGIONS_SERVED = [
-  "Pakistan - Karachi, Lahore, Islamabad, Faisalabad, Multan, Peshawar",
-  "UAE - Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah",
-  "Saudi Arabia - Riyadh, Jeddah, Dammam, Mecca, Medina, Khobar",
-  "Qatar - Doha, Al Wakrah", "Kuwait - Kuwait City", "Bahrain - Manama", "Oman - Muscat",
-  "United Kingdom - London, Manchester, Birmingham, Glasgow, Edinburgh",
-  "United States - New York, San Francisco, Chicago, Houston, Seattle, Austin",
-  "Canada - Toronto, Vancouver, Calgary, Montreal, Ottawa",
-  "India - Mumbai, Delhi NCR, Bangalore, Hyderabad, Chennai, Pune",
+  "Pakistan � Karachi, Lahore, Islamabad, Faisalabad, Multan, Peshawar, Rawalpindi, Sialkot",
+  "UAE � Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah, Al Ain",
+  "Saudi Arabia � Riyadh, Jeddah, Dammam, Mecca, Medina, Khobar",
+  "Qatar � Doha, Al Wakrah", "Kuwait � Kuwait City", "Bahrain � Manama", "Oman � Muscat",
+  "United Kingdom � London, Manchester, Birmingham, Glasgow, Edinburgh",
+  "United States � New York, San Francisco, Chicago, Houston, Seattle, Austin",
+  "Canada � Toronto, Vancouver, Calgary, Montreal, Ottawa",
+  "India � Mumbai, Delhi NCR, Bangalore, Hyderabad, Chennai, Pune",
 ];
-
-const cleanCopy = v => String(v || "").replaceAll("\uFFFD", "-").replaceAll("�", "-").replace(/\?+/g, "").replace(/\s+/g, " ").trim();
 
 /* ================================================================
    PAGE COMPONENT
@@ -579,135 +743,132 @@ export default async function CvMakerPage() {
           features={CV_FEATURES}
           audiences={TARGET_AUDIENCES}
           regions={REGIONS_SERVED}
+          helpfulContent={HELPFUL_CONTENT_SECTIONS}
         />
       </Suspense>
 
       {/* Static Helpful Content Section � 1,500+ words, EEAT-optimized, AI-readable */}
       <section
-        className="cv-public-guide"
         aria-label="CV writing guide, ATS optimization, and career resources"
         style={{
-          maxWidth: 1180,
+          maxWidth: 960,
           margin: "0 auto",
-          padding: "24px 20px 40px",
+          padding: "48px 20px 64px",
           fontFamily: "'DM Sans','Outfit',sans-serif",
           color: "#0b1437",
         }}
       >
-        <style>{`body[data-cv-maker-started="1"] .cv-public-guide{display:none!important}`}</style>
-        <article
-          itemScope
-          itemType="https://schema.org/Article"
-          style={{
-            background: "rgba(255,255,255,.78)",
-            border: "1px solid rgba(37,99,235,.12)",
-            borderRadius: 18,
-            boxShadow: "0 14px 50px rgba(15,23,42,.07)",
-            padding: "clamp(18px,3vw,30px)",
-          }}
-        >
+        <article itemScope itemType="https://schema.org/Article">
           <meta itemProp="headline" content="The Complete 2026 Guide to Creating ATS-Friendly CVs for Pakistan, UAE, GCC & Global Jobs" />
           <meta itemProp="author" content="AIDLA" />
           <meta itemProp="datePublished" content="2025-01-15T00:00:00+05:00" />
           <meta itemProp="dateModified" content={new Date().toISOString()} />
 
           {/* Introduction */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#eff6ff", color: "#1e3a8a", border: "1px solid #bfdbfe", borderRadius: 999, padding: "6px 12px", fontSize: ".72rem", fontWeight: 800, marginBottom: 12 }}>
-            CV Guide 2026
-          </div>
-          <h2 style={{ fontSize: "clamp(1.25rem, 3vw, 2rem)", fontWeight: 900, marginBottom: 10, lineHeight: 1.2, maxWidth: 760 }}>
+          <h2 style={{ fontSize: "clamp(1.3rem, 4vw, 1.8rem)", fontWeight: 800, marginBottom: 12, lineHeight: 1.3 }}>
             Your Complete 2026 Guide to ATS-Friendly CVs for Pakistan, UAE, GCC & Global Jobs
           </h2>
-          <p style={{ color: "#64748b", marginBottom: 22, maxWidth: 780, fontSize: ".92rem", lineHeight: 1.7 }}>
+          <p style={{ color: "#64748b", marginBottom: 24, maxWidth: 700, fontSize: "1rem", lineHeight: 1.7 }}>
             In 2026, over <strong>75% of CVs are rejected by ATS algorithms</strong> before a human recruiter sees them. This comprehensive guide covers
             ATS parsing mechanics, the CAR achievement formula, industry-specific keywords, and regional formatting requirements for Pakistan
             (HEC-compliant, CNIC, FSc/Matric), UAE (MOHRE-compliant, visa status), GCC, UK, US, and Canada. Use our free AI CV maker to implement
-            these strategies instantly with no sign-up, no watermarks, and no hidden fees.
+            these strategies instantly � no sign-up, no watermarks, genuinely free.
           </p>
 
           {/* Features Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(210px,1fr))", gap: 10, marginBottom: 22 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 16, marginBottom: 40 }}>
             {CV_FEATURES.map(f => (
-              <div key={f.title} style={{ background: "linear-gradient(180deg,#fff,#f8fafc)", borderRadius: 12, padding: "14px 15px", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(15,23,42,.04)" }}>
-                <h3 style={{ fontSize: ".88rem", fontWeight: 800, color: "#0b1437", marginBottom: 6 }}>{f.title}</h3>
-                <p style={{ fontSize: ".78rem", color: "#64748b", lineHeight: 1.55 }}>{f.desc}</p>
+              <div key={f.title} style={{ background: "#fff", borderRadius: 14, padding: "24px 22px", border: "1px solid #e2e8f0", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                <div style={{ fontSize: "2rem", marginBottom: 10 }} aria-hidden="true">{f.icon}</div>
+                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "#0b1437", marginBottom: 8 }}>{f.title}</h3>
+                <p style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.6 }}>{f.desc}</p>
               </div>
             ))}
           </div>
 
           {/* Trust Statistics Bar */}
-          <div style={{ background: "linear-gradient(135deg, #eff6ff, #fff7d6)", borderRadius: 14, padding: "16px 18px", border: "1px solid rgba(37,99,235,0.12)", marginBottom: 26, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 12, textAlign: "center" }}>
+          <div style={{ background: "linear-gradient(135deg, #f0f9ff, #fef3c7)", borderRadius: 14, padding: "28px 24px", border: "1px solid rgba(37,99,235,0.12)", marginBottom: 40, display: "flex", flexWrap: "wrap", justifyContent: "space-around", gap: 16, textAlign: "center" }}>
             {TRUST_STATS.map(stat => (
               <div key={stat.label}>
-                <div style={{ fontSize: "clamp(1.1rem,2vw,1.55rem)", fontWeight: 900, color: "#1e3a8a", marginBottom: 2 }}>{stat.value}</div>
-                <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>{stat.label}</div>
+                <div style={{ fontSize: "1.8rem", fontWeight: 900, color: "#1e3a8a", marginBottom: 4 }}>{stat.value}</div>
+                <div style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: 600 }}>{stat.label}</div>
               </div>
             ))}
           </div>
 
-          {/* Key FAQ */}
-          <h2 style={{ fontSize: "1.05rem", fontWeight: 900, color: "#0b1437", marginBottom: 12 }}>
-            Frequently Asked Questions
+          {/* Helpful Content Sections */}
+          {HELPFUL_CONTENT_SECTIONS.map(section => (
+            <div key={section.id} style={{ marginBottom: 36 }}>
+              <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                <span aria-hidden="true">{section.icon}</span>
+                {section.title}
+              </h2>
+              <div style={{ fontSize: "0.92rem", color: "#475569", lineHeight: 1.8, maxWidth: 800 }}>
+                {section.content}
+              </div>
+            </div>
+          ))}
+
+          {/* 24 Answer Blocks � AEO-optimized for PAA, Featured Snippets, AI Overviews */}
+          <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 20 }}>
+            ? Frequently Asked Questions � CV Writing, ATS Optimization & Career Tips
           </h2>
-          <div style={{ marginBottom: 26, display: "grid", gap: 8 }}>
-            {ANSWER_BLOCKS.slice(0, 6).map((block, i) => (
-              <details key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "12px 14px" }}
+          <div style={{ marginBottom: 40 }}>
+            {ANSWER_BLOCKS.map((block, i) => (
+              <div key={i} style={{ borderBottom: "1px solid #e2e8f0", padding: "14px 0" }}
                 itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
-                <summary itemProp="name" style={{ fontSize: ".86rem", fontWeight: 800, color: "#0b1437", cursor: "pointer" }}>
-                  {cleanCopy(block.question)}
-                </summary>
+                <h3 itemProp="name" style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: 6, color: "#0b1437", cursor: "default" }}>
+                  {block.question}
+                </h3>
                 <div itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer">
-                  <p itemProp="text" style={{ fontSize: ".8rem", color: "#64748b", lineHeight: 1.65, marginTop: 8 }}>
-                    {cleanCopy(block.answer)}
+                  <p itemProp="text" style={{ fontSize: "0.85rem", color: "#64748b", lineHeight: 1.7 }}>
+                    {block.answer}
                   </p>
                 </div>
-              </details>
+              </div>
             ))}
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 14 }}>
-            <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 14, padding: 16 }}>
-              <h3 style={{ fontSize: ".98rem", fontWeight: 900, color: "#0b1437", marginBottom: 12 }}>Available CV Templates</h3>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                {CV_TEMPLATES.map(t => (
-                  <span key={t} style={{ background: "#f8fafc", color: "#1e3a8a", borderRadius: 999, padding: "5px 11px", fontSize: ".74rem", fontWeight: 800, border: "1px solid #dbeafe" }}>
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </section>
+          {/* Templates Showcase */}
+          <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 16 }}>
+            ?? Available CV Templates � All 100% Free
+          </h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 36 }}>
+            {CV_TEMPLATES.map(t => (
+              <span key={t} style={{ background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", color: "#1e3a8a", borderRadius: 20, padding: "6px 16px", fontSize: "0.82rem", fontWeight: 600, border: "1px solid rgba(37,99,235,0.12)" }}>
+                {t}
+              </span>
+            ))}
+          </div>
 
-            <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 14, padding: 16 }}>
-              <h3 style={{ fontSize: ".98rem", fontWeight: 900, color: "#0b1437", marginBottom: 12 }}>Who Uses Our Free CV Maker</h3>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
-                {TARGET_AUDIENCES.map(a => (
-                  <span key={a} style={{ background: "#fff7d6", color: "#78350f", borderRadius: 999, padding: "5px 11px", fontSize: ".74rem", fontWeight: 800 }}>
-                    {a}
-                  </span>
-                ))}
-              </div>
-            </section>
+          {/* Target Audiences */}
+          <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 16 }}>
+            ?? Who Uses Our Free CV Maker?
+          </h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 36 }}>
+            {TARGET_AUDIENCES.map(a => (
+              <span key={a} style={{ background: "#fef3c7", color: "#78350f", borderRadius: 20, padding: "6px 16px", fontSize: "0.8rem", fontWeight: 600 }}>
+                {a}
+              </span>
+            ))}
+          </div>
 
-            <section style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 14, padding: 16, gridColumn: "1 / -1" }}>
-              <h3 style={{ fontSize: ".98rem", fontWeight: 900, color: "#0b1437", marginBottom: 6 }}>Optimized for Regional Job Markets</h3>
-              <p style={{ color: "#64748b", marginBottom: 12, maxWidth: 760, fontSize: ".82rem", lineHeight: 1.6 }}>
-                Tailored fields and formatting for Pakistan, GCC, Western, and global hiring expectations.
-              </p>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 8 }}>
-                {REGIONS_SERVED.map(r => (
-                  <div key={r} style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: "9px 11px", fontSize: ".78rem", color: "#334155", fontWeight: 650 }}>
-                    {r}
-                  </div>
-                ))}
+          {/* Regions Served */}
+          <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#0b1437", marginBottom: 16 }}>
+            ?? Optimized for Regional Job Markets Worldwide
+          </h3>
+          <p style={{ color: "#64748b", marginBottom: 16, maxWidth: 700 }}>
+            Our CV templates are tailored for specific regional requirements and employer expectations across Pakistan, the Middle East, South Asia, and Western markets.
+          </p>
+          <div style={{ columns: "2 280px", gap: 16, marginBottom: 40 }}>
+            {REGIONS_SERVED.map(r => (
+              <div key={r} style={{ breakInside: "avoid", marginBottom: 8, padding: "8px 0", fontSize: "0.85rem", color: "#334155" }}>
+                ? {r}
               </div>
-            </section>
+            ))}
           </div>
         </article>
       </section>
     </>
   );
 }
-
-
-
-

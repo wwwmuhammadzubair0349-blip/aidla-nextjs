@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useId } from "react";
-import { motion, AnimatePresence } from "@/components/framerMotionLite";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import styles from "./contact.module.css";
 

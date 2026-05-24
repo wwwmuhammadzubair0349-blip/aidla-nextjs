@@ -1,4 +1,4 @@
-import CvBuilderClient from "./CvBuilderClientOnly";
+import CvBuilderClient from "./CvBuilderClient";
 import { buildGraph, buildWebPageSchema, buildBreadcrumbSchema } from "@/lib/schemas";
 
 const SITE_URL = "https://www.aidla.online";

@@ -8,7 +8,7 @@
 // ?? Technical: SSR dynamic metadata, zero CLS, Lighthouse 100, canonical + hreflang, Dublin Core + geo meta
 
 import { Suspense } from "react";
-import CvMakerClient from "./CvMakerClientOnly";
+import CvMakerClient from "./CvMakerClient";
 import { fetchReviews } from "@/lib/reviewsHelper";
 
 export const dynamic = "force-static";

@@ -7,7 +7,7 @@
 // ?? Technical: SSR dynamic metadata, zero CLS, Lighthouse 100, canonical + hreflang, Dublin Core + geo meta
 
 import { Suspense } from "react";
-import CoverLetterClient from "./CoverLetterClientOnly";
+import CoverLetterClient from "./CoverLetterClient";
 import { fetchReviews } from "@/lib/reviewsHelper";
 
 /* ================================================================

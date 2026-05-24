@@ -969,8 +969,8 @@ export default function CvMakerClient({
 
   const extractCvText = async (file) => {
     if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
-      const pdfjs = await import("pdfjs-dist");
-      pdfjs.GlobalWorkerOptions.workerSrc ||= new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
+      const pdfjs = await import(/* webpackIgnore: true */ "/vendor/pdf.mjs");
+      pdfjs.GlobalWorkerOptions.workerSrc ||= "/vendor/pdf.worker.min.mjs";
       const pdf = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
       const first = await pdf.getPage(1);
       const viewport = first.getViewport({ scale: 1.25 });
@@ -991,8 +991,16 @@ export default function CvMakerClient({
       return out.join("\n");
     }
     if (file.name.toLowerCase().endsWith(".docx")) {
-      const mammoth = await import("mammoth/mammoth.browser");
-      const r = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+      if (!window.mammoth) {
+        await new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "/vendor/mammoth.browser.js";
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+      const r = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
       return r.value || "";
     }
     return file.text();

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion } from "@/components/framerMotionLite";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 import styles from "./email-confirmed.module.css";

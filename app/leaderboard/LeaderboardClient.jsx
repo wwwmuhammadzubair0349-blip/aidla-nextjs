@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "@/components/framerMotionLite";
 import { supabase } from "@/lib/supabase";
 import styles from "./leaderboard.module.css";
 

@@ -15,74 +15,13 @@ export const dynamic = "force-static";
 export const revalidate = 3600;
 
 /* ================================================================
-   DYNAMIC METADATA � Context-aware, long-tail keyword maximization
-   Template � Region � Industry combinations
+   STATIC METADATA - no searchParams, keeps route static/ISR
 ================================================================ */
-export async function generateMetadata({ searchParams }) {
-  const params = await searchParams;
-  const template = params?.template || "";
-  const region = params?.region || "";
-  const industry = params?.industry || "";
-
-  if (template && region) {
-    return {
-      title: `${template} CV Template for ${region} � Free ATS Resume Builder 2026 | AIDLA`,
-      description: `Create a professional ${template} CV for ${region} jobs. AI writing, ATS score checker, 17 templates, PDF download. , 100% free, no sign-up.`,
-      keywords: [
-        `${template.toLowerCase()} CV template ${region.toLowerCase()} free 2026`,
-        `${region.toLowerCase()} resume builder free no sign up`,
-        `free CV maker ${region.toLowerCase()}`,
-        "ATS resume builder", "professional CV maker", "free PDF resume download"
-      ].join(", "),
-    };
-  }
-
-  if (industry) {
-    return {
-      title: `Free ${industry} CV Maker 2026 � ATS Resume Builder for ${industry} Jobs | AIDLA`,
-      description: `Build an ATS-optimized ${industry} CV with AI writing assistant. Industry-specific keywords, 17 premium templates, real-time ATS checker, PDF download. Perfect for ${industry.toLowerCase()} jobs in Pakistan, UAE, GCC & globally. 100% free, no sign-up, no watermarks.`,
-      keywords: [
-        `${industry.toLowerCase()} CV maker free 2026`,
-        `${industry.toLowerCase()} resume builder online free`,
-        `ATS ${industry.toLowerCase()} resume`,
-        `professional ${industry.toLowerCase()} CV template free`,
-        "free resume maker no hidden fees", "AI CV builder", "career tools Pakistan"
-      ].join(", "),
-    };
-  }
-
-  if (template) {
-    return {
-      title: `${template} CV Template � Free ${template} Resume Builder 2026 | AIDLA`,
-      description: `Create a ${template} CV with AI writing assistant. ATS-friendly, instant PDF, 17 templates. ${template === "Gulf Premium" || template === "Dubai Pro" ? "MOHRE-optimized for UAE, Dubai & GCC jobs with visa status fields." : template === "Compact ATS" ? "Engineered for 95%+ ATS parseability on Workday, Taleo, Greenhouse." : "Perfect for global job markets."} 100% free, no sign-up needed.`,
-      keywords: [
-        `${template.toLowerCase()} CV template free 2026`,
-        `${template.toLowerCase()} resume builder online free`,
-        `free ${template.toLowerCase()} CV maker no sign up`,
-        "ATS resume builder", "CV maker Pakistan", "UAE CV format", "professional resume builder free"
-      ].join(", "),
-    };
-  }
-
-  if (region) {
-    return {
-      title: `Free CV Maker for ${region} Jobs 2026 � ATS Resume Builder | AIDLA`,
-      description: `Create ATS-optimized CVs for ${region} job applications. ${region === "Pakistan" ? "HEC-compliant with CNIC, domicile, FSc/Matric fields, city targeting (Karachi, Lahore, Islamabad)." : region === "Dubai" || region === "UAE" ? "MOHRE-compliant with visa status, nationality, photo, and GCC driving license fields." : "Professional templates for global recruitment standards."} AI writing, ATS checker, PDF. 100% free.`,
-      keywords: [
-        `CV maker ${region.toLowerCase()} 2026`,
-        `resume builder ${region.toLowerCase()} free no sign up`,
-        `${region.toLowerCase()} CV format professional`,
-        `free CV maker for ${region.toLowerCase()} jobs`,
-        "ATS resume checker", "professional CV templates", "online resume builder free"
-      ].join(", "),
-    };
-  }
-
-  // Fallback � maximum keyword coverage
+export function generateMetadata() {
   return {
-    title: "Free CV Maker 2026 � AI-Powered ATS Resume Builder | Premium Templates",
+    title: "Free CV Maker 2026 - AI-Powered ATS Resume Builder | Premium Templates",
     description:
-      "Create ATS-friendly CVs & resumes free. AI assistant & instant download. Best CV maker for Asia, GCC, UK, US & worldwide. Better than Zety, Enhancv, Resume.io � 100% free forever.",
+      "Create ATS-friendly CVs & resumes free. AI assistant & instant download. Best CV maker for Asia, GCC, UK, US & worldwide. Better than Zety, Enhancv, Resume.io - 100% free forever.",
     keywords: [
       "free CV maker 2026", "ATS resume builder online free", "CV maker Pakistan free",
       "resume builder no sign up", "AI CV builder free", "create CV online free",
@@ -114,7 +53,7 @@ export async function generateMetadata({ searchParams }) {
       },
     },
     openGraph: {
-      title: "Free AI CV Maker 2026 � ATS Resume Builder | 17 Templates | No Sign-Up | AIDLA",
+      title: "Free AI CV Maker 2026 - ATS Resume Builder | 17 Templates | No Sign-Up | AIDLA",
       description: "Build professional ATS-compatible CVs in minutes with AI writing. 17 templates for Pakistan, UAE, Dubai & GCC. Free PDF download. No sign-up, no watermarks. 100% free forever.",
       type: "website",
       url: "https://www.aidla.online/tools/career/cv-maker",
@@ -122,7 +61,7 @@ export async function generateMetadata({ searchParams }) {
         url: "https://www.aidla.online/og-cv-maker.jpg",
         width: 1200,
         height: 630,
-        alt: "AIDLA Free CV Maker 2026 � Professional ATS Resume Builder with 17 Templates",
+        alt: "AIDLA Free CV Maker 2026 - Professional ATS Resume Builder with 17 Templates",
         type: "image/jpeg",
       }],
       siteName: "AIDLA",
@@ -132,7 +71,7 @@ export async function generateMetadata({ searchParams }) {
       card: "summary_large_image",
       site: "@aidla_online",
       creator: "@aidla_online",
-      title: "Free CV Maker 2026 � ATS Resume Builder | No Sign-Up | AIDLA",
+      title: "Free CV Maker 2026 - ATS Resume Builder | No Sign-Up | AIDLA",
       description: "Build ATS-compatible CVs with AI writing. 17 templates, instant PDF, no watermarks. Free for global jobs.",
       images: ["https://www.aidla.online/og-cv-maker.jpg"],
     },
@@ -141,7 +80,7 @@ export async function generateMetadata({ searchParams }) {
       "geo.placename": "Pakistan",
       "geo.position": "30.3753;69.3451",
       "ICBM": "30.3753, 69.3451",
-      "DC.title": "Free CV Maker 2026 � AI Resume Builder for Pakistan & GCC | AIDLA",
+      "DC.title": "Free CV Maker 2026 - AI Resume Builder for Pakistan & GCC | AIDLA",
       "DC.description": "Professional AI-powered CV builder with 17 templates, ATS checker, PDF download. HEC-compliant for Pakistan, MOHRE-optimized for UAE & GCC. No sign-up, no watermarks. 100% free forever.",
       "DC.subject": "CV maker, resume builder, ATS resume, Pakistan jobs, UAE CV format, Dubai resume, free CV templates, cover letter examples, career tools 2026",
       "DC.language": "en",

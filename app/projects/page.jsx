@@ -3,7 +3,6 @@ import { createClient } from "@supabase/supabase-js";
 import ProjectsClient from "./ProjectsClient";
 import {
   buildBreadcrumbSchema,
-  buildEducationalOrgSchema,
   buildGraph,
   buildHowToSchema,
   buildItemListSchema,
@@ -82,7 +81,6 @@ export default async function ProjectsPage({ searchParams }) {
       speakableSelectors: ["#projects-heading", "#projects-description"],
     }),
     buildBreadcrumbSchema([{ name: "Home", url: "/" }, { name: "Projects", url: "/projects" }], "/projects"),
-    buildEducationalOrgSchema(),
     buildHowToSchema([
       { title: "Search project ideas", text: "Use AIDLA Projects to search free FYP, mini project, semester, and research ideas." },
       { title: "Filter by requirements", text: "Filter ideas by domain, difficulty, tech stack, subject, university, and education level." },

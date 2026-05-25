@@ -166,6 +166,14 @@ const styles = `
   .badge-blue { background: rgba(59,130,246,0.1); color: var(--royal); }
   .badge-gold { background: rgba(245,158,11,0.12); color: #92400e; }
 
+  .btn-delete {
+    padding: 4px 10px; border-radius: 8px; font-size: 0.65rem; font-weight: 700;
+    background: rgba(239,68,68,0.08); color: #dc2626; border: 1px solid rgba(239,68,68,0.2);
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .btn-delete:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
+  .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
+
   .bar-list { padding: clamp(14px,3vw,20px) clamp(16px,4vw,28px); display: flex; flex-direction: column; gap: 12px; }
   .bar-meta { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 5px; }
   .bar-name { font-weight: 600; color: var(--navy); }
@@ -376,8 +384,23 @@ function Dashboard({ users }) {
 /* ═══════════════════════════════════════════════════════════════
    USERS LIST TAB
 ═══════════════════════════════════════════════════════════════ */
-function UsersList({ users, loading }) {
-  const [search, setSearch] = useState("");
+function UsersList({ users, loading, onDelete }) {
+  const [search,    setSearch]    = useState("");
+  const [deleting,  setDeleting]  = useState(null); // userId being deleted
+
+  async function handleDelete(u) {
+    if (!confirm(`Delete "${u.full_name || u.email}"? This cannot be undone.`)) return;
+    setDeleting(u.user_id);
+    const res = await fetch("/api/admin/delete-user", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: u.user_id }),
+    });
+    const json = await res.json();
+    setDeleting(null);
+    if (!res.ok) { alert("Error: " + json.error); return; }
+    onDelete(u.user_id);
+  }
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -423,12 +446,13 @@ function UsersList({ users, loading }) {
                   <th className="usr-th hide-mobile">Country</th>
                   <th className="usr-th right">AIDLA Coins</th>
                   <th className="usr-th hide-mobile">Joined</th>
+                  <th className="usr-th right">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={6}>
+                    <td colSpan={7}>
                       <div className="usr-empty">
                         <span className="usr-empty-icon">🔍</span>
                         No users match your search.
@@ -462,6 +486,15 @@ function UsersList({ users, loading }) {
                         </td>
                         <td className="usr-td muted hide-mobile" style={{ fontSize: "0.78rem" }}>
                           {fmtDate(u.created_at)}
+                        </td>
+                        <td className="usr-td right">
+                          <button
+                            className="btn-delete"
+                            disabled={deleting === u.user_id}
+                            onClick={() => handleDelete(u)}
+                          >
+                            {deleting === u.user_id ? "…" : "Delete"}
+                          </button>
                         </td>
                       </tr>
                     );
@@ -537,7 +570,13 @@ export default function Users() {
               ? <div className="usr-empty"><span className="usr-empty-icon">⏳</span>Loading dashboard…</div>
               : <Dashboard users={users} />
           )}
-          {activeTab === "list" && <UsersList users={users} loading={loading} />}
+          {activeTab === "list" && (
+            <UsersList
+              users={users}
+              loading={loading}
+              onDelete={(uid) => setUsers((prev) => prev.filter((u) => u.user_id !== uid))}
+            />
+          )}
         </div>
       </div>
     </div>

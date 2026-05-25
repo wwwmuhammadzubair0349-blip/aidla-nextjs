@@ -66,7 +66,7 @@ export default async function ProjectDetailPage({ params }) {
 
   const schema = idea ? {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "TechArticle",
     "@id": `${SITE_URL}/projects/${slug}`,
     name: idea.title,
     description: idea.description || `Project idea on AIDLA`,

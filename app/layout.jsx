@@ -4,6 +4,7 @@
 //   Mobile SEO, International SEO, Entity SEO, Topical Authority, Knowledge Graph,
 //   Featured Snippet, Zero-Click, Schema Markup, SERP, Core Web Vitals
 import PublicShell from "@/components/PublicShell";
+import Script from "next/script";
 import localFont from "next/font/local";
 import "@/app/globals.css";
 import { buildGraph, buildFounderSchema, buildOrganizationSchema, buildWebSiteSchema, buildSoftwareSchema } from "@/lib/schemas";
@@ -91,6 +92,7 @@ export const metadata = {
     languages: {
       "en-PK": `${SITE_URL}/`,
       "en-US": `${SITE_URL}/`,
+      "ur-PK": `${SITE_URL}/`,
       "x-default": `${SITE_URL}/`,
     },
   },
@@ -185,10 +187,9 @@ export default function RootLayout({ children }) {
         <meta name="pinterest" content="nopin" />
 
         {/* ── Trustpilot Widget Script ── */}
-        <script
-          type="text/javascript"
-          src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
-          async
+        <Script
+          src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
+          strategy="lazyOnload"
         />
 
         {/* ── Global JSON-LD ── */}

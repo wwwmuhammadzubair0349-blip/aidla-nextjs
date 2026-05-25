@@ -77,7 +77,7 @@ export default async function ResourcesPage() {
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>
         <h1>Free Study &amp; Career Resources, Notes, PDFs, Books — AIDLA</h1>
         <p>Access free study materials, career resources, notes, PDFs, books, thesis, templates and professional learning resources organized by subject and level.</p>
         <ul>

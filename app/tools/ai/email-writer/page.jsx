@@ -27,7 +27,7 @@ export async function generateMetadata({ searchParams }) {
   // Industry + Region (e.g., "real estate email writer Dubai")
   if (industry && region) {
     return {
-      title: `Free ${industry} Email Writer for ${region} � AI-Powered ${industry} Emails | AIDLA`,
+      title: `Free ${industry} Email Writer for ${region} — AI-Powered ${industry} Emails | AIDLA`,
       description: `Generate professional ${industry.toLowerCase()} emails for ${region} with AI. ${region === "Pakistan" ? "HEC-compliant, Urdu-ready." : region === "Dubai" || region === "UAE" ? "MOHRE-optimized, visa context." : ""} Cold outreach, client updates, follow-ups. Opens in Gmail, Outlook. 100% free, no sign-up.`,
       keywords: [
         `${industry.toLowerCase()} email writer ${region.toLowerCase()}`,
@@ -35,6 +35,7 @@ export async function generateMetadata({ searchParams }) {
         `${region.toLowerCase()} ${industry.toLowerCase()} email templates`,
         "AI email writer free", "professional email generator", "business email tool"
       ].join(", "),
+      alternates: { canonical: "https://www.aidla.online/tools/ai/email-writer" },
     };
   }
 
@@ -56,6 +57,7 @@ export async function generateMetadata({ searchParams }) {
         `AI ${typeLabel.toLowerCase()} email writer`,
         "free email writer no sign up", "professional email generator", "AI email tool"
       ].join(", "),
+      alternates: { canonical: "https://www.aidla.online/tools/ai/email-writer" },
     };
   }
 
@@ -76,6 +78,7 @@ export async function generateMetadata({ searchParams }) {
         `${category.toLowerCase()} email templates professional`,
         "free email writer alternative Grammarly", "AI email assistant", "business email tool"
       ].join(", "),
+      alternates: { canonical: "https://www.aidla.online/tools/ai/email-writer" },
     };
   }
 
@@ -90,6 +93,7 @@ export async function generateMetadata({ searchParams }) {
         `${tone.toLowerCase()} tone email template`,
         "free email generator no subscription", "professional email AI", "email writing tool"
       ].join(", "),
+      alternates: { canonical: "https://www.aidla.online/tools/ai/email-writer" },
     };
   }
 
@@ -105,6 +109,7 @@ export async function generateMetadata({ searchParams }) {
         `${langLabel.toLowerCase()} professional email generator`,
         "free multilingual email tool", "AI email assistant", "business email writer"
       ].join(", "),
+      alternates: { canonical: "https://www.aidla.online/tools/ai/email-writer" },
     };
   }
 
@@ -119,6 +124,7 @@ export async function generateMetadata({ searchParams }) {
         `professional email templates ${region.toLowerCase()}`,
         "free email writer no sign up", "AI email assistant", "career email tool"
       ].join(", "),
+      alternates: { canonical: "https://www.aidla.online/tools/ai/email-writer" },
     };
   }
 
@@ -173,8 +179,8 @@ export async function generateMetadata({ searchParams }) {
     },
     twitter: {
       card: "summary_large_image",
-      site: "@aidla_online",
-      creator: "@aidla_online",
+      site: "@AIDLA_online",
+      creator: "@AIDLA_online",
       title: "Free AI Email Writer 2026 | Better Than Grammarly | No Sign-Up",
       description: "AI writes professional emails in seconds. 24 types, 6 tones, 11 languages. 100% free.",
       images: ["https://www.aidla.online/og-email-writer.jpg"],

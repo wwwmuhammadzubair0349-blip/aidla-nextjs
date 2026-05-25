@@ -1,6 +1,6 @@
 // app/page.jsx
 import {
-  buildGraph, buildEducationalOrgSchema,
+  buildGraph,
   buildWebPageSchema, buildBreadcrumbSchema,
   buildHowToSchema,
 } from "@/lib/schemas";
@@ -172,7 +172,6 @@ export default async function Home() {
     }),
     buildBreadcrumbSchema([{ name: "Home", url: "/" }], "/"),
     buildHowToSchema(STEPS.map((s) => ({ title: s.title, text: s.text })), "/"),
-    buildEducationalOrgSchema(),
   );
 
   return (

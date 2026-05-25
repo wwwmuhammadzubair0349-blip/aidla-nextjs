@@ -77,7 +77,7 @@ export default async function NewsPage() {
         type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>
         <h1>AIDLA News — Latest Updates, Announcements &amp; Events</h1>
         <p>Read the latest news from AIDLA: platform updates, community events, educational tips, winner announcements, and breaking education news from Pakistan.</p>
         <ul>

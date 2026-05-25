@@ -492,25 +492,25 @@ export default function Footer() {
 
               <div className="ft-socials-h">Follow Us</div>
               <div className="ft-socials">
-                <a href="https://www.facebook.com/profile.php?id=61586195563121" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Follow us on Facebook">
+                <a href="https://www.facebook.com/aidla.online" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Follow us on Facebook">
                   <FaFacebookF />
                 </a>
                 <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" title="Follow us on X (Twitter)">
                   <FaTwitter />
                 </a>
-                <a href="https://www.linkedin.com/company/aidla" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="Follow us on LinkedIn">
+                <a href="https://www.linkedin.com/company/aidla-online/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="Follow us on LinkedIn">
                   <FaLinkedinIn />
                 </a>
-                <a href="https://www.tiktok.com/@aidla_official" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="Follow us on TikTok">
+                <a href="https://www.tiktok.com/@aidla.online" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="Follow us on TikTok">
                   <FaTiktok />
                 </a>
-                <a href="https://www.instagram.com/aidla_official/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Follow us on Instagram">
+                <a href="https://www.instagram.com/aidla.online/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Follow us on Instagram">
                   <FaInstagram />
                 </a>
                 <a href="https://whatsapp.com/channel/0029VbC6yju0rGiV5JaCqj42" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" title="Join our WhatsApp Channel">
                   <FaWhatsappSquare />
                 </a>
-                <a href="https://g.page/r/CfiEd2AW-Y_fEBI" target="_blank" rel="noopener noreferrer" aria-label="Google Business" title="Find us on Google">
+                <a href="https://maps.app.goo.gl/Sgc5ieoWgwcwwXWk7" target="_blank" rel="noopener noreferrer" aria-label="Google Business" title="Find us on Google">
                   <FaGoogle />
                 </a>
               </div>
@@ -527,7 +527,7 @@ export default function Footer() {
                 ))}
               </ul>
               <a
-                href="https://g.page/r/CfiEd2AW-Y_fEBI/review"
+                href="https://maps.app.goo.gl/Sgc5ieoWgwcwwXWk7"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ft-review-btn"

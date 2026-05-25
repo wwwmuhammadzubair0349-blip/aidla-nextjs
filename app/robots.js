@@ -9,7 +9,7 @@ export default function robots() {
       // Default rule — deny-list (allow everything except private routes)
       {
         userAgent: "*",
-        allow: ["/", "/login", "/signup"],
+        allow: ["/"],
         disallow: [
           "/admin/",
           "/user/",

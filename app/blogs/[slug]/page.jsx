@@ -127,6 +127,7 @@ export default async function BlogPostPage({ params }) {
       datePublished:      post.published_at,
       dateModified:       post.updated_at || post.published_at,
       keywords:           (post.tags || []).join(", ") || undefined,
+      authorName:         post.author_name,
       speakableSelectors: ["h1", ".article-lead", "article h2:first-of-type"],
     }),
   );

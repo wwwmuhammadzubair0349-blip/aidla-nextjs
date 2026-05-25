@@ -46,9 +46,12 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const desc =
-    (c.description || "").slice(0, 155).replace(/\n/g, " ") +
-    " � Learn on AIDLA with courses for students, professionals, freshers, career switchers, founders and lifelong learners.";
+  const SUFFIX = " — Learn on AIDLA with courses for students, professionals, freshers, career switchers, founders and lifelong learners.";
+  const maxBase = 155 - SUFFIX.length;
+  const base = (c.description || "").replace(/\n/g, " ").trim();
+  const desc = base.length > maxBase
+    ? base.slice(0, maxBase - 3).trim() + "..." + SUFFIX
+    : (base ? base + SUFFIX : SUFFIX.trim().slice(0, 155));
   const url   = `${SITE_URL}/courses/${slug}`;
   const image = c.thumbnail_url || `${SITE_URL}/og-home.jpg`;
   const title = `${c.title} | AIDLA Online Courses`;
@@ -126,6 +129,11 @@ export default async function CourseDetailPage({ params }) {
     ...(course.category && { educationalLevel: course.category }),
     inLanguage:          "en",
     isAccessibleForFree: isFree,
+    educationalCredentialAwarded: {
+      "@type": "EducationalOccupationalCredential",
+      credentialCategory: "Certificate of Completion",
+      recognizedBy: { "@type": "Organization", "@id": `${SITE_URL}/#organization` },
+    },
   };
 
   const breadcrumbSchema = {

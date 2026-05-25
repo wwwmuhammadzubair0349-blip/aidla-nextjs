@@ -55,7 +55,7 @@ export async function generateMetadata({ params }) {
       url:          canonical,
       siteName:     "AIDLA",
       locale:       "en_PK",
-      type:         "article",
+      type:         "website",
       modifiedTime: faq.updated_at || faq.created_at,
       images:       [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: faq.question }],
     },

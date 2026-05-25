@@ -11,6 +11,7 @@ export async function generateStaticParams() {
   const { data } = await serverFetch("study_materials", {
     select: "slug",
     "status": "eq.published",
+    "deleted_at": "is.null",
     order: "created_at.desc",
     limit: "100",
   });

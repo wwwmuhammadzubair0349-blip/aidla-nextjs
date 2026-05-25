@@ -86,7 +86,7 @@ export default async function CoursesPage() {
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>
         <h1>Online Courses for AI, Data, Career &amp; Startup Skills — AIDLA</h1>
         <p>Explore AI, data analytics, engineering, medical, career switching and mentoring courses on AIDLA. Learn from school to master level, all free.</p>
         <ul>

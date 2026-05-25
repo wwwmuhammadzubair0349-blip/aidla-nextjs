@@ -18,21 +18,19 @@ Mission: make practical education, AI learning, and career tools accessible to s
 - [Tools](https://www.aidla.online/tools)
 - [Leaderboard](https://www.aidla.online/leaderboard)
 - [Contact](https://www.aidla.online/contact)
-- [Login](https://www.aidla.online/login)
-- [Signup](https://www.aidla.online/signup)
 - [Careers](https://www.aidla.online/careers)
 - [Privacy Policy](https://www.aidla.online/privacy-policy)
 - [Terms](https://www.aidla.online/terms)
 
 ## Free Tools
 
-- [AI Text Summarizer](https://www.aidla.online/tools/ai/summarizer)
-- [AI Paraphraser](https://www.aidla.online/tools/ai/paraphraser)
-- [AI Email Writer](https://www.aidla.online/tools/ai/email-writer)
-- [AI Interview Prep](https://www.aidla.online/tools/ai/interview-prep)
-- [AI LinkedIn Bio Generator](https://www.aidla.online/tools/ai/linkedin-bio)
-- [Free CV Maker](https://www.aidla.online/tools/career/cv-maker)
-- [Cover Letter Maker](https://www.aidla.online/tools/career/cover-letter-maker)
+- [AI Text Summarizer](https://www.aidla.online/tools/ai/summarizer): Condenses long articles, documents, or text into clear, concise summaries instantly.
+- [AI Paraphraser](https://www.aidla.online/tools/ai/paraphraser): Rewrites and rephrases text to improve clarity, tone, or originality.
+- [AI Email Writer](https://www.aidla.online/tools/ai/email-writer): Generates professional emails for any industry, tone, or purpose in seconds.
+- [AI Interview Prep](https://www.aidla.online/tools/ai/interview-prep): Creates tailored interview questions and model answers for any job role.
+- [AI LinkedIn Bio Generator](https://www.aidla.online/tools/ai/linkedin-bio): Writes compelling LinkedIn summaries and bios for students and professionals.
+- [Free CV Maker](https://www.aidla.online/tools/career/cv-maker): Builds ATS-ready CVs with 17 templates, AI writing assistance, and instant PDF download.
+- [Cover Letter Maker](https://www.aidla.online/tools/career/cover-letter-maker): Generates tailored cover letters matched to any job description.
 
 ## Key Facts
 

@@ -86,7 +86,7 @@ export default async function BlogsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       {/* Bot-crawlable static HTML — visually hidden, fully readable by Googlebot and AI crawlers */}
-      <div aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0, pointerEvents: "none" }}>
+      <div style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>
         <h1>AIDLA Blog — AI Learning, Career Tips &amp; Platform Updates</h1>
         <p>Explore AIDLA&apos;s blog for learning strategies, AI tips, platform updates, and guides to earn more AIDLA Coins. Stay informed and grow your skills today.</p>
         <ul>

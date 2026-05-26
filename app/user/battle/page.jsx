@@ -4,79 +4,121 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
 const MODES = [
-  { id:"free",  label:"Free",    stake:0,   prize:10,  tax:0,  color:"#059669" },
-  { id:"25",    label:"25 coins",   stake:25,  prize:45,  tax:5,  color:"#6366f1" },
-  { id:"50",    label:"50 coins",   stake:50,  prize:90,  tax:10, color:"#f59e0b" },
-  { id:"100",   label:"100 coins",  stake:100, prize:180, tax:20, color:"#ef4444" },
+  { id:"free",  label:"Free",       stake:0,   prize:10,  tax:0,  color:"#059669", glow:"rgba(5,150,105,0.25)",  icon:"🎮", badge:"FREE" },
+  { id:"25",    label:"25 Coins",   stake:25,  prize:45,  tax:5,  color:"#6366f1", glow:"rgba(99,102,241,0.25)", icon:"⚔️", badge:"25" },
+  { id:"50",    label:"50 Coins",   stake:50,  prize:90,  tax:10, color:"#f59e0b", glow:"rgba(245,158,11,0.25)", icon:"🔥", badge:"50" },
+  { id:"100",   label:"100 Coins",  stake:100, prize:180, tax:20, color:"#ef4444", glow:"rgba(239,68,68,0.25)",  icon:"👑", badge:"100" },
 ];
 
 const HINT_COSTS = [2.5, 5, 10, 20, 40];
+const BOT_EMOJIS  = ["🤖","👾","🎮","🦾","🧠","⚡","🎯","💻"];
+
+function getBotEmoji(name) {
+  return BOT_EMOJIS[(name || "").charCodeAt(0) % BOT_EMOJIS.length] || "🤖";
+}
+
+function AvatarCircle({ url, name, size = 44, ring = "#6366f1", isBot = false }) {
+  if (url && !isBot) {
+    return (
+      <img src={url} alt={name || "Player"}
+        style={{ width:size, height:size, borderRadius:"50%", objectFit:"cover",
+          border:`3px solid ${ring}`, flexShrink:0, display:"block" }} />
+    );
+  }
+  if (isBot) {
+    return (
+      <div style={{ width:size, height:size, borderRadius:"50%",
+        background:"linear-gradient(135deg,#334155,#1e293b)",
+        display:"flex", alignItems:"center", justifyContent:"center",
+        fontSize:size * 0.42, border:`3px solid ${ring}`, flexShrink:0 }}>
+        {getBotEmoji(name)}
+      </div>
+    );
+  }
+  const initials = (name || "?").split(" ").filter(Boolean).map(w => w[0]).join("").slice(0,2).toUpperCase() || "?";
+  const palette   = ["#6366f1","#8b5cf6","#ec4899","#f59e0b","#059669","#0284c7","#dc2626","#d97706"];
+  const bg        = palette[(name || "?").charCodeAt(0) % palette.length];
+  return (
+    <div style={{ width:size, height:size, borderRadius:"50%", background:bg,
+      display:"flex", alignItems:"center", justifyContent:"center",
+      fontSize:size * 0.33, fontWeight:800, color:"white",
+      border:`3px solid ${ring}`, flexShrink:0 }}>
+      {initials}
+    </div>
+  );
+}
+
+function diffBadge(diff) {
+  const map = { easy:["#dcfce7","#166534"], medium:["#fef9c3","#854d0e"], hard:["#fee2e2","#991b1b"] };
+  return map[diff] || ["#f1f5f9","#475569"];
+}
 
 export default function BattlePage() {
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [view, setView] = useState("lobby"); // lobby|waiting|selecting|in_progress|result|history
-  const [activeTab, setActiveTab] = useState("play"); // play|open|history|leaderboard
-  const [msg, setMsg] = useState("");
+  const [user,       setUser]       = useState(null);
+  const [profile,    setProfile]    = useState(null);
+  const [loading,    setLoading]    = useState(true);
+  const [view,       setView]       = useState("lobby");
+  const [activeTab,  setActiveTab]  = useState("play");
+  const [msg,        setMsg]        = useState("");
 
-  // Room state
-  const [room, setRoom] = useState(null);
-  const [myRole, setMyRole] = useState(null); // player1|player2
+  const [room,    setRoom]    = useState(null);
+  const [myRole,  setMyRole]  = useState(null);
   const [openRooms, setOpenRooms] = useState([]);
 
-  // Selection state
-  const [categories, setCategories] = useState([]);
-  const [selCategory, setSelCategory] = useState(null);
-  const [selDifficulty, setSelDifficulty] = useState("medium");
-  const [selQuestions, setSelQuestions] = useState(10);
-  const [submittingSelection, setSubmittingSelection] = useState(false);
+  const [categories,         setCategories]         = useState([]);
+  const [selCategory,        setSelCategory]        = useState(null);
+  const [selDifficulty,      setSelDifficulty]      = useState("medium");
+  const [selQuestions,       setSelQuestions]       = useState(10);
+  const [submittingSelection,setSubmittingSelection]= useState(false);
 
-  // Quiz state
-  const [questions, setQuestions] = useState([]);
-  const [qIndex, setQIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30);
-  const [selected, setSelected] = useState(null);
-  const [feedback, setFeedback] = useState(null);
-  const [myScore, setMyScore] = useState(0);
+  const [questions,    setQuestions]    = useState([]);
+  const [qIndex,       setQIndex]       = useState(0);
+  const [timeLeft,     setTimeLeft]     = useState(30);
+  const [selected,     setSelected]     = useState(null);
+  const [feedback,     setFeedback]     = useState(null);
+  const [myScore,      setMyScore]      = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
-  const [hintsUsed, setHintsUsed] = useState(0);
-  const [eliminated, setEliminated] = useState([]);
-  const [generatingQ, setGeneratingQ] = useState(false);
+  const [hintsUsed,    setHintsUsed]    = useState(0);
+  const [eliminated,   setEliminated]   = useState([]);
+  const [generatingQ,  setGeneratingQ]  = useState(false);
 
-  // Result
-  const [result, setResult] = useState(null);
+  const [result,    setResult]    = useState(null);
   const [showShare, setShowShare] = useState(false);
 
-  // History/LB
-  const [history, setHistory] = useState([]);
-  const [myStats, setMyStats] = useState(null);
+  const [history,     setHistory]     = useState([]);
+  const [myStats,     setMyStats]     = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
-  const [lbPeriod, setLbPeriod] = useState("daily");
+  const [lbPeriod,    setLbPeriod]    = useState("daily");
 
-  const pollRef = useRef(null);
-  const roomSyncRef = useRef(null);
-  const roomChannelRef = useRef(null);
-  const botTimerRef = useRef(null);
-  const timerRef = useRef(null);
-  const submitLock = useRef(false);
-  const roomTimeoutRef = useRef(null);
-  const tabHideTimerRef = useRef(null);
-  const sessionRef = useRef(null);
-  const roomRef = useRef(null);
-  const currentRoomIdRef = useRef(null);
-  const myRoleRef = useRef(null);
-  const viewRef = useRef("lobby");
-  const startedRoundsRef = useRef(new Set());
-  const completedRoundsRef = useRef(new Set());
-  const forfeitLockRef = useRef(false);
-  const botAnsweredRef = useRef(new Set());
+  // NEW
+  const [opponentProfile, setOpponentProfile] = useState(null);
 
-  const [selectedMode, setSelectedMode] = useState(null);
-  const [joinRoomInput, setJoinRoomInput] = useState("");
-  const [currentRoomId, setCurrentRoomId] = useState(null);
-  const [isPrivateRoom, setIsPrivateRoom] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const pollRef           = useRef(null);
+  const roomSyncRef       = useRef(null);
+  const roomChannelRef    = useRef(null);
+  const botTimerRef       = useRef(null);
+  const timerRef          = useRef(null);
+  const submitLock        = useRef(false);
+  const roomTimeoutRef    = useRef(null);
+  const tabHideTimerRef   = useRef(null);
+  const sessionRef        = useRef(null);
+  const roomRef           = useRef(null);
+  const currentRoomIdRef  = useRef(null);
+  const myRoleRef         = useRef(null);
+  const viewRef           = useRef("lobby");
+  const startedRoundsRef  = useRef(new Set());
+  const completedRoundsRef= useRef(new Set());
+  const forfeitLockRef    = useRef(false);
+  const botAnsweredRef    = useRef(new Set());
+  // NEW refs
+  const roundTotalsRef      = useRef({ 1:0, 2:0 });
+  const opponentFetchedRef  = useRef(false);
+
+  const [selectedMode,   setSelectedMode]   = useState(null);
+  const [joinRoomInput,  setJoinRoomInput]  = useState("");
+  const [currentRoomId,  setCurrentRoomId]  = useState(null);
+  const [isPrivateRoom,  setIsPrivateRoom]  = useState(false);
+  const [copied,         setCopied]         = useState(false);
 
   useEffect(() => {
     init();
@@ -86,10 +128,10 @@ export default function BattlePage() {
     };
   }, []);
 
-  useEffect(() => { roomRef.current = room; }, [room]);
+  useEffect(() => { roomRef.current       = room;         }, [room]);
   useEffect(() => { currentRoomIdRef.current = currentRoomId; }, [currentRoomId]);
-  useEffect(() => { myRoleRef.current = myRole; }, [myRole]);
-  useEffect(() => { viewRef.current = view; }, [view]);
+  useEffect(() => { myRoleRef.current     = myRole;       }, [myRole]);
+  useEffect(() => { viewRef.current       = view;         }, [view]);
 
   function clearAllTimers() {
     clearInterval(pollRef.current);
@@ -112,25 +154,39 @@ export default function BattlePage() {
     return Number(r[`${myRoleRef.current}_round${round}_score`]) || 0;
   }
 
+  async function fetchOpponentProfile(r) {
+    if (r.is_bot) return;
+    const oppId = myRoleRef.current === "player1" ? r.player2_id : r.player1_id;
+    if (!oppId) return;
+    const { data } = await supabase.from("users_profiles")
+      .select("full_name, avatar_url").eq("user_id", oppId).maybeSingle();
+    if (data) setOpponentProfile(data);
+  }
+
   async function goLobby() {
-    const r = roomRef.current;
+    const r    = roomRef.current;
     const role = myRoleRef.current;
     clearAllTimers();
-    if ((r?.id || currentRoomIdRef.current) && viewRef.current === "waiting") await supabase.rpc("battle_cancel_room", { p_room_id: r?.id || currentRoomIdRef.current });
-    if (r?.id && role && ["selecting", "in_progress"].includes(viewRef.current)) await supabase.rpc("battle_forfeit", { p_room_id: r.id, p_role: role });
+    if ((r?.id || currentRoomIdRef.current) && viewRef.current === "waiting")
+      await supabase.rpc("battle_cancel_room", { p_room_id: r?.id || currentRoomIdRef.current });
+    if (r?.id && role && ["selecting","in_progress"].includes(viewRef.current))
+      await supabase.rpc("battle_forfeit", { p_room_id: r.id, p_role: role });
     setRoom(null);
     setCurrentRoomId(null);
     setIsPrivateRoom(false);
     startedRoundsRef.current.clear();
     completedRoundsRef.current.clear();
     botAnsweredRef.current.clear();
-    forfeitLockRef.current = false;
+    forfeitLockRef.current    = false;
+    opponentFetchedRef.current= false;
+    roundTotalsRef.current    = { 1:0, 2:0 };
+    setOpponentProfile(null);
     setView("lobby");
     setActiveTab("play");
   }
 
   async function forfeitNow() {
-    const r = roomRef.current;
+    const r    = roomRef.current;
     const role = myRoleRef.current;
     if (!r?.id || !role || forfeitLockRef.current) return;
     forfeitLockRef.current = true;
@@ -153,8 +209,7 @@ export default function BattlePage() {
     await loadOpenRooms();
     await loadHistory();
     setLoading(false);
-    // Handle URL params: ?room=<id> to auto-show join prompt
-    const params = new URLSearchParams(window.location.search);
+    const params  = new URLSearchParams(window.location.search);
     const urlRoom = params.get("room");
     if (urlRoom) setJoinRoomInput(urlRoom);
   }
@@ -166,10 +221,7 @@ export default function BattlePage() {
 
   async function loadHistory() {
     const { data } = await supabase.rpc("battle_my_stats");
-    if (data?.ok) {
-      setMyStats(data);
-      setHistory(data.history || []);
-    }
+    if (data?.ok) { setMyStats(data); setHistory(data.history || []); }
   }
 
   async function loadLeaderboard(period = lbPeriod) {
@@ -177,12 +229,9 @@ export default function BattlePage() {
     setLeaderboard(data || []);
   }
 
-  // FIND / CREATE ROOM
   async function findBattle(mode) {
     const modeObj = MODES.find(m => m.id === mode);
-    if (modeObj.stake > 0 && profile?.total_aidla_coins < modeObj.stake) {
-      flash("Insufficient coins"); return;
-    }
+    if (modeObj.stake > 0 && profile?.total_aidla_coins < modeObj.stake) { flash("Insufficient coins"); return; }
     setView("waiting");
     setIsPrivateRoom(false);
     setRoom(null);
@@ -215,17 +264,12 @@ export default function BattlePage() {
   async function pollRoom(roomId, startBotTimer) {
     clearInterval(pollRef.current);
     clearInterval(roomSyncRef.current);
-    // Start bot timer if player1 and no match in 12s
     if (startBotTimer) {
       botTimerRef.current = setTimeout(async () => {
         const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: roomId });
-        if (r?.status === "waiting") {
-          await supabase.rpc("battle_add_bot", { p_room_id: roomId });
-        }
+        if (r?.status === "waiting") await supabase.rpc("battle_add_bot", { p_room_id: roomId });
       }, 12000);
     }
-
-    // Poll every 2s
     pollRef.current = setInterval(async () => {
       const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: roomId });
       if (!r) return;
@@ -234,7 +278,10 @@ export default function BattlePage() {
       setCurrentRound(rn);
       setMyScore(myRoundScore(r, rn));
       if (r.status === "selecting") {
-        // Keep polling so non-selector detects in_progress
+        if (!opponentFetchedRef.current) {
+          opponentFetchedRef.current = true;
+          fetchOpponentProfile(r);
+        }
         clearTimeout(botTimerRef.current);
         clearTimeout(roomTimeoutRef.current);
         setView("selecting");
@@ -254,8 +301,6 @@ export default function BattlePage() {
     }, 2000);
   }
 
-  // ROUND SELECTION
-  // Round 1: player1 picks. Round 2: player2 picks.
   function isMySelectorTurn() {
     if (!room) return false;
     const isRound2 = !!room.round1_category;
@@ -278,7 +323,6 @@ export default function BattlePage() {
       p_difficulty: selDifficulty, p_questions: selQuestions,
     });
     if (setErr) { flash(setErr.message); setSubmittingSelection(false); return; }
-
     setGeneratingQ(true);
     const { data: prep, error: prepErr } = await supabase.rpc("battle_prepare_round", {
       p_room_id: room.id, p_round: round
@@ -290,26 +334,20 @@ export default function BattlePage() {
       return;
     }
     setSubmittingSelection(false);
-
-    // If bot, simulate bot selection for round 2
     if (room.is_bot && round === 1) {
       setTimeout(async () => {
         const botCat = categories[Math.floor(Math.random() * categories.length)];
-        const diffs = ["easy","medium","hard"];
-        const qs = [5,10,15,20];
-        const botDifficulty = diffs[Math.floor(Math.random()*3)];
-        const botQuestions = qs[Math.floor(Math.random()*4)];
+        const diffs  = ["easy","medium","hard"];
+        const qs     = [5,10,15,20];
         await supabase.rpc("battle_set_round", {
           p_room_id: room.id, p_round: 2,
           p_category_id: botCat.id, p_category: botCat.name,
-          p_difficulty: botDifficulty,
-          p_questions: botQuestions,
+          p_difficulty: diffs[Math.floor(Math.random()*3)],
+          p_questions:  qs[Math.floor(Math.random()*4)],
         });
         await supabase.rpc("battle_prepare_round", { p_room_id: room.id, p_round: 2 });
       }, 3000 + Math.random() * 4000);
     }
-
-    // Clear any stale poll (from pollRoom's selecting branch) before starting fresh
     clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
@@ -322,7 +360,6 @@ export default function BattlePage() {
     }, 2000);
   }
 
-  // QUIZ ROUND
   async function startRound(r, roundNum) {
     if (startedRoundsRef.current.has(roundNum) || completedRoundsRef.current.has(roundNum)) return;
     startedRoundsRef.current.add(roundNum);
@@ -335,7 +372,6 @@ export default function BattlePage() {
     setEliminated([]);
     submitLock.current = false;
     setView("in_progress");
-
     const { data } = await supabase.rpc("battle_get_questions", { p_room_id: r.id, p_round: roundNum });
     if (!data?.ok || !data.questions?.length) {
       startedRoundsRef.current.delete(roundNum);
@@ -343,11 +379,11 @@ export default function BattlePage() {
       return;
     }
     setQuestions(data.questions);
-    const diff = r[`round${roundNum}_difficulty`];
+    // Track total questions for this round (for score display + result breakdown)
+    roundTotalsRef.current[roundNum] = data.questions.length;
+    const diff    = r[`round${roundNum}_difficulty`];
     const secPerQ = diff === "hard" ? 10 : diff === "easy" ? 15 : 12;
     startTimer(secPerQ);
-
-    // Poll opponent score every 2s during round
     clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       const { data: rd } = await supabase.rpc("battle_get_room", { p_room_id: r.id });
@@ -360,7 +396,6 @@ export default function BattlePage() {
         setMyScore(myRoundScore(rd, roundNum));
       }
     }, 2000);
-
   }
 
   async function syncRoom(roomId) {
@@ -370,10 +405,7 @@ export default function BattlePage() {
     const rn = roundFromRoom(r);
     setCurrentRound(rn);
     setMyScore(myRoundScore(r, rn));
-    if (r.status === "completed") {
-      clearAllTimers();
-      handleResult(r);
-    }
+    if (r.status === "completed") { clearAllTimers(); handleResult(r); }
   }
 
   function watchRoom(roomId) {
@@ -404,20 +436,18 @@ export default function BattlePage() {
   }
 
   useEffect(() => {
-    if (timeLeft === 0 && view === "in_progress" && !feedback && !submitLock.current) {
+    if (timeLeft === 0 && view === "in_progress" && !feedback && !submitLock.current)
       handleAnswer(null);
-    }
   }, [timeLeft]);
 
   async function handleAnswer(optionIdx) {
     if (submitLock.current || !room) return;
     submitLock.current = true;
     clearInterval(timerRef.current);
-    const q = questions[qIndex];
+    const q        = questions[qIndex];
     const roundSec = room[`round${currentRound}_difficulty`] === "hard" ? 10 : room[`round${currentRound}_difficulty`] === "easy" ? 15 : 12;
     const timeTaken = roundSec - timeLeft;
     setSelected(optionIdx);
-
     const { data } = await supabase.rpc("battle_submit_answer", {
       p_room_id: room.id, p_round: currentRound,
       p_question_order: qIndex + 1,
@@ -425,17 +455,13 @@ export default function BattlePage() {
       p_selected: optionIdx, p_correct_index: q.correct_option_index,
       p_time_taken: timeTaken, p_is_bot: false,
     });
-
     const correct = data?.is_correct;
     const { data: scoreRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
-    if (scoreRoom) {
-      setRoom(scoreRoom);
-      setMyScore(myRoundScore(scoreRoom, currentRound));
-    } else if (correct) setMyScore(s => s + 1);
+    if (scoreRoom) { setRoom(scoreRoom); setMyScore(myRoundScore(scoreRoom, currentRound)); }
+    else if (correct) setMyScore(s => s + 1);
     setFeedback({ correct, correctIndex: q.correct_option_index });
     if (room.is_bot) await submitBotAnswerForQuestion(room, currentRound, qIndex, q, scoreRoom, correct);
     await new Promise(r => setTimeout(r, 1000));
-
     const next = qIndex + 1;
     if (next >= questions.length) {
       completedRoundsRef.current.add(currentRound);
@@ -448,31 +474,22 @@ export default function BattlePage() {
         setFeedback(null);
         setSelected(null);
         submitLock.current = false;
-
-        // Check if opponent already finished round 1
         const { data: latestRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
         if (latestRoom) setRoom(latestRoom);
         const bothDone = latestRoom?.player1_round1_done && latestRoom?.player2_round1_done;
         setView(bothDone ? "selecting" : "waiting_round");
-
-        // Poll: once both done → selecting; then watch for round 2 to start
         pollRef.current = setInterval(async () => {
           const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
           if (!r) return;
           setRoom(r);
-          if (viewRef.current === "waiting_round" && r.player1_round1_done && r.player2_round1_done) {
+          if (viewRef.current === "waiting_round" && r.player1_round1_done && r.player2_round1_done)
             setView("selecting");
-          }
           if (r.round2_category && r.status === "in_progress" && !completedRoundsRef.current.has(2)) {
             const { data: qd } = await supabase.rpc("battle_get_questions", { p_room_id: r.id, p_round: 2 });
-            if (qd?.questions?.length) {
-              clearInterval(pollRef.current);
-              await startRound(r, 2);
-            }
+            if (qd?.questions?.length) { clearInterval(pollRef.current); await startRound(r, 2); }
           }
         }, 2000);
       } else {
-        // Both rounds done
         clearInterval(pollRef.current);
         const { data: comp } = await supabase.rpc("battle_complete", { p_room_id: room.id });
         if (comp?.already_done || comp?.ok) {
@@ -484,7 +501,6 @@ export default function BattlePage() {
       setQIndex(next);
       setSelected(null);
       setFeedback(null);
-      // DO NOT reset hintsUsed - price persists per round
       setEliminated([]);
       submitLock.current = false;
       const curDiff = room?.[`round${currentRound}_difficulty`];
@@ -493,24 +509,14 @@ export default function BattlePage() {
     }
   }
 
-  // TAB SWITCH DETECTION
   useEffect(() => {
     if (view !== "in_progress" || !room?.id) return;
-
     const onVisibility = () => {
-      if (document.visibilityState === "hidden") {
-        submitLock.current = true;
-        forfeitNow();
-      } else {
-        clearTimeout(tabHideTimerRef.current);
-      }
+      if (document.visibilityState === "hidden") { submitLock.current = true; forfeitNow(); }
+      else clearTimeout(tabHideTimerRef.current);
     };
-
     document.addEventListener("visibilitychange", onVisibility);
-    return () => {
-      document.removeEventListener("visibilitychange", onVisibility);
-      clearTimeout(tabHideTimerRef.current);
-    };
+    return () => { document.removeEventListener("visibilitychange", onVisibility); clearTimeout(tabHideTimerRef.current); };
   }, [view, room?.id, myRole, qIndex]);
 
   useEffect(() => {
@@ -520,26 +526,15 @@ export default function BattlePage() {
     return () => window.removeEventListener("blur", fail);
   }, [view, room?.id, myRole]);
 
-  // WINDOW CLOSE / NAVIGATE AWAY
   useEffect(() => {
-    if (!room?.id || !["in_progress", "selecting"].includes(view)) return;
-
+    if (!room?.id || !["in_progress","selecting"].includes(view)) return;
     const onUnload = () => {
-      fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/battle_forfeit`,
-        {
-          method: "POST",
-          keepalive: true,
-          headers: {
-            "Content-Type": "application/json",
-            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${sessionRef.current?.access_token || ""}`,
-          },
-          body: JSON.stringify({ p_room_id: room.id, p_role: myRole }),
-        }
-      );
+      fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/battle_forfeit`, {
+        method: "POST", keepalive: true,
+        headers: { "Content-Type":"application/json", apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, Authorization: `Bearer ${sessionRef.current?.access_token || ""}` },
+        body: JSON.stringify({ p_room_id: room.id, p_role: myRole }),
+      });
     };
-
     window.addEventListener("beforeunload", onUnload);
     return () => window.removeEventListener("beforeunload", onUnload);
   }, [view, room?.id, myRole]);
@@ -548,14 +543,12 @@ export default function BattlePage() {
     const key = `${r.id}:${roundNum}:${index + 1}`;
     if (botAnsweredRef.current.has(key)) return;
     botAnsweredRef.current.add(key);
-
     await new Promise(res => setTimeout(res, 600 + Math.random() * 900));
     const sourceRoom = latestRoom || roomRef.current || r;
-    const userScore = Number(sourceRoom[`player1_round${roundNum}_score`]) || 0;
-    const botScore = Number(sourceRoom[`player2_round${roundNum}_score`]) || 0;
+    const userScore  = Number(sourceRoom[`player1_round${roundNum}_score`]) || 0;
+    const botScore   = Number(sourceRoom[`player2_round${roundNum}_score`]) || 0;
     const botCorrect = userScore > botScore || userCorrect || Math.random() < 0.7;
-    const chosen = botCorrect ? q.correct_option_index : (q.correct_option_index + 1) % 4;
-
+    const chosen     = botCorrect ? q.correct_option_index : (q.correct_option_index + 1) % 4;
     await supabase.rpc("battle_submit_answer", {
       p_room_id: r.id, p_round: roundNum,
       p_question_order: index + 1, p_question_text: q.question_text,
@@ -566,25 +559,39 @@ export default function BattlePage() {
   }
 
   function handleResult(r) {
-    const isMe = myRole === "player1" ? r.player1_id : r.player2_id;
-    const iWon = r.winner_id === (myRole === "player1" ? r.player1_id : r.player2_id);
+    const iWon    = r.winner_id === (myRole === "player1" ? r.player1_id : r.player2_id);
     const myTotal = myRole === "player1"
-      ? (r.player1_round1_score || 0) + (r.player1_round2_score || 0)
-      : (r.player2_round1_score || 0) + (r.player2_round2_score || 0);
+      ? (r.player1_round1_score||0) + (r.player1_round2_score||0)
+      : (r.player2_round1_score||0) + (r.player2_round2_score||0);
     const oppTotal = myRole === "player1"
-      ? (r.player2_round1_score || 0) + (r.player2_round2_score || 0)
-      : (r.player1_round1_score || 0) + (r.player1_round2_score || 0);
-    const modeObj = MODES.find(m => m.id === r.mode);
+      ? (r.player2_round1_score||0) + (r.player2_round2_score||0)
+      : (r.player1_round1_score||0) + (r.player1_round2_score||0);
+    const modeObj   = MODES.find(m => m.id === r.mode);
+    const r1Total   = roundTotalsRef.current[1];
+    const r2Total   = roundTotalsRef.current[2];
     setResult({
-      won: r.is_tie ? null : iWon,
-      tie: r.is_tie,
-      myScore: myTotal,
-      oppScore: oppTotal,
-      oppName: myRole === "player1" ? (r.bot_name || r.player2_name) : r.player1_name,
-      coinsChange: r.is_tie ? -(modeObj.tax / 2) : iWon ? modeObj.prize : -modeObj.stake,
-      prize: modeObj.prize,
-      mode: r.mode,
-      isBot: r.is_bot,
+      won:        r.is_tie ? null : iWon,
+      tie:        r.is_tie,
+      myScore:    myTotal,
+      oppScore:   oppTotal,
+      oppName:    myRole === "player1" ? (r.bot_name || r.player2_name) : r.player1_name,
+      oppAvatar:  opponentProfile?.avatar_url || null,
+      oppIsBot:   r.is_bot,
+      coinsChange:r.is_tie ? -(modeObj.tax / 2) : iWon ? modeObj.prize : -modeObj.stake,
+      prize:      modeObj.prize,
+      mode:       r.mode,
+      isBot:      r.is_bot,
+      round1: {
+        my:    myRole === "player1" ? (r.player1_round1_score||0) : (r.player2_round1_score||0),
+        opp:   myRole === "player1" ? (r.player2_round1_score||0) : (r.player1_round1_score||0),
+        total: r1Total,
+      },
+      round2: {
+        my:    myRole === "player1" ? (r.player1_round2_score||0) : (r.player2_round2_score||0),
+        opp:   myRole === "player1" ? (r.player2_round2_score||0) : (r.player1_round2_score||0),
+        total: r2Total,
+      },
+      totalQuestions: r1Total + r2Total,
     });
     setView("result");
     loadHistory();
@@ -593,51 +600,39 @@ export default function BattlePage() {
   async function useHint() {
     const cost = HINT_COSTS[hintsUsed] || 40;
     if ((profile?.total_aidla_coins || 0) < cost) { flash("Insufficient coins"); return; }
-    const q = questions[qIndex];
-    // Only eliminate 1 wrong option per hint
-    const wrong = [0,1,2,3].filter(i => i !== q.correct_option_index && !eliminated.includes(i));
+    const q    = questions[qIndex];
+    const wrong= [0,1,2,3].filter(i => i !== q.correct_option_index && !eliminated.includes(i));
     if (wrong.length === 0) return;
     const toElim = wrong[Math.floor(Math.random() * wrong.length)];
     setEliminated(prev => [...prev, toElim]);
     setHintsUsed(h => h + 1);
     const newBal = (profile?.total_aidla_coins || 0) - cost;
     setProfile(prev => ({ ...prev, total_aidla_coins: newBal }));
-    // Deduct from user + add to admin pool via two inserts
-    const txnNo = "HINT-BTL-" + Date.now();
-    const poolBal = await supabase.from("admin_pool").select("total_aidla_coins").eq("id",1).single().then(r => r.data?.total_aidla_coins || 0);
+    const txnNo  = "HINT-BTL-" + Date.now();
+    const poolBal= await supabase.from("admin_pool").select("total_aidla_coins").eq("id",1).single().then(r => r.data?.total_aidla_coins || 0);
     await supabase.from("users_transactions").insert({
-      txn_no: txnNo+"-U", user_id: user.id,
-      user_email: profile?.email || user.email,
-      txn_type: "battle_hint", direction: "OUT", amount: cost,
-      balance_before: profile?.total_aidla_coins || 0,
-      balance_after: newBal,
-      note: "Battle hint used",
+      txn_no: txnNo+"-U", user_id: user.id, user_email: profile?.email || user.email,
+      txn_type:"battle_hint", direction:"OUT", amount: cost,
+      balance_before: profile?.total_aidla_coins || 0, balance_after: newBal, note:"Battle hint used",
     });
     await supabase.from("admin_pool_transactions").insert({
-      txn_no: txnNo+"-A", txn_type: "battle_hint", direction: "IN", amount: cost,
-      admin_email: "system@battle",
-      target_user_id: user.id,
-      target_user_email: profile?.email || user.email,
+      txn_no: txnNo+"-A", txn_type:"battle_hint", direction:"IN", amount: cost,
+      admin_email:"system@battle", target_user_id: user.id, target_user_email: profile?.email || user.email,
       target_user_name: profile?.full_name || "User",
-      pool_balance_before: poolBal,
-      pool_balance_after: poolBal + cost,
-      user_balance_before: profile?.total_aidla_coins || 0,
-      user_balance_after: newBal,
-      note: "Hint fee collected from battle",
+      pool_balance_before: poolBal, pool_balance_after: poolBal + cost,
+      user_balance_before: profile?.total_aidla_coins || 0, user_balance_after: newBal, note:"Hint fee collected from battle",
     });
   }
 
   function flash(text) {
     setMsg(text);
-    setTimeout(() => setMsg(""), 3000);
+    setTimeout(() => setMsg(""), 3500);
   }
+
   async function createPrivateRoom() {
     if (!selectedMode) return;
     const modeObj = selectedMode;
-    if (modeObj.stake > 0 && profile?.total_aidla_coins < modeObj.stake) {
-      flash("Insufficient coins");
-      return;
-    }
+    if (modeObj.stake > 0 && profile?.total_aidla_coins < modeObj.stake) { flash("Insufficient coins"); return; }
     setView("waiting");
     setIsPrivateRoom(true);
     setRoom(null);
@@ -665,61 +660,90 @@ export default function BattlePage() {
     setIsPrivateRoom(false);
     setCurrentRoomId(rid);
     const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: rid });
-    if (error || !data?.ok) {
-      flash(data?.error || error?.message || "Room not found or full");
-      setView("lobby");
-      return;
-    }
+    if (error || !data?.ok) { flash(data?.error || error?.message || "Room not found or full"); setView("lobby"); return; }
     setMyRole("player2");
     watchRoom(rid);
     await pollRoom(rid, false);
   }
+
   function copyRoomId() {
     if (!currentRoomId) return;
     navigator.clipboard.writeText(currentRoomId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopied(true); setTimeout(() => setCopied(false), 2000);
   }
 
   function copyRoomLink() {
     if (!currentRoomId) return;
     const link = `${window.location.origin}/user/battle?room=${currentRoomId}`;
     navigator.clipboard.writeText(link);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopied(true); setTimeout(() => setCopied(false), 2000);
   }
 
-  const q = questions[qIndex];
-  const secPerQ = room ? (room[`round${currentRound}_difficulty`] === "hard" ? 10 : room[`round${currentRound}_difficulty`] === "easy" ? 15 : 12) : 12;
-  const timePct = timeLeft / secPerQ * 100;
-  const opponentName = room ? (room.is_bot ? room.bot_name : myRole === "player1" ? room.player2_name : room.player1_name) : "-";
+  // ── Derived values ──────────────────────────────────────────────
+  const q             = questions[qIndex];
+  const secPerQ       = room ? (room[`round${currentRound}_difficulty`] === "hard" ? 10 : room[`round${currentRound}_difficulty`] === "easy" ? 15 : 12) : 12;
+  const timePct       = timeLeft / secPerQ * 100;
+  const opponentName  = room ? (room.is_bot ? room.bot_name : myRole === "player1" ? room.player2_name : room.player1_name) : "-";
   const opponentScore = room ? (Number(myRole === "player1" ? room[`player2_round${currentRound}_score`] : room[`player1_round${currentRound}_score`]) || 0) : 0;
+  const myFirstName   = (profile?.full_name || "You").split(" ")[0];
+  const oppFirstName  = (opponentName || "Opponent").split(" ")[0];
 
-  if (loading) return <div style={{ textAlign:"center", padding:80, fontFamily:"sans-serif" }}>Loading...</div>;
+  if (loading) return (
+    <div style={{ minHeight:"100vh", background:"#0f0f1a", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif" }}>
+      <div style={{ fontSize:40, marginBottom:20, animation:"spin 1s linear infinite" }}>⚔️</div>
+      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:15, fontWeight:600 }}>Loading Battle Arena...</div>
+      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
 
   return (
     <div style={S.wrap}>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+      <style>{`
+        @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+        @keyframes wobble{0%,100%{transform:rotate(-6deg) scale(1.05)}50%{transform:rotate(6deg) scale(1.1)}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes timerPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.5)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+        @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+        @keyframes hbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+        @keyframes hbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+        @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(90px) rotate(360deg);opacity:0}}
+        @keyframes liveBlip{0%,100%{opacity:1}50%{opacity:0.3}}
+        @keyframes glow{0%,100%{box-shadow:0 0 12px rgba(99,102,241,0.4)}50%{box-shadow:0 0 24px rgba(99,102,241,0.7)}}
+      `}</style>
 
       {/* Share Card */}
       {showShare && result && (
         <BattleShareCard profile={profile} result={result} onClose={() => setShowShare(false)} />
       )}
 
-      {/* Header */}
+      {/* ── HEADER ─────────────────────────────────────────────── */}
       <div style={S.header}>
-        <button style={S.backBtn} onClick={goLobby}>Back</button>
-        <span style={S.headerTitle}>1v1 Battle</span>
-        <span style={S.coins}>{(profile?.total_aidla_coins||0).toLocaleString()} coins</span>
+        <button style={S.backBtn} onClick={goLobby}>←</button>
+        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+          <span style={{ fontSize:18 }}>⚔️</span>
+          <span style={S.headerTitle}>1v1 Battle Arena</span>
+        </div>
+        <div style={S.coinsBadge}>
+          <span style={{ fontSize:14 }}>🪙</span>
+          <span style={{ fontWeight:800, fontSize:13 }}>{(profile?.total_aidla_coins||0).toLocaleString()}</span>
+        </div>
       </div>
 
-      {msg && <div style={S.toast}>{msg}</div>}
-      {/* LOBBY */}
+      {msg && (
+        <div style={{ position:"fixed", top:64, left:"50%", transform:"translateX(-50%)", background:"#1e293b", color:"white", padding:"10px 20px", borderRadius:24, fontSize:13, fontWeight:700, zIndex:9999, boxShadow:"0 4px 20px rgba(0,0,0,0.3)", animation:"fadeUp 0.2s ease" }}>
+          {msg}
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════
+          LOBBY
+      ══════════════════════════════════════════════════════════ */}
       {view === "lobby" && (
-        <div style={{ padding:16 }}>
+        <div style={{ padding:"16px 14px" }}>
           {/* Tabs */}
           <div style={S.tabs}>
-            {[["play","Play"],["open","Open"],["history","History"],["leaderboard","Board"]].map(([id,label]) => (
+            {[["play","⚔️ Play"],["open","🌐 Open"],["history","📜 History"],["leaderboard","🏆 Board"]].map(([id,label]) => (
               <button key={id} style={{ ...S.tab, ...(activeTab===id ? S.tabActive : {}) }}
                 onClick={() => {
                   setActiveTab(id);
@@ -733,16 +757,22 @@ export default function BattlePage() {
 
           {/* PLAY TAB */}
           {activeTab === "play" && (
-            <div>
+            <div style={{ animation:"fadeUp 0.3s ease" }}>
               {/* Stats */}
               {myStats && (
-                <div style={S.card}>
-                  <div style={S.cardTitle}>My Stats</div>
+                <div style={{ ...S.card, background:"linear-gradient(135deg,#1e1b4b,#312e81)", marginBottom:14 }}>
+                  <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:12 }}>My Battle Stats</div>
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8 }}>
-                    {[["Battles",myStats.total],["Wins",myStats.wins],["Losses",myStats.losses],["Earned",`+${myStats.coins_earned}`]].map(([l,v]) => (
-                      <div key={l} style={S.statBox}>
-                        <div style={S.statVal}>{v}</div>
-                        <div style={S.statKey}>{l}</div>
+                    {[
+                      ["⚔️","Battles", myStats.total,    "#a5b4fc"],
+                      ["🏆","Wins",    myStats.wins,     "#6ee7b7"],
+                      ["💀","Losses",  myStats.losses,   "#fca5a5"],
+                      ["🪙","Earned", `+${myStats.coins_earned}`,"#fcd34d"],
+                    ].map(([icon,label,val,color]) => (
+                      <div key={label} style={{ background:"rgba(255,255,255,0.08)", borderRadius:12, padding:"10px 6px", textAlign:"center" }}>
+                        <div style={{ fontSize:18, marginBottom:3 }}>{icon}</div>
+                        <div style={{ fontWeight:900, fontSize:15, color }}>{val}</div>
+                        <div style={{ fontSize:9, color:"rgba(255,255,255,0.45)", marginTop:2, textTransform:"uppercase", letterSpacing:"0.05em" }}>{label}</div>
                       </div>
                     ))}
                   </div>
@@ -750,77 +780,73 @@ export default function BattlePage() {
               )}
 
               {/* Mode selection */}
-              <div style={S.card}>
-                <div style={S.cardTitle}>Choose Mode</div>
+              <div style={{ ...S.card, marginBottom:10 }}>
+                <div style={S.cardTitle}>Choose Battle Mode</div>
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   {MODES.map(m => (
-                    <button key={m.id} style={{ ...S.modeBtn, borderColor: m.color }} onClick={() => { setSelectedMode(m); setView("pre_waiting"); }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                        <div>
-                          <div style={{ fontWeight:800, fontSize:15 }}>{m.label}</div>
-                          <div style={{ fontSize:12, color:"#64748b" }}>
-                            {m.stake === 0 ? "Free entry" : `Stake: ${m.stake} coins`} - Winner gets {m.prize} coins
-                          </div>
+                    <button key={m.id}
+                      style={{ width:"100%", padding:"14px 16px", borderRadius:14, border:`1.5px solid ${m.color}44`, background:`linear-gradient(135deg,${m.glow},transparent)`, textAlign:"left", cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:12 }}
+                      onClick={() => { setSelectedMode(m); setView("pre_waiting"); }}>
+                      <div style={{ width:42, height:42, borderRadius:12, background:`${m.color}22`, border:`1.5px solid ${m.color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>
+                        {m.icon}
+                      </div>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontWeight:800, fontSize:15, color:"#0f172a", marginBottom:2 }}>{m.label}</div>
+                        <div style={{ fontSize:11, color:"#64748b" }}>
+                          {m.stake === 0 ? "Free entry" : `Stake ${m.stake} coins`} · Win <strong style={{ color: m.color }}>{m.prize} coins</strong>
                         </div>
-                        <div style={{ fontSize:13, fontWeight:700, color: m.color }}>
-                          {m.stake === 0 ? "FREE" : `${m.stake} coins`}
-                        </div>
+                      </div>
+                      <div style={{ background: m.color, color:"white", fontSize:11, fontWeight:900, padding:"4px 10px", borderRadius:20, flexShrink:0 }}>
+                        {m.badge}
                       </div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              <div style={{ fontSize:12, color:"#94a3b8", textAlign:"center", padding:"8px 0" }}>
-                Hints: 1st=2.5 coins, 2nd=5 coins, 3rd=10 coins...
+              <div style={{ background:"#fffbeb", border:"1px solid #fde68a", borderRadius:12, padding:"10px 14px", fontSize:12, color:"#92400e", fontWeight:600 }}>
+                💡 Hints: 1st=2.5 · 2nd=5 · 3rd=10 · 4th=20 · 5th=40 coins — eliminates one wrong option
               </div>
             </div>
           )}
 
           {/* OPEN ROOMS TAB */}
           {activeTab === "open" && (
-            <div>
-              {/* Join by Room ID */}
+            <div style={{ animation:"fadeUp 0.3s ease" }}>
               <div style={S.card}>
                 <div style={S.cardTitle}>Join by Room ID</div>
-                <div style={{ fontSize:12, color:"#64748b", marginBottom:10 }}>
-                  Paste a private room ID to join directly.
-                </div>
+                <div style={{ fontSize:12, color:"#64748b", marginBottom:10 }}>Enter a private room ID shared by a friend.</div>
                 <div style={{ display:"flex", gap:8 }}>
-                  <input
-                    style={S.input}
-                    placeholder="Paste room ID here..."
-                    value={joinRoomInput}
+                  <input style={S.input} placeholder="Paste room ID here..." value={joinRoomInput}
                     onChange={e => setJoinRoomInput(e.target.value)}
-                    onKeyDown={e => e.key === "Enter" && joinByRoomId()}
-                  />
-                  <button
-                    style={{ ...S.smBtn, background:"#6366f1", color:"white", whiteSpace:"nowrap" }}
-                    onClick={joinByRoomId}
-                    disabled={!joinRoomInput.trim()}>
+                    onKeyDown={e => e.key === "Enter" && joinByRoomId()} />
+                  <button style={{ ...S.smBtn, background:"#6366f1", color:"white", border:"none" }} onClick={joinByRoomId} disabled={!joinRoomInput.trim()}>
                     Join
                   </button>
                 </div>
               </div>
-
-              {/* Open rooms list */}
               <div style={S.card}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-                  <div style={S.cardTitle}>Open Battles</div>
-                  <button style={S.smBtn} onClick={loadOpenRooms}>Refresh</button>
+                  <div style={S.cardTitle}>Live Open Battles</div>
+                  <button style={S.smBtn} onClick={loadOpenRooms}>↻ Refresh</button>
                 </div>
                 {openRooms.length === 0 ? (
-                  <p style={S.empty}>No open battles. Create one from Play tab!</p>
+                  <div style={{ textAlign:"center", padding:"32px 0" }}>
+                    <div style={{ fontSize:36, marginBottom:8 }}>🎮</div>
+                    <div style={{ color:"#94a3b8", fontSize:13 }}>No open battles right now.</div>
+                    <div style={{ color:"#cbd5e1", fontSize:12, marginTop:4 }}>Create one from the Play tab!</div>
+                  </div>
                 ) : openRooms.map((r, i) => {
                   const m = MODES.find(md => md.id === r.mode);
                   return (
-                    <div key={i} style={S.lbRow}>
+                    <div key={i} style={{ ...S.lbRow, padding:"10px 0" }}>
+                      <AvatarCircle name={r.player1_name} size={36} ring={m?.color || "#6366f1"} />
                       <div style={{ flex:1 }}>
-                        <div style={{ fontWeight:700, fontSize:14 }}>{r.player1_name}</div>
-                        <div style={{ fontSize:12, color:"#64748b" }}>Mode: {m?.label} - Stake: {m?.stake} coins</div>
+                        <div style={{ fontWeight:700, fontSize:14, color:"#0f172a" }}>{r.player1_name}</div>
+                        <div style={{ fontSize:11, color:"#64748b" }}>{m?.label} mode · Win {m?.prize} coins</div>
                       </div>
-                      <button style={{ ...S.smBtn, background:"#6366f1", color:"white" }} onClick={() => joinRoom(r.id)}>
-                        Join
+                      <button style={{ ...S.smBtn, background:"#6366f1", color:"white", border:"none" }} onClick={() => joinRoom(r.id)}>
+                        Join ⚔️
                       </button>
                     </div>
                   );
@@ -831,316 +857,485 @@ export default function BattlePage() {
 
           {/* HISTORY TAB */}
           {activeTab === "history" && (
-            <div style={S.card}>
+            <div style={{ ...S.card, animation:"fadeUp 0.3s ease" }}>
               <div style={S.cardTitle}>Battle History</div>
-              {history.length === 0 ? <p style={S.empty}>No battles yet.</p> : history.map((h, i) => (
-                <div key={i} style={S.lbRow}>
-                  <div style={{ width:36, height:36, borderRadius:"50%", background: h.result==="won"?"#dcfce7":h.result==="tie"?"#fef9c3":"#fee2e2", display:"flex", alignItems:"center", justifyContent:"center", fontSize:16 }}>
-                    {h.result==="won"?"W":h.result==="tie"?"T":"L"}
-                  </div>
-                  <div style={{ flex:1 }}>
-                    <div style={{ fontWeight:700, fontSize:13 }}>{h.opponent_name} {h.is_bot ? "" : ""}</div>
-                    <div style={{ fontSize:11, color:"#94a3b8" }}>{h.my_score} vs {h.opp_score} - {h.mode==="free"?"Free":h.mode+" coins"}</div>
-                  </div>
-                  <div style={{ fontWeight:800, fontSize:13, color: h.coins_change>=0?"#059669":"#dc2626" }}>
-                    {h.coins_change>=0?"+":""}{h.coins_change}
-                  </div>
+              {history.length === 0 ? (
+                <div style={{ textAlign:"center", padding:"32px 0" }}>
+                  <div style={{ fontSize:36, marginBottom:8 }}>⚔️</div>
+                  <div style={{ color:"#94a3b8", fontSize:13 }}>No battles yet. Go win some!</div>
                 </div>
-              ))}
+              ) : history.map((h, i) => {
+                const resColor = h.result==="won" ? "#059669" : h.result==="tie" ? "#d97706" : "#dc2626";
+                const resBg    = h.result==="won" ? "#dcfce7" : h.result==="tie" ? "#fef9c3" : "#fee2e2";
+                return (
+                  <div key={i} style={S.lbRow}>
+                    <div style={{ width:36, height:36, borderRadius:10, background:resBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:15, fontWeight:900, color:resColor, flexShrink:0 }}>
+                      {h.result==="won"?"W":h.result==="tie"?"T":"L"}
+                    </div>
+                    <div style={{ flex:1 }}>
+                      <div style={{ fontWeight:700, fontSize:13, color:"#0f172a" }}>{h.opponent_name}</div>
+                      <div style={{ fontSize:11, color:"#94a3b8" }}>{h.my_score} vs {h.opp_score} · {h.mode==="free"?"Free":h.mode+" coins"}</div>
+                    </div>
+                    <div style={{ fontWeight:900, fontSize:14, color: h.coins_change>=0?"#059669":"#dc2626" }}>
+                      {h.coins_change>=0?"+":""}{h.coins_change} 🪙
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
           {/* LEADERBOARD TAB */}
           {activeTab === "leaderboard" && (
-            <div style={S.card}>
-              <div style={{ display:"flex", gap:6, marginBottom:12 }}>
+            <div style={{ ...S.card, animation:"fadeUp 0.3s ease" }}>
+              <div style={{ display:"flex", gap:6, marginBottom:14 }}>
                 {["daily","weekly","monthly"].map(p => (
-                  <button key={p} style={{ ...S.smBtn, ...(lbPeriod===p?{background:"#6366f1",color:"white"}:{}) }}
+                  <button key={p} style={{ ...S.smBtn, ...(lbPeriod===p?{background:"#6366f1",color:"white",border:"1px solid #6366f1"}:{}) }}
                     onClick={() => { setLbPeriod(p); loadLeaderboard(p); }}>
                     {p.charAt(0).toUpperCase()+p.slice(1)}
                   </button>
                 ))}
               </div>
-              {leaderboard.length === 0 ? <p style={S.empty}>No data yet.</p> : leaderboard.slice(0,20).map((l, i) => (
-                <div key={i} style={S.lbRow}>
-                  <span style={{ fontWeight:800, width:28, color:i<3?["#f59e0b","#94a3b8","#92400e"][i]:"#475569" }}>#{i+1}</span>
-                  {l.avatar_url
-  ? <img src={l.avatar_url} alt="" style={S.avatar} />
-  : <div style={{ width:28, height:28, borderRadius:"50%", background:l.is_bot?"#f1f5f9":"#e0e7ff", display:"flex", alignItems:"center", justifyContent:"center", fontSize:13 }}>{l.is_bot?"":"U"}</div>}
-<span style={{ flex:1, fontWeight:600, fontSize:13 }}>{l.full_name}{l.is_bot?" ":""}</span>
-<span style={{ fontSize:12, color:"#64748b" }}>{l.wins} Wins</span>
-                </div>
-              ))}
+              {leaderboard.length === 0 ? (
+                <div style={{ textAlign:"center", padding:"24px 0", color:"#94a3b8", fontSize:13 }}>No data yet.</div>
+              ) : leaderboard.slice(0,20).map((l, i) => {
+                const medals = ["🥇","🥈","🥉"];
+                return (
+                  <div key={i} style={{ ...S.lbRow, background: i<3 ? "linear-gradient(90deg,rgba(245,158,11,0.06),transparent)" : "none", borderRadius:10, padding:"8px 6px" }}>
+                    <span style={{ fontWeight:900, fontSize:16, width:28, textAlign:"center", flexShrink:0 }}>
+                      {medals[i] || <span style={{ color:"#94a3b8", fontSize:13 }}>#{i+1}</span>}
+                    </span>
+                    {l.avatar_url
+                      ? <img src={l.avatar_url} alt="" style={{ width:32, height:32, borderRadius:"50%", objectFit:"cover", border:"2px solid #e2e8f0" }} />
+                      : <AvatarCircle name={l.full_name} size={32} ring="#e2e8f0" isBot={l.is_bot} />}
+                    <span style={{ flex:1, fontWeight:700, fontSize:13, color:"#0f172a" }}>{l.full_name}{l.is_bot?" 🤖":""}</span>
+                    <span style={{ fontSize:12, fontWeight:700, color:"#6366f1" }}>{l.wins} W</span>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
       )}
-      {/* ROOM OPTIONS */}
+
+      {/* ══════════════════════════════════════════════════════════
+          PRE-WAITING — mode selected, pick match type
+      ══════════════════════════════════════════════════════════ */}
       {view === "pre_waiting" && selectedMode && (
-        <div style={{ padding:16 }}>
-          <div style={{ ...S.card, border:`2px solid ${selectedMode.color}33`, marginBottom:12 }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-              <div>
-                <div style={{ fontWeight:800, fontSize:18 }}>{selectedMode.label} Mode</div>
-                <div style={{ fontSize:12, color:"#64748b", marginTop:3 }}>
-                  {selectedMode.stake === 0 ? "Free entry" : `Stake: ${selectedMode.stake} coins`} - Winner gets {selectedMode.prize} coins
+        <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
+          {/* Mode hero */}
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:18, padding:"22px 20px", marginBottom:16, textAlign:"center", position:"relative", overflow:"hidden" }}>
+            <div style={{ position:"absolute", top:-20, right:-20, width:80, height:80, borderRadius:"50%", background:`${selectedMode.color}22` }} />
+            <div style={{ fontSize:44, marginBottom:8 }}>{selectedMode.icon}</div>
+            <div style={{ fontSize:24, fontWeight:900, color:"white", marginBottom:4 }}>{selectedMode.label} Mode</div>
+            <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:16 }}>
+              {selectedMode.stake === 0 ? "Free to play" : `Stake: ${selectedMode.stake} coins`} · Winner takes <span style={{ color:"#fbbf24", fontWeight:800 }}>{selectedMode.prize} coins</span>
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
+              {[["Entry",selectedMode.stake===0?"Free":`${selectedMode.stake}`],["Prize",`${selectedMode.prize}`],["Tax",`${selectedMode.tax}`]].map(([l,v]) => (
+                <div key={l} style={{ background:"rgba(255,255,255,0.08)", borderRadius:10, padding:"8px 4px" }}>
+                  <div style={{ fontWeight:800, fontSize:16, color:"white" }}>{v}</div>
+                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.05em", marginTop:2 }}>{l}</div>
                 </div>
-              </div>
-              <div style={{ fontWeight:900, fontSize:24, color: selectedMode.color }}>
-                {selectedMode.stake === 0 ? "FREE" : `${selectedMode.stake}`}
-              </div>
+              ))}
             </div>
           </div>
 
           <button style={{ ...S.btn, marginBottom:10 }} onClick={() => findBattle(selectedMode.id)}>
-            Find Public Match
+            🌐 Find Public Match
           </button>
-          <button style={{ ...S.btnGhost, marginBottom:12 }} onClick={createPrivateRoom}>
-            Create Private Room
+          <button style={{ ...S.btnGhost, marginBottom:14 }} onClick={createPrivateRoom}>
+            🔒 Create Private Room
           </button>
 
           <div style={S.card}>
             <div style={S.cardTitle}>Join Private Room</div>
             <div style={{ display:"flex", gap:8 }}>
-              <input
-                style={S.input}
-                placeholder="Paste room ID..."
-                value={joinRoomInput}
+              <input style={S.input} placeholder="Paste room ID..." value={joinRoomInput}
                 onChange={e => setJoinRoomInput(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && joinByRoomId()}
-              />
-              <button style={{ ...S.smBtn, background:"#6366f1", color:"white" }} onClick={joinByRoomId} disabled={!joinRoomInput.trim()}>
+                onKeyDown={e => e.key === "Enter" && joinByRoomId()} />
+              <button style={{ ...S.smBtn, background:"#6366f1", color:"white", border:"none" }} onClick={joinByRoomId} disabled={!joinRoomInput.trim()}>
                 Join
               </button>
             </div>
           </div>
 
-          <button style={{ ...S.btnGhost, marginTop:4 }} onClick={() => setView("lobby")}>Back</button>
+          <button style={S.btnGhost} onClick={() => setView("lobby")}>← Back</button>
         </div>
       )}
-      {/* WAITING */}
+
+      {/* ══════════════════════════════════════════════════════════
+          WAITING — searching for opponent
+      ══════════════════════════════════════════════════════════ */}
       {view === "waiting" && (
-        <div style={{ padding:16 }}>
-          <div style={{ ...S.card, textAlign:"center", padding:"48px 24px" }}>
-            <div style={{ fontSize:56, marginBottom:16, animation:"wobble 1s ease-in-out infinite" }}>VS</div>
-            <div style={{ fontSize:20, fontWeight:800, marginBottom:8, color:"#0f172a" }}>Searching for Opponent</div>
-            <div style={{ fontSize:13, color:"#94a3b8", marginBottom:24 }}>Matching you with the best available challenger...</div>
-            <div style={{ display:"flex", justifyContent:"center", gap:6, marginBottom:24 }}>
+        <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:20, padding:"36px 20px", textAlign:"center", marginBottom:14 }}>
+            {/* Players row */}
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:20, marginBottom:28 }}>
+              {/* You */}
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
+                <div style={{ position:"relative" }}>
+                  <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={64} ring="#818cf8" />
+                  <div style={{ position:"absolute", bottom:-2, right:-2, width:18, height:18, borderRadius:"50%", background:"#22c55e", border:"2px solid #1e1b4b", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9 }}>✓</div>
+                </div>
+                <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.8)", maxWidth:80, textOverflow:"ellipsis", overflow:"hidden", whiteSpace:"nowrap" }}>{myFirstName}</div>
+              </div>
+
+              <div style={{ fontSize:22, fontWeight:900, color:"#f59e0b", animation:"wobble 1.5s ease-in-out infinite" }}>VS</div>
+
+              {/* Opponent */}
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
+                <div style={{ width:64, height:64, borderRadius:"50%", background:"rgba(255,255,255,0.08)", border:"3px dashed rgba(255,255,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26 }}>
+                  ?
+                </div>
+                <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.45)" }}>Searching...</div>
+              </div>
+            </div>
+
+            <div style={{ fontSize:14, color:"rgba(255,255,255,0.6)", marginBottom:20 }}>
+              Matching you with the best challenger...
+            </div>
+            <div style={{ display:"flex", justifyContent:"center", gap:8, marginBottom:24 }}>
               {[0,1,2,3,4].map(i => (
-                <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#6366f1", animation:`bounce 1.2s ease-in-out ${i*0.15}s infinite` }} />
+                <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#818cf8", animation:`bounce 1.2s ease-in-out ${i*0.15}s infinite` }} />
               ))}
             </div>
-            <style>{`
-              @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-              @keyframes wobble{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
-            `}</style>
-            <button style={{ ...S.btnGhost, maxWidth:200, margin:"0 auto" }} onClick={goLobby}>Cancel</button>
+            <button style={{ ...S.btnGhost, maxWidth:200, margin:"0 auto", background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.7)", border:"1px solid rgba(255,255,255,0.15)" }} onClick={goLobby}>
+              Cancel
+            </button>
           </div>
+
+          {/* Private room share card */}
           {currentRoomId && isPrivateRoom && (
             <div style={S.card}>
-              <div style={S.cardTitle}>Private Room</div>
-              <div style={{ background:"#f8fafc", borderRadius:10, padding:"10px 12px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"space-between", gap:8 }}>
-                <div>
-                  <div style={{ fontSize:10, color:"#94a3b8", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:2 }}>Room ID</div>
-                  <div style={{ fontSize:12, fontWeight:700, color:"#0f172a", fontFamily:"monospace", wordBreak:"break-all" }}>{currentRoomId}</div>
-                </div>
-                <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-                  <button style={S.smBtn} onClick={copyRoomId}>{copied ? "Copied" : "Copy"} ID</button>
-                  <button style={S.smBtn} onClick={copyRoomLink}>{copied ? "Copied" : "Copy"} Link</button>
-                </div>
+              <div style={{ display:"flex", gap:4, alignItems:"center", marginBottom:10 }}>
+                <span style={{ fontSize:14 }}>🔒</span>
+                <div style={S.cardTitle}>Private Room Ready</div>
               </div>
-              <div style={{ fontSize:11, color:"#94a3b8" }}>
-                Share this Room ID. The other player enters it in Join Private Room.
+              <div style={{ background:"#f8fafc", borderRadius:12, padding:"12px 14px", marginBottom:10 }}>
+                <div style={{ fontSize:10, color:"#94a3b8", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:4 }}>Room ID</div>
+                <div style={{ fontSize:13, fontWeight:800, color:"#0f172a", fontFamily:"monospace", wordBreak:"break-all" }}>{currentRoomId}</div>
               </div>
+              <div style={{ display:"flex", gap:8 }}>
+                <button style={{ ...S.smBtn, flex:1, justifyContent:"center" }} onClick={copyRoomId}>{copied ? "✓ Copied!" : "Copy ID"}</button>
+                <button style={{ ...S.smBtn, flex:1, background:"#6366f1", color:"white", border:"none" }} onClick={copyRoomLink}>{copied ? "✓ Copied!" : "Copy Link"}</button>
+              </div>
+              <div style={{ fontSize:11, color:"#94a3b8", marginTop:8 }}>Share the link or ID with your opponent</div>
             </div>
           )}
         </div>
       )}
 
-      {/* SELECTING */}
+      {/* ══════════════════════════════════════════════════════════
+          SELECTING
+      ══════════════════════════════════════════════════════════ */}
       {view === "selecting" && room && (
-        <div style={{ padding:16 }}>
-          <div style={{ ...S.card, background:"#f0f9ff", border:"1px solid #bae6fd", marginBottom:12, padding:14 }}>
-            <div style={{ fontSize:13, fontWeight:700, color:"#0369a1" }}>
-              vs {opponentName} {room.is_bot ? "" : ""}
+        <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
+          {/* Battle header */}
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:16, padding:"14px 16px", marginBottom:14, display:"flex", alignItems:"center", gap:12 }}>
+            <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={36} ring="#818cf8" />
+            <div style={{ flex:1, textAlign:"center" }}>
+              <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.08em" }}>Round {currentRound} of 2</div>
+              <div style={{ fontSize:16, fontWeight:900, color:"#f59e0b", letterSpacing:"0.04em" }}>⚔️ VS ⚔️</div>
             </div>
-            <div style={{ fontSize:12, color:"#0284c7" }}>Round {currentRound} of 2</div>
+            <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={36} ring="#f87171" isBot={!!room.is_bot} />
           </div>
 
           {isMySelectorTurn() ? (
-            <div style={{ ...S.card, padding: 14 }}>
-              <div style={{ ...S.cardTitle, marginBottom: 8 }}>Pick Round {currentRound}</div>
+            <div style={{ ...S.card, padding:16 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
+                <div style={{ background:"#eff0ff", color:"#4338ca", fontSize:11, fontWeight:800, padding:"4px 12px", borderRadius:20 }}>Your Pick</div>
+                <div style={S.cardTitle}>Round {currentRound} — Choose Category</div>
+              </div>
 
-              {/* Category grid — scrollable, compact */}
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 5 }}>Category</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, maxHeight: 168, overflowY: "auto", marginBottom: 10, paddingRight: 2 }}>
+              {/* Category grid */}
+              <div style={{ fontSize:10, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:6 }}>Category</div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:5, maxHeight:180, overflowY:"auto", marginBottom:12, paddingRight:2 }}>
                 {categories.map(c => (
                   <button key={c.id}
-                    style={{ padding: "5px 4px", border: selCategory?.id === c.id ? "2px solid #6366f1" : "1px solid #e2e8f0", borderRadius: 7, background: selCategory?.id === c.id ? "#eef2ff" : "white", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", color: selCategory?.id === c.id ? "#4338ca" : "#334155", textAlign: "center", lineHeight: 1.3, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}
+                    style={{ padding:"7px 4px", border: selCategory?.id===c.id ? "2px solid #6366f1" : "1.5px solid #e2e8f0", borderRadius:10, background: selCategory?.id===c.id ? "#eff0ff" : "white", fontSize:10, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color: selCategory?.id===c.id ? "#4338ca" : "#334155", textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:2, transition:"all 0.15s" }}
                     onClick={() => setSelCategory(c)}>
-                    <span style={{ fontSize: 14 }}>{c.icon}</span>
-                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%", textAlign: "center" }}>{c.name}</span>
+                    <span style={{ fontSize:16 }}>{c.icon}</span>
+                    <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", width:"100%" }}>{c.name}</span>
                   </button>
                 ))}
               </div>
 
-              {/* Difficulty + Questions in one row */}
-              <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 4 }}>Difficulty</div>
-                  <div style={{ display: "flex", gap: 3 }}>
-                    {["easy","medium","hard"].map(d => (
-                      <button key={d} style={{ flex: 1, padding: "6px 2px", border: "1px solid #e2e8f0", borderRadius: 7, background: selDifficulty === d ? "#6366f1" : "white", color: selDifficulty === d ? "white" : "#334155", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", textTransform: "capitalize" }}
-                        onClick={() => setSelDifficulty(d)}>{d}</button>
+              {/* Difficulty + Questions */}
+              <div style={{ display:"flex", gap:10, marginBottom:14 }}>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:10, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>Difficulty</div>
+                  <div style={{ display:"flex", gap:4 }}>
+                    {[["easy","🟢"],["medium","🟡"],["hard","🔴"]].map(([d,dot]) => (
+                      <button key={d} style={{ flex:1, padding:"7px 2px", border:"1.5px solid #e2e8f0", borderRadius:8, background: selDifficulty===d ? "#6366f1" : "white", color: selDifficulty===d ? "white" : "#334155", fontSize:10, fontWeight:800, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}
+                        onClick={() => setSelDifficulty(d)}>
+                        {dot} {d.charAt(0).toUpperCase()+d.slice(1)}
+                      </button>
                     ))}
                   </div>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: 4 }}>Questions</div>
-                  <div style={{ display: "flex", gap: 3 }}>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:10, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>Questions</div>
+                  <div style={{ display:"flex", gap:4 }}>
                     {[5,10,15,20].map(n => (
-                      <button key={n} style={{ flex: 1, padding: "6px 2px", border: "1px solid #e2e8f0", borderRadius: 7, background: selQuestions === n ? "#6366f1" : "white", color: selQuestions === n ? "white" : "#334155", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}
-                        onClick={() => setSelQuestions(n)}>{n}</button>
+                      <button key={n} style={{ flex:1, padding:"7px 2px", border:"1.5px solid #e2e8f0", borderRadius:8, background: selQuestions===n ? "#6366f1" : "white", color: selQuestions===n ? "white" : "#334155", fontSize:10, fontWeight:800, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}
+                        onClick={() => setSelQuestions(n)}>
+                        {n}
+                      </button>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <button style={{ ...S.btn, padding: 11 }} onClick={submitSelection} disabled={!selCategory || submittingSelection}>
-                {generatingQ ? "Generating..." : submittingSelection ? "Submitting..." : "Confirm Selection"}
+              <button style={{ ...S.btn, opacity: (!selCategory||submittingSelection) ? 0.6 : 1 }} onClick={submitSelection} disabled={!selCategory||submittingSelection}>
+                {generatingQ ? "⚙️ Generating Questions..." : submittingSelection ? "⏳ Confirming..." : "⚔️ Lock In Selection"}
               </button>
             </div>
           ) : (
-            <div style={{ ...S.card, textAlign:"center", padding:40 }}>
-              <div style={{ fontSize:36, marginBottom:12 }}>...</div>
-              <div style={{ fontSize:16, fontWeight:700 }}>{opponentName} is picking Round {currentRound}...</div>
-              <div style={{ fontSize:12, color:"#94a3b8", marginTop:8 }}>
-                {room[`round${currentRound === 1 ? 1 : 2}_category`]
-                  ? `Category: ${room[`round${currentRound === 1 ? 1 : 2}_category`]}`
-                  : "Waiting for selection..."}
+            <div style={{ ...S.card, textAlign:"center", padding:"44px 20px" }}>
+              <div style={{ display:"flex", justifyContent:"center", marginBottom:16 }}>
+                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={56} ring="#f87171" isBot={!!room.is_bot} />
+              </div>
+              <div style={{ fontSize:17, fontWeight:800, color:"#0f172a", marginBottom:6 }}>
+                {oppFirstName} is picking Round {currentRound}
+              </div>
+              {room[`round${currentRound}_category`] ? (
+                <div style={{ display:"inline-block", background:"#eff0ff", color:"#4338ca", fontSize:12, fontWeight:700, padding:"4px 14px", borderRadius:20, marginBottom:16 }}>
+                  Category: {room[`round${currentRound}_category`]}
+                </div>
+              ) : (
+                <div style={{ fontSize:12, color:"#94a3b8", marginBottom:20 }}>Waiting for their selection...</div>
+              )}
+              <div style={{ display:"flex", justifyContent:"center", gap:6 }}>
+                {[0,1,2].map(i => (
+                  <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#6366f1", animation:`bounce 1.2s ease-in-out ${i*0.2}s infinite` }} />
+                ))}
               </div>
             </div>
           )}
         </div>
       )}
 
-      {/* WAITING FOR OPPONENT TO FINISH ROUND */}
+      {/* ══════════════════════════════════════════════════════════
+          WAITING FOR OPPONENT ROUND 1
+      ══════════════════════════════════════════════════════════ */}
       {view === "waiting_round" && (
-        <div style={{ padding: 16 }}>
-          <div style={{ ...S.card, textAlign: "center", padding: "48px 24px" }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", marginBottom: 8 }}>
-              Round 1 Complete!
+        <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:20, padding:"40px 20px", textAlign:"center" }}>
+            <div style={{ fontSize:52, marginBottom:12, animation:"hbFloat 2s ease-in-out infinite" }}>✅</div>
+            <div style={{ fontSize:20, fontWeight:900, color:"white", marginBottom:6 }}>Round 1 Complete!</div>
+            <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:24 }}>
+              Waiting for <strong style={{ color:"#fbbf24" }}>{oppFirstName}</strong> to finish...
             </div>
-            <div style={{ fontSize: 14, color: "#64748b", marginBottom: 24 }}>
-              Waiting for <strong>{opponentName}</strong> to finish Round 1...
-            </div>
-            <div style={{ display: "flex", justifyContent: "center", gap: 6, marginBottom: 24 }}>
-              {[0, 1, 2, 3, 4].map(i => (
-                <div key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: "#6366f1", animation: `bounce 1.2s ease-in-out ${i * 0.15}s infinite` }} />
+            <div style={{ display:"flex", justifyContent:"center", gap:6, marginBottom:20 }}>
+              {[0,1,2,3,4].map(i => (
+                <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#818cf8", animation:`bounce 1.2s ease-in-out ${i*0.15}s infinite` }} />
               ))}
             </div>
-            <div style={{ fontSize: 12, color: "#94a3b8" }}>
-              Round 2 category selection will begin once both players are done.
-            </div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>Round 2 selection begins once both players finish</div>
           </div>
         </div>
       )}
 
-      {/* IN PROGRESS */}
+      {/* ══════════════════════════════════════════════════════════
+          IN PROGRESS — Battle HUD
+      ══════════════════════════════════════════════════════════ */}
       {view === "in_progress" && q && (
-        <div style={{ padding:16 }}>
-          {/* Scoreboard */}
-          <div style={{ display:"flex", gap:8, marginBottom:10 }}>
-            <div style={{ flex:1, background:"#eff6ff", borderRadius:10, padding:"8px 12px", textAlign:"center" }}>
-              <div style={{ fontSize:11, color:"#64748b" }}>You</div>
-              <div style={{ fontSize:20, fontWeight:800, color:"#6366f1" }}>{myScore}</div>
+        <div style={{ padding:"12px 14px" }}>
+          {/* ── Battle HUD ── */}
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:18, padding:"14px 16px", marginBottom:12 }}>
+            {/* Round + question info bar */}
+            <div style={{ display:"flex", justifyContent:"center", marginBottom:12 }}>
+              <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:20, padding:"3px 14px", display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ width:6, height:6, borderRadius:"50%", background:"#22c55e", animation:"liveBlip 1.2s ease-in-out infinite", flexShrink:0 }} />
+                <span style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.8)", letterSpacing:"0.04em" }}>
+                  ROUND {currentRound}/2 &nbsp;·&nbsp; Q {qIndex+1}/{questions.length}
+                </span>
+              </div>
             </div>
-            <div style={{ flex:1, background:"#f8fafc", borderRadius:10, padding:"8px 12px", textAlign:"center" }}>
-              <div style={{ fontSize:11, color:"#64748b" }}>Round {currentRound}/2</div>
-              <div style={{ fontSize:14, fontWeight:700 }}>Q{qIndex+1}/{questions.length}</div>
+
+            {/* Players + timer row */}
+            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+              {/* You */}
+              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:5 }}>
+                <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={46} ring="#818cf8" />
+                <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.65)", maxWidth:80, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                  {myFirstName}
+                </div>
+                <div style={{ display:"flex", alignItems:"baseline", gap:1 }}>
+                  <span style={{ fontSize:30, fontWeight:900, color:"#a5b4fc", lineHeight:1 }}>{myScore}</span>
+                  <span style={{ fontSize:13, fontWeight:700, color:"rgba(165,180,252,0.55)", lineHeight:1 }}>/{questions.length}</span>
+                </div>
+              </div>
+
+              {/* Center timer circle */}
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, flexShrink:0 }}>
+                <div style={{
+                  width:56, height:56, borderRadius:"50%",
+                  border:`3px solid ${timeLeft<=5?"#ef4444":timeLeft<=10?"#f59e0b":"rgba(255,255,255,0.25)"}`,
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  background: timeLeft<=5?"rgba(239,68,68,0.18)":"rgba(255,255,255,0.06)",
+                  animation: timeLeft<=5?"timerPulse 0.6s ease-in-out infinite":"none",
+                  transition:"border-color 0.3s, background 0.3s",
+                }}>
+                  <span style={{ fontSize:20, fontWeight:900, color:timeLeft<=5?"#f87171":timeLeft<=10?"#fbbf24":"white", lineHeight:1 }}>{timeLeft}</span>
+                </div>
+                <span style={{ fontSize:10, fontWeight:700, color:"#f59e0b", letterSpacing:"0.05em" }}>VS</span>
+              </div>
+
+              {/* Opponent */}
+              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:5 }}>
+                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={46} ring="#f87171" isBot={!!room?.is_bot} />
+                <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.65)", maxWidth:80, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                  {oppFirstName}
+                </div>
+                <div style={{ display:"flex", alignItems:"baseline", gap:1 }}>
+                  <span style={{ fontSize:30, fontWeight:900, color:"#fca5a5", lineHeight:1 }}>{opponentScore}</span>
+                  <span style={{ fontSize:13, fontWeight:700, color:"rgba(252,165,165,0.55)", lineHeight:1 }}>/{questions.length}</span>
+                </div>
+              </div>
             </div>
-            <div style={{ flex:1, background:"#fef2f2", borderRadius:10, padding:"8px 12px", textAlign:"center" }}>
-              <div style={{ fontSize:11, color:"#64748b" }}>{opponentName}</div>
-              <div style={{ fontSize:20, fontWeight:800, color:"#ef4444" }}>{opponentScore}</div>
+
+            {/* Timer progress bar */}
+            <div style={{ marginTop:12, height:3, background:"rgba(255,255,255,0.1)", borderRadius:4, overflow:"hidden" }}>
+              <div style={{ height:"100%", width:`${timePct}%`, background:timeLeft<=5?"#ef4444":timeLeft<=10?"#f59e0b":"#818cf8", borderRadius:4, transition:"width 1s linear" }} />
             </div>
           </div>
 
-          {/* Timer */}
-          <div style={S.timerBar}><div style={{ ...S.timerFill, width:`${timePct}%`, background:timeLeft<=5?"#ef4444":"#6366f1" }} /></div>
-          <div style={{ textAlign:"center", fontSize:24, fontWeight:800, marginBottom:10, color:timeLeft<=5?"#ef4444":"#0f172a" }}>{timeLeft}s</div>
-
-          <div style={S.card} onContextMenu={e => e.preventDefault()}>
-            <div style={{ fontSize:11, color:"#6366f1", fontWeight:700, marginBottom:6 }}>
-              {room?.[`round${currentRound}_category`]} - {room?.[`round${currentRound}_difficulty`]}
+          {/* ── Question Card ── */}
+          <div style={{ background:"white", borderRadius:16, padding:"16px", marginBottom:10, boxShadow:"0 4px 20px rgba(0,0,0,0.07)" }} onContextMenu={e => e.preventDefault()}>
+            {/* Badges */}
+            <div style={{ display:"flex", gap:6, marginBottom:12, flexWrap:"wrap" }}>
+              <span style={{ background:"#eff0ff", color:"#4338ca", fontSize:10, fontWeight:800, padding:"3px 10px", borderRadius:20, textTransform:"uppercase", letterSpacing:"0.04em" }}>
+                {room?.[`round${currentRound}_category`]}
+              </span>
+              {(() => {
+                const diff  = room?.[`round${currentRound}_difficulty`];
+                const [bg,  color] = diffBadge(diff);
+                return (
+                  <span style={{ background:bg, color, fontSize:10, fontWeight:800, padding:"3px 10px", borderRadius:20, textTransform:"capitalize" }}>
+                    {diff}
+                  </span>
+                );
+              })()}
             </div>
-            <p style={{ fontWeight:700, fontSize:15, lineHeight:1.5, margin:"0 0 12px", userSelect:"none" }}>{q.question_text}</p>
+
+            <p style={{ fontWeight:700, fontSize:15, lineHeight:1.6, margin:"0 0 14px", color:"#0f172a", userSelect:"none" }}>
+              {q.question_text}
+            </p>
+
             {q.options?.map((opt, i) => {
-              let bg="white", border="1px solid #e2e8f0", color="#0f172a";
+              let bg="#fff", border="1.5px solid #e2e8f0", color="#0f172a", shadow="none", letterBg="#f1f5f9", letterColor="#64748b";
               if (feedback) {
-                if (i===feedback.correctIndex) { bg="#dcfce7"; border="1px solid #10b981"; color="#065f46"; }
-                else if (i===selected && !feedback.correct) { bg="#fee2e2"; border="1px solid #ef4444"; color="#991b1b"; }
-              } else if (selected===i) { bg="#eef2ff"; border="1px solid #6366f1"; }
+                if (i===feedback.correctIndex) { bg="#f0fdf4"; border="1.5px solid #22c55e"; color="#166534"; letterBg="#22c55e"; letterColor="white"; }
+                else if (i===selected && !feedback.correct) { bg="#fef2f2"; border="1.5px solid #ef4444"; color="#991b1b"; letterBg="#ef4444"; letterColor="white"; }
+              } else if (selected===i) {
+                bg="#eff0ff"; border="1.5px solid #6366f1"; color="#4338ca"; shadow="0 0 0 3px rgba(99,102,241,0.12)"; letterBg="#6366f1"; letterColor="white";
+              }
               const elim = eliminated.includes(i);
               return (
-                <button key={i} disabled={!!feedback || elim}
+                <button key={i} disabled={!!feedback||elim}
                   onClick={() => { if (!feedback) { setSelected(i); handleAnswer(i); } }}
-                  style={{ width:"100%", padding:"11px 14px", margin:"4px 0", borderRadius:10, textAlign:"left", fontSize:14, fontFamily:"inherit", cursor:"pointer", background:bg, border, color, opacity:elim?0.25:1, textDecoration:elim?"line-through":"none", userSelect:"none", display:"flex", gap:10, alignItems:"center" }}>
-                  <span style={{ fontWeight:800, minWidth:20 }}>{String.fromCharCode(65+i)}</span>{opt}
+                  style={{ width:"100%", padding:"11px 13px", margin:"5px 0", borderRadius:12, textAlign:"left", fontSize:14, fontFamily:"inherit", cursor:elim?"default":"pointer", background:bg, border, color, opacity:elim?0.25:1, textDecoration:elim?"line-through":"none", userSelect:"none", display:"flex", gap:10, alignItems:"center", boxShadow:shadow, transition:"all 0.15s" }}>
+                  <span style={{ width:26, height:26, borderRadius:7, background:letterBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, color:letterColor, flexShrink:0, transition:"all 0.15s" }}>
+                    {String.fromCharCode(65+i)}
+                  </span>
+                  <span style={{ flex:1, lineHeight:1.4 }}>{opt}</span>
+                  {feedback && i===feedback.correctIndex && <span style={{ flexShrink:0 }}>✓</span>}
+                  {feedback && i===selected && !feedback.correct && <span style={{ flexShrink:0 }}>✗</span>}
                 </button>
               );
             })}
+
             {feedback && (
-              <div style={{ textAlign:"center", marginTop:10, fontWeight:700, color:feedback.correct?"#059669":"#dc2626" }}>
-                {feedback.correct ? "Correct!" : `Answer: ${String.fromCharCode(65+feedback.correctIndex)}`}
+              <div style={{ textAlign:"center", marginTop:12, fontWeight:900, fontSize:15, color:feedback.correct?"#059669":"#dc2626" }}>
+                {feedback.correct ? "✓ Correct!" : `✗ Correct answer: ${String.fromCharCode(65+feedback.correctIndex)}`}
               </div>
             )}
           </div>
 
           {/* Hint button */}
           {!feedback && hintsUsed < HINT_COSTS.length && (
-            <button style={S.hintBtn} onClick={useHint}>
-              Hint #{hintsUsed+1} - costs {HINT_COSTS[Math.min(hintsUsed, HINT_COSTS.length-1)]} coins (eliminates 1 wrong option)
+            <button style={{ width:"100%", padding:"11px", background:"linear-gradient(135deg,#fffbeb,#fef9c3)", border:"1.5px solid #fde068", borderRadius:12, color:"#92400e", fontWeight:800, fontSize:13, cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}
+              onClick={useHint}>
+              💡 Hint #{hintsUsed+1} — costs <strong>{HINT_COSTS[Math.min(hintsUsed, HINT_COSTS.length-1)]} coins</strong> · eliminates 1 wrong option
             </button>
           )}
         </div>
       )}
 
-      {/* RESULT */}
+      {/* ══════════════════════════════════════════════════════════
+          RESULT
+      ══════════════════════════════════════════════════════════ */}
       {view === "result" && result && (
-        <div style={{ padding: 16 }}>
-          <style>{`
-            @keyframes hbPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.18)} }
-            @keyframes hbFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-            @keyframes confettiFall { 0%{transform:translateY(-10px) rotate(0deg);opacity:1} 100%{transform:translateY(80px) rotate(360deg);opacity:0} }
-          `}</style>
-
+        <div style={{ padding:"16px 14px" }}>
           {/* ── WIN ── */}
           {result.won && (
-            <div style={{ background:"linear-gradient(135deg,#064e3b,#065f46,#047857)", borderRadius:16, padding:"28px 20px", textAlign:"center", position:"relative", overflow:"hidden" }}>
-              <div style={{ position:"absolute", top:-16, right:-16, width:90, height:90, borderRadius:"50%", background:"rgba(52,211,153,0.18)" }} />
-              <div style={{ position:"absolute", bottom:-12, left:-12, width:70, height:70, borderRadius:"50%", background:"rgba(16,185,129,0.15)" }} />
-              <div style={{ fontSize:56, marginBottom:6, animation:"hbFloat 2s ease-in-out infinite" }}>🏆</div>
-              <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.03em" }}>You Won!</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.75)", marginBottom:20 }}>vs {result.oppName}{result.isBot ? " 🤖" : ""}</div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:20 }}>
-                <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.myScore}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Your Score</div>
+            <div style={{ background:"linear-gradient(145deg,#064e3b,#065f46,#047857)", borderRadius:20, padding:"28px 18px", textAlign:"center", position:"relative", overflow:"hidden", animation:"fadeUp 0.4s ease" }}>
+              <div style={{ position:"absolute", top:-20, right:-20, width:100, height:100, borderRadius:"50%", background:"rgba(52,211,153,0.15)" }} />
+              <div style={{ position:"absolute", bottom:-15, left:-15, width:80, height:80, borderRadius:"50%", background:"rgba(16,185,129,0.12)" }} />
+              <div style={{ fontSize:58, marginBottom:8, animation:"hbFloat 2s ease-in-out infinite" }}>🏆</div>
+              <div style={{ fontSize:32, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.02em" }}>You Won!</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{result.isBot ? " 🤖" : ""}</div>
+
+              {/* Round breakdown */}
+              <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:14, padding:"14px 16px", marginBottom:14, textAlign:"left" }}>
+                <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Score Breakdown</div>
+                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:4 }}>
+                  <div />
+                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.4)", textAlign:"center", textTransform:"uppercase", letterSpacing:"0.06em" }}>You</div>
+                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.4)", textAlign:"center", textTransform:"uppercase", letterSpacing:"0.06em" }}>Opponent</div>
                 </div>
-                <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.oppScore}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Their Score</div>
-                </div>
-                <div style={{ background:"rgba(52,211,153,0.25)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#6ee7b7" }}>+{result.coinsChange}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Coins</div>
+                {result.round1.total > 0 && (
+                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:6, alignItems:"center" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.55)" }}>Round 1</div>
+                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.my}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>/{result.round1.total}</span>
+                    </div>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.opp}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>/{result.round1.total}</span>
+                    </div>
+                  </div>
+                )}
+                {result.round2.total > 0 && (
+                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:10, alignItems:"center" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.55)" }}>Round 2</div>
+                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.my}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>/{result.round2.total}</span>
+                    </div>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.opp}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>/{result.round2.total}</span>
+                    </div>
+                  </div>
+                )}
+                <div style={{ height:1, background:"rgba(255,255,255,0.12)", marginBottom:8 }} />
+                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, alignItems:"center" }}>
+                  <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.75)" }}>Total</div>
+                  <div style={{ background:"rgba(52,211,153,0.2)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:18, color:"#6ee7b7" }}>{result.myScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(110,231,183,0.6)" }}>/{result.totalQuestions}</span>}
+                  </div>
+                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:18, color:"#fff" }}>{result.oppScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
+                  </div>
                 </div>
               </div>
+
+              <div style={{ background:"rgba(52,211,153,0.15)", borderRadius:12, padding:"12px", marginBottom:20, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                <span style={{ fontSize:22 }}>🪙</span>
+                <span style={{ fontWeight:900, fontSize:22, color:"#6ee7b7" }}>+{result.coinsChange}</span>
+                <span style={{ fontSize:12, color:"rgba(255,255,255,0.55)" }}>coins earned</span>
+              </div>
+
               <button style={{ ...S.btn, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)", color:"#fff", marginBottom:8 }} onClick={() => setShowShare(true)}>
                 Share Victory 🎉
               </button>
-              <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.8)", border:"none" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
+              <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.7)", border:"1px solid rgba(255,255,255,0.12)" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
                 Back to Lobby
               </button>
             </div>
@@ -1148,54 +1343,79 @@ export default function BattlePage() {
 
           {/* ── LOSE ── */}
           {!result.won && !result.tie && (
-            <div style={{ background:"linear-gradient(145deg,#1a0533 0%,#4a044e 35%,#7f1d1d 70%,#1e1b4b 100%)", borderRadius:16, padding:"28px 20px", textAlign:"center", position:"relative", overflow:"hidden" }}>
-              {/* Decorative blobs */}
+            <div style={{ background:"linear-gradient(145deg,#1a0533,#4a044e 35%,#7f1d1d 70%,#1e1b4b)", borderRadius:20, padding:"28px 18px", textAlign:"center", position:"relative", overflow:"hidden", animation:"fadeUp 0.4s ease" }}>
               <div style={{ position:"absolute", top:-20, left:-20, width:100, height:100, borderRadius:"50%", background:"rgba(220,38,38,0.18)" }} />
-              <div style={{ position:"absolute", top:10, right:-10, width:60, height:60, borderRadius:"50%", background:"rgba(167,139,250,0.2)" }} />
-              <div style={{ position:"absolute", bottom:-15, left:"40%", width:80, height:80, borderRadius:"50%", background:"rgba(236,72,153,0.15)" }} />
-              <div style={{ position:"absolute", bottom:-10, right:-20, width:70, height:70, borderRadius:"50%", background:"rgba(239,68,68,0.12)" }} />
-
-              {/* Falling pieces */}
               {[...Array(6)].map((_,i) => (
-                <div key={i} style={{ position:"absolute", top:0, left:`${10+i*15}%`, width:6, height:6, borderRadius:2, background:["#f87171","#c084fc","#fb923c","#e879f9","#f472b6","#a78bfa"][i], animation:`confettiFall ${1.5+i*0.3}s ease-in ${i*0.2}s infinite`, opacity:0 }} />
+                <div key={i} style={{ position:"absolute", top:0, left:`${8+i*16}%`, width:6, height:6, borderRadius:2, background:["#f87171","#c084fc","#fb923c","#e879f9","#f472b6","#a78bfa"][i], animation:`confettiFall ${1.5+i*0.3}s ease-in ${i*0.2}s infinite`, opacity:0 }} />
               ))}
+              <div style={{ fontSize:58, marginBottom:8, animation:"hbPulse 1.4s ease-in-out infinite" }}>💔</div>
+              <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.02em" }}>You Lost</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.55)", marginBottom:16 }}>vs {result.oppName}{result.isBot?" 🤖":""}</div>
 
-              <div style={{ fontSize:60, marginBottom:6, animation:"hbPulse 1.4s ease-in-out infinite" }}>💔</div>
-              <div style={{ fontSize:28, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.03em" }}>You Lost</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:6 }}>vs {result.oppName}{result.isBot ? " 🤖" : ""}</div>
-
-              <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:12, padding:"10px 14px", marginBottom:16, border:"1px solid rgba(255,255,255,0.1)" }}>
-                <div style={{ fontSize:12, color:"rgba(255,255,255,0.55)", fontStyle:"italic", lineHeight:1.5 }}>
-                  {[
-                    "Every champion was once a challenger. Get back up! 🔥",
-                    "The road to victory is paved with losses. Keep going! 💪",
-                    "Defeat is just a detour, not a dead end. Try again! ⚡",
-                    "Your next battle starts now. Don't stop! 🚀",
-                  ][Math.floor(Math.random() * 4)]}
+              <div style={{ background:"rgba(255,255,255,0.06)", borderRadius:12, padding:"10px 14px", marginBottom:14, border:"1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)", fontStyle:"italic", lineHeight:1.6 }}>
+                  {["Every champion was once a challenger. Get back up! 🔥","The road to victory is paved with losses. Keep going! 💪","Defeat is just a detour, not a dead end. Try again! ⚡","Your next battle starts now. Don't stop! 🚀"][Math.floor(Math.random()*4)]}
                 </div>
               </div>
 
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:20 }}>
-                <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.myScore}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", marginTop:2 }}>Your Score</div>
+              {/* Round breakdown */}
+              <div style={{ background:"rgba(0,0,0,0.25)", borderRadius:14, padding:"14px 16px", marginBottom:14, textAlign:"left" }}>
+                <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Score Breakdown</div>
+                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:4 }}>
+                  <div />
+                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>You</div>
+                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>Opponent</div>
                 </div>
-                <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.oppScore}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", marginTop:2 }}>Their Score</div>
-                </div>
-                <div style={{ background:"rgba(239,68,68,0.25)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#fca5a5" }}>{result.coinsChange}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.5)", marginTop:2 }}>Coins</div>
+                {result.round1.total > 0 && (
+                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:6, alignItems:"center" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 1</div>
+                    <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.my}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
+                    </div>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.opp}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
+                    </div>
+                  </div>
+                )}
+                {result.round2.total > 0 && (
+                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:10, alignItems:"center" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 2</div>
+                    <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.my}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
+                    </div>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.opp}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
+                    </div>
+                  </div>
+                )}
+                <div style={{ height:1, background:"rgba(255,255,255,0.1)", marginBottom:8 }} />
+                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, alignItems:"center" }}>
+                  <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.7)" }}>Total</div>
+                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:18, color:"#fff" }}>{result.myScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(255,255,255,0.4)" }}>/{result.totalQuestions}</span>}
+                  </div>
+                  <div style={{ background:"rgba(239,68,68,0.2)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:18, color:"#fca5a5" }}>{result.oppScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(252,165,165,0.5)" }}>/{result.totalQuestions}</span>}
+                  </div>
                 </div>
               </div>
 
-              <button style={{ ...S.btn, background:"linear-gradient(135deg,#7c3aed,#db2777)", border:"none", marginBottom:8, fontSize:14 }}
-                onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
+              <div style={{ background:"rgba(239,68,68,0.18)", borderRadius:12, padding:"12px", marginBottom:20, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                <span style={{ fontSize:18 }}>🪙</span>
+                <span style={{ fontWeight:900, fontSize:22, color:"#fca5a5" }}>{result.coinsChange}</span>
+                <span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>coins lost</span>
+              </div>
+
+              <button style={{ ...S.btn, background:"linear-gradient(135deg,#7c3aed,#db2777)", border:"none", marginBottom:8 }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
                 Try Again 🔁
               </button>
-              <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.07)", color:"rgba(255,255,255,0.6)", border:"1px solid rgba(255,255,255,0.12)", fontSize:13 }}
-                onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
+              <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.6)", border:"1px solid rgba(255,255,255,0.1)" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
                 Back to Lobby
               </button>
             </div>
@@ -1203,26 +1423,66 @@ export default function BattlePage() {
 
           {/* ── TIE ── */}
           {result.tie && (
-            <div style={{ background:"linear-gradient(135deg,#1e3a5f,#1e40af,#0369a1)", borderRadius:16, padding:"28px 20px", textAlign:"center", position:"relative", overflow:"hidden" }}>
+            <div style={{ background:"linear-gradient(135deg,#1e3a5f,#1e40af,#0369a1)", borderRadius:20, padding:"28px 18px", textAlign:"center", position:"relative", overflow:"hidden", animation:"fadeUp 0.4s ease" }}>
               <div style={{ position:"absolute", top:-15, right:-15, width:80, height:80, borderRadius:"50%", background:"rgba(96,165,250,0.2)" }} />
-              <div style={{ position:"absolute", bottom:-10, left:-10, width:65, height:65, borderRadius:"50%", background:"rgba(147,197,253,0.15)" }} />
-              <div style={{ fontSize:52, marginBottom:6 }}>🤝</div>
-              <div style={{ fontSize:28, fontWeight:900, color:"#fff", marginBottom:4 }}>It's a Tie!</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.7)", marginBottom:20 }}>vs {result.oppName}{result.isBot ? " 🤖" : ""}</div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginBottom:20 }}>
-                <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.myScore}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Your Score</div>
+              <div style={{ fontSize:54, marginBottom:8 }}>🤝</div>
+              <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4 }}>It's a Tie!</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{result.isBot?" 🤖":""}</div>
+
+              {/* Round breakdown */}
+              <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:14, padding:"14px 16px", marginBottom:14, textAlign:"left" }}>
+                <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Score Breakdown</div>
+                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:4 }}>
+                  <div />
+                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>You</div>
+                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>Opponent</div>
                 </div>
-                <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#fff" }}>{result.oppScore}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Their Score</div>
-                </div>
-                <div style={{ background:"rgba(251,191,36,0.2)", borderRadius:10, padding:"10px 6px" }}>
-                  <div style={{ fontWeight:800, fontSize:18, color:"#fcd34d" }}>{result.coinsChange < 0 ? result.coinsChange : `+${result.coinsChange}`}</div>
-                  <div style={{ fontSize:10, color:"rgba(255,255,255,0.6)", marginTop:2 }}>Coins</div>
+                {result.round1.total > 0 && (
+                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:6, alignItems:"center" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 1</div>
+                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.my}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
+                    </div>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.opp}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
+                    </div>
+                  </div>
+                )}
+                {result.round2.total > 0 && (
+                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:10, alignItems:"center" }}>
+                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 2</div>
+                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.my}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
+                    </div>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.opp}</span>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
+                    </div>
+                  </div>
+                )}
+                <div style={{ height:1, background:"rgba(255,255,255,0.12)", marginBottom:8 }} />
+                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, alignItems:"center" }}>
+                  <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.75)" }}>Total</div>
+                  <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:18, color:"#fff" }}>{result.myScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
+                  </div>
+                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:18, color:"#fff" }}>{result.oppScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
+                  </div>
                 </div>
               </div>
+
+              <div style={{ background:"rgba(251,191,36,0.15)", borderRadius:12, padding:"12px", marginBottom:20, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                <span style={{ fontSize:18 }}>🪙</span>
+                <span style={{ fontWeight:900, fontSize:22, color:"#fcd34d" }}>{result.coinsChange < 0 ? result.coinsChange : `+${result.coinsChange}`}</span>
+                <span style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>coins</span>
+              </div>
+
               <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.12)", color:"#fff", border:"1px solid rgba(255,255,255,0.2)" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
                 Back to Lobby
               </button>
@@ -1234,7 +1494,7 @@ export default function BattlePage() {
   );
 }
 
-// SHARE CARD
+// ── SHARE CARD (unchanged) ──────────────────────────────────────────
 function BattleShareCard({ profile, result, onClose }) {
   const cardRef = useRef(null);
   const [imgUrl, setImgUrl] = useState(null);
@@ -1252,23 +1512,20 @@ function BattleShareCard({ profile, result, onClose }) {
   }, []);
 
   const caption = [
-    `I just WON a 1v1 Battle on AIDLA!`,
-    ``,
+    `I just WON a 1v1 Battle on AIDLA!`,``,
     `vs ${result.oppName}${result.isBot?" (Bot)":""}`,
     `Score: ${result.myScore} vs ${result.oppScore}`,
-    `Earned: +${result.coinsChange} coins`,
-    ``,
+    `Earned: +${result.coinsChange} coins`,``,
     `Can you beat me? Challenge now`,
-    `www.aidla.online/user/battle`,
-    ``,
+    `www.aidla.online/user/battle`,``,
     `#AIDLA #1v1Battle #LearnAndEarn`,
   ].join("\n");
 
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.8)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, padding:16 }} onClick={onClose}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, padding:16 }} onClick={onClose}>
       <div style={{ width:"100%", maxWidth:400, display:"flex", flexDirection:"column", gap:10 }} onClick={e => e.stopPropagation()}>
         <div style={{ display:"flex", justifyContent:"flex-end" }}>
-          <button onClick={onClose} style={{ background:"rgba(255,255,255,0.15)", border:"none", color:"white", width:30, height:30, borderRadius:"50%", cursor:"pointer", fontWeight:700 }}>X</button>
+          <button onClick={onClose} style={{ background:"rgba(255,255,255,0.15)", border:"none", color:"white", width:32, height:32, borderRadius:"50%", cursor:"pointer", fontWeight:800, fontSize:16 }}>✕</button>
         </div>
         <div ref={cardRef} style={{ borderRadius:16, overflow:"hidden", background:"white" }}>
           <div style={{ background:"#1e1b4b", padding:"14px 18px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
@@ -1297,7 +1554,7 @@ function BattleShareCard({ profile, result, onClose }) {
             ))}
           </div>
           <div style={{ background:"#1e1b4b", padding:"9px", textAlign:"center", fontSize:10, color:"rgba(255,255,255,0.5)", fontWeight:600 }}>
-            www.aidla.online - Earn While You Learn
+            www.aidla.online — Earn While You Learn
           </div>
         </div>
         <div style={{ background:"#1e293b", borderRadius:12, padding:14 }}>
@@ -1318,35 +1575,21 @@ function BattleShareCard({ profile, result, onClose }) {
   );
 }
 
+// ── STYLES ─────────────────────────────────────────────────────────
 const S = {
-  wrap: { fontFamily:"'DM Sans',sans-serif", maxWidth:560, margin:"0 auto", minHeight:"100vh", background:"#f9fafb" },
-  header: { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"14px 16px", background:"white", borderBottom:"1px solid #e2e8f0" },
-  backBtn: { background:"none", border:"none", color:"#6366f1", fontWeight:700, fontSize:20, cursor:"pointer", padding:0 },
-  headerTitle: { fontWeight:800, fontSize:16 },
-  coins: { fontWeight:800, fontSize:14, color:"#0f172a" },
-  toast: { background:"#1e293b", color:"white", padding:"10px 16px", fontSize:13, fontWeight:600 },
-  tabs: { display:"flex", gap:4, marginBottom:12, background:"white", borderRadius:12, padding:4 },
-  tab: { flex:1, padding:"8px 4px", border:"none", background:"transparent", fontWeight:600, fontSize:12, cursor:"pointer", fontFamily:"inherit", color:"#64748b", borderRadius:8 },
-  tabActive: { background:"#6366f1", color:"white" },
-  card: { background:"white", borderRadius:14, padding:20, marginBottom:12, boxShadow:"0 1px 4px rgba(0,0,0,0.05)" },
-  cardTitle: { fontWeight:800, fontSize:14, marginBottom:12, color:"#0f172a" },
-  label: { fontSize:12, fontWeight:700, color:"#475569", marginBottom:6, textTransform:"uppercase", letterSpacing:"0.04em" },
-  btn: { width:"100%", padding:"13px", background:"#6366f1", color:"white", border:"none", borderRadius:12, fontWeight:700, fontSize:15, cursor:"pointer", fontFamily:"inherit" },
-  btnGhost: { width:"100%", padding:"12px", background:"#f1f5f9", color:"#334155", border:"none", borderRadius:12, fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit" },
-  smBtn: { padding:"8px 12px", border:"1px solid #e2e8f0", background:"white", borderRadius:8, fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"inherit", color:"#334155" },
-  modeBtn: { width:"100%", padding:"14px 16px", border:"2px solid #e2e8f0", borderRadius:12, background:"white", textAlign:"left", cursor:"pointer", fontFamily:"inherit", transition:"border-color 0.15s" },
-  catBtn: { padding:"8px 10px", border:"1px solid #e2e8f0", borderRadius:8, background:"white", fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:"inherit", color:"#334155", textAlign:"left" },
-  catBtnActive: { border:"2px solid #6366f1", background:"#eef2ff", color:"#4338ca" },
-  statBox: { background:"#f8fafc", borderRadius:10, padding:"10px 8px", textAlign:"center" },
-  statVal: { fontWeight:800, fontSize:16 },
-  statKey: { fontSize:10, color:"#94a3b8", marginTop:2 },
-  lbRow: { display:"flex", alignItems:"center", gap:8, padding:"9px 0", borderBottom:"1px solid #f1f5f9" },
-  avatar: { width:28, height:28, borderRadius:"50%", objectFit:"cover" },
-  empty: { textAlign:"center", color:"#94a3b8", padding:20, fontSize:13 },
-  progressBar: { width:"100%", height:6, background:"#e2e8f0", borderRadius:20, overflow:"hidden" },
-  progressFill: { height:"100%", background:"#6366f1", borderRadius:20, width:"60%" },
-  timerBar: { width:"100%", height:4, background:"#e2e8f0", borderRadius:4, overflow:"hidden", marginBottom:6 },
-  timerFill: { height:"100%", borderRadius:4, transition:"width 1s linear" },
-  hintBtn: { width:"100%", padding:"10px", background:"#fffbeb", border:"1px solid #fde047", borderRadius:10, color:"#854d0e", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit", marginTop:4 },
-  input: { flex:1, border:"1px solid #e2e8f0", borderRadius:10, padding:"10px 12px", fontSize:13, outline:"none", fontFamily:"inherit", minWidth:0 },
+  wrap:       { fontFamily:"'DM Sans',sans-serif", maxWidth:560, margin:"0 auto", minHeight:"100vh", background:"#f0f2ff" },
+  header:     { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:"linear-gradient(135deg,#1e1b4b,#312e81)", position:"sticky", top:0, zIndex:100 },
+  backBtn:    { background:"rgba(255,255,255,0.12)", border:"none", color:"white", fontWeight:800, fontSize:18, cursor:"pointer", width:36, height:36, borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center" },
+  headerTitle:{ fontWeight:800, fontSize:15, color:"white", letterSpacing:"-0.01em" },
+  coinsBadge: { background:"rgba(245,158,11,0.2)", border:"1px solid rgba(245,158,11,0.4)", borderRadius:20, padding:"5px 10px", display:"flex", alignItems:"center", gap:5 },
+  tabs:       { display:"flex", gap:4, marginBottom:14, background:"white", borderRadius:14, padding:4, boxShadow:"0 1px 4px rgba(0,0,0,0.06)" },
+  tab:        { flex:1, padding:"8px 4px", border:"none", background:"transparent", fontWeight:700, fontSize:11, cursor:"pointer", fontFamily:"inherit", color:"#64748b", borderRadius:10, transition:"all 0.15s" },
+  tabActive:  { background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"white", boxShadow:"0 2px 8px rgba(99,102,241,0.35)" },
+  card:       { background:"white", borderRadius:16, padding:18, marginBottom:12, boxShadow:"0 2px 12px rgba(0,0,0,0.06)" },
+  cardTitle:  { fontWeight:800, fontSize:14, marginBottom:12, color:"#0f172a" },
+  btn:        { width:"100%", padding:"13px", background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"white", border:"none", borderRadius:13, fontWeight:800, fontSize:15, cursor:"pointer", fontFamily:"inherit", boxShadow:"0 4px 15px rgba(99,102,241,0.35)" },
+  btnGhost:   { width:"100%", padding:"12px", background:"white", color:"#334155", border:"1.5px solid #e2e8f0", borderRadius:13, fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit" },
+  smBtn:      { padding:"8px 14px", border:"1.5px solid #e2e8f0", background:"white", borderRadius:10, fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color:"#334155", display:"flex", alignItems:"center", justifyContent:"center" },
+  lbRow:      { display:"flex", alignItems:"center", gap:10, padding:"9px 0", borderBottom:"1px solid #f1f5f9" },
+  input:      { flex:1, border:"1.5px solid #e2e8f0", borderRadius:11, padding:"10px 12px", fontSize:13, outline:"none", fontFamily:"inherit", minWidth:0, background:"#fafafa" },
 };

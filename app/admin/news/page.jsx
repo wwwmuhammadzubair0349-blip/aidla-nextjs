@@ -20,6 +20,18 @@ const statusColors = {
   scheduled: { bg: "rgba(245,158,11,0.1)",  color: "#b45309", border: "rgba(245,158,11,0.3)" },
 };
 
+const AUTHOR_BYLINE = `<div class="aidla-author-byline" style="display:flex;align-items:center;gap:16px;padding:20px 24px;background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.2);border-radius:12px;margin:0 0 28px;">
+  <img src="https://www.aidla.online/founder-zubair-afridi.jpg" alt="Engr. Muhammad Zubair Afridi" style="flex-shrink:0;width:52px;height:52px;border-radius:50%;object-fit:cover;" />
+  <div>
+    <p style="margin:0 0 2px;font-weight:700;font-size:0.97em;color:#0b1437;">Engr-Muhammad Zubair</p>
+    <p style="margin:0 0 6px;font-size:0.82em;color:#64748b;">Electrical Engineer &amp; Education Technology Strategist</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/" target="_blank" rel="noopener noreferrer me" style="font-size:0.8em;color:#92400e;text-decoration:none;">LinkedIn ↗</a>
+      <a href="https://sites.google.com/view/muhammadzubairafridi/home" target="_blank" rel="noopener noreferrer me" style="font-size:0.8em;color:#92400e;text-decoration:none;">Author Profile ↗</a>
+    </div>
+  </div>
+</div>`;
+
 const CATEGORIES = [
   { value: "", label: "No Category" },
   { value: "general", label: "🌐 General" },
@@ -171,8 +183,12 @@ export default function AdminNews() {
     if (!contentHtml.trim()) return showMsg("Content required", "error");
     if (status === "scheduled" && !scheduledAt) return showMsg("Please set a scheduled date & time", "error");
 
+    const finalHtml = contentHtml.includes("aidla-author-byline")
+      ? contentHtml
+      : AUTHOR_BYLINE + "\n" + contentHtml;
+
     const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = contentHtml;
+    tempDiv.innerHTML = finalHtml;
     const plainText = tempDiv.innerText || tempDiv.textContent || "";
 
     let scheduledIso = null;
@@ -187,7 +203,7 @@ export default function AdminNews() {
       p_slug: slugify(slug),
       p_excerpt: excerpt.trim(),
       p_content: plainText,
-      p_content_html: contentHtml,
+      p_content_html: finalHtml,
       p_cover_image_url: coverUrl || "",
       p_cover_image_path: coverPath || "",
       p_status: status,
@@ -659,7 +675,7 @@ const css = `
   @media(max-width:768px){.an-mobile-tabs{display:flex}}
   .an-hide{display:none!important}
   @media(min-width:769px){.an-hide{display:block!important}}
-  .an-grid{display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start}
+  .an-grid{display:grid;grid-template-columns:320px 1fr;gap:20px;align-items:start}
   @media(max-width:860px){.an-grid{grid-template-columns:1fr}}
   .an-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.9);border-radius:16px;padding:16px;box-shadow:0 4px 24px rgba(15,23,42,0.07);animation:anCardIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}
   @keyframes anCardIn{to{opacity:1}}
@@ -689,9 +705,9 @@ const css = `
   .an-post-thumb img{width:100%;height:100%;object-fit:cover;display:block}
   .an-post-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
   .an-post-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:4px}
-  .an-post-name{font-weight:800;font-size:0.84rem;color:#0f172a;word-break:break-word;line-height:1.3}
-  .an-post-slug{font-size:10px;color:#64748b;font-weight:600;margin-bottom:3px;font-family:monospace}
-  .an-post-excerpt{font-size:11px;color:#94a3b8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:4px}
+  .an-post-name{font-weight:800;font-size:0.84rem;color:#0f172a;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .an-post-slug{font-size:10px;color:#64748b;font-weight:600;margin-bottom:3px;font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .an-post-excerpt{font-size:0.72rem;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
   .an-status-pill{padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700;white-space:nowrap}
   .an-editor-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:10px;flex-wrap:wrap}
   .an-section-title{font-size:0.72rem;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:#64748b;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(217,119,6,0.08);display:flex;align-items:center;gap:8px}

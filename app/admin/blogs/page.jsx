@@ -96,9 +96,9 @@ export default function Blogs() {
     setLoading(true); showMsg("", "info");
     const { data, error } = await supabase
       .from("blogs_posts")
-      .select("id,title,author_name,slug,status,excerpt,cover_image_url,published_at,scheduled_at,updated_at,deleted_at,view_count")
+      .select("id,title,author_name,slug,status,excerpt,cover_image_url,published_at,scheduled_at,updated_at,created_at,deleted_at,view_count")
       .is("deleted_at", null)
-      .order("updated_at", { ascending: false });
+      .order("created_at", { ascending: false });
     if (error) { showMsg(error.message, "error"); setPosts([]); setLoading(false); return; }
     setPosts(data || []); setLoading(false);
   };

@@ -113,9 +113,9 @@ export default function AdminNews() {
     setLoading(true);
     const { data, error } = await supabase
       .from("news_posts")
-      .select("id,title,slug,status,excerpt,cover_image_url,published_at,scheduled_at,updated_at,view_count,tags")
+      .select("id,title,slug,status,excerpt,cover_image_url,published_at,scheduled_at,updated_at,created_at,view_count,tags")
       .is("deleted_at", null)
-      .order("updated_at", { ascending: false });
+      .order("created_at", { ascending: false });
     if (error) { showMsg(error.message, "error"); setPosts([]); } else setPosts(data || []);
     setLoading(false);
   };
@@ -682,12 +682,12 @@ const css = `
   .an-list-scroll{display:flex;flex-direction:column;gap:8px;max-height:62vh;overflow-y:auto;padding-right:2px}
   .an-list-scroll::-webkit-scrollbar{width:4px}
   .an-list-scroll::-webkit-scrollbar-thumb{background:rgba(217,119,6,0.3);border-radius:100px}
-  .an-post-item{border-radius:12px;border:1px solid rgba(217,119,6,0.1);background:#fff;overflow:hidden;cursor:pointer;transition:all 0.15s;box-shadow:2px 2px 6px rgba(15,23,42,0.04)}
+  .an-post-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;border:1px solid rgba(217,119,6,0.1);background:#fff;overflow:hidden;cursor:pointer;transition:all 0.15s;box-shadow:2px 2px 6px rgba(15,23,42,0.04)}
   .an-post-item:hover{border-color:rgba(217,119,6,0.3);transform:translateX(2px)}
   .an-post-item-active{background:linear-gradient(135deg,rgba(217,119,6,0.05),rgba(245,158,11,0.08))!important;border-color:rgba(217,119,6,0.35)!important;box-shadow:0 0 14px rgba(217,119,6,0.12)!important}
-  .an-post-thumb{height:64px;overflow:hidden}
+  .an-post-thumb{width:64px;height:64px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,0.05)}
   .an-post-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-  .an-post-body{padding:10px 12px}
+  .an-post-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
   .an-post-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;margin-bottom:4px}
   .an-post-name{font-weight:800;font-size:0.84rem;color:#0f172a;word-break:break-word;line-height:1.3}
   .an-post-slug{font-size:10px;color:#64748b;font-weight:600;margin-bottom:3px;font-family:monospace}

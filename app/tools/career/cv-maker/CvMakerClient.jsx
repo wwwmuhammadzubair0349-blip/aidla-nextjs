@@ -1,7 +1,5 @@
 "use client";
 // app/tools/career/cv-maker/CvMakerClient.jsx
-// Main orchestrator — state, AI calls, ATS score, layout logic
-// v5.0 - Apex Design System Upgrade
 
 import {
   useState, useEffect, useRef, useCallback, useMemo,
@@ -11,7 +9,9 @@ import Templates from "./cv/Templates";
 import Preview   from "./cv/Preview";
 import Print     from "./cv/Print";
 import { buildCvHtml, PREMIUM_TEMPLATES, PREMIUM_CATS } from "./cv/cvRenderer";
+import "./cv-maker.css";
 
+// ─── legacy APP_CSS kept only as a placeholder so the closing backtick below compiles ───
 const APP_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Sora:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@400;500;600;700;800;900&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&display=swap');
 
@@ -59,7 +59,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 img    { display: block; max-width: 100%; }
 
 .cv-bg {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(160deg,#eef2fb 0%,#fefdf7 55%,#edf7f4 100%);
 }
 .cv-bg::before {
@@ -421,6 +421,13 @@ const ACCENTS = [
   "#92400e","#166534","#0c4a6e","#3b0764",
 ];
 
+const COLOR_NAMES = {
+  "#1e3a8a": "Navy Blue",   "#0f766e": "Teal",       "#7c2d12": "Rust",
+  "#4c1d95": "Purple",      "#065f46": "Forest Green","#1f2937": "Charcoal",
+  "#be123c": "Crimson",     "#0369a1": "Ocean Blue",  "#92400e": "Amber",
+  "#166534": "Dark Green",  "#0c4a6e": "Sapphire",    "#3b0764": "Violet",
+};
+
 const TEMPLATES = PREMIUM_TEMPLATES;
 const CATS      = PREMIUM_CATS;
 
@@ -646,15 +653,76 @@ export default function CvMakerClient({
   const [fontId,    setFontId]    = useState("outfit");
   const [fontSize,  setFontSize]  = useState("medium");
   const [paper,     setPaper]     = useState("a4");
-  const [zoom,      setZoom]      = useState(1);
   const [activeTab, setActiveTab] = useState("personal");
-  const [mainTab,   setMainTab]   = useState("edit");
+  const [mobileTab, setMobileTab] = useState("edit");   // "edit" | "preview" | "templates"
+  const [previewTab,setPreviewTab]= useState("preview"); // "preview" | "templates"
   const [activeCat, setActiveCat] = useState("All");
   const [atsOpen,   setAtsOpen]   = useState(false);
   const [toasts,    setToasts]    = useState([]);
   const [aiLoading, setAiLoading] = useState({});
+  const [aiCmd,           setAiCmd]          = useState("");
+  const [aiCmdLoading,    setAiCmdLoading]    = useState(false);
+  const [jobPosting,      setJobPosting]      = useState("");
+  const [jobTailorOpen,   setJobTailorOpen]   = useState(false);
+  const [jobTailorLoading,setJobTailorLoading]= useState(false);
+  const [tailorDiff,      setTailorDiff]      = useState(null);
+  const [showReset,       setShowReset]       = useState(false);
+  const [aiOverlayMsg,    setAiOverlayMsg]    = useState("");
+  const [phIdx,           setPhIdx]           = useState(0);
+  const [progressIdx,     setProgressIdx]     = useState(0);
+  const [flashSignal,     setFlashSignal]     = useState(0);
 
-  const prevScrollRef = useRef(null);
+  const aiRunning = aiCmdLoading || jobTailorLoading || !!aiOverlayMsg;
+  const flashPreview = useCallback(() => setFlashSignal(s => s + 1), []);
+
+  const AI_PLACEHOLDERS = [
+    'e.g. "Tailor for Electrical Maintenance Engineer jobs in New Zealand"',
+    'e.g. "Optimize my whole CV for ATS"',
+    'e.g. "Rewrite my experience in a natural human tone"',
+    'e.g. "Add solar energy keywords throughout"',
+    'e.g. "Make my summary stronger and more specific"',
+  ];
+  const AI_PROGRESS = [
+    "Analyzing your CV…",
+    "Writing content…",
+    "Optimizing for ATS…",
+    "Polishing wording…",
+  ];
+
+  // Cycle the AI command placeholder every 3s while the input is empty and idle
+  useEffect(() => {
+    if (aiCmd || aiCmdLoading) return;
+    const t = setInterval(() => setPhIdx(i => (i + 1) % AI_PLACEHOLDERS.length), 3000);
+    return () => clearInterval(t);
+  }, [aiCmd, aiCmdLoading]);
+
+  // Cycle the overlay progress message every 2s while AI runs
+  useEffect(() => {
+    if (!aiOverlayMsg) { setProgressIdx(0); return; }
+    const t = setInterval(() => setProgressIdx(i => (i + 1) % AI_PROGRESS.length), 2000);
+    return () => clearInterval(t);
+  }, [aiOverlayMsg]);
+
+  // Lightweight ripple on primary button clicks
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const onClick = (e) => {
+      const btn = e.target.closest(".cv-btn-primary, .cv-btn-add");
+      if (!btn || btn.disabled) return;
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const r = document.createElement("span");
+      r.className = "cv-ripple";
+      r.style.width = r.style.height = `${size}px`;
+      r.style.left = `${e.clientX - rect.left - size / 2}px`;
+      r.style.top  = `${e.clientY - rect.top  - size / 2}px`;
+      btn.appendChild(r);
+      setTimeout(() => r.remove(), 600);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   const paperRef      = useRef(null);
   const saveTimer     = useRef(null);
 
@@ -667,7 +735,17 @@ export default function CvMakerClient({
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      let raw = localStorage.getItem(STORAGE_KEY);
+      // Migrate from legacy storage keys (cvmk_v1 through cvmk_v11, with or without _apex suffix)
+      if (!raw) {
+        const suffixes = ["_apex", ""];
+        outer: for (let v = 11; v >= 1; v--) {
+          for (const suf of suffixes) {
+            const legacy = localStorage.getItem(`cvmk_v${v}${suf}`);
+            if (legacy) { raw = legacy; break outer; }
+          }
+        }
+      }
       if (!raw) return;
       const sv = JSON.parse(raw);
       if (sv.data)     setData(d => ({ ...d, ...sv.data }));
@@ -682,42 +760,38 @@ export default function CvMakerClient({
   useEffect(() => {
     clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data, tmpl, accent, fontId, fontSize, paper })); } catch {}
+      try {
+        const payload = JSON.stringify({ data, tmpl, accent, fontId, fontSize, paper });
+        localStorage.setItem(STORAGE_KEY, payload);
+        // Warn when approaching the typical 5 MB localStorage limit
+        if (payload.length > 3_500_000) {
+          toast("Storage nearly full — your photo may not save next time. Consider removing or resizing the photo.", "inf", 7000);
+        }
+      } catch (e) {
+        if (e?.name === "QuotaExceededError") {
+          toast("Storage full — remove the photo or use JSON save/load to preserve your CV.", "err", 8000);
+        }
+      }
     }, 400);
   }, [data, tmpl, accent, fontId, fontSize, paper]);
 
-  const fitZoom = useCallback(() => {
-    if (!prevScrollRef.current) return;
-    const cw = prevScrollRef.current.clientWidth - 20;
-    setZoom(Math.min(1, +(cw / PAPERS[paper].w).toFixed(3)));
-  }, [paper]);
 
-  useEffect(() => { fitZoom(); }, [fitZoom, paper]);
-  useEffect(() => {
-    window.addEventListener("resize", fitZoom);
-    return () => window.removeEventListener("resize", fitZoom);
-  }, [fitZoom]);
 
-  useEffect(() => {
-    const pp = paperRef.current;
-    if (!pp) return;
-    const { w, h } = PAPERS[paper];
-    pp.style.width = `${w}px`;
-    pp.style.minHeight = `${h}px`;
-    pp.style.transform = `scale(${zoom})`;
-    pp.style.transformOrigin = "top left";
-    pp.style.position = "absolute";
-    pp.style.left = "0";
-    pp.style.top = "0";
-    const sc = pp.parentElement;
-    if (sc) {
-      sc.style.width = `${w * zoom}px`;
-      sc.style.minHeight = `${h * zoom}px`;
-      sc.style.height = "auto";
-    }
-  }, [zoom, paper]);
 
-  useEffect(() => { if (mainTab === "preview") setTimeout(fitZoom, 50); }, [mainTab, fitZoom]);
+  const handlePreviewFieldChange = useCallback((field, value, id) => {
+    setData(prev => {
+      if (!id) return { ...prev, [field]: value };
+      const next = { ...prev };
+      for (const section of ["experience", "education"]) {
+        const idx = (prev[section] || []).findIndex(x => x.id === id);
+        if (idx !== -1) {
+          next[section] = prev[section].map((x, i) => i === idx ? { ...x, [field]: value } : x);
+          return next;
+        }
+      }
+      return next;
+    });
+  }, []);
 
   const sf         = (k, v) => setData(d => ({ ...d, [k]: v }));
   const addItem    = (sec, tpl) => setData(d => ({ ...d, [sec]: [...(d[sec] || []), { id: uid(), ...tpl }] }));
@@ -728,10 +802,22 @@ export default function CvMakerClient({
     const f = e.target.files?.[0];
     if (!f) return;
     if (!f.type.startsWith("image/")) return toast("Pick an image file", "err");
-    if (f.size > 5e6)                  return toast("Max 5MB", "err");
-    const r = new FileReader();
-    r.onload = ev => { sf("photoDataUrl", ev.target.result); toast("Photo uploaded ✅", "ok"); };
-    r.readAsDataURL(f);
+    if (f.size > 5e6) return toast("Max 5MB", "err");
+    const objectUrl = URL.createObjectURL(f);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const MAX = 800;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width  = Math.round(img.width  * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      sf("photoDataUrl", canvas.toDataURL("image/jpeg", 0.85));
+      toast("Photo uploaded ✅", "ok");
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); toast("Failed to process image", "err"); };
+    img.src = objectUrl;
   };
 
   const uploadQR = e => {
@@ -753,6 +839,14 @@ export default function CvMakerClient({
     toast("CV saved as JSON ✅", "ok");
   };
 
+  const ALLOWED_DATA_KEYS = new Set([
+    "fullName","title","email","phoneCode","phoneNum","location","linkedin","github","website",
+    "nationality","dob","drivingLicense","marital","gender","notice","summary","skills","hobbies",
+    "photoDataUrl","qrDataUrl","compass","kpis","caseStudies",
+    "experience","education","projects","certifications","languages","awards",
+    "publications","volunteer","references",
+  ]);
+
   const importJSON = e => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -760,7 +854,13 @@ export default function CvMakerClient({
     r.onload = ev => {
       try {
         const o = JSON.parse(ev.target.result);
-        if (o.data)     setData(d => ({ ...d, ...o.data }));
+        if (o.data && typeof o.data === "object" && !Array.isArray(o.data)) {
+          const safe = {};
+          for (const k of ALLOWED_DATA_KEYS) {
+            if (k in o.data) safe[k] = o.data[k];
+          }
+          setData(d => ({ ...d, ...safe }));
+        }
         if (o.tmpl)     setTmpl(o.tmpl);
         if (o.accent)   setAccent(o.accent);
         if (o.fontId)   setFontId(o.fontId);
@@ -773,8 +873,7 @@ export default function CvMakerClient({
     e.target.value = "";
   };
 
-  const resetAll = () => {
-    if (!window.confirm("Reset all CV data?")) return;
+  const doReset = () => {
     localStorage.removeItem(STORAGE_KEY);
     setData(INIT_DATA());
     setTmpl("modern-stack");
@@ -782,46 +881,202 @@ export default function CvMakerClient({
     setFontId("outfit");
     setFontSize("medium");
     setPaper("a4");
+    setShowReset(false);
     toast("Reset complete ✅", "ok");
   };
 
-  const callClaude = async (prompt) => {
+  const callClaude = async (prompt, opts = {}) => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/cv-ai`,
-      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt }) }
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ prompt, ...opts }) }
     );
     const json = await res.json();
     return json.result || "";
   };
 
+  const applyAIPatch = (patch) => {
+    setData(prev => {
+      const next = { ...prev };
+      [
+        "fullName","title","email","phoneNum","phoneCode","location",
+        "linkedin","github","website","nationality","dob","drivingLicense",
+        "marital","gender","notice","summary","skills","hobbies","compass",
+      ].forEach(f => { if (patch[f] !== undefined) next[f] = patch[f]; });
+
+      ["experience","education","certifications","projects","awards","volunteer","publications","kpis","caseStudies"].forEach(section => {
+        if (!Array.isArray(patch[section]) || !patch[section].length) return;
+        const removeIds = new Set(patch[section].filter(x => x._remove).map(x => x.id));
+        next[section] = (prev[section] || [])
+          .filter(item => !removeIds.has(item.id))
+          .map(item => {
+            const u = patch[section].find(x => x.id === item.id && !x._remove);
+            return u ? { ...item, ...u } : item;
+          });
+      });
+      return next;
+    });
+  };
+
+  // Escape literal control chars inside JSON string values (model sometimes forgets to escape \n)
+  const sanitizeJson = (s) => {
+    let out = '', inStr = false, esc = false;
+    for (const ch of s) {
+      if (esc)                          { out += ch; esc = false; continue; }
+      if (ch === '\\' && inStr)         { out += ch; esc = true;  continue; }
+      if (ch === '"')                   { inStr = !inStr; out += ch; continue; }
+      if (inStr && ch === '\n')         { out += '\\n'; continue; }
+      if (inStr && ch === '\r')         { out += '\\r'; continue; }
+      if (inStr && ch === '\t')         { out += '\\t'; continue; }
+      out += ch;
+    }
+    return out;
+  };
+
+  const parseAiJson = (raw) => {
+    const cleaned = String(raw || "").replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+    const parsed = JSON.parse(sanitizeJson(cleaned));
+    return parsed?.patch ? parsed : { patch: parsed };
+  };
+
+  const runAiCommand = async () => {
+    const cmd = aiCmd.trim();
+    if (!cmd) return;
+    setAiCmdLoading(true);
+    setAiOverlayMsg("AI updating your CV…");
+    try {
+      const payload = {
+        fullName: data.fullName, title: data.title, email: data.email,
+        phoneNum: data.phoneNum, location: data.location, linkedin: data.linkedin,
+        github: data.github, website: data.website, nationality: data.nationality,
+        summary: data.summary, skills: data.skills, hobbies: data.hobbies,
+        experience: (data.experience || []).map(e => ({
+          id: e.id, role: e.role, company: e.company, empType: e.empType,
+          industry: e.industry, city: e.city, start: e.start, end: e.end,
+          current: e.current, bullets: e.bullets,
+        })),
+        education: (data.education || []).map(e => ({
+          id: e.id, degree: e.degree, degType: e.degType, school: e.school,
+          gpa: e.gpa, notes: e.notes,
+        })),
+        certifications: (data.certifications || []).map(c => ({
+          id: c.id, name: c.name, issuer: c.issuer, year: c.year,
+        })),
+      };
+      const prompt = `USER COMMAND: "${cmd}"\n\nCURRENT CV:\n${JSON.stringify(payload, null, 2)}`;
+      const raw = await callClaude(prompt, { mode: "command", model: "llama-3.3-70b-versatile" });
+      const { patch } = parseAiJson(raw);
+      applyAIPatch(patch);
+      flashPreview();
+      toast("CV updated ✅", "ok");
+      setAiCmd("");
+    } catch (e) {
+      console.error("AI command error:", e);
+      toast("AI error — try again", "err");
+    } finally {
+      setAiCmdLoading(false);
+      setAiOverlayMsg("");
+    }
+  };
+
+  const runJobTailor = async () => {
+    const jd = jobPosting.trim();
+    if (!jd) return;
+    setJobTailorLoading(true);
+    setAiOverlayMsg("AI tailoring CV to job posting…");
+    // Snapshot key fields before patch so we can show a diff
+    const before = {
+      title:   data.title,
+      summary: data.summary,
+      skills:  data.skills,
+      experience: (data.experience || []).map(e => ({ id: e.id, bullets: e.bullets })),
+    };
+    try {
+      const payload = {
+        fullName: data.fullName, title: data.title, summary: data.summary,
+        skills: data.skills, location: data.location,
+        experience: (data.experience || []).map(e => ({
+          id: e.id, role: e.role, company: e.company, empType: e.empType,
+          industry: e.industry, city: e.city, start: e.start, end: e.end,
+          current: e.current, bullets: e.bullets,
+        })),
+        education: (data.education || []).map(e => ({
+          id: e.id, degree: e.degree, degType: e.degType, school: e.school,
+        })),
+        certifications: (data.certifications || []).map(c => ({
+          id: c.id, name: c.name, issuer: c.issuer, year: c.year,
+        })),
+      };
+      const prompt = `JOB POSTING:\n${jd}\n\nCANDIDATE CV:\n${JSON.stringify(payload, null, 2)}`;
+      const raw = await callClaude(prompt, { mode: "job_tailor", model: "llama-3.3-70b-versatile" });
+      const aiResult = parseAiJson(raw);
+      const patch = aiResult.patch || {};
+      applyAIPatch(patch);
+      // Build diff for display
+      const diffItems = [];
+      if (patch.title   && patch.title   !== before.title)   diffItems.push({ field: "Title",   before: before.title   || "—", after: patch.title });
+      if (patch.summary && patch.summary !== before.summary) diffItems.push({ field: "Summary", before: before.summary || "—", after: patch.summary });
+      if (patch.skills  && patch.skills  !== before.skills)  diffItems.push({ field: "Skills",  before: before.skills  || "—", after: patch.skills });
+      (patch.experience || []).forEach(pe => {
+        const old = before.experience.find(b => b.id === pe.id);
+        if (pe.bullets && old && pe.bullets !== old.bullets) {
+          diffItems.push({ field: "Experience bullets", before: old.bullets || "—", after: pe.bullets });
+        }
+      });
+      if (diffItems.length) setTailorDiff(diffItems);
+      flashPreview();
+      toast("CV tailored to job posting ✅", "ok");
+      setJobPosting("");
+      setJobTailorOpen(false);
+    } catch (e) {
+      console.error("Job tailor error:", e);
+      toast("AI error — try again", "err");
+    } finally {
+      setJobTailorLoading(false);
+      setAiOverlayMsg("");
+    }
+  };
+
   const aiSummary = async () => {
     setAiLoading(l => ({ ...l, summary: true }));
-    toast("AI writing summary…", "inf", 8000);
+    setAiOverlayMsg("AI writing your summary…");
     try {
-      const sk = lines(data.skills).slice(0, 6).join(", ") || "various skills";
-      const expLine = (data.experience || []).slice(0, 2).map(e => `${e.role} at ${e.company}`).join("; ");
+      const sk = lines(data.skills).slice(0, 8).join(", ") || "various skills";
+      const expItems = data.experience || [];
+      const expLine  = expItems.map(e =>
+        `${e.role} at ${e.company}${e.industry ? ` (${e.industry})` : ''}${e.current ? ' — current' : ''}`
+      ).join("; ");
+      const seniorityHint = expItems.length >= 5
+        ? "senior / leadership level"
+        : expItems.length >= 2
+          ? "mid-level"
+          : expItems.length === 1
+            ? "early career"
+            : "recent graduate / entry level";
       const existing = data.summary?.trim();
       const text = await callClaude(
         `You are an expert CV writer. ${existing
-          ? `Improve and expand this existing summary: "${existing}"\n\nUse this additional context:`
-          : "Write a punchy 2-3 sentence professional CV summary using this context:"}
+          ? `Improve and expand this existing summary: "${existing}"\n\nAdditional context:`
+          : "Write a punchy 2-3 sentence professional CV summary:"}
 Job Title: ${data.title || "Professional"}
+Career Level: ${seniorityHint}
 Skills: ${sk}
 Experience: ${expLine || "Not specified"}
 Rules:
 - 2-3 sentences maximum
-- Start with a strong action word
+- No first person pronouns
+- Start with a strong noun or verb phrase
 - Quantify impact where logical
-- Output only the summary text, no labels or preamble`
+- Output only the summary text, no labels or preamble
+- Avoid: utilize, leverage, synergy, dynamic, results-driven, detail-oriented, passionate about, hardworking, team player, go-getter, self-motivated, responsible for`
       );
-      if (text) { sf("summary", text); toast("Summary written ✅", "ok"); }
-    } catch { toast("AI error — check console", "err"); }
-    finally   { setAiLoading(l => ({ ...l, summary: false })); }
+      if (text) { sf("summary", text); flashPreview(); toast("Summary written ✅", "ok"); }
+    } catch { toast("AI error — try again", "err"); }
+    finally   { setAiLoading(l => ({ ...l, summary: false })); setAiOverlayMsg(""); }
   };
 
   const aiCompass = async () => {
     setAiLoading(l => ({ ...l, compass: true }));
-    toast("AI writing professional compass…", "inf", 8000);
+    setAiOverlayMsg("AI writing your professional compass…");
     try {
       const text = await callClaude(
         `Write a powerful 2-3 sentence "Professional Compass" for this person:
@@ -836,30 +1091,35 @@ Rules:
 - Inspiring but realistic
 - Output only the compass text, no labels`
       );
-      if (text) { sf("compass", text); toast("Professional compass written ✅", "ok"); }
+      if (text) { sf("compass", text); flashPreview(); toast("Professional compass written ✅", "ok"); }
     } catch { toast("AI error", "err"); }
-    finally { setAiLoading(l => ({ ...l, compass: false })); }
+    finally { setAiLoading(l => ({ ...l, compass: false })); setAiOverlayMsg(""); }
   };
 
   const aiSkills = async () => {
     setAiLoading(l => ({ ...l, skills: true }));
+    setAiOverlayMsg("AI suggesting skills…");
     try {
-      const expLine = (data.experience || []).slice(0, 3).map(e => `${e.role} at ${e.company}`).join(", ");
+      const expItems = data.experience || [];
+      const expLine  = expItems.map(e => `${e.role} at ${e.company}${e.industry ? ` (${e.industry})` : ''}`).join("; ");
+      const existingSkills = lines(data.skills).join(", ");
       const text = await callClaude(
-        `You are an expert CV writer. Generate exactly 12 ATS-optimized professional skills for:
-Name: ${data.fullName || "Professional"}
+        `You are an expert CV writer. Suggest ATS-optimized professional skills for this candidate.
 Job Title: ${data.title || "Professional"}
 Experience: ${expLine || "Not specified"}
 Summary: ${data.summary || "Not specified"}
+${existingSkills ? `Existing skills (build on these, do not duplicate): ${existingSkills}` : ""}
 Rules:
-- One skill per line
-- Mix technical and soft skills relevant to their role
-- No bullets, numbers, or preamble
-- Just the skill names, one per line`
+- Suggest 10-14 skills, one per line
+- Only include skills the candidate plausibly has based on their title, experience, and summary
+- Do NOT invent software, certifications, or technologies not implied by their background
+- Mix hard technical skills and relevant soft skills
+- No bullets, numbers, or preamble — just skill names, one per line
+- Avoid generic filler: "team player", "hardworking", "detail-oriented", "passionate about", "go-getter"`
       );
-      if (text) { sf("skills", text); toast("Skills added ✅", "ok"); }
+      if (text) { sf("skills", text); flashPreview(); toast("Skills added ✅", "ok"); }
     } catch { toast("AI error", "err"); }
-    finally   { setAiLoading(l => ({ ...l, skills: false })); }
+    finally   { setAiLoading(l => ({ ...l, skills: false })); setAiOverlayMsg(""); }
   };
 
   const aiProjectDesc = async (projItem) => {
@@ -932,26 +1192,44 @@ Rules:
 
   const { score: atsScore, checks: atsChecks } = useMemo(() => {
     const d = data;
-    let sc = 0;
+    const doc = [
+      d.title, d.summary, d.skills,
+      ...(d.experience || []).flatMap(x => [x.role, x.company, x.industry, x.bullets]),
+      ...(d.education || []).flatMap(x => [x.degree, x.degType, x.school, x.notes]),
+      ...(d.certifications || []).flatMap(x => [x.name, x.issuer]),
+      ...(d.projects || []).flatMap(x => [x.name, x.tech, x.bullets]),
+    ].filter(Boolean).join(" ").toLowerCase();
+    const jdTerms = [...new Set(String(jobPosting || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9+#.\s-]/g, " ")
+      .split(/\s+/)
+      .filter(w => w.length > 3 && !["with","from","that","this","will","your","have","must","able","work","role","team"].includes(w)))].slice(0, 40);
+    const matchRatio = jdTerms.length ? jdTerms.filter(w => doc.includes(w)).length / jdTerms.length : 1;
     const checks = [];
-    const ck = (ok, msg, pts) => { if (ok) sc += pts; checks.push({ ok, msg }); };
+    let sc = 0;
+    const ck = (ok, msg, pts) => { if (ok) sc += pts; checks.push({ ok: !!ok, msg }); };
 
-    ck(d.fullName?.trim(),                                                            "Full name present",                 8);
-    ck(d.email?.trim(),                                                               "Email address",                     8);
-    ck(d.phoneNum?.trim(),                                                            "Phone number",                      5);
-    ck(d.location?.trim(),                                                            "Location present",                  5);
-    ck((d.summary || d.compass || "").length > 60,                                     "Professional summary (60+ chars)",  15);
+    const summaryLen = (d.summary || d.compass || "").trim().length;
     const sk = lines(d.skills).length;
-    ck(sk >= 6,                                                                       `${sk} skills listed (aim 6+)`,     12);
-    const ex = (d.experience || []).filter(x => (x.role || x.company || "").trim()).length;
-    ck(ex >= 1,                                                                       `${ex} experience entr${ex === 1 ? "y" : "ies"}`, 18);
-    ck((d.education || []).filter(x => (x.degree || x.school || "").trim()).length >= 1, "Education section",             10);
-    ck(d.linkedin?.trim(),                                                            "LinkedIn URL added",                5);
-    ck((d.certifications || []).filter(x => x.name?.trim()).length >= 1,              "Certifications added",             5);
-    ck((d.experience || []).some(x => (x.bullets || "").trim().length > 10),         "Achievement bullets in experience", 9);
+    const ex = (d.experience || []).filter(x => (x.role || x.company || "").trim());
+    const bullets = ex.flatMap(x => lines(x.bullets));
+    const action = bullets.filter(b => /^(led|built|managed|delivered|created|improved|reduced|increased|designed|implemented|developed|maintained|optimized|coordinated|trained|analyzed|resolved)\b/i.test(b)).length;
+    const evidence = bullets.filter(b => /\d|%|\$|aed|usd|kpi|revenue|cost|time|downtime|sla/i.test(b)).length;
 
-    return { score: Math.min(sc, 100), checks };
-  }, [data]);
+    ck(d.fullName?.trim() && d.email?.trim() && d.phoneNum?.trim(), "Contact essentials present", 12);
+    ck(d.location?.trim() && d.linkedin?.trim(), "Location and LinkedIn present", 8);
+    ck(summaryLen >= 90 && summaryLen <= 520, `Summary length ${summaryLen || 0} chars`, 14);
+    ck(sk >= 8 && sk <= 24, `${sk} focused skills`, 14);
+    ck(ex.length >= 1, `${ex.length} experience entr${ex.length === 1 ? "y" : "ies"}`, 14);
+    ck(bullets.length >= Math.min(3, ex.length * 2), `${bullets.length} achievement bullets`, 10);
+    ck(action >= Math.min(2, bullets.length), `${action} action-led bullets`, 8);
+    ck(evidence >= 1 || bullets.length < 2, evidence ? `${evidence} evidence-rich bullets` : "Add truthful metrics where available", 7);
+    ck((d.education || []).some(x => (x.degree || x.school || "").trim()), "Education section present", 6);
+    ck((d.certifications || []).some(x => x.name?.trim()) || sk >= 10, "Certifications or strong skills coverage", 4);
+    ck(matchRatio >= .55, jdTerms.length ? `JD keyword match ${Math.round(matchRatio * 100)}%` : "Paste a JD for match scoring", 3);
+
+    return { score: Math.min(100, Math.round(sc)), checks };
+  }, [data, jobPosting]);
 
   const atsColor = atsScore >= 80 ? "#047857" : atsScore >= 50 ? "#d97706" : "#b91c1c";
 
@@ -962,76 +1240,95 @@ Rules:
 
   return (
     <>
-      <style>{APP_CSS}</style>
-
       <div className="cv-bg" aria-hidden="true" />
       <Toasts toasts={toasts} onDismiss={dismissToast} />
 
-      <div className="cvapp">
-        <div className="cv-wrap">
+      {/* AI loading overlay */}
+      {aiOverlayMsg && (
+        <div className="cv-ai-overlay" role="status" aria-live="polite">
+          <div className="cv-ai-overlay-box">
+            <div className="cv-ai-overlay-spinner" aria-hidden="true" />
+            <div className="cv-ai-overlay-msg">{aiOverlayMsg}</div>
+            <div className="cv-ai-overlay-sub">{AI_PROGRESS[progressIdx]}</div>
+            <div className="cv-ai-overlay-dots" aria-hidden="true"><span /><span /><span /></div>
+          </div>
+        </div>
+      )}
 
-          <header className="cv-hero">
-            <div className="cv-hero-l">
-              <nav aria-label="Breadcrumb" style={{ fontSize: ".65rem", color: "#94a3b8", marginBottom: 6, display: "flex", gap: 4, alignItems: "center" }}>
-                <Link href="/" style={{ color: "#1a3a8f", textDecoration: "none", fontWeight: 600 }}>Home</Link>
-                <span aria-hidden="true">›</span>
-                <Link href="/tools" style={{ color: "#1a3a8f", textDecoration: "none", fontWeight: 600 }}>Tools</Link>
-                <span aria-hidden="true">›</span>
-                <Link href="/tools/career" style={{ color: "#1a3a8f", textDecoration: "none", fontWeight: 600 }}>Career</Link>
-                <span aria-hidden="true">›</span>
-                <span style={{ color: "#0b1437", fontWeight: 700 }} aria-current="page">CV Maker</span>
-              </nav>
-              <span className="cv-badge">🧑‍💼 Career Tools</span>
-              <h1>Professional <span className="cv-grad">CV Maker</span></h1>
-              <p className="cv-hero-sub">
-                AI-powered · 17 premium templates · ATS checker · perfect PDF. 100% free.
-              </p>
-              <ul className="cv-pills" role="list" aria-label="Features">
-                {["17 Templates","AI Writing","ATS Score","PDF Print"].map(p => (
-                  <li key={p} className="cv-pill">✓ {p}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="cv-ats-wrap">
-              <div
-                className="cv-ats-ring"
-                style={{ background: `conic-gradient(${atsColor} ${atsScore}%, #e2e8f0 ${atsScore}%)` }}
-                role="meter"
-                aria-valuenow={atsScore}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label={`ATS score: ${atsScore} out of 100`}
-              >
-                <div className="cv-ats-inner">
-                  <span className="cv-ats-score" aria-hidden="true">{atsScore}</span>
-                  <span className="cv-ats-lbl" aria-hidden="true">ATS Score</span>
-                </div>
-              </div>
-              <button className="cv-ats-btn" onClick={() => setAtsOpen(o => !o)} aria-expanded={atsOpen}
-                aria-controls="ats-panel">
-                {atsOpen ? "Hide ↑" : "Checks ↓"}
+      {/* Reset confirmation modal */}
+      {showReset && (
+        <div className="cv-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="reset-title"
+          onClick={e => e.target === e.currentTarget && setShowReset(false)}>
+          <div className="cv-modal" style={{ maxWidth: 360 }}>
+            <h2 id="reset-title" style={{ fontSize: ".95rem", fontWeight: 800, marginBottom: 8, color: "#7f1d1d" }}>
+              🗑️ Reset all CV data?
+            </h2>
+            <p style={{ fontSize: ".8rem", color: "#475569", marginBottom: 18, lineHeight: 1.6 }}>
+              This will permanently erase everything you've entered. Download a JSON backup first if you want to save your work.
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="cv-btn cv-btn-ghost cv-btn-sm" style={{ flex: 1 }} onClick={() => setShowReset(false)}>
+                Cancel
+              </button>
+              <button className="cv-btn cv-btn-danger" style={{ flex: 1, minHeight: 36 }} onClick={doReset}>
+                Yes, reset
               </button>
             </div>
-          </header>
+          </div>
+        </div>
+      )}
 
-          <div
-            id="ats-panel"
-            className={`cv-ats-panel${atsOpen ? " open" : ""}`}
-            aria-hidden={!atsOpen}
-            role="region"
-            aria-label="ATS checklist"
-          >
-            {atsChecks.map((c, i) => (
-              <div key={i} className={`cv-ck ${c.ok ? "ok" : "fail"}`}>
-                <b aria-hidden="true">{c.ok ? "✓" : "✗"}</b>
-                <span>{c.msg}</span>
+      {/* Job tailor diff panel */}
+      {tailorDiff && (
+        <div style={{
+          position: "fixed", bottom: 16, left: "50%", transform: "translateX(-50%)",
+          zIndex: 9000, width: "min(540px, calc(100vw - 24px))",
+          background: "#fff", border: "1.5px solid #86efac", borderRadius: 14,
+          boxShadow: "0 8px 32px rgba(0,0,0,.18)", overflow: "hidden",
+        }} role="region" aria-label="Job tailor changes">
+          <div style={{ background: "#f0fdf4", padding: "10px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: ".78rem", fontWeight: 800, color: "#166534" }}>
+              ✅ {tailorDiff.length} field{tailorDiff.length !== 1 ? "s" : ""} updated by job tailoring
+            </span>
+            <button onClick={() => setTailorDiff(null)} style={{ background: "none", border: "none", fontWeight: 800, color: "#6b7280", cursor: "pointer", fontSize: ".85rem" }}>✕</button>
+          </div>
+          <div style={{ maxHeight: 240, overflowY: "auto", padding: "10px 14px" }}>
+            {tailorDiff.map((d, i) => (
+              <div key={i} style={{ marginBottom: 10, fontSize: ".74rem" }}>
+                <div style={{ fontWeight: 800, color: "#0b1437", marginBottom: 3 }}>{d.field}</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                  <div style={{ background: "#fef2f2", borderRadius: 6, padding: "5px 8px", color: "#7f1d1d", whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.5 }}>
+                    <div style={{ fontWeight: 800, fontSize: ".62rem", opacity: .7, marginBottom: 2 }}>BEFORE</div>
+                    {d.before.length > 200 ? d.before.slice(0, 200) + "…" : d.before}
+                  </div>
+                  <div style={{ background: "#f0fdf4", borderRadius: 6, padding: "5px 8px", color: "#166534", whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.5 }}>
+                    <div style={{ fontWeight: 800, fontSize: ".62rem", opacity: .7, marginBottom: 2 }}>AFTER</div>
+                    {d.after.length > 200 ? d.after.slice(0, 200) + "…" : d.after}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+        </div>
+      )}
 
-          <nav className="cv-toolbar" aria-label="CV file actions">
-            <div className="cv-tbr">
+      <div className="cvapp">
+
+          {/* ── COMPACT TOP BAR ── */}
+          <header className="cv-topbar">
+            <div className="cv-topbar-brand">
+              <nav className="crumb" aria-label="Breadcrumb">
+                <Link href="/">Home</Link><span aria-hidden="true">›</span>
+                <Link href="/tools">Tools</Link><span aria-hidden="true">›</span>
+                <Link href="/tools/career">Career</Link><span aria-hidden="true">›</span>
+                <span style={{ color: "var(--text-1)", fontWeight: 700 }} aria-current="page">CV Maker</span>
+              </nav>
+              <span className="cv-topbar-title">Professional <span className="cv-grad">CV Maker</span></span>
+            </div>
+
+            <div className="cv-topbar-spacer" />
+
+            <div className="cv-topbar-actions">
               <label className="cv-btn cv-btn-ghost cv-btn-sm cv-file-btn" title="Load saved CV">
                 <span aria-hidden="true">📂</span> Load
                 <input type="file" accept=".json" onChange={importJSON} aria-label="Load CV from JSON file" />
@@ -1039,49 +1336,164 @@ Rules:
               <button className="cv-btn cv-btn-ghost cv-btn-sm" onClick={exportJSON}>
                 <span aria-hidden="true">💾</span> Save
               </button>
+
+              {/* ATS score chip with animated ring + checklist popover */}
+              <div style={{ position: "relative" }}>
+                <button
+                  className="cv-ats-chip"
+                  onClick={() => setAtsOpen(o => !o)}
+                  aria-expanded={atsOpen}
+                  aria-controls="ats-panel"
+                  aria-label={`ATS score ${atsScore} out of 100. Show checklist.`}
+                >
+                  <span className="cv-ats-ring-sm" aria-hidden="true">
+                    <svg width="34" height="34" viewBox="0 0 34 34">
+                      <circle className="track" cx="17" cy="17" r="14" fill="none" strokeWidth="3.5" />
+                      <circle
+                        className="fill" cx="17" cy="17" r="14" fill="none" strokeWidth="3.5"
+                        stroke={atsColor}
+                        strokeDasharray={2 * Math.PI * 14}
+                        strokeDashoffset={(2 * Math.PI * 14) * (1 - atsScore / 100)}
+                      />
+                    </svg>
+                  </span>
+                  <span className="cv-ats-chip-txt">
+                    <span className="cv-ats-chip-num" style={{ color: atsColor }}>{atsScore}</span>
+                    <span className="cv-ats-chip-lbl">ATS</span>
+                  </span>
+                </button>
+                {atsOpen && (
+                  <div id="ats-panel" className="cv-ats-pop" role="region" aria-label="ATS checklist">
+                    {atsChecks.map((c, i) => (
+                      <div key={i} className={`cv-ck ${c.ok ? "ok" : "fail"}`}>
+                        <b aria-hidden="true">{c.ok ? "✓" : "✗"}</b>
+                        <span>{c.msg}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <Print paperRef={paperRef} paper={paper} fullName={data.fullName} toast={toast} />
             </div>
-          </nav>
+          </header>
 
-          <nav className="cv-main-tabs" role="tablist" aria-label="CV editor sections">
-            {[
-              { id: "edit",      ico: "✍️", lbl: "Edit"      },
-              { id: "templates", ico: "🎨", lbl: "Templates" },
-              { id: "preview",   ico: "👁",  lbl: "Preview"  },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                className={`cv-main-tab${mainTab === tab.id ? " on" : ""}`}
-                role="tab"
-                aria-selected={mainTab === tab.id}
-                onClick={() => setMainTab(tab.id)}
-              >
-                <span className="tab-ico" aria-hidden="true">{tab.ico}</span>
-                <span>{tab.lbl}</span>
-              </button>
-            ))}
-          </nav>
+          <div className="cv-grid2">
 
-          <div className="cv-grid">
-
+            {/* ── FORM COLUMN ── */}
             <section
-              className={`cv-col-form cv-panel${mainTab === "edit" ? " on" : ""}`}
+              className={`cv-col-form${mobileTab === "edit" ? " m-on" : ""}`}
               id="panel-edit"
-              role="tabpanel"
               aria-label="Edit CV content"
             >
+            <div className="cv-col-form-scroll">
+              {/* ── AI Command Bar ── */}
+              <div className="cv-aicmd">
+                <div className="cv-aicmd-head">
+                  <span className="cv-aicmd-dot" aria-hidden="true" />
+                  <span className="cv-aicmd-title">✨ AI Command</span>
+                  <span style={{ fontSize: 11, color: "#d97706", fontWeight: 600 }}>
+                    — tell the AI what to do
+                  </span>
+                </div>
+                <div className="cv-aicmd-row">
+                  <input
+                    className="cv-aicmd-input"
+                    value={aiCmd}
+                    onChange={e => setAiCmd(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && !aiCmdLoading && runAiCommand()}
+                    placeholder={AI_PLACEHOLDERS[phIdx]}
+                    disabled={aiCmdLoading}
+                    aria-label="AI CV command"
+                  />
+                  <button
+                    className="cv-btn cv-btn-primary cv-btn-sm"
+                    onClick={runAiCommand}
+                    disabled={aiCmdLoading || !aiCmd.trim()}
+                    aria-label="Run AI command"
+                    style={{ minWidth: 84 }}
+                  >
+                    {aiCmdLoading ? <><span className="cv-spinner" aria-hidden="true" /> …</> : "✨ Apply"}
+                  </button>
+                </div>
+                <div className="cv-aicmd-ex">
+                  {["Optimize for ATS", "Rewrite in human tone", "Focus on solar energy", "Tailor for UAE market"].map(ex => (
+                    <button key={ex} onClick={() => setAiCmd(ex)}>{ex}</button>
+                  ))}
+                </div>
+
+                {/* Job Posting Tailor */}
+                <div style={{ borderTop: "1px solid rgba(37,99,235,.1)", margin: "8px 0 0", padding: "8px 0 0" }}>
+                  <button
+                    onClick={() => setJobTailorOpen(o => !o)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 7,
+                      background: "none", border: "none", cursor: "pointer",
+                      fontSize: ".76rem", fontWeight: 700,
+                      color: jobTailorOpen ? "var(--royal)" : "#475569",
+                      padding: "0 0 8px",
+                    }}
+                  >
+                    <span>🎯</span>
+                    Tailor CV to a Job Posting
+                    <span style={{ fontSize: ".65rem", opacity: .6 }}>{jobTailorOpen ? "▲" : "▼"}</span>
+                  </button>
+
+                  {jobTailorOpen && (
+                    <div style={{ marginBottom: 10 }}>
+                      <textarea
+                        value={jobPosting}
+                        onChange={e => setJobPosting(e.target.value)}
+                        placeholder={"Paste the full job description here…\n\nThe AI will read the job requirements and rewrite your summary, reorder skills, enhance experience bullets, and inject ATS keywords — all based on your real background."}
+                        disabled={jobTailorLoading}
+                        rows={8}
+                        style={{
+                          width: "100%", padding: "10px 12px",
+                          borderRadius: "var(--r-sm)",
+                          border: "1.5px solid rgba(37,99,235,.3)",
+                          fontSize: ".78rem", lineHeight: 1.6,
+                          resize: "vertical", outline: "none",
+                          background: jobTailorLoading ? "#f8faff" : "#fff",
+                          color: "var(--navy)",
+                        }}
+                      />
+                      <button
+                        onClick={runJobTailor}
+                        disabled={jobTailorLoading || !jobPosting.trim()}
+                        style={{
+                          marginTop: 8, width: "100%", padding: "10px",
+                          borderRadius: "var(--r-sm)", border: "none",
+                          background: jobTailorLoading || !jobPosting.trim()
+                            ? "#94a3b8"
+                            : "linear-gradient(135deg,var(--gold),var(--gold-l))",
+                          color: jobTailorLoading || !jobPosting.trim() ? "#fff" : "#1c1917",
+                          fontWeight: 800, fontSize: ".8rem",
+                          cursor: jobTailorLoading || !jobPosting.trim() ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        {jobTailorLoading
+                          ? "⏳ Tailoring your CV…"
+                          : "🎯 Tailor My CV to This Job"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <nav className="cv-ftabs" role="tablist" aria-label="CV form sections">
                 {[
-                  ["personal",   "👤", "Personal"],
-                  ["experience", "💼", "Work"],
-                  ["education",  "🎓", "Edu"],
-                  ["skills",     "🛠",  "Skills"],
-                  ["extras",     "⭐", "Extras"],
-                ].map(([tab, ico, lbl]) => (
+                  ["personal",   "👤", "Personal",   "Name, contact, photo, summary"],
+                  ["experience", "💼", "Work",        "Jobs, roles, achievements"],
+                  ["education",  "🎓", "Edu",         "Degrees, projects, certs"],
+                  ["skills",     "🛠",  "Skills",      "Skills & languages"],
+                  ["extras",     "⭐", "Extras",      "Awards, KPIs, volunteer, refs"],
+                ].map(([tab, ico, lbl, hint]) => (
                   <button
                     key={tab}
                     className={`cv-ftab${activeTab === tab ? " on" : ""}`}
                     role="tab"
                     aria-selected={activeTab === tab}
+                    title={hint}
                     onClick={() => setActiveTab(tab)}
                   >
                     <span className="ico" aria-hidden="true">{ico}</span>
@@ -1089,6 +1501,22 @@ Rules:
                   </button>
                 ))}
               </nav>
+
+              {/* Section hint bar */}
+              <div style={{ fontSize: ".64rem", color: "#94a3b8", fontWeight: 600, padding: "0 2px 8px", display: "flex", alignItems: "center", gap: 5 }}>
+                <span aria-hidden="true">
+                  { activeTab === "personal"   ? "👤"
+                  : activeTab === "experience" ? "💼"
+                  : activeTab === "education"  ? "🎓"
+                  : activeTab === "skills"     ? "🛠"
+                  : "⭐" }
+                </span>
+                { activeTab === "personal"   ? "Personal details — name, contact info, photo, and professional summary"
+                : activeTab === "experience" ? "Work experience — roles, companies, and AI-written achievement bullets"
+                : activeTab === "education"  ? "Education, academic projects, and certifications"
+                : activeTab === "skills"     ? "Skills list (one per line) and languages"
+                : "Extras — awards, KPIs, volunteer work, publications, and references" }
+              </div>
 
               {/* PERSONAL TAB */}
               <div className={`cv-tpanel${activeTab === "personal" ? " on" : ""}`} role="tabpanel">
@@ -1204,72 +1632,7 @@ Rules:
                     value={data.summary || ""} onChange={e => sf("summary", e.target.value)} />
                 </div>
 
-                <div className="cv-card">
-                  <div className="cv-card-h">
-                    <h2 className="cv-card-t">🧭 Professional Compass</h2>
-                    <button className="cv-ai-btn" disabled={!!aiLoading.compass} onClick={aiCompass}
-                      aria-label="Generate compass with AI">
-                      {aiLoading.compass ? <><span className="cv-spinner" />…</> : "✨ AI Write"}
-                    </button>
-                  </div>
-                  <p style={{ fontSize: ".7rem", color: "#4b5563", marginBottom: 6 }}>
-                    A future-focused career narrative. Used in Apex Pro and executive templates.
-                  </p>
-                  <label className="cv-lbl" htmlFor="p-compass" style={{ marginBottom: 4 }}>Career direction statement</label>
-                  <textarea id="p-compass" className="cv-inp" rows={3}
-                    placeholder="A data-driven transformation leader with a 14-year compass pointing from engineering deep dives to C-suite strategy…"
-                    value={data.compass || ""} onChange={e => sf("compass", e.target.value)} />
-                </div>
 
-                <div className="cv-card">
-                  <h2 className="cv-card-t" style={{ marginBottom: 10 }}>📊 KPI Highlights</h2>
-                  <p style={{ fontSize: ".7rem", color: "#4b5563", marginBottom: 8 }}>
-                    Add 2-4 key metrics that showcase your impact at a glance.
-                  </p>
-                  {(data.kpis || []).map(item => (
-                    <SItem key={item.id} item={item}
-                      onUpdate={u => updateItem("kpis", u)}
-                      onRemove={() => removeItem("kpis", item.id)}>
-                      {(L, upd, rm) => (
-                        <div className="cv-shell" style={{ padding: "10px 11px", marginTop: 6 }}>
-                          <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
-                            <input className="cv-inp" value={L.value} placeholder="e.g. $2.4M"
-                              style={{ flex: 1 }} aria-label="KPI value"
-                              onChange={e => upd("value", e.target.value)} />
-                            <input className="cv-inp" value={L.label} placeholder="e.g. Revenue Generated"
-                              style={{ flex: 2 }} aria-label="KPI label"
-                              onChange={e => upd("label", e.target.value)} />
-                            <button className="cv-btn-rm" onClick={rm} aria-label="Remove KPI">✕</button>
-                          </div>
-                        </div>
-                      )}
-                    </SItem>
-                  ))}
-                  <button className="cv-btn-add" style={{ marginTop: 9 }}
-                    onClick={() => addItem("kpis", { value: "", label: "" })}>
-                    + Add KPI
-                  </button>
-                </div>
-
-                <div className="cv-card">
-                  <h2 className="cv-card-t" style={{ marginBottom: 10 }}>🔲 QR Code (Portfolio Link)</h2>
-                  <div className="cv-photo-row">
-                    <div className="cv-photo-thumb" aria-hidden="true" style={{ borderRadius: 8 }}>
-                      {data.qrDataUrl ? <img src={data.qrDataUrl} alt="QR preview" /> : "🔲"}
-                    </div>
-                    <div className="cv-photo-btns">
-                      <label className="cv-btn cv-btn-ghost cv-btn-sm cv-file-btn">
-                        <span aria-hidden="true">📱</span> Upload QR
-                        <input type="file" accept="image/*" onChange={uploadQR} aria-label="Upload QR code" />
-                      </label>
-                      {data.qrDataUrl && (
-                        <button className="cv-btn cv-btn-danger" onClick={() => sf("qrDataUrl", "")}>
-                          ✕ Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* EXPERIENCE TAB */}
@@ -1278,7 +1641,7 @@ Rules:
                   <div className="cv-card-h">
                     <h2 className="cv-card-t">💼 Work Experience</h2>
                     <button className="cv-btn-add" aria-label="Add experience" onClick={() => addItem("experience", {
-                      role:"", company:"", companyLogo:"", empType:"Full-time",
+                      role:"", company:"", empType:"Full-time",
                       industry:"", city:"", start:"", end:"", current:false, bullets:"",
                     })}>+ Add</button>
                   </div>
@@ -1589,6 +1952,136 @@ Rules:
                   ))}
                 </div>
 
+                {/* KPI / Impact Highlights — used by Double Column and Apex Pro templates */}
+                <div className="cv-card">
+                  <div className="cv-card-h">
+                    <h2 className="cv-card-t">📊 Impact Highlights (KPIs)</h2>
+                    <button className="cv-btn-add" aria-label="Add KPI" onClick={() => addItem("kpis", { value: "", label: "" })}>+ Add</button>
+                  </div>
+                  <p style={{ fontSize: ".68rem", color: "#4b5563", marginBottom: 8 }}>
+                    Big numbers shown as a visual block — used by Double Column &amp; Apex Pro templates
+                  </p>
+                  {!(data.kpis || []).length && <div className="cv-empty" role="status">📊 No KPIs yet. E.g. value "95%" label "Customer Satisfaction"</div>}
+                  {(data.kpis || []).map(item => (
+                    <SItem key={item.id} item={item}
+                      onUpdate={u => updateItem("kpis", u)}
+                      onRemove={() => removeItem("kpis", item.id)}>
+                      {(L, upd, rm) => (
+                        <div className="cv-shell" style={{ padding: "10px 11px", marginTop: 6 }}>
+                          <div style={{ display: "flex", gap: 7, alignItems: "center" }}>
+                            <input className="cv-inp" value={L.value} placeholder='95%'
+                              aria-label="KPI value" style={{ flex: "0 0 90px" }}
+                              onChange={e => upd("value", e.target.value)} />
+                            <input className="cv-inp" value={L.label} placeholder='Customer Satisfaction'
+                              aria-label="KPI label" style={{ flex: 1 }}
+                              onChange={e => upd("label", e.target.value)} />
+                            <button className="cv-btn-rm" onClick={rm} aria-label="Remove KPI">✕</button>
+                          </div>
+                        </div>
+                      )}
+                    </SItem>
+                  ))}
+                </div>
+
+                {/* Volunteer Work */}
+                <div className="cv-card">
+                  <div className="cv-card-h">
+                    <h2 className="cv-card-t">🤝 Volunteer Work</h2>
+                    <button className="cv-btn-add" aria-label="Add volunteer" onClick={() => addItem("volunteer", {
+                      org: "", role: "", start: "", end: "", bullets: "",
+                    })}>+ Add</button>
+                  </div>
+                  {!(data.volunteer || []).length && <div className="cv-empty" role="status">🤝 No volunteer work added yet.</div>}
+                  {(data.volunteer || []).map(item => (
+                    <SItem key={item.id} item={item}
+                      onUpdate={u => updateItem("volunteer", u)}
+                      onRemove={() => removeItem("volunteer", item.id)}>
+                      {(L, upd, rm) => {
+                        const bid = `vol-${L.id}`;
+                        return (
+                          <div className="cv-shell">
+                            <div className="cv-shell-h">
+                              <span className="cv-shell-t">{L.role || "New Volunteer Role"}{L.org ? " @ " + L.org : ""}</span>
+                              <button className="cv-btn-rm" onClick={rm} aria-label="Remove volunteer">✕</button>
+                            </div>
+                            <div className="cv-g2">
+                              <Field label="Role *" id={`${bid}-role`}>
+                                <input id={`${bid}-role`} className="cv-inp" value={L.role} placeholder="Community Coordinator"
+                                  onChange={e => upd("role", e.target.value)} />
+                              </Field>
+                              <Field label="Organisation" id={`${bid}-org`}>
+                                <input id={`${bid}-org`} className="cv-inp" value={L.org} placeholder="Red Crescent"
+                                  onChange={e => upd("org", e.target.value)} />
+                              </Field>
+                              <Field label="Start" id={`${bid}-start`}>
+                                <input id={`${bid}-start`} className="cv-inp" value={L.start} placeholder="Jan 2023"
+                                  onChange={e => upd("start", e.target.value)} />
+                              </Field>
+                              <Field label="End" id={`${bid}-end`}>
+                                <input id={`${bid}-end`} className="cv-inp" value={L.end} placeholder="Present"
+                                  onChange={e => upd("end", e.target.value)} />
+                              </Field>
+                            </div>
+                            <div className="cv-field" style={{ marginTop: 8 }}>
+                              <label className="cv-lbl" htmlFor={`${bid}-bullets`}>What you did (one per line)</label>
+                              <textarea id={`${bid}-bullets`} className="cv-inp" rows={2}
+                                value={L.bullets} placeholder="Coordinated food drives for 200+ families"
+                                onChange={e => upd("bullets", e.target.value)} />
+                            </div>
+                          </div>
+                        );
+                      }}
+                    </SItem>
+                  ))}
+                </div>
+
+                {/* Publications */}
+                <div className="cv-card">
+                  <div className="cv-card-h">
+                    <h2 className="cv-card-t">📄 Publications</h2>
+                    <button className="cv-btn-add" aria-label="Add publication" onClick={() => addItem("publications", {
+                      title: "", publisher: "", year: "", url: "",
+                    })}>+ Add</button>
+                  </div>
+                  {!(data.publications || []).length && <div className="cv-empty" role="status">📄 No publications yet.</div>}
+                  {(data.publications || []).map(item => (
+                    <SItem key={item.id} item={item}
+                      onUpdate={u => updateItem("publications", u)}
+                      onRemove={() => removeItem("publications", item.id)}>
+                      {(L, upd, rm) => {
+                        const bid = `pub-${L.id}`;
+                        return (
+                          <div className="cv-shell">
+                            <div className="cv-shell-h">
+                              <span className="cv-shell-t">{L.title || "New Publication"}</span>
+                              <button className="cv-btn-rm" onClick={rm} aria-label="Remove publication">✕</button>
+                            </div>
+                            <div className="cv-g2">
+                              <Field label="Title *" id={`${bid}-title`} span2>
+                                <input id={`${bid}-title`} className="cv-inp" value={L.title}
+                                  placeholder="Optimizing HVAC Systems in Gulf Climate"
+                                  onChange={e => upd("title", e.target.value)} />
+                              </Field>
+                              <Field label="Publisher / Journal" id={`${bid}-pub`}>
+                                <input id={`${bid}-pub`} className="cv-inp" value={L.publisher}
+                                  placeholder="IEEE" onChange={e => upd("publisher", e.target.value)} />
+                              </Field>
+                              <Field label="Year" id={`${bid}-year`}>
+                                <input id={`${bid}-year`} className="cv-inp" value={L.year}
+                                  placeholder="2024" onChange={e => upd("year", e.target.value)} />
+                              </Field>
+                              <Field label="URL" id={`${bid}-url`} span2>
+                                <input id={`${bid}-url`} className="cv-inp" value={L.url}
+                                  placeholder="doi.org/…" onChange={e => upd("url", e.target.value)} />
+                              </Field>
+                            </div>
+                          </div>
+                        );
+                      }}
+                    </SItem>
+                  ))}
+                </div>
+
                 <div className="cv-card">
                   <div className="cv-card-h">
                     <h2 className="cv-card-t">📋 References</h2>
@@ -1646,61 +2139,153 @@ Rules:
 
                 <button className="cv-btn cv-btn-danger cv-btn-sm"
                   style={{ marginTop: 8, width: "100%", justifyContent: "center", borderRadius: "var(--r)" }}
-                  onClick={resetAll}>
+                  onClick={() => setShowReset(true)}>
                   🗑️ Reset All Data
                 </button>
               </div>
+            </div>{/* end cv-col-form-scroll */}
             </section>
 
-            <section
-              className={`cv-col-prev cv-panel${mainTab === "templates" || mainTab === "preview" ? " on" : ""}`}
+            {/* ── RIGHT COLUMN: Preview + Templates ── */}
+            <div
+              className={`cv-col-right${mobileTab !== "edit" ? " m-on" : ""}`}
               id="panel-right"
-              role="tabpanel"
-              aria-label="Templates and CV preview"
             >
-              <div className={mainTab === "preview" ? "cv-desktop-only" : ""}>
-                <Templates
-                  currentTemplate={tmpl}
-                  setTemplate={setTmpl}
-                  accent={accent}
-                  activeCat={activeCat}
-                  setActiveCat={setActiveCat}
-                  TEMPLATES={TEMPLATES}
-                  CATS={CATS}
-                />
+              {/* Preview / Templates tab strip (desktop only — hidden on mobile) */}
+              <div className="cv-right-tabs" role="tablist" aria-label="Right panel">
+                <button
+                  className={`cv-right-tab${previewTab === "preview" ? " on" : ""}`}
+                  role="tab" aria-selected={previewTab === "preview"}
+                  onClick={() => setPreviewTab("preview")}
+                >
+                  👁 Preview
+                </button>
+                <button
+                  className={`cv-right-tab${previewTab === "templates" ? " on" : ""}`}
+                  role="tab" aria-selected={previewTab === "templates"}
+                  onClick={() => setPreviewTab("templates")}
+                >
+                  🌟 Templates
+                </button>
               </div>
 
-              <div
-                className={mainTab === "templates" ? "cv-desktop-only" : ""}
-                style={{ marginTop: mainTab === "preview" ? 0 : 14 }}
-              >
-                <Preview
-                  cvHtml={cvHtml}
-                  zoom={zoom}
-                  setZoom={setZoom}
-                  fitZoom={fitZoom}
-                  paperRef={paperRef}
-                  prevScrollRef={prevScrollRef}
-                  accent={accent}
-                  setAccent={setAccent}
-                  fontId={fontId}
-                  setFontId={setFontId}
-                  fontSize={fontSize}
-                  setFontSize={setFontSize}
-                  paper={paper}
-                  setPaper={setPaper}
-                  ACCENTS={ACCENTS}
-                  FONTS={FONTS}
-                  FSIZES={FSIZES}
-                  PAPERS={PAPERS}
-                  fullName={data.fullName}
-                  toast={toast}
-                />
+              {/* Controls strip — always visible */}
+              <div className="cv-controls-strip" role="group" aria-label="Appearance controls">
+                <span className="cv-cs-lbl">Color</span>
+                <div className="cv-cs-dots" role="radiogroup" aria-label="Accent colour">
+                  {ACCENTS.map(c => {
+                    const name = COLOR_NAMES[c] || c;
+                    return (
+                      <button
+                        key={c}
+                        type="button"
+                        className={`cv-dot${accent === c ? " on" : ""}`}
+                        style={{ background: c, "--col": c }}
+                        title={name}
+                        aria-label={`${name}${accent === c ? " (selected)" : ""}`}
+                        aria-pressed={accent === c}
+                        onClick={() => setAccent(c)}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="cv-cs-sep" />
+                <span className="cv-cs-lbl">Font</span>
+                <select
+                  className="cv-cs-font"
+                  value={fontId}
+                  onChange={e => setFontId(e.target.value)}
+                  aria-label="Font family"
+                  style={{ fontFamily: FONTS.find(f => f.id === fontId)?.s }}
+                >
+                  {FONTS.map(f => (
+                    <option key={f.id} value={f.id} style={{ fontFamily: f.s }}>{f.l}</option>
+                  ))}
+                </select>
+                <div className="cv-cs-sep" />
+                <span className="cv-cs-lbl">Size</span>
+                {Object.keys(FSIZES).map(s => (
+                  <button
+                    key={s}
+                    type="button"
+                    className={`cv-cs-tog${fontSize === s ? " on" : ""}`}
+                    aria-pressed={fontSize === s}
+                    onClick={() => setFontSize(s)}
+                  >
+                    {s === "small" ? "S" : s === "medium" ? "M" : "L"}
+                  </button>
+                ))}
+                <div className="cv-cs-sep" />
+                <span className="cv-cs-lbl">Paper</span>
+                {Object.entries(PAPERS).map(([key, val]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`cv-cs-tog${paper === key ? " on" : ""}`}
+                    aria-pressed={paper === key}
+                    onClick={() => setPaper(key)}
+                  >
+                    {val.l}
+                  </button>
+                ))}
               </div>
-            </section>
+
+              {/* Content panel: Preview OR Templates */}
+              <div className="cv-right-panel">
+                {previewTab === "preview" && (
+                  <Preview
+                    cvHtml={cvHtml}
+                    paperRef={paperRef}
+                    paper={paper}
+                    PAPERS={PAPERS}
+                    fullName={data.fullName}
+                    toast={toast}
+                    onFieldChange={handlePreviewFieldChange}
+                    aiRunning={aiRunning}
+                    flashSignal={flashSignal}
+                  />
+                )}
+                {previewTab === "templates" && (
+                  <div className="cv-templates-panel">
+                    <Templates
+                      currentTemplate={tmpl}
+                      setTemplate={setTmpl}
+                      accent={accent}
+                      activeCat={activeCat}
+                      setActiveCat={setActiveCat}
+                      TEMPLATES={TEMPLATES}
+                      CATS={CATS}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
 
           </div>
-        </div>
+
+          {/* ── MOBILE BOTTOM NAV (inside cvapp flex flow) ── */}
+          <nav className="cv-bottom-nav" role="tablist" aria-label="Sections">
+            {[
+              { id: "edit",      pt: null,        ico: "✍️", lbl: "Edit"      },
+              { id: "preview",   pt: "preview",   ico: "👁",  lbl: "Preview"  },
+              { id: "templates", pt: "templates", ico: "🌟", lbl: "Templates" },
+            ].map(t => (
+              <button
+                key={t.id}
+                className={`cv-bottom-nav-btn${mobileTab === t.id ? " on" : ""}`}
+                role="tab"
+                aria-selected={mobileTab === t.id}
+                onClick={() => {
+                  setMobileTab(t.id);
+                  if (t.pt) setPreviewTab(t.pt);
+                }}
+              >
+                <span className="ico" aria-hidden="true">{t.ico}</span>
+                <span>{t.lbl}</span>
+              </button>
+            ))}
+          </nav>
+
       </div>
     </>
   );

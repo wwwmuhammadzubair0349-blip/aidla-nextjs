@@ -1,0 +1,235 @@
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+const GROQ_MODELS = [
+  "llama-3.1-8b-instant",
+  "llama-3.3-70b-versatile",
+];
+
+const BANNED = [
+  "utilize", "leverage", "synergy", "dynamic", "results-driven", "detail-oriented",
+  "passionate about", "hardworking", "team player", "go-getter", "self-motivated",
+  "responsible for", "helped with", "worked on", "proven track record",
+  "innovative solutions", "cutting-edge",
+];
+
+const JSON_MODES = new Set(["command", "job_tailor", "ats_audit"]);
+
+function baseConsultantRules() {
+  return `
+You are an elite resume consultant, ATS analyst, recruiter, and hiring manager.
+
+Non-negotiable quality rules:
+- Preserve truth. Never invent employers, dates, degrees, certifications, projects, tools, metrics, locations, titles, or awards.
+- If evidence is missing, write credible achievement language without fabricated numbers.
+- Prefer concrete scope, tools, domain terms, and outcomes already present in the CV or job description.
+- Write in natural professional English. No first person. No hype. No keyword stuffing.
+- Every line must pass recruiter review and ATS parsing.
+- Remove weak phrases: ${BANNED.join(", ")}.
+- Use active verbs, concise sentences, role-aligned seniority, and industry-appropriate keywords.
+- Output only what the requested mode asks for.`;
+}
+
+function systemFor(mode = "") {
+  if (mode === "summary") return `${baseConsultantRules()}
+
+Task: write or improve a professional CV summary.
+Output:
+- 2-4 concise sentences
+- No heading
+- No bullets
+- No markdown
+- Mention role, seniority, domain, strongest skills, and credible value
+- Do not add facts not present in the user prompt`;
+
+  if (mode === "bullets") return `${baseConsultantRules()}
+
+Task: write CV experience bullets.
+Output:
+- One bullet per line
+- No bullet symbols or numbering
+- 3-5 lines unless the user asks otherwise
+- Each line should show action, scope, skill/tool, and business impact
+- Use metrics only when supplied or explicitly implied by the prompt`;
+
+  if (mode === "job_tailor") return `${baseConsultantRules()}
+
+Task: tailor the CV to a specific job description like a senior resume strategist.
+
+Internal method:
+1. Extract required skills, preferred skills, tools, technologies, certifications, responsibilities, soft skills, seniority, industry, and ATS phrases.
+2. Compare the JD with the candidate's real CV.
+3. Use only matched or honestly implied capabilities.
+4. Reorder and rewrite for relevance without stuffing.
+5. Leave gaps untouched instead of fabricating qualifications.
+
+Return ONLY raw valid JSON. No markdown. No explanation.
+Schema:
+{
+  "analysis": {
+    "jobTitle": "string",
+    "requiredKeywords": ["string"],
+    "matchedKeywords": ["string"],
+    "missingKeywords": ["string"],
+    "tailoringStrategy": ["string"]
+  },
+  "patch": {
+    "title": "string",
+    "summary": "string",
+    "skills": "newline separated string",
+    "experience": [{ "id": "existing id", "role": "string", "bullets": "newline separated string" }],
+    "education": [{ "id": "existing id", "notes": "string" }],
+    "certifications": [{ "id": "existing id", "name": "string", "issuer": "string", "year": "string" }]
+  }
+}
+Rules:
+- Include only changed fields in patch.
+- Array updates must include existing id.
+- Omit patch fields that do not change.
+- missingKeywords are recommendations, not invented CV content.`;
+
+  if (mode === "ats_audit") return `${baseConsultantRules()}
+
+Task: produce a structured ATS audit.
+Return ONLY raw valid JSON:
+{
+  "score": 0,
+  "methodology": ["string"],
+  "strengths": ["string"],
+  "issues": ["string"],
+  "missingKeywords": ["string"],
+  "sectionQuality": [{ "section": "string", "score": 0, "feedback": "string" }],
+  "recommendedActions": ["string"]
+}
+Scoring must be evidence-based:
+- Contact completeness
+- Summary specificity
+- Skills coverage
+- Experience relevance
+- Achievement quality
+- Education/certification relevance
+- JD keyword match when a job description is provided`;
+
+  if (mode === "command") return `${baseConsultantRules()}
+
+Task: apply the user's plain-English command to CV JSON.
+
+Return ONLY raw valid JSON. No markdown. No explanation.
+Return only changed fields.
+
+Editable top-level fields:
+fullName, title, email, phoneNum, phoneCode, location, linkedin, github, website,
+nationality, dob, drivingLicense, marital, gender, notice, summary, skills, hobbies, compass
+
+Editable arrays:
+experience, education, certifications, projects, awards, volunteer, publications, kpis, caseStudies
+
+Array update rules:
+- Include "id" and changed keys only.
+- To remove an item, include { "id": "...", "_remove": true }.
+- Never create facts unless the command explicitly provides them.
+- For skills, use newline-separated strings.
+- For bullets, use newline-separated strings.`;
+
+  return `${baseConsultantRules()}
+
+Task: write the requested CV content.
+Output only the requested text. No markdown, no preamble, no explanations.`;
+}
+
+function cleanText(s: string) {
+  return String(s || "")
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/i, "")
+    .trim();
+}
+
+function validatePlainOutput(result: string) {
+  const lower = result.toLowerCase();
+  const found = BANNED.filter(w => lower.includes(w));
+  if (found.length) {
+    return result
+      .split("\n")
+      .filter(line => !found.some(w => line.toLowerCase().includes(w)))
+      .join("\n")
+      .trim();
+  }
+  return result;
+}
+
+function validateJsonOutput(result: string) {
+  const cleaned = cleanText(result);
+  JSON.parse(cleaned);
+  return cleaned;
+}
+
+async function callGroq(model: string, systemPrompt: string, messages: unknown[], temperature: number, maxTokens: number, jsonMode: boolean, signal: AbortSignal) {
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    signal,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${Deno.env.get("GROK_API_KEY")}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [{ role: "system", content: systemPrompt }, ...messages],
+      temperature,
+      max_tokens: maxTokens,
+      response_format: jsonMode ? { type: "json_object" } : undefined,
+    }),
+  });
+  if (!res.ok) throw new Error(`Groq error ${res.status}: ${await res.text()}`);
+  return res.json();
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  let timeout = 0;
+  try {
+    const body = await req.json();
+    const { prompt, mode = "", model, messages } = body;
+
+    if (!prompt && !messages?.length) {
+      return new Response(JSON.stringify({ ok: false, error: "prompt required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const finalModel = model || (mode === "command" || mode === "job_tailor" || mode === "ats_audit"
+      ? "llama-3.3-70b-versatile"
+      : "llama-3.1-8b-instant");
+
+    if (!GROQ_MODELS.includes(finalModel)) throw new Error("model not allowed");
+
+    const finalMessages = messages?.length ? messages : [{ role: "user", content: String(prompt).slice(0, 24000) }];
+    const temperature = JSON_MODES.has(mode) ? 0.15 : 0.45;
+    const maxTokens = mode === "job_tailor" || mode === "ats_audit" || mode === "command" ? 3200 : 1200;
+    const controller = new AbortController();
+    timeout = setTimeout(() => controller.abort(), 30000);
+
+    const data = await callGroq(finalModel, systemFor(mode), finalMessages, temperature, maxTokens, JSON_MODES.has(mode), controller.signal) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+
+    const raw = data?.choices?.[0]?.message?.content?.trim() || "";
+    const result = JSON_MODES.has(mode) ? validateJsonOutput(raw) : validatePlainOutput(cleanText(raw));
+
+    return new Response(JSON.stringify({ ok: true, result, model_used: finalModel }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ ok: false, error: err?.message || "Error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+});

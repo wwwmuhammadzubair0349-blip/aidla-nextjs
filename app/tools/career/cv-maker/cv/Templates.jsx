@@ -106,6 +106,13 @@ const TEMPLATES_CSS = `
   box-shadow: 0 0 0 3px var(--ac, #3b82f6), 0 8px 22px rgba(59,130,246,.18);
 }
 .cv-tmpl-card:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+.cv-tmpl-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; margin-top: 2px; }
+.cv-tmpl-badge {
+  font-size: .5rem; font-weight: 800; padding: 1px 5px;
+  border-radius: 4px; line-height: 1.4; white-space: nowrap;
+}
+.cv-tmpl-badge-ats { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+.cv-tmpl-badge-cap { background: rgba(37,99,235,.09); color: #1e3a8a; border: 1px solid rgba(37,99,235,.2); }
 .cv-tmpl-thumb svg {
   display: block;
   height: 62px;
@@ -178,24 +185,39 @@ export default function Templates({
         </div>
 
         <div className="cv-tmpl-grid" role="list" aria-label="CV templates">
-          {visibleTemplates.map(t => (
-            <button
-              key={t.id}
-              type="button"
-              role="listitem"
-              className={`cv-tmpl-card${currentTemplate === t.id ? " on" : ""}`}
-              style={{ "--ac": accent }}
-              aria-pressed={currentTemplate === t.id}
-              aria-label={`Select ${t.l} template${currentTemplate === t.id ? " (currently selected)" : ""}`}
-              onClick={() => setTemplate(t.id)}
-            >
-              <span
-                className="cv-tmpl-thumb"
-                dangerouslySetInnerHTML={{ __html: renderThumbSvg(t, accent) }}
-              />
-              <span className="cv-tmpl-lbl">{t.l}</span>
-            </button>
-          ))}
+          {visibleTemplates.map(t => {
+            const capLabels = { kpi: "KPIs", caseStudy: "Cases", compass: "Compass", qr: "QR" };
+            return (
+              <button
+                key={t.id}
+                type="button"
+                role="listitem"
+                className={`cv-tmpl-card${currentTemplate === t.id ? " on" : ""}`}
+                style={{ "--ac": accent }}
+                aria-pressed={currentTemplate === t.id}
+                aria-label={`Select ${t.l} template${t.atsRisk ? " (multi-column, ATS risk)" : ""}${currentTemplate === t.id ? " (currently selected)" : ""}`}
+                onClick={() => setTemplate(t.id)}
+              >
+                <span
+                  className="cv-tmpl-thumb"
+                  dangerouslySetInnerHTML={{ __html: renderThumbSvg(t, accent) }}
+                />
+                <span className="cv-tmpl-lbl">{t.l}</span>
+                <div className="cv-tmpl-badges">
+                  {t.atsRisk && (
+                    <span className="cv-tmpl-badge cv-tmpl-badge-ats" title="Multi-column layout may reduce ATS parseability">
+                      ⚠ ATS Risk
+                    </span>
+                  )}
+                  {(t.caps || []).map(cap => (
+                    <span key={cap} className="cv-tmpl-badge cv-tmpl-badge-cap" title={`Supports ${capLabels[cap] || cap} section`}>
+                      {capLabels[cap] || cap}
+                    </span>
+                  ))}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
     </>

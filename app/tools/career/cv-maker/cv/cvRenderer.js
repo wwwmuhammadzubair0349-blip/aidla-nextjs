@@ -251,27 +251,60 @@ const THUMBS = {
     <rect x="8" y="59" width="46" height="1.5" rx="0.75" fill="#e2e8f0"/>
     <rect x="8" y="63" width="30" height="1.5" rx="0.75" fill="#e2e8f0"/>
   `,
+
+  impactSplit: (c) => `
+    <rect width="62" height="82" rx="4" fill="#fff"/>
+    <rect x="4" y="6" width="38" height="5" rx="0.5" fill="#0f172a"/>
+    <rect x="4" y="14" width="22" height="1.5" rx="0.75" fill="${c}"/>
+    <rect x="4" y="18" width="54" height="0.5" fill="#94a3b8"/>
+    <rect x="4" y="21" width="54" height="0.5" fill="#0f172a"/>
+    <rect x="4" y="26" width="12" height="1.5" rx="0.75" fill="#0f172a"/>
+    <rect x="4" y="29" width="30" height="0.75" fill="#0f172a"/>
+    <rect x="4" y="33" width="18" height="1.5" rx="0.75" fill="#0f172a"/>
+    <rect x="4" y="36" width="14" height="1" rx="0.5" fill="${c}"/>
+    <rect x="4" y="39" width="30" height="0.75" fill="#e2e8f0"/>
+    <rect x="4" y="41" width="28" height="0.75" fill="#e2e8f0"/>
+    <rect x="4" y="44" width="26" height="0.75" fill="#e2e8f0"/>
+    <rect x="36" y="21" width="0.75" height="56" fill="#e2e8f0"/>
+    <rect x="40" y="26" width="14" height="1.5" rx="0.75" fill="#0f172a"/>
+    <rect x="40" y="29" width="18" height="0.75" fill="#0f172a"/>
+    <rect x="40" y="33" width="18" height="0.75" fill="#e2e8f0"/>
+    <rect x="40" y="36" width="16" height="0.75" fill="#e2e8f0"/>
+    <rect x="40" y="42" width="14" height="1.5" rx="0.75" fill="#0f172a"/>
+    <rect x="40" y="45" width="18" height="0.75" fill="#0f172a"/>
+    <circle cx="41" cy="50" r="1.5" fill="${c}"/>
+    <rect x="44" y="49" width="12" height="1.5" rx="0.75" fill="#0f172a"/>
+    <rect x="44" y="52" width="12" height="0.75" fill="#e2e8f0"/>
+    <circle cx="41" cy="57" r="1.5" fill="${c}"/>
+    <rect x="44" y="56" width="12" height="1.5" rx="0.75" fill="#0f172a"/>
+    <rect x="44" y="59" width="10" height="0.75" fill="#e2e8f0"/>
+    <rect x="40" y="64" width="8" height="2" rx="1" fill="transparent" stroke="#cbd5e1" stroke-width="0.75"/>
+    <rect x="50" y="64" width="7" height="2" rx="1" fill="transparent" stroke="#cbd5e1" stroke-width="0.75"/>
+  `,
 };
 
+// atsRisk: true = multi-column layout, ATS parsers may misread column order
+// caps: special sections this template renders (kpi, caseStudy, compass, qr)
 export const PREMIUM_TEMPLATES = [
-  { id: 'modern-stack', l: 'Modern Stack', cat: 'Corporate', thumb: THUMBS.modernStack },
-  { id: 'pure-white', l: 'Pure White', cat: 'Minimal', thumb: THUMBS.pureWhite },
-  { id: 'swiss-clean', l: 'Swiss Clean', cat: 'Corporate', thumb: THUMBS.swissClean },
-  { id: 'ink-line', l: 'Ink Line', cat: 'Minimal', thumb: THUMBS.inkLine },
-  { id: 'sidebar-dark', l: 'Sidebar Dark', cat: 'Executive', thumb: THUMBS.sidebarDark },
-  { id: 'gulf-premium', l: 'Gulf Premium', cat: 'Premium', thumb: THUMBS.gulfPremium },
-  { id: 'infographic', l: 'Infographic Split', cat: 'Creative', thumb: THUMBS.infographic },
-  { id: 'diamond', l: 'Diamond', cat: 'Minimal', thumb: THUMBS.diamond },
-  { id: 'ivy-league', l: 'Ivy League', cat: 'Academic', thumb: THUMBS.ivyLeague },
-  { id: 'double-col', l: 'Double Column', cat: 'Corporate', thumb: THUMBS.doubleCol },
-  { id: 'navy-exec', l: 'Navy Executive', cat: 'Executive', thumb: THUMBS.navyExec },
-  { id: 'timeline-pro', l: 'Timeline Pro', cat: 'Corporate', thumb: THUMBS.timelinePro },
-  { id: 'coral-modern', l: 'Coral Modern', cat: 'Creative', thumb: THUMBS.coralModern },
-  { id: 'slate-pro', l: 'Slate Pro', cat: 'Executive', thumb: THUMBS.slatePro },
-  { id: 'compact-ats', l: 'Compact ATS', cat: 'Minimal', thumb: THUMBS.compactAts },
-  { id: 'bold-header', l: 'Bold Header', cat: 'Premium', thumb: THUMBS.boldHeader },
-  { id: 'dubai-pro', l: 'Dubai Pro', cat: 'Premium', thumb: THUMBS.dubaiPro },
-  { id: 'apex-pro', l: 'Apex Pro', cat: 'Executive', thumb: THUMBS.apexPro },
+  { id: 'modern-stack', l: 'Modern Stack',     cat: 'Corporate', thumb: THUMBS.modernStack, atsRisk: false, caps: [] },
+  { id: 'pure-white',   l: 'Pure White',       cat: 'Minimal',   thumb: THUMBS.pureWhite,   atsRisk: false, caps: [] },
+  { id: 'swiss-clean',  l: 'Swiss Clean',      cat: 'Corporate', thumb: THUMBS.swissClean,  atsRisk: true,  caps: [] },
+  { id: 'ink-line',     l: 'Ink Line',         cat: 'Minimal',   thumb: THUMBS.inkLine,     atsRisk: false, caps: [] },
+  { id: 'sidebar-dark', l: 'Sidebar Dark',     cat: 'Executive', thumb: THUMBS.sidebarDark, atsRisk: true,  caps: [] },
+  { id: 'gulf-premium', l: 'Gulf Premium',     cat: 'Premium',   thumb: THUMBS.gulfPremium, atsRisk: true,  caps: [] },
+  { id: 'infographic',  l: 'Infographic Split',cat: 'Creative',  thumb: THUMBS.infographic, atsRisk: true,  caps: [] },
+  { id: 'diamond',      l: 'Diamond',          cat: 'Minimal',   thumb: THUMBS.diamond,     atsRisk: false, caps: [] },
+  { id: 'ivy-league',   l: 'Ivy League',       cat: 'Academic',  thumb: THUMBS.ivyLeague,   atsRisk: true,  caps: [] },
+  { id: 'double-col',   l: 'Double Column',    cat: 'Corporate', thumb: THUMBS.doubleCol,   atsRisk: true,  caps: ['kpi'] },
+  { id: 'navy-exec',    l: 'Navy Executive',   cat: 'Executive', thumb: THUMBS.navyExec,    atsRisk: false, caps: [] },
+  { id: 'timeline-pro', l: 'Timeline Pro',     cat: 'Corporate', thumb: THUMBS.timelinePro, atsRisk: false, caps: [] },
+  { id: 'coral-modern', l: 'Coral Modern',     cat: 'Creative',  thumb: THUMBS.coralModern, atsRisk: false, caps: [] },
+  { id: 'slate-pro',    l: 'Slate Pro',        cat: 'Executive', thumb: THUMBS.slatePro,    atsRisk: true,  caps: [] },
+  { id: 'compact-ats',  l: 'Compact ATS',      cat: 'Minimal',   thumb: THUMBS.compactAts,  atsRisk: false, caps: [] },
+  { id: 'bold-header',  l: 'Bold Header',      cat: 'Premium',   thumb: THUMBS.boldHeader,  atsRisk: false, caps: [] },
+  { id: 'dubai-pro',    l: 'Dubai Pro',        cat: 'Premium',   thumb: THUMBS.dubaiPro,    atsRisk: true,  caps: ['qr'] },
+  { id: 'apex-pro',     l: 'Apex Pro',         cat: 'Executive', thumb: THUMBS.apexPro,     atsRisk: true,  caps: ['kpi', 'caseStudy', 'compass'] },
+  { id: 'impact-split', l: 'Impact Split',     cat: 'Premium',   thumb: THUMBS.impactSplit, atsRisk: true,  caps: [] },
 ];
 
 export const PREMIUM_CATS = ['All', ...new Set(PREMIUM_TEMPLATES.map(t => t.cat))];
@@ -279,7 +312,7 @@ export const PREMIUM_CATS = ['All', ...new Set(PREMIUM_TEMPLATES.map(t => t.cat)
 const BUILT_IN_LAYOUTS = {
   'modern-stack': {
     header: ['profile', 'photo'],
-    main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'refs', 'hobbies']
+    main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'volunteer', 'publications', 'refs', 'hobbies']
   },
   'pure-white': {
     header: ['photo', 'profile'],
@@ -325,7 +358,7 @@ const BUILT_IN_LAYOUTS = {
   },
   'navy-exec': {
     header: ['profile', 'photo'],
-    main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'refs', 'hobbies']
+    main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'volunteer', 'publications', 'refs', 'hobbies']
   },
   'timeline-pro': {
     header: ['profile', 'photo'],
@@ -342,11 +375,11 @@ const BUILT_IN_LAYOUTS = {
   },
   'compact-ats': {
     header: ['profile'],
-    main: ['summary', 'exp', 'edu', 'skills', 'projects', 'certs', 'langs', 'awards', 'refs', 'hobbies']
+    main: ['summary', 'exp', 'edu', 'skills', 'projects', 'certs', 'langs', 'awards', 'volunteer', 'publications', 'refs', 'hobbies']
   },
   'bold-header': {
     header: ['profile', 'photo'],
-    main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'refs', 'hobbies']
+    main: ['summary', 'exp', 'edu', 'projects', 'skills', 'certs', 'langs', 'awards', 'volunteer', 'publications', 'refs', 'hobbies']
   },
   'dubai-pro': {
     header: ['profile', 'photo', 'qr'],
@@ -357,6 +390,11 @@ const BUILT_IN_LAYOUTS = {
     header: ['photo', 'profile'],
     main: ['kpi', 'compass', 'exp', 'edu', 'caseStudy', 'projects'],
     right: ['skills', 'certs', 'langs', 'awards']
+  },
+  'impact-split': {
+    header: ['profile'],
+    main: ['exp', 'edu', 'projects'],
+    right: ['summary', 'keyAchievements', 'skills', 'certs', 'langs', 'refs', 'hobbies']
   },
 };
 
@@ -630,6 +668,129 @@ const BUILT_IN_CSS = {
     .cv-skills-list li { padding: 2px 8px; background: rgba(var(--ac-rgb), 0.06); color: var(--ac); font-weight: 700; font-size: 0.78em; }
     .cv-bullets { font-size: 0.9em; color: #334155; }
   `,
+
+  'impact-split': `
+    /* ── Impact Split – Enhancv-inspired ── */
+    .cv-doc { padding: 0; }
+
+    /* Full-width header */
+    .layout-impact-split .cv-header {
+      padding: 28px 36px 18px;
+      border-bottom: 2.5px solid #0f172a;
+      margin-bottom: 0;
+    }
+    .layout-impact-split .cv-name {
+      font-size: 2.9em; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 3px;
+      color: #0f172a; line-height: 1; margin-bottom: 4px;
+    }
+    .layout-impact-split .cv-role {
+      font-size: 0.88em; font-weight: 600;
+      color: var(--ac); text-transform: uppercase;
+      letter-spacing: 1.5px; margin-top: 6px;
+    }
+    .layout-impact-split .cv-contact-row {
+      font-size: 0.77em; color: #475569;
+      gap: 5px 16px; margin-top: 10px;
+    }
+    .layout-impact-split .cv-photo-wrapper { display: none; }
+
+    /* Two-column body */
+    .layout-impact-split .cv-body.has-right {
+      display: grid; grid-template-columns: 58% 42%;
+    }
+    .layout-impact-split .cv-main {
+      padding: 22px 22px 22px 36px;
+      border-right: 1.5px solid #e2e8f0;
+    }
+    .layout-impact-split .cv-right {
+      padding: 22px 36px 22px 20px;
+    }
+
+    /* Section headers */
+    .layout-impact-split .cv-sec-title {
+      font-size: 0.69em; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 2.5px;
+      color: #0f172a; border-top: none; border-left: none;
+      border-right: none; border-bottom: 2px solid #0f172a;
+      padding-bottom: 5px; margin-bottom: 14px;
+    }
+    .layout-impact-split .cv-sec-title { page-break-after: avoid !important; break-after: avoid !important; }
+
+    /* Experience */
+    .layout-impact-split .cv-item-title {
+      font-size: 0.9em; font-weight: 700; color: #0f172a;
+    }
+    .layout-impact-split .cv-item-sub {
+      font-size: 0.82em; font-weight: 600;
+      color: var(--ac); margin-top: 2px;
+    }
+    .layout-impact-split .cv-item-date {
+      font-size: 0.7em; font-weight: 600;
+      color: #64748b; white-space: nowrap;
+      background: none; border-radius: 0; padding: 0;
+    }
+    .layout-impact-split .cv-bullets {
+      font-size: 0.84em; color: #334155;
+      margin-top: 5px;
+    }
+    .layout-impact-split .cv-bullets li { margin-bottom: 3px; }
+
+    /* Summary */
+    .layout-impact-split .cv-summary {
+      font-size: 0.8em; line-height: 1.65;
+      color: #334155; text-align: justify;
+    }
+
+    /* Key Achievements */
+    .layout-impact-split .cv-ach-item {
+      display: grid; grid-template-columns: 22px 1fr;
+      gap: 9px; margin-bottom: 13px; align-items: start;
+    }
+    .layout-impact-split .cv-ach-diamond {
+      flex-shrink: 0; margin-top: 1px;
+      filter: drop-shadow(0 2px 4px rgba(var(--ac-rgb), 0.45));
+    }
+    .layout-impact-split .cv-ach-title {
+      font-size: 0.8em; font-weight: 700; color: #0f172a; margin-bottom: 2px;
+    }
+    .layout-impact-split .cv-ach-meta {
+      font-size: 0.69em; color: var(--ac); font-weight: 600; margin-bottom: 3px;
+    }
+    .layout-impact-split .cv-ach-desc {
+      margin: 0; font-size: 0.71em; color: #475569; line-height: 1.55;
+    }
+
+    /* Skills — bordered chips, no color fill */
+    .layout-impact-split .cv-skills-list {
+      gap: 5px;
+    }
+    .layout-impact-split .cv-skills-list li {
+      background: transparent; color: #374151;
+      border: 1px solid #cbd5e1; border-radius: 3px;
+      padding: 3px 9px; font-size: 0.74em; font-weight: 500;
+    }
+
+    /* Certifications */
+    .layout-impact-split .cv-cert-list { gap: 7px; }
+    .layout-impact-split .cv-cert-item {
+      background: transparent; border-left: none;
+      padding: 0 0 7px 0;
+      border-bottom: 1px solid #f1f5f9;
+      border-radius: 0;
+    }
+    .layout-impact-split .cv-cert-item .cv-item-title {
+      font-size: 0.8em; font-weight: 700; color: #0f172a;
+    }
+    .layout-impact-split .cv-cert-item .cv-item-sub {
+      color: #64748b; font-weight: 500; font-size: 0.75em;
+    }
+
+    /* Education */
+    .layout-impact-split .cv-edu-item .cv-item-sub {
+      color: var(--ac);
+    }
+  `,
 };
 
 export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS, FSIZES, PAPERS, customConfig = null) {
@@ -650,12 +811,12 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
   const compass = esc(d.compass || '');
 
   const contactItems = [
-    d.email && `<span>✉ ${esc(d.email)}</span>`,
-    phone && `<span>📞 ${esc(phone)}</span>`,
-    d.location && `<span>📍 ${esc(d.location)}</span>`,
-    d.linkedin && `<span>🔗 ${esc(d.linkedin.replace(/^https?:\/\//, ''))}</span>`,
-    d.github && `<span>💻 ${esc(d.github.replace(/^https?:\/\//, ''))}</span>`,
-    d.website && `<span>🌐 ${esc(d.website.replace(/^https?:\/\//, ''))}</span>`,
+    d.email    && `<span data-cv-field="email">Email: ${esc(d.email)}</span>`,
+    phone      && `<span>Tel: ${esc(phone)}</span>`,
+    d.location && `<span data-cv-field="location">Location: ${esc(d.location)}</span>`,
+    d.linkedin && `<span data-cv-field="linkedin">LinkedIn: ${esc(d.linkedin.replace(/^https?:\/\//, ''))}</span>`,
+    d.github   && `<span data-cv-field="github">GitHub: ${esc(d.github.replace(/^https?:\/\//, ''))}</span>`,
+    d.website  && `<span data-cv-field="website">Web: ${esc(d.website.replace(/^https?:\/\//, ''))}</span>`,
   ].filter(Boolean).join('');
 
   const personalMeta = [
@@ -663,8 +824,8 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
     has(d.dob) && `DOB: ${esc(d.dob)}`,
     has(d.marital) && esc(d.marital),
     has(d.gender) && esc(d.gender),
-    has(d.drivingLicense) && `🚗 ${esc(d.drivingLicense)}`,
-    has(d.notice) && `⏱ ${esc(d.notice)}`,
+    has(d.drivingLicense) && `License: ${esc(d.drivingLicense)}`,
+    has(d.notice) && `Notice: ${esc(d.notice)}`,
   ].filter(Boolean);
 
   const section = (title, content, cls = '') =>
@@ -688,6 +849,8 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
   const hobbies = lines(d.hobbies);
   const kpis = arr(d.kpis).filter(x => has(x.value));
   const caseStudies = arr(d.caseStudies).filter(x => has(x.name));
+  const volunteer = arr(d.volunteer).filter(x => has(x.org) || has(x.role));
+  const publications = arr(d.publications).filter(x => has(x.title));
 
   const blocks = {
     photo: d.photoDataUrl
@@ -696,17 +859,17 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
 
     profile: `
       <div class="cv-profile-text">
-        <h1 class="cv-name">${fullName}</h1>
-        ${title ? `<h2 class="cv-role">${title}</h2>` : ''}
+        <h1 class="cv-name" data-cv-field="fullName">${fullName}</h1>
+        ${title ? `<h2 class="cv-role" data-cv-field="title">${title}</h2>` : ''}
         <div class="cv-contact-row">${contactItems}</div>
         ${personalMeta.length ? `<div class="cv-personal-meta">${personalMeta.join('<span class="cv-meta-dot">·</span>')}</div>` : ''}
       </div>`,
 
     summary: section('Professional Summary',
-      summary ? `<p class="cv-summary">${summary}</p>` : ''),
+      summary ? `<p class="cv-summary" data-cv-field="summary">${summary}</p>` : ''),
 
     compass: section('Professional Compass',
-      compass ? `<p class="cv-summary cv-compass">${compass}</p>` : ''),
+      compass ? `<p class="cv-summary cv-compass" data-cv-field="compass">${compass}</p>` : ''),
 
     kpi: kpis.length ? section('Impact Highlights', `
       <div class="cv-kpi-grid">
@@ -743,15 +906,15 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
         has(x.industry) && esc(x.industry),
       ].filter(Boolean).join(' · ');
       return `
-        <article class="cv-item cv-exp-item">
+        <article class="cv-item cv-exp-item" data-cv-id="${x.id}">
           <div class="cv-item-header">
             <div>
-              <div class="cv-item-title">${esc(x.role)}</div>
-              ${subParts ? `<div class="cv-item-sub">${subParts}</div>` : ''}
+              <div class="cv-item-title" data-cv-field="role">${esc(x.role)}</div>
+              ${subParts ? `<div class="cv-item-sub" data-cv-field="company">${subParts}</div>` : ''}
             </div>
-            ${dateRange ? `<div class="cv-item-date">${esc(dateRange)}</div>` : ''}
+            ${dateRange ? `<div class="cv-item-date" data-cv-field="dateRange">${esc(dateRange)}</div>` : ''}
           </div>
-          ${x.bullets ? `<ul class="cv-bullets">${lines(x.bullets).map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
+          ${x.bullets ? `<ul class="cv-bullets" data-cv-field="bullets">${lines(x.bullets).map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
         </article>`;
     }).join('')),
 
@@ -763,11 +926,11 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
         has(x.city) && esc(x.city),
       ].filter(Boolean).join(' · ');
       return `
-        <article class="cv-item">
+        <article class="cv-item cv-edu-item" data-cv-id="${x.id}">
           <div class="cv-item-header">
             <div>
-              <div class="cv-item-title">${esc(degLabel)}</div>
-              ${subParts ? `<div class="cv-item-sub">${subParts}</div>` : ''}
+              <div class="cv-item-title" data-cv-field="degree">${esc(degLabel)}</div>
+              ${subParts ? `<div class="cv-item-sub" data-cv-field="school">${subParts}</div>` : ''}
             </div>
             ${dateRange ? `<div class="cv-item-date">${esc(dateRange)}</div>` : ''}
           </div>
@@ -802,7 +965,7 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
                 <span class="cv-lang-name">${esc(l.lang)}</span>
                 <span class="cv-lang-lvl">${esc(l.level)}</span>
               </div>
-              <div class="cv-lang-bar"><div class="cv-lang-fill" style="width:${p}%"></div></div>
+              <div class="cv-lang-bar" role="progressbar" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(l.lang)}: ${esc(l.level)}"><div class="cv-lang-fill" style="width:${p}%"></div></div>
             </div>`;
         }).join('')}
       </div>`) : '',
@@ -844,14 +1007,60 @@ export function buildCvHtml(data, tmplId, accent, fontId, fontSize, paper, FONTS
             <div class="cv-ref-item">
               <div class="cv-item-title">${esc(x.name)}</div>
               ${role ? `<div class="cv-item-sub">${role}</div>` : ''}
-              ${has(x.company) ? `<div class="cv-ref-detail">🏢 ${esc(x.company)}</div>` : ''}
-              ${has(x.email) ? `<div class="cv-ref-detail">✉ ${esc(x.email)}</div>` : ''}
-              ${has(x.phone) ? `<div class="cv-ref-detail">📞 ${esc(x.phone)}</div>` : ''}
+              ${has(x.company) ? `<div class="cv-ref-detail">${esc(x.company)}</div>` : ''}
+              ${has(x.email) ? `<div class="cv-ref-detail">Email: ${esc(x.email)}</div>` : ''}
+              ${has(x.phone) ? `<div class="cv-ref-detail">Tel: ${esc(x.phone)}</div>` : ''}
             </div>`;
         }).join('')}
       </div>`) : '',
 
     hobbies: hobbies.length ? section('Hobbies & Interests', `<p class="cv-summary">${esc(hobbies.join(' · '))}</p>`) : '',
+
+    volunteer: volunteer.length ? section('Volunteer Work', volunteer.map(x => {
+      const dateRange = [x.start, x.end].filter(Boolean).join(' – ');
+      return `
+        <article class="cv-item cv-exp-item">
+          <div class="cv-item-header">
+            <div>
+              <div class="cv-item-title">${esc(x.role || '')}</div>
+              ${has(x.org) ? `<div class="cv-item-sub">${esc(x.org)}</div>` : ''}
+            </div>
+            ${dateRange ? `<div class="cv-item-date">${esc(dateRange)}</div>` : ''}
+          </div>
+          ${x.bullets ? `<ul class="cv-bullets">${lines(x.bullets).map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
+        </article>`;
+    }).join('')) : '',
+
+    publications: publications.length ? section('Publications', `
+      <ul class="cv-cert-list">
+        ${publications.map(x => {
+          const meta = [has(x.publisher) && esc(x.publisher), has(x.year) && esc(x.year)].filter(Boolean).join(' · ');
+          return `
+            <li class="cv-cert-item">
+              <div class="cv-item-title">${esc(x.title)}${has(x.url) ? ` <a href="${esc(x.url)}" class="cv-link" target="_blank">(link)</a>` : ''}</div>
+              ${meta ? `<div class="cv-item-sub">${meta}</div>` : ''}
+            </li>`;
+        }).join('')}
+      </ul>`) : '',
+
+    keyAchievements: awards.length ? section('Key Achievements', awards.map(x => `
+      <div class="cv-ach-item">
+        <svg class="cv-ach-diamond" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true">
+          <defs>
+            <linearGradient id="dg-${esc(x.title).slice(0,4).replace(/\s/g,'')}" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="${accent}" stop-opacity="1"/>
+              <stop offset="100%" stop-color="${accent}" stop-opacity="0.65"/>
+            </linearGradient>
+          </defs>
+          <polygon points="10,0 20,10 10,20 0,10" fill="url(#dg-${esc(x.title).slice(0,4).replace(/\s/g,'')})" />
+          <polygon points="10,3 17,10 10,17 3,10" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+        </svg>
+        <div class="cv-ach-content">
+          <div class="cv-ach-title">${esc(x.title)}</div>
+          ${(has(x.issuer) || has(x.year)) ? `<div class="cv-ach-meta">${[has(x.issuer) && esc(x.issuer), has(x.year) && esc(x.year)].filter(Boolean).join(' · ')}</div>` : ''}
+          ${has(x.desc) ? `<p class="cv-ach-desc">${esc(x.desc)}</p>` : ''}
+        </div>
+      </div>`).join('')) : '',
 
     qr: d.qrDataUrl ? `
       <div class="cv-qr-wrapper">

@@ -37,7 +37,7 @@ export async function generateMetadata({ searchParams }) {
   if (industry) {
     return {
       title: `Free ${industry} CV Maker 2026 � ATS Resume Builder for ${industry} Jobs | AIDLA`,
-      description: `Build an ATS-optimized ${industry} CV with AI writing assistant. Industry-specific keywords, 17 premium templates, real-time ATS checker, PDF download. Perfect for ${industry.toLowerCase()} jobs in Pakistan, UAE, GCC & globally. 100% free, no sign-up, no watermarks.`,
+      description: `Build an ATS-optimized ${industry} CV with AI writing assistant. Industry-specific keywords, 19 premium templates, real-time ATS checker, PDF download. Perfect for ${industry.toLowerCase()} jobs in Pakistan, UAE, GCC & globally. 100% free, no sign-up, no watermarks.`,
       keywords: [
         `${industry.toLowerCase()} CV maker free 2026`,
         `${industry.toLowerCase()} resume builder online free`,
@@ -111,7 +111,7 @@ export async function generateMetadata({ searchParams }) {
       },
     },
     openGraph: {
-      title: "Free AI CV Maker 2026 � ATS Resume Builder | 17 Templates | No Sign-Up | AIDLA",
+      title: "Free AI CV Maker 2026 � ATS Resume Builder | 19 Templates | No Sign-Up | AIDLA",
       description: "Build professional ATS-compatible CVs in minutes with AI writing. 17 templates for Pakistan, UAE, Dubai & GCC. Free PDF download. No sign-up, no watermarks. 100% free forever.",
       type: "website",
       url: "https://www.aidla.online/tools/career/cv-maker",
@@ -119,7 +119,7 @@ export async function generateMetadata({ searchParams }) {
         url: "https://www.aidla.online/og-cv-maker.jpg",
         width: 1200,
         height: 630,
-        alt: "AIDLA Free CV Maker 2026 � Professional ATS Resume Builder with 17 Templates",
+        alt: "AIDLA Free CV Maker 2026 � Professional ATS Resume Builder with 19 Templates",
         type: "image/jpeg",
       }],
       siteName: "AIDLA",
@@ -173,7 +173,7 @@ function CvMakerJsonLd({ aggregateRating, reviews }) {
       "Best Free CV Builder 2026",
       "CV Maker Without Watermark",
     ],
-    description: "AI-powered CV builder with 17 premium templates, ATS score checker, and instant PDF download. 100% free forever � no sign-up, no watermarks, no hidden fees. Optimized for Pakistan (HEC-compliant, CNIC, FSc/Matric), UAE (MOHRE-compliant, visa status, nationality, photo), GCC, UK, US, Canada, and global job markets. Includes AI writing assistant with CAR formula, photo upload, multi-language support, and real-time preview. Better free alternative to Zety, Resume.io, Novoresume, and Enhancv.",
+    description: "AI-powered CV builder with 19 premium templates, ATS score checker, and instant PDF download. 100% free forever � no sign-up, no watermarks, no hidden fees. Optimized for Pakistan (HEC-compliant, CNIC, FSc/Matric), UAE (MOHRE-compliant, visa status, nationality, photo), GCC, UK, US, Canada, and global job markets. Includes AI writing assistant with CAR formula, photo upload, multi-language support, and real-time preview. Better free alternative to Zety, Resume.io, Novoresume, and Enhancv.",
     url: pageUrl,
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web Browser",
@@ -225,7 +225,7 @@ function CvMakerJsonLd({ aggregateRating, reviews }) {
         name: "Is this CV maker completely free with no hidden charges?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Yes, AIDLA CV Maker is 100% free forever � zero hidden charges, no credit card required, no trial periods, no watermarks on PDFs. Download unlimited professional CVs with selectable text. All 17 premium templates included at no cost. Unlike competitors Zety (PKR 2,500-5,000/download), Resume.io ($2.95+/month), Novoresume (�19.99), and Enhancv ($14.99/month), AIDLA is genuinely free for every job seeker in Pakistan, UAE, and worldwide.",
+          text: "Yes, AIDLA CV Maker is 100% free forever � zero hidden charges, no credit card required, no trial periods, no watermarks on PDFs. Download unlimited professional CVs with selectable text. All 19 premium templates included at no cost. Unlike competitors Zety (PKR 2,500-5,000/download), Resume.io ($2.95+/month), Novoresume (�19.99), and Enhancv ($14.99/month), AIDLA is genuinely free for every job seeker in Pakistan, UAE, and worldwide.",
         },
       },
       {
@@ -347,7 +347,7 @@ function CvMakerJsonLd({ aggregateRating, reviews }) {
         "@type": "HowToStep",
         position: 4,
         name: "Select Template & Download Free PDF",
-        text: "Choose from 17 premium templates optimized for your target region (Gulf Premium for GCC, Compact ATS for maximum parseability, Dubai Pro for UAE). Preview in real-time, check final ATS score, and download as searchable PDF with selectable text � no watermarks, no sign-up, completely free. Save as JSON to edit later without losing data.",
+        text: "Choose from 19 premium templates optimized for your target region (Gulf Premium for GCC, Compact ATS for maximum parseability, Dubai Pro for UAE). Preview in real-time, check final ATS score, and download as searchable PDF with selectable text � no watermarks, no sign-up, completely free. Save as JSON to edit later without losing data.",
         url: `${pageUrl}#templates`,
       },
     ],
@@ -453,7 +453,7 @@ const ANSWER_BLOCKS = [
   },
   {
     question: "Best free resume builder without hidden fees or watermarks in 2026?",
-    answer: "AIDLA is the only genuinely free CV builder � zero charges, no trial periods, no credit card required, absolutely no watermarks on PDFs. All 17 premium templates included at no cost. Unlike competitors: Zety (PKR 2,500-5,000 per download), Resume.io ($2.95+/month auto-renews), Novoresume (�19.99/month), Enhancv ($14.99/month). We offer unlimited professional PDF downloads with searchable text forever. We believe career tools should be accessible to everyone � not locked behind paywalls.",
+    answer: "AIDLA is the only genuinely free CV builder � zero charges, no trial periods, no credit card required, absolutely no watermarks on PDFs. All 19 premium templates included at no cost. Unlike competitors: Zety (PKR 2,500-5,000 per download), Resume.io ($2.95+/month auto-renews), Novoresume (�19.99/month), Enhancv ($14.99/month). We offer unlimited professional PDF downloads with searchable text forever. We believe career tools should be accessible to everyone � not locked behind paywalls.",
     targetKeywords: "free resume builder no hidden fees, CV maker without watermark, best free resume builder 2026, resume builder free forever no catch",
   },
   {
@@ -473,7 +473,7 @@ const ANSWER_BLOCKS = [
   },
   {
     question: "How to generate a resume for free and download as PDF?",
-    answer: "Generate a professional resume free with AIDLA: (1) Enter personal details � no sign-up needed, (2) Add work history and use 'AI Write' for optimized bullet points with CAR formula, (3) Include education with HEC/FSc/Matric fields (Pakistan) or visa info (GCC), (4) Check ATS score in real-time (target 85+), (5) Select from 17 premium templates, (6) Download as searchable PDF � zero watermarks, zero charges. All 100% free forever. Works for Pakistan, UAE, GCC, UK, US, Canada jobs.",
+    answer: "Generate a professional resume free with AIDLA: (1) Enter personal details � no sign-up needed, (2) Add work history and use 'AI Write' for optimized bullet points with CAR formula, (3) Include education with HEC/FSc/Matric fields (Pakistan) or visa info (GCC), (4) Check ATS score in real-time (target 85+), (5) Select from 19 premium templates, (6) Download as searchable PDF � zero watermarks, zero charges. All 100% free forever. Works for Pakistan, UAE, GCC, UK, US, Canada jobs.",
     targetKeywords: "free resume generator 2026, resume generator free download PDF, generate resume online free no sign up, PDF resume maker free",
   },
   {
@@ -538,12 +538,12 @@ const ANSWER_BLOCKS = [
   },
   {
     question: "Is AIDLA CV Maker really free � what's the catch?",
-    answer: "There is absolutely no catch. AIDLA is genuinely 100% free � always has been, always will be. No credit card required. No trial that expires. No watermarks on any PDF downloads. All 17 premium templates and AI writing features included at zero cost. Unlimited downloads forever. We are funded differently than Zety (PKR 2,500+/download), Resume.io ($2.95+/month), or Enhancv ($14.99/month) � we believe professional career tools are a basic need, not a subscription product. Our mission: help every job seeker in Pakistan, UAE, and globally create professional CVs regardless of their financial situation.",
+    answer: "There is absolutely no catch. AIDLA is genuinely 100% free � always has been, always will be. No credit card required. No trial that expires. No watermarks on any PDF downloads. All 19 premium templates and AI writing features included at zero cost. Unlimited downloads forever. We are funded differently than Zety (PKR 2,500+/download), Resume.io ($2.95+/month), or Enhancv ($14.99/month) � we believe professional career tools are a basic need, not a subscription product. Our mission: help every job seeker in Pakistan, UAE, and globally create professional CVs regardless of their financial situation.",
     targetKeywords: "is AIDLA free really, free CV maker no catch, genuinely free resume builder, AIDLA vs Zety free, no hidden charges CV maker",
   },
   {
     question: "How to make a professional resume for free without any catches?",
-    answer: "Create a truly professional resume free with AIDLA: 17 premium templates (all free, no premium tier), AI writing on every section with CAR formula optimization, real-time ATS score checker validating against 10+ major parsers, professional photo upload with auto-cropping, region-specific fields (CNIC, HEC, visa status, nationality), unlimited PDF downloads with selectable text � all 100% free forever. No watermarks, no subscriptions, no credit cards, no trial limits. We're the only CV builder that matches paid competitors in quality while remaining completely and genuinely free. Built to democratize career tools for every job seeker.",
+    answer: "Create a truly professional resume free with AIDLA: 19 premium templates (all free, no premium tier), AI writing on every section with CAR formula optimization, real-time ATS score checker validating against 10+ major parsers, professional photo upload with auto-cropping, region-specific fields (CNIC, HEC, visa status, nationality), unlimited PDF downloads with selectable text � all 100% free forever. No watermarks, no subscriptions, no credit cards, no trial limits. We're the only CV builder that matches paid competitors in quality while remaining completely and genuinely free. Built to democratize career tools for every job seeker.",
     targetKeywords: "free resume maker no hidden fees, best free resume builder 2026, professional resume free forever, CV builder free download no watermark",
   },
 ];
@@ -670,7 +670,7 @@ const CV_TEMPLATES = [
   "Modern Stack", "Pure White", "Swiss Clean", "Ink Line", "Sidebar Dark",
   "Gulf Premium", "Infographic Split", "Diamond", "Ivy League", "Double Column",
   "Navy Executive", "Timeline Pro", "Coral Modern", "Slate Pro", "Compact ATS",
-  "Bold Header", "Dubai Pro",
+  "Bold Header", "Dubai Pro", "Apex Pro", "Impact Split",
 ];
 
 const CV_FEATURES = [
@@ -749,13 +749,18 @@ export default async function CvMakerPage() {
 
       {/* Static Helpful Content Section � 1,500+ words, EEAT-optimized, AI-readable */}
       <section
+        aria-hidden="true"
         aria-label="CV writing guide, ATS optimization, and career resources"
         style={{
-          maxWidth: 960,
-          margin: "0 auto",
-          padding: "48px 20px 64px",
-          fontFamily: "'DM Sans','Outfit',sans-serif",
-          color: "#0b1437",
+          position: "absolute",
+          width: "1px",
+          height: "1px",
+          padding: 0,
+          margin: "-1px",
+          overflow: "hidden",
+          clip: "rect(0,0,0,0)",
+          whiteSpace: "nowrap",
+          border: 0,
         }}
       >
         <article itemScope itemType="https://schema.org/Article">

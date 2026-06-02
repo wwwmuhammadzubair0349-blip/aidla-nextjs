@@ -1,0 +1,212 @@
+/* ── Preview: no-scroll, auto-zoom, page navigation ── */
+
+.cv-preview-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: calc(var(--cv-page-h) + 112px);
+  overflow: hidden;
+  max-width: 100%;
+  background: #d9e2ee;
+}
+
+/* Header bar: "Live Preview" + zoom controls + edit toggle */
+.cv-prev-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--surface, #fff);
+  border-bottom: 1px solid var(--border, rgba(37,99,235,.13));
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: 46px;
+}
+.cv-prev-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cv-prev-label {
+  font-size: .78rem; font-weight: 900; color: #0f172a;
+  letter-spacing: .02em; white-space: nowrap;
+}
+
+.cv-prev-zoom { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.cv-prev-zoom-value {
+  font-size: .64rem; font-weight: 700;
+  min-width: 28px; text-align: center; color: #0f172a;
+}
+.cv-zoom-btn {
+  width: 30px; height: 30px; border-radius: 8px;
+  border: 1px solid var(--border, rgba(37,99,235,.13));
+  background: #fff; font-size: .8rem; font-weight: 700; color: #1e3a8a;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .12s ease, transform .12s ease;
+  -webkit-tap-highlight-color: transparent; flex-shrink: 0;
+}
+.cv-zoom-btn:hover { background: #eff6ff; transform: translateY(-1px); }
+.cv-zoom-btn:active { transform: scale(.92); }
+.cv-zoom-btn:focus-visible { outline: 2px solid #2563eb; outline-offset: 1px; }
+.cv-zoom-fit { width: auto; padding: 0 7px; font-size: .58rem; }
+
+/* Edit mode toggle */
+.cv-edit-toggle {
+  padding: 5px 10px; border-radius: 8px; border: none;
+  font-size: .64rem; font-weight: 700; cursor: pointer;
+  background: rgba(37,99,235,.09); color: #1e3a8a;
+  transition: background .15s ease, transform .12s ease;
+  min-height: 24px;
+}
+.cv-edit-toggle:hover { transform: translateY(-1px); }
+.cv-edit-toggle.on { background: #1e3a8a; color: #fff; }
+.cv-edit-toggle:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+.cv-edit-hint { font-size: .58rem; color: #d97706; font-weight: 600; white-space: nowrap; }
+
+/* Viewport — clips to show exactly one page at a time, no scroll */
+.cv-viewport {
+  flex: 1;
+  min-height: calc(var(--cv-page-h) + 48px);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(37,99,235,.12) 0%, transparent 60%),
+    linear-gradient(180deg, #9dafc8 0%, #b0bfcf 40%, #a8b8ca 100%);
+  padding: 24px;
+  outline: none;
+  max-width: 100%;
+}
+
+.cv-page-stage {
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 30px 48px rgba(15,23,42,.26));
+}
+
+.cv-page-track {
+  height: 100%;
+  display: flex;
+  transition: transform .32s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+
+.cv-page-frame {
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+  background: #fff;
+}
+
+.cv-page-slice {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #fff;
+  outline: none;
+}
+
+.cv-page-slice[contenteditable="true"] {
+  box-shadow: inset 0 0 0 3px #2563eb;
+}
+
+#cv-paper {
+  position: absolute;
+  left: -100000px;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
+  background: #fff;
+}
+
+/* Shimmer while AI runs */
+.cv-prev-shimmer {
+  position: absolute; inset: 0; z-index: 6;
+  pointer-events: none; overflow: hidden;
+  background: rgba(255,255,255,.04);
+}
+.cv-prev-shimmer-bar {
+  position: absolute; top: 0; left: -40%;
+  width: 40%; height: 100%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,.5) 50%, transparent 100%);
+  animation: cvShimmer 1.2s linear infinite;
+}
+@keyframes cvShimmer { from { left: -40% } to { left: 110% } }
+
+/* Gold flash after AI */
+.cv-viewport.cv-flash::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: rgba(217,119,6,.16);
+  pointer-events: none; z-index: 5; border-radius: 4px;
+  animation: cvFlashFade 1.5s ease forwards;
+}
+@keyframes cvFlashFade { 0% { opacity: 1 } 100% { opacity: 0 } }
+
+/* Page navigation */
+.cv-page-nav {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--surface, #fff);
+  border-top: 1px solid var(--border, rgba(37,99,235,.13));
+}
+.cv-page-btn {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--border, rgba(37,99,235,.13));
+  background: #fff; color: #1e3a8a;
+  font-size: 1rem; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .12s ease, transform .12s ease, opacity .12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.cv-page-btn:hover:not(:disabled) { background: #eff6ff; transform: translateY(-1px); }
+.cv-page-btn:active { transform: scale(.92); }
+.cv-page-btn:disabled { opacity: .3; cursor: not-allowed; }
+.cv-page-indicator {
+  font-size: .72rem; font-weight: 700; color: #475569;
+  min-width: 64px; text-align: center;
+}
+
+/* Download strip — compact elegant bar */
+.cv-prev-download {
+  flex-shrink: 0;
+  background: var(--surface, #fff);
+  border-top: 1px solid var(--border, rgba(37,99,235,.13));
+  padding: 8px 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Fullscreen mode */
+.cv-preview-shell.fullscreen {
+  position: fixed; inset: 0; z-index: 9500;
+  height: 100dvh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-page-track { transition: none !important; }
+  .cv-prev-shimmer-bar { animation: none; }
+  .cv-viewport.cv-flash::after { animation: none; opacity: 0; }
+}
+
+@media (max-width: 640px) {
+  .cv-prev-header { align-items: flex-start; }
+  .cv-prev-title,
+  .cv-prev-zoom { width: 100%; justify-content: space-between; }
+  .cv-preview-shell { min-height: 780px; }
+  .cv-viewport { min-height: 660px; }
+  .cv-viewport { padding: 14px; }
+  .cv-prev-download { justify-content: center; }
+}
+
+@media (max-width: 360px) {
+  .cv-preview-shell { min-height: 700px; }
+  .cv-viewport { min-height: 590px; padding: 10px; }
+  .cv-zoom-btn { width: 28px; height: 28px; }
+}

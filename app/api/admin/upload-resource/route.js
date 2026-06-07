@@ -24,32 +24,65 @@ function getFileType(filename) {
   return "link";
 }
 
-// Manual multipart parser.
-// latin1 is a 1:1 byte mapping (0–255), so binary file data survives
-// the string round-trip and can be converted back to bytes exactly.
+// Robust multipart parser — works when Content-Type header is stripped.
+// Uses latin1 (1:1 byte mapping) so binary file data survives string ops.
+// Handles both \r\n and \n line endings.
 async function parseMultipart(request) {
   const buffer = await request.arrayBuffer();
-  const body   = new TextDecoder("latin1").decode(new Uint8Array(buffer));
+  const bytes  = new Uint8Array(buffer);
 
-  // Boundary is always the first line of the body: "--<boundary>\r\n"
-  const firstLineEnd = body.indexOf("\r\n");
-  if (firstLineEnd === -1) throw new Error("No boundary line in body");
-  const boundary = body.slice(2, firstLineEnd); // strip leading "--"
+  console.log("[upload-resource] Raw body size:", bytes.length);
+  if (bytes.length === 0) throw new Error("Empty request body");
+
+  // Hex preview of first 150 bytes for debugging
+  console.log("[upload-resource] Body hex[0-150]:",
+    Array.from(bytes.slice(0, 150)).map(b => b.toString(16).padStart(2,"0")).join(" "));
+
+  // Decode with latin1 — safe for binary
+  const body = new TextDecoder("latin1").decode(bytes);
+
+  // Detect line ending style
+  const crlfPos = body.indexOf("\r\n");
+  const lfPos   = body.indexOf("\n");
+  let nl = "\r\n";
+  if (crlfPos === -1 && lfPos !== -1) nl = "\n";
+  else if (crlfPos !== -1 && lfPos !== -1 && lfPos < crlfPos) nl = "\n";
+
+  // Find first line (the boundary line: --<boundary>)
+  const firstLineEnd = nl === "\r\n" ? body.indexOf("\r\n") : body.indexOf("\n");
+  if (firstLineEnd === -1) {
+    throw new Error(
+      `No line ending found. Size=${bytes.length} ` +
+      `first20bytes=${Array.from(bytes.slice(0,20)).map(b=>b.toString(16).padStart(2,"0")).join(" ")}`
+    );
+  }
+
+  const firstLine = body.slice(0, firstLineEnd);
+  console.log("[upload-resource] First line:", JSON.stringify(firstLine));
+
+  if (!firstLine.startsWith("--")) {
+    throw new Error(`Expected boundary marker (--), got: ${JSON.stringify(firstLine.slice(0, 60))}`);
+  }
+
+  const boundary = firstLine.slice(2).replace(/[\r\n]+$/, "");
   if (!boundary) throw new Error("Empty boundary");
-  console.log("[upload-resource] boundary:", boundary);
+  console.log("[upload-resource] Boundary:", boundary, "| nl:", nl === "\r\n" ? "CRLF" : "LF");
 
-  const fields = {};
+  const fields   = {};
   const sections = body.split("--" + boundary);
 
   for (const section of sections) {
-    if (!section.startsWith("\r\n")) continue; // skip preamble / epilogue
+    // Each part starts with the nl after the boundary
+    if (!section.startsWith(nl)) continue;
 
-    const split = section.indexOf("\r\n\r\n");
-    if (split === -1) continue;
+    const doubleNl  = nl + nl;
+    const headerEnd = section.indexOf(doubleNl);
+    if (headerEnd === -1) continue;
 
-    const headersStr = section.slice(2, split); // skip leading \r\n
-    let content      = section.slice(split + 4); // skip \r\n\r\n
-    if (content.endsWith("\r\n")) content = content.slice(0, -2);
+    const headersStr = section.slice(nl.length, headerEnd);
+    let   content    = section.slice(headerEnd + doubleNl.length);
+    // Strip trailing nl (boundary separator)
+    if (content.endsWith(nl)) content = content.slice(0, -nl.length);
 
     const dispositionMatch = headersStr.match(
       /Content-Disposition:\s*form-data;\s*name="([^"]+)"(?:;\s*filename="([^"]*)")?/i
@@ -62,10 +95,9 @@ async function parseMultipart(request) {
     if (filename !== undefined) {
       const ctMatch     = headersStr.match(/Content-Type:\s*([^\r\n]+)/i);
       const contentType = ctMatch ? ctMatch[1].trim() : "application/octet-stream";
-      // Convert latin1 string back to raw bytes
-      const bytes = new Uint8Array(content.length);
-      for (let i = 0; i < content.length; i++) bytes[i] = content.charCodeAt(i) & 0xff;
-      fields[name] = { filename, contentType, bytes, size: bytes.length };
+      const fileBytes   = new Uint8Array(content.length);
+      for (let i = 0; i < content.length; i++) fileBytes[i] = content.charCodeAt(i) & 0xff;
+      fields[name] = { filename, contentType, bytes: fileBytes, size: fileBytes.length };
     } else {
       fields[name] = content;
     }
@@ -76,17 +108,17 @@ async function parseMultipart(request) {
 
 export async function POST(request) {
   console.log("[upload-resource] Request received");
-  console.log("[upload-resource] Content-Type header:", request.headers.get("content-type"));
+  console.log("[upload-resource] Content-Type:", request.headers.get("content-type"));
 
-  // ── Parse multipart body ────────────────────────────────
+  // ── Parse body ──────────────────────────────────────────
   let fields;
   try {
     const ct = request.headers.get("content-type") || "";
 
-    if (ct.includes("multipart/form-data")) {
-      // Header present — use native formData
+    if (ct.includes("multipart/form-data") && ct.includes("boundary=")) {
+      // Native formData — Content-Type header intact
       const fd = await request.formData();
-      console.log("[upload-resource] native formData keys:", [...fd.keys()]);
+      console.log("[upload-resource] Native formData keys:", [...fd.keys()]);
       fields = {};
       for (const [k, v] of fd.entries()) {
         if (v instanceof File) {
@@ -97,19 +129,21 @@ export async function POST(request) {
         }
       }
     } else {
-      // Header stripped by Cloudflare/OpenNext — parse raw bytes manually
-      console.log("[upload-resource] Content-Type missing, falling back to manual parser");
+      // Header stripped — parse raw body
+      console.log("[upload-resource] Using manual multipart parser (header stripped)");
       fields = await parseMultipart(request);
     }
 
     console.log("[upload-resource] Parsed fields:", Object.fromEntries(
       Object.entries(fields).map(([k, v]) => [
         k,
-        v && typeof v === "object" && v.filename ? `FILE:${v.filename}(${v.size}b)` : v,
+        v && typeof v === "object" && "filename" in v
+          ? `FILE:${v.filename}(${v.size}b)`
+          : String(v).slice(0, 100),
       ])
     ));
   } catch (e) {
-    console.error("[upload-resource] Parse error:", e.message, e.stack);
+    console.error("[upload-resource] Parse error:", e.message);
     return NextResponse.json({ ok: false, error: "Body parse failed: " + e.message }, { status: 400 });
   }
 
@@ -118,12 +152,12 @@ export async function POST(request) {
   // ── Auth ────────────────────────────────────────────────
   const secretKey = get("secret_key");
   if (!secretKey || secretKey !== process.env.UPLOAD_API_SECRET) {
-    console.warn("[upload-resource] Unauthorized");
+    console.warn("[upload-resource] Unauthorized. Received key:", secretKey ? "[present]" : "[missing]");
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   console.log("[upload-resource] Auth passed");
 
-  // ── Extract fields ──────────────────────────────────────
+  // ── Fields ──────────────────────────────────────────────
   const fileField   = fields["file"];
   const title       = get("grok_title")       || get("title");
   const description = get("grok_description") || get("description") || "";
@@ -135,34 +169,34 @@ export async function POST(request) {
   const year        = get("year")        || null;
   const tagsRaw     = get("tags")        || "";
   const tags        = tagsRaw ? tagsRaw.split(",").map(t => t.trim().toLowerCase()).filter(Boolean) : [];
-  const access      = get("access")      || "free";
-  const status      = get("status")      || "published";
+  const access      = get("access")  || "free";
+  const status      = get("status")  || "published";
 
-  console.log("[upload-resource] Fields:", { title, category, language, subject, class_level, university, year, access, status });
+  console.log("[upload-resource] title:", title, "| category:", category, "| file:", fileField?.filename);
 
   // ── Validate ────────────────────────────────────────────
-  if (!title)    return NextResponse.json({ ok: false, error: "title is required" }, { status: 400 });
-  if (!category) return NextResponse.json({ ok: false, error: "category is required" }, { status: 400 });
-  if (!fileField?.bytes) return NextResponse.json({ ok: false, error: "file is required" }, { status: 400 });
+  if (!title)          return NextResponse.json({ ok: false, error: "title is required" },    { status: 400 });
+  if (!category)       return NextResponse.json({ ok: false, error: "category is required" }, { status: 400 });
+  if (!fileField?.bytes) return NextResponse.json({ ok: false, error: "file is required" },   { status: 400 });
 
-  const ALLOWED = ["notes", "past_papers", "thesis", "templates", "books", "video_link", "external_link", "other"];
+  const ALLOWED = ["notes","past_papers","thesis","templates","books","video_link","external_link","other"];
   if (!ALLOWED.includes(category)) {
     return NextResponse.json({ ok: false, error: `Invalid category. Allowed: ${ALLOWED.join(", ")}` }, { status: 400 });
   }
 
-  // ── Supabase (service role) ─────────────────────────────
+  // ── Supabase ────────────────────────────────────────────
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
     { auth: { persistSession: false } }
   );
 
-  // ── Upload to storage ───────────────────────────────────
+  // ── Upload file ─────────────────────────────────────────
   const ext         = fileField.filename.split(".").pop()?.toLowerCase() || "bin";
   const safeFile    = slugify(fileField.filename.replace(/\.[^.]+$/, "")) + "." + ext;
   const storagePath = `uploads/${process.env.ADMIN_USER_ID}/${Date.now()}-${safeFile}`;
 
-  console.log("[upload-resource] Uploading to:", storagePath, "size:", fileField.size);
+  console.log("[upload-resource] Uploading:", storagePath, "| size:", fileField.size);
 
   const { error: uploadError } = await supabase.storage
     .from("study-materials")
@@ -181,9 +215,8 @@ export async function POST(request) {
   const fileType = get("file_type") || getFileType(fileField.filename);
   console.log("[upload-resource] File URL:", fileUrl);
 
-  // ── RPC ─────────────────────────────────────────────────
+  // ── Slug + RPC ──────────────────────────────────────────
   const slug = slugify(title);
-  console.log("[upload-resource] Slug:", slug);
 
   const { data: rpcData, error: rpcError } = await supabase.rpc("study_materials_admin_upsert", {
     p_id:               null,
@@ -216,22 +249,22 @@ export async function POST(request) {
     console.error("[upload-resource] RPC not ok:", rpcData?.error);
     return NextResponse.json({ ok: false, error: rpcData?.error || "Save failed" }, { status: 500 });
   }
-  console.log("[upload-resource] RPC success");
+  console.log("[upload-resource] RPC success, slug:", slug);
 
-  // ── Set admin-only fields ───────────────────────────────
+  // ── Admin fields ────────────────────────────────────────
   const { data: inserted } = await supabase
     .from("study_materials").select("id").eq("slug", slug).maybeSingle();
 
   if (inserted?.id) {
-    console.log("[upload-resource] Setting admin fields, id:", inserted.id);
     await supabase.from("study_materials").update({
       is_free:         true,
       coin_price:      0,
       uploader_type:   "admin",
       approval_status: "approved",
     }).eq("id", inserted.id);
+    console.log("[upload-resource] Admin fields set on id:", inserted.id);
   }
 
-  console.log("[upload-resource] Done");
+  console.log("[upload-resource] Done ✓");
   return NextResponse.json({ ok: true, file_url: fileUrl, slug, title });
 }

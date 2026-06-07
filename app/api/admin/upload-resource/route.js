@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 function slugify(str) {
   return String(str || "")
     .toLowerCase().trim()
@@ -22,112 +24,168 @@ function getFileType(filename) {
   return "link";
 }
 
-export const dynamic = "force-dynamic";
+// Manual multipart parser.
+// latin1 is a 1:1 byte mapping (0–255), so binary file data survives
+// the string round-trip and can be converted back to bytes exactly.
+async function parseMultipart(request) {
+  const buffer = await request.arrayBuffer();
+  const body   = new TextDecoder("latin1").decode(new Uint8Array(buffer));
+
+  // Boundary is always the first line of the body: "--<boundary>\r\n"
+  const firstLineEnd = body.indexOf("\r\n");
+  if (firstLineEnd === -1) throw new Error("No boundary line in body");
+  const boundary = body.slice(2, firstLineEnd); // strip leading "--"
+  if (!boundary) throw new Error("Empty boundary");
+  console.log("[upload-resource] boundary:", boundary);
+
+  const fields = {};
+  const sections = body.split("--" + boundary);
+
+  for (const section of sections) {
+    if (!section.startsWith("\r\n")) continue; // skip preamble / epilogue
+
+    const split = section.indexOf("\r\n\r\n");
+    if (split === -1) continue;
+
+    const headersStr = section.slice(2, split); // skip leading \r\n
+    let content      = section.slice(split + 4); // skip \r\n\r\n
+    if (content.endsWith("\r\n")) content = content.slice(0, -2);
+
+    const dispositionMatch = headersStr.match(
+      /Content-Disposition:\s*form-data;\s*name="([^"]+)"(?:;\s*filename="([^"]*)")?/i
+    );
+    if (!dispositionMatch) continue;
+
+    const name     = dispositionMatch[1];
+    const filename = dispositionMatch[2];
+
+    if (filename !== undefined) {
+      const ctMatch     = headersStr.match(/Content-Type:\s*([^\r\n]+)/i);
+      const contentType = ctMatch ? ctMatch[1].trim() : "application/octet-stream";
+      // Convert latin1 string back to raw bytes
+      const bytes = new Uint8Array(content.length);
+      for (let i = 0; i < content.length; i++) bytes[i] = content.charCodeAt(i) & 0xff;
+      fields[name] = { filename, contentType, bytes, size: bytes.length };
+    } else {
+      fields[name] = content;
+    }
+  }
+
+  return fields;
+}
 
 export async function POST(request) {
   console.log("[upload-resource] Request received");
-  console.log("[upload-resource] Method:", request.method);
-  console.log("[upload-resource] Content-Type:", request.headers.get("content-type"));
-  console.log("[upload-resource] All headers:", Object.fromEntries(request.headers.entries()));
+  console.log("[upload-resource] Content-Type header:", request.headers.get("content-type"));
 
-  // ── Auth check ──────────────────────────────────────────
-  let formData;
+  // ── Parse multipart body ────────────────────────────────
+  let fields;
   try {
-    formData = await request.formData();
-    console.log("[upload-resource] formData keys:", [...formData.keys()]);
-    console.log("[upload-resource] All fields:", Object.fromEntries(
-      [...formData.entries()].map(([k, v]) => [k, v instanceof File ? `FILE:${v.name}(${v.size}b)` : v])
+    const ct = request.headers.get("content-type") || "";
+
+    if (ct.includes("multipart/form-data")) {
+      // Header present — use native formData
+      const fd = await request.formData();
+      console.log("[upload-resource] native formData keys:", [...fd.keys()]);
+      fields = {};
+      for (const [k, v] of fd.entries()) {
+        if (v instanceof File) {
+          const ab = await v.arrayBuffer();
+          fields[k] = { filename: v.name, contentType: v.type, bytes: new Uint8Array(ab), size: v.size };
+        } else {
+          fields[k] = v;
+        }
+      }
+    } else {
+      // Header stripped by Cloudflare/OpenNext — parse raw bytes manually
+      console.log("[upload-resource] Content-Type missing, falling back to manual parser");
+      fields = await parseMultipart(request);
+    }
+
+    console.log("[upload-resource] Parsed fields:", Object.fromEntries(
+      Object.entries(fields).map(([k, v]) => [
+        k,
+        v && typeof v === "object" && v.filename ? `FILE:${v.filename}(${v.size}b)` : v,
+      ])
     ));
   } catch (e) {
-    console.error("[upload-resource] Failed to parse formData:", e.message, e.stack);
-    return NextResponse.json({ ok: false, error: "formData parse failed: " + e.message }, { status: 400 });
+    console.error("[upload-resource] Parse error:", e.message, e.stack);
+    return NextResponse.json({ ok: false, error: "Body parse failed: " + e.message }, { status: 400 });
   }
 
-  const secretKey = formData.get("secret_key");
+  const get = (key) => (typeof fields[key] === "string" ? fields[key].trim() : undefined);
+
+  // ── Auth ────────────────────────────────────────────────
+  const secretKey = get("secret_key");
   if (!secretKey || secretKey !== process.env.UPLOAD_API_SECRET) {
-    console.warn("[upload-resource] Unauthorized — invalid secret_key");
+    console.warn("[upload-resource] Unauthorized");
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
   console.log("[upload-resource] Auth passed");
 
   // ── Extract fields ──────────────────────────────────────
-  const file          = formData.get("file");
-  const grokTitle     = formData.get("grok_title")?.trim();
-  const grokDesc      = formData.get("grok_description")?.trim();
-  const rawTitle      = formData.get("title")?.trim();
-  const title         = grokTitle || rawTitle;
-  const description   = grokDesc  || formData.get("description")?.trim() || "";
-  const category      = formData.get("category")?.trim();
-  const language      = formData.get("language")?.trim()    || "en";
-  const subject       = formData.get("subject")?.trim()     || null;
-  const class_level   = formData.get("class_level")?.trim() || null;
-  const university    = formData.get("university")?.trim()  || null;
-  const year          = formData.get("year")?.trim()        || null;
-  const tagsRaw       = formData.get("tags")?.trim()        || "";
-  const tags          = tagsRaw ? tagsRaw.split(",").map(t => t.trim().toLowerCase()).filter(Boolean) : [];
-  const access        = formData.get("access")?.trim()      || "free";
-  const status        = formData.get("status")?.trim()      || "published";
+  const fileField   = fields["file"];
+  const title       = get("grok_title")       || get("title");
+  const description = get("grok_description") || get("description") || "";
+  const category    = get("category");
+  const language    = get("language")    || "en";
+  const subject     = get("subject")     || null;
+  const class_level = get("class_level") || null;
+  const university  = get("university")  || null;
+  const year        = get("year")        || null;
+  const tagsRaw     = get("tags")        || "";
+  const tags        = tagsRaw ? tagsRaw.split(",").map(t => t.trim().toLowerCase()).filter(Boolean) : [];
+  const access      = get("access")      || "free";
+  const status      = get("status")      || "published";
 
   console.log("[upload-resource] Fields:", { title, category, language, subject, class_level, university, year, access, status });
 
-  // ── Validate required fields ────────────────────────────
-  if (!title) {
-    return NextResponse.json({ ok: false, error: "title is required" }, { status: 400 });
-  }
-  if (!category) {
-    return NextResponse.json({ ok: false, error: "category is required" }, { status: 400 });
-  }
-  if (!file) {
-    return NextResponse.json({ ok: false, error: "file is required" }, { status: 400 });
+  // ── Validate ────────────────────────────────────────────
+  if (!title)    return NextResponse.json({ ok: false, error: "title is required" }, { status: 400 });
+  if (!category) return NextResponse.json({ ok: false, error: "category is required" }, { status: 400 });
+  if (!fileField?.bytes) return NextResponse.json({ ok: false, error: "file is required" }, { status: 400 });
+
+  const ALLOWED = ["notes", "past_papers", "thesis", "templates", "books", "video_link", "external_link", "other"];
+  if (!ALLOWED.includes(category)) {
+    return NextResponse.json({ ok: false, error: `Invalid category. Allowed: ${ALLOWED.join(", ")}` }, { status: 400 });
   }
 
-  const ALLOWED_CATEGORIES = ["notes", "past_papers", "thesis", "templates", "books", "video_link", "external_link", "other"];
-  if (!ALLOWED_CATEGORIES.includes(category)) {
-    return NextResponse.json({ ok: false, error: `Invalid category. Allowed: ${ALLOWED_CATEGORIES.join(", ")}` }, { status: 400 });
-  }
-
-  // ── Supabase service role client ────────────────────────
+  // ── Supabase (service role) ─────────────────────────────
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
     { auth: { persistSession: false } }
   );
 
-  // ── Upload file to Supabase storage ────────────────────
-  const adminUserId = process.env.ADMIN_USER_ID;
-  const safeFilename = slugify(file.name.replace(/\.[^.]+$/, "")) + "." + (file.name.split(".").pop()?.toLowerCase() || "bin");
-  const storagePath = `uploads/${adminUserId}/${Date.now()}-${safeFilename}`;
+  // ── Upload to storage ───────────────────────────────────
+  const ext         = fileField.filename.split(".").pop()?.toLowerCase() || "bin";
+  const safeFile    = slugify(fileField.filename.replace(/\.[^.]+$/, "")) + "." + ext;
+  const storagePath = `uploads/${process.env.ADMIN_USER_ID}/${Date.now()}-${safeFile}`;
 
-  console.log("[upload-resource] Uploading to storage path:", storagePath);
-
-  const arrayBuffer = await file.arrayBuffer();
-  const fileBuffer  = new Uint8Array(arrayBuffer);
+  console.log("[upload-resource] Uploading to:", storagePath, "size:", fileField.size);
 
   const { error: uploadError } = await supabase.storage
     .from("study-materials")
-    .upload(storagePath, fileBuffer, {
-      contentType: file.type || "application/octet-stream",
+    .upload(storagePath, fileField.bytes, {
+      contentType: fileField.contentType || "application/octet-stream",
       upsert: true,
     });
 
   if (uploadError) {
-    console.error("[upload-resource] Storage upload failed:", uploadError.message);
-    return NextResponse.json({ ok: false, error: "File upload failed: " + uploadError.message }, { status: 500 });
+    console.error("[upload-resource] Upload failed:", uploadError.message);
+    return NextResponse.json({ ok: false, error: "Upload failed: " + uploadError.message }, { status: 500 });
   }
-  console.log("[upload-resource] File uploaded successfully");
 
   const { data: pubData } = supabase.storage.from("study-materials").getPublicUrl(storagePath);
   const fileUrl  = pubData.publicUrl;
-  const fileType = formData.get("file_type")?.trim() || getFileType(file.name);
+  const fileType = get("file_type") || getFileType(fileField.filename);
+  console.log("[upload-resource] File URL:", fileUrl);
 
-  console.log("[upload-resource] Public URL:", fileUrl);
-
-  // ── Generate slug ───────────────────────────────────────
+  // ── RPC ─────────────────────────────────────────────────
   const slug = slugify(title);
   console.log("[upload-resource] Slug:", slug);
 
-  // ── Call RPC ────────────────────────────────────────────
-  const payload = {
+  const { data: rpcData, error: rpcError } = await supabase.rpc("study_materials_admin_upsert", {
     p_id:               null,
     p_title:            title,
     p_slug:             slug,
@@ -142,47 +200,38 @@ export async function POST(request) {
     p_file_url:         fileUrl,
     p_file_path:        storagePath,
     p_file_type:        fileType,
-    p_file_size_bytes:  file.size || null,
+    p_file_size_bytes:  fileField.size || null,
     p_external_url:     null,
     p_access:           access,
     p_meta_title:       null,
     p_meta_description: null,
     p_status:           status,
-  };
-
-  console.log("[upload-resource] Calling RPC study_materials_admin_upsert");
-  const { data: rpcData, error: rpcError } = await supabase.rpc("study_materials_admin_upsert", payload);
+  });
 
   if (rpcError) {
     console.error("[upload-resource] RPC error:", rpcError.message);
-    return NextResponse.json({ ok: false, error: "Database error: " + rpcError.message }, { status: 500 });
+    return NextResponse.json({ ok: false, error: "DB error: " + rpcError.message }, { status: 500 });
   }
   if (!rpcData?.ok) {
-    console.error("[upload-resource] RPC returned not ok:", rpcData?.error);
+    console.error("[upload-resource] RPC not ok:", rpcData?.error);
     return NextResponse.json({ ok: false, error: rpcData?.error || "Save failed" }, { status: 500 });
   }
   console.log("[upload-resource] RPC success");
 
-  // ── Set admin fields on inserted record ─────────────────
+  // ── Set admin-only fields ───────────────────────────────
   const { data: inserted } = await supabase
-    .from("study_materials")
-    .select("id")
-    .eq("slug", slug)
-    .maybeSingle();
+    .from("study_materials").select("id").eq("slug", slug).maybeSingle();
 
   if (inserted?.id) {
-    console.log("[upload-resource] Setting admin fields on id:", inserted.id);
-    await supabase
-      .from("study_materials")
-      .update({
-        is_free:         true,
-        coin_price:      0,
-        uploader_type:   "admin",
-        approval_status: "approved",
-      })
-      .eq("id", inserted.id);
+    console.log("[upload-resource] Setting admin fields, id:", inserted.id);
+    await supabase.from("study_materials").update({
+      is_free:         true,
+      coin_price:      0,
+      uploader_type:   "admin",
+      approval_status: "approved",
+    }).eq("id", inserted.id);
   }
 
-  console.log("[upload-resource] Done. Returning success.");
-  return NextResponse.json({ ok: true, file_url: fileUrl, slug, title }, { status: 200 });
+  console.log("[upload-resource] Done");
+  return NextResponse.json({ ok: true, file_url: fileUrl, slug, title });
 }

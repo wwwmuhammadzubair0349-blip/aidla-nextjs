@@ -55,22 +55,22 @@ export default async function ProjectsPage({ searchParams }) {
   const tech_stack = params.tech || "";
   const page = parseInt(params.page) || 1;
 
-  const [{ data: ideas }, { data: options }] = await Promise.all([
-    supabase.rpc("project_ideas_public_list", {
-      p_search: search || null,
-      p_domain: domain || null,
-      p_type: type || null,
-      p_difficulty: difficulty || null,
-      p_subject: subject || null,
-      p_course: course || null,
-      p_educational_level: educational_level || null,
-      p_university: university || null,
-      p_tech_stack: tech_stack || null,
-      p_limit: 12,
-      p_offset: (page - 1) * 12,
-    }),
-    supabase.rpc("project_ideas_filter_options"),
-  ]);
+  // Only fetch the paginated list on the server.
+  // Filter options are loaded client-side to avoid hitting Cloudflare CPU limits.
+  const { data: ideas } = await supabase.rpc("project_ideas_public_list", {
+    p_search: search || null,
+    p_domain: domain || null,
+    p_type: type || null,
+    p_difficulty: difficulty || null,
+    p_subject: subject || null,
+    p_course: course || null,
+    p_educational_level: educational_level || null,
+    p_university: university || null,
+    p_tech_stack: tech_stack || null,
+    p_limit: 12,
+    p_offset: (page - 1) * 12,
+  });
+  const options = null;
 
   const jsonLd = buildGraph(
     buildWebPageSchema({
@@ -117,7 +117,7 @@ export default async function ProjectsPage({ searchParams }) {
       <ProjectsClient
         initialIdeas={safeIdeas}
         initialTotal={safeIdeas?.[0]?.total_count || 0}
-        initialOptions={options || { subjects: [], courses: [], educational_levels: [], universities: [], tech_stacks: [] }}
+        initialOptions={{ subjects: [], courses: [], educational_levels: [], universities: [], tech_stacks: [] }}
       />
     </>
   );

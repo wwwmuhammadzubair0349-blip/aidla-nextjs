@@ -1,7 +1,7 @@
 "use client";
 // app/projects/ProjectsClient.jsx
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -288,12 +288,19 @@ export default function ProjectsClient({ initialIdeas = [], initialTotal = 0, in
 
   const [ideas,      setIdeas]      = useState(initialIdeas);
   const [total,      setTotal]      = useState(initialTotal);
-  const [options]                   = useState(initialOptions);
+  const [options,    setOptions]    = useState(initialOptions);
   const [loading,    setLoading]    = useState(false);
   const [page,       setPage]       = useState(1);
   const [showFilter, setShowFilter] = useState(false);
   const [showGenerator, setShowGenerator] = useState(false);
   const [filters,    setFilters]    = useState(EMPTY_FILTERS);
+
+  // Load filter options client-side — keeps server response lightweight
+  useEffect(() => {
+    supabase.rpc("project_ideas_filter_options").then(({ data }) => {
+      if (data) setOptions(data);
+    });
+  }, []);
 
   const searchRef  = useRef(null);
   const debounceRef = useRef(null);

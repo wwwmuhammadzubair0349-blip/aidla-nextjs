@@ -82,16 +82,24 @@ export default function ProjectDetailClient({ slug }) {
     if (!slug) return;
     setLoading(true);
 
-    supabase.rpc("project_ideas_get_by_slug", { p_slug: slug }).then(({ data, error }) => {
-      if (error || !data || data.length === 0) { setNotFound(true); setLoading(false); return; }
-      const m = data[0];
-      setIdea(m);
-      setUpvoteCount(m.upvotes_count || 0);
-      setLoading(false);
+    supabase
+      .from("project_ideas")
+      .select("*")
+      .eq("slug", slug)
+      .eq("status", "published")
+      .eq("approval_status", "approved")
+      .is("deleted_at", null)
+      .single()
+      .then(({ data, error }) => {
+        if (error || !data) { setNotFound(true); setLoading(false); return; }
+        const m = data;
+        setIdea(m);
+        setUpvoteCount(m.upvotes_count || 0);
+        setLoading(false);
 
-      supabase.rpc("project_ideas_get_related", { p_id: m.id, p_domain: m.domain, p_type: m.type, p_limit: 4 })
-        .then(({ data: rel }) => setRelated(rel || []));
-    });
+        supabase.rpc("project_ideas_get_related", { p_id: m.id, p_domain: m.domain, p_type: m.type, p_limit: 4 })
+          .then(({ data: rel }) => setRelated(rel || []));
+      });
   }, [slug]);
 
   // load user state (upvoted/saved)

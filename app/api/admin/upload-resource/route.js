@@ -22,16 +22,25 @@ function getFileType(filename) {
   return "link";
 }
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request) {
   console.log("[upload-resource] Request received");
+  console.log("[upload-resource] Method:", request.method);
+  console.log("[upload-resource] Content-Type:", request.headers.get("content-type"));
+  console.log("[upload-resource] All headers:", Object.fromEntries(request.headers.entries()));
 
   // ── Auth check ──────────────────────────────────────────
   let formData;
   try {
     formData = await request.formData();
+    console.log("[upload-resource] formData keys:", [...formData.keys()]);
+    console.log("[upload-resource] All fields:", Object.fromEntries(
+      [...formData.entries()].map(([k, v]) => [k, v instanceof File ? `FILE:${v.name}(${v.size}b)` : v])
+    ));
   } catch (e) {
-    console.error("[upload-resource] Failed to parse formData:", e.message);
-    return NextResponse.json({ ok: false, error: "Invalid form data" }, { status: 400 });
+    console.error("[upload-resource] Failed to parse formData:", e.message, e.stack);
+    return NextResponse.json({ ok: false, error: "formData parse failed: " + e.message }, { status: 400 });
   }
 
   const secretKey = formData.get("secret_key");

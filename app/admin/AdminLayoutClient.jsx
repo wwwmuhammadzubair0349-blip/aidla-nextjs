@@ -1,248 +1,189 @@
 "use client";
-// app/admin/layout.jsx
-// Converted from React Router AdminLayout.jsx
-//
-// Changes:
-//   1. "use client" directive
-//   2. import { Outlet } removed → uses {children} prop instead
-//   3. useNavigate → useRouter from next/navigation
-//   4. NavLink → Link from next/link (active state via usePathname)
-//   5. ProtectedRoute removed → middleware.js handles auth at edge
-//   6. useAuth hook for logout + admin check
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
-// ── Tab component (NavLink → Link + usePathname) ──
-function Tab({ to, label }) {
+const NAV_GROUPS = [
+  {
+    title: "Control",
+    items: [
+      ["/admin", "Dashboard"],
+      ["/admin/users", "Users"],
+      ["/admin/leaderboard", "Leaderboard"],
+    ],
+  },
+  {
+    title: "Finance",
+    items: [
+      ["/admin/withdraws", "Withdrawals"],
+      ["/admin/deposits", "Deposits"],
+      ["/admin/mining", "Mining"],
+      ["/admin/invite", "Invite Rewards"],
+    ],
+  },
+  {
+    title: "Commerce",
+    items: [
+      ["/admin/shop", "Shop"],
+      ["/admin/lucky-wheel", "Lucky Wheel"],
+      ["/admin/lucky-draw", "Lucky Draw"],
+    ],
+  },
+  {
+    title: "Articles",
+    items: [
+      ["/admin/blogs", "Blogs"],
+      ["/admin/news", "News"],
+      ["/admin/homepage", "Post Generator"],
+      ["/admin/AutoBlogTab", "Auto Blog"],
+      ["/admin/AutoNewsTab", "Auto News"],
+    ],
+  },
+  {
+    title: "Learning",
+    items: [
+      ["/admin/courses", "Courses"],
+      ["/admin/tests", "Tests"],
+      ["/admin/dailyquizz", "Daily Quiz"],
+      ["/admin/battle", "Battle Arena"],
+      ["/admin/AdminStudyMaterials", "Study Materials"],
+      ["/admin/AdminProjects", "Projects"],
+    ],
+  },
+  {
+    title: "Community",
+    items: [
+      ["/admin/FeedAdmin", "Forum"],
+      ["/admin/adminfaqs", "FAQs"],
+      ["/admin/reviews", "Reviews"],
+      ["/admin/email-blast", "Email Blast"],
+      ["/admin/AdminHome", "Admin Home"],
+    ],
+  },
+];
+
+function isActivePath(pathname, to) {
+  return pathname === to || (to !== "/admin" && pathname.startsWith(to));
+}
+
+function NavLinkItem({ to, label, onClick }) {
   const pathname = usePathname();
-  const isActive = pathname === to || (to !== "/admin" && pathname.startsWith(to));
+  const active = isActivePath(pathname, to);
   return (
-    <Link href={to} className={isActive ? "tab-3d active" : "tab-3d"}>
-      {label}
+    <Link href={to} onClick={onClick} className={active ? "adm-link active" : "adm-link"}>
+      <span>{label}</span>
     </Link>
   );
 }
 
-const ADMIN_CSS = `
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  .admin-layout-wrapper {
-    min-height: 100vh;
-    background: #f0f4f8;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #0f172a;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  .bg-orb {
-    position: fixed; border-radius: 50%; filter: blur(90px);
-    z-index: 0; animation: float 20s infinite alternate ease-in-out;
-    pointer-events: none;
-  }
-  .orb-1 { width: 500px; height: 500px; background: rgba(30,58,138,0.12); top: -150px; left: -150px; }
-  .orb-2 { width: 400px; height: 400px; background: rgba(59,130,246,0.12); bottom: -100px; right: -100px; animation-duration: 25s; }
-  @keyframes float {
-    0%   { transform: translate(0,0) scale(1); }
-    100% { transform: translate(50px,50px) scale(1.1); }
-  }
-
-  .admin-header-2060 {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255,255,255,1);
-    box-shadow: 0 10px 30px rgba(15,23,42,0.05);
-    padding: 15px 20px 0 20px;
-  }
-
-  .header-top {
-    max-width: 1400px; margin: 0 auto;
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 15px; flex-wrap: wrap; padding-bottom: 15px;
-  }
-
-  .brand-title {
-    font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(2px 2px 4px rgba(30,58,138,0.15));
-    display: flex; align-items: center; gap: 8px; margin: 0;
-  }
-  .brand-title span {
-    font-weight: 500; color: #64748b; -webkit-text-fill-color: #64748b; font-size: 1.4rem;
-  }
-
-  .header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-
-  .action-btn-3d {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 10px 16px; background: #f8fafc; color: #1e3a8a;
-    font-weight: 700; font-size: 0.85rem; border: none; border-radius: 12px;
-    box-shadow: 4px 4px 10px rgba(15,23,42,0.06), -4px -4px 10px rgba(255,255,255,1);
-    transition: all 0.2s ease; cursor: pointer;
-  }
-  .action-btn-3d:hover { color: #3b82f6; transform: translateY(-2px); box-shadow: 6px 6px 12px rgba(15,23,42,0.08), -6px -6px 12px rgba(255,255,255,1); }
-  .action-btn-3d:active { transform: translateY(1px); box-shadow: inset 2px 2px 5px rgba(15,23,42,0.06), inset -2px -2px 5px rgba(255,255,255,1); }
-  .action-btn-3d svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.5; fill: none; }
-  .action-btn-3d:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
-
-  .btn-logout { color: #ef4444; }
-  .btn-logout:hover { color: #dc2626; }
-
-  .tabs-wrapper { max-width: 1400px; margin: 0 auto; padding: 5px 0 15px 0; }
-  .tabs-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-
-  .tab-3d {
-    padding: 10px 16px; border-radius: 12px; text-decoration: none;
-    font-weight: 600; font-size: 0.9rem; color: #64748b; background: #f1f5f9;
-    box-shadow: 4px 4px 8px rgba(15,23,42,0.05), -4px -4px 8px rgba(255,255,255,1);
-    transition: all 0.2s ease; white-space: nowrap;
-  }
-  .tab-3d:hover { color: #1e3a8a; transform: translateY(-1px); }
-  .tab-3d.active {
-    background: #e0e7ff; color: #1e3a8a; font-weight: 800;
-    box-shadow: inset 3px 3px 6px rgba(15,23,42,0.08), inset -3px -3px 6px rgba(255,255,255,1);
-    transform: translateY(1px);
-  }
-  .tab-3d:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
-
-  .admin-main {
-    position: relative; z-index: 10;
-    max-width: 1400px; margin: 0 auto; padding: 30px 20px;
-  }
-
-  .outlet-card-2060 {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,1); border-radius: 24px; padding: 30px;
-    box-shadow:
-      15px 15px 40px rgba(15,23,42,0.05),
-      -15px -15px 40px rgba(255,255,255,0.8),
-      inset 0 0 0 1px rgba(255,255,255,0.5);
-    animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
-  }
-  @keyframes popIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Auth loading */
-  .auth-loading {
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(160deg,#f0f4ff 0%,#fffbf0 60%,#e8f4fd 100%);
-    z-index: 9999;
-  }
-  .auth-spinner {
-    width: 40px; height: 40px; border-radius: 50%;
-    border: 3px solid rgba(26,58,143,0.12);
-    border-top-color: #1a3a8f;
-    animation: spin 0.65s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  @media (max-width: 768px) {
-    .header-top { justify-content: center; text-align: center; gap: 12px; }
-    .header-actions { justify-content: center; width: 100%; gap: 8px; }
-    .action-btn-3d { padding: 8px 12px; font-size: 0.75rem; }
-    .action-btn-3d svg { width: 12px; height: 12px; }
-    .tabs-container { gap: 8px; }
-    .tab-3d { padding: 8px 12px; font-size: 0.8rem; }
-    .admin-main { padding: 20px 10px; }
-    .outlet-card-2060 { padding: 15px; border-radius: 18px; }
-  }
+const CSS = `
+*{box-sizing:border-box}
+.admin-shell{min-height:100vh;background:#f6f8fc;color:#111827;font-family:Inter,system-ui,-apple-system,sans-serif}
+.admin-shell:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(30,58,138,.06),transparent 35%),radial-gradient(circle at 92% 8%,rgba(212,175,55,.10),transparent 28%);z-index:0}
+.adm-sidebar{position:fixed;inset:0 auto 0 0;width:286px;background:linear-gradient(180deg,#fff,#f8fbff);color:#102044;z-index:80;display:flex;flex-direction:column;border-right:1px solid #dbe5f3;box-shadow:18px 0 44px rgba(30,58,138,.10)}
+.adm-brand{padding:22px 20px 18px;border-bottom:1px solid #e5edf7}
+.adm-brand h1{margin:0;font-size:24px;letter-spacing:-.05em;line-height:1;color:#1e3a8a;font-weight:950}
+.adm-brand span{display:block;margin-top:7px;font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:#9f7a13;font-weight:900}
+.adm-nav{padding:14px 14px 20px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#c7d2fe transparent}
+.adm-group{margin-bottom:12px}
+.adm-group-title{display:block;padding:11px 10px 7px;font-size:10px;font-weight:900;color:#7b8ca7;text-transform:uppercase;letter-spacing:.14em}
+.adm-link{display:flex;align-items:center;min-height:37px;padding:9px 11px;border-radius:10px;color:#4b5f7d;text-decoration:none;font-size:13px;font-weight:760;transition:background .16s ease,color .16s ease,transform .16s ease}
+.adm-link:hover{background:#eef4ff;color:#1e3a8a}
+.adm-link.active{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;box-shadow:0 10px 22px rgba(30,58,138,.22)}
+.adm-rail-actions{margin-top:auto;padding:14px;border-top:1px solid #e5edf7;display:grid;gap:8px}
+.adm-action{width:100%;border:1px solid #dbe5f3;background:#fff;color:#1e3a8a;border-radius:10px;padding:10px 12px;font-weight:820;cursor:pointer;text-align:left}
+.adm-action:hover{background:#f2f6ff}
+.adm-action.danger{color:#dc2626}
+.adm-main{position:relative;z-index:1;margin-left:286px;min-height:100vh}
+.adm-topbar{display:none}
+.adm-page-title{min-width:0}
+.adm-page-title strong{display:block;font-size:18px;font-weight:900;color:#0f172a}
+.adm-page-title span{display:block;font-size:12px;color:#64748b;font-weight:700;margin-top:2px}
+.adm-mobile-toggle{display:none;border:0;background:#111827;color:#fff;border-radius:11px;padding:10px 12px;font-weight:900}
+.adm-content{padding:22px}
+.adm-card{background:#fff;border:1px solid #dfe7f2;border-radius:20px;padding:20px;box-shadow:0 18px 50px rgba(15,23,42,.07)}
+.auth-loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#f5f7fb;z-index:9999}
+.auth-spinner{width:40px;height:40px;border-radius:50%;border:3px solid rgba(30,58,138,.14);border-top-color:#1e3a8a;animation:spin .65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:1080px){
+  .adm-sidebar{transform:translateX(-105%);transition:transform .2s ease}
+  .adm-sidebar.open{transform:translateX(0)}
+  .adm-main{margin-left:0}
+  .adm-mobile-toggle{display:inline-flex}
+  .adm-topbar{position:sticky;top:0;z-index:50;min-height:64px;display:flex;align-items:center;gap:14px;padding:10px 12px;background:rgba(255,255,255,.86);backdrop-filter:blur(18px);border-bottom:1px solid #e2e8f0}
+  .adm-content{padding:12px}
+  .adm-card{padding:12px;border-radius:16px}
+  .adm-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:70}
+}
+@media(max-width:520px){
+  .adm-page-title strong{font-size:16px}
+  .adm-sidebar{width:min(86vw,310px)}
+}
+@media(max-width:340px){
+  .adm-content{padding:8px}
+  .adm-card{padding:10px;border-radius:14px}
+}
 `;
 
 export default function AdminLayout({ children }) {
-  const router  = useRouter();
-  const { user, loading, logout } = useAuth({ requireAdmin: true });
+  const router = useRouter();
+  const pathname = usePathname();
+  const { loading, logout } = useAuth({ requireAdmin: true });
+  const [open, setOpen] = useState(false);
 
-  function goBack() {
-    router.back();
-  }
+  const active = NAV_GROUPS.flatMap(g => g.items).find(([to]) => isActivePath(pathname, to));
+  const title = active?.[1] || "Dashboard";
 
-  function switchToUser() {
-    router.push("/user");
-  }
-
-  // Show spinner while auth check runs
   if (loading) {
     return (
       <>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}.auth-loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#f0f4ff 0%,#fffbf0 60%,#e8f4fd 100%);z-index:9999}.auth-spinner{width:40px;height:40px;border-radius:50%;border:3px solid rgba(26,58,143,0.12);border-top-color:#1a3a8f;animation:spin .65s linear infinite}`}</style>
+        <style>{CSS}</style>
         <div className="auth-loading"><div className="auth-spinner" /></div>
       </>
     );
   }
 
   return (
-    <div className="admin-layout-wrapper">
-      <style>{ADMIN_CSS}</style>
+    <div className="admin-shell">
+      <style>{CSS}</style>
+      {open && <button className="adm-backdrop" aria-label="Close navigation" onClick={() => setOpen(false)} />}
 
-      <div className="bg-orb orb-1" aria-hidden="true"/>
-      <div className="bg-orb orb-2" aria-hidden="true"/>
+      <aside className={open ? "adm-sidebar open" : "adm-sidebar"}>
+        <div className="adm-brand">
+          <h1>AIDLA Admin</h1>
+          <span>Executive Console</span>
+        </div>
 
-      <header className="admin-header-2060">
-        <div className="header-top">
-          <h1 className="brand-title">
-            AIDLA <span>Admin</span>
-          </h1>
+        <nav className="adm-nav" aria-label="Admin navigation">
+          {NAV_GROUPS.map(group => (
+            <section className="adm-group" key={group.title}>
+              <span className="adm-group-title">{group.title}</span>
+              {group.items.map(([to, label]) => (
+                <NavLinkItem key={to} to={to} label={label} onClick={() => setOpen(false)} />
+              ))}
+            </section>
+          ))}
+        </nav>
 
-          <div className="header-actions">
-            <button onClick={goBack} className="action-btn-3d" aria-label="Go back">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              Back
-            </button>
-            <button onClick={switchToUser} className="action-btn-3d" aria-label="Switch to user area">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              Switch to User
-            </button>
-            <button onClick={logout} className="action-btn-3d btn-logout" aria-label="Logout">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-              Logout
-            </button>
+        <div className="adm-rail-actions">
+          <button className="adm-action" onClick={() => router.push("/user")}>Switch to User</button>
+          <button className="adm-action danger" onClick={logout}>Logout</button>
+        </div>
+      </aside>
+
+      <main className="adm-main">
+        <header className="adm-topbar">
+          <button className="adm-mobile-toggle" onClick={() => setOpen(true)}>Menu</button>
+          <div className="adm-page-title">
+            <strong>{title}</strong>
+            <span>Operations dashboard and platform controls</span>
           </div>
-        </div>
+        </header>
 
-        {/* Tabs nav */}
-        <div className="tabs-wrapper">
-          <nav className="tabs-container" aria-label="Admin navigation">
-            <Tab to="/admin"                      label="Admin Pool"        />
-            <Tab to="/admin/tests"                label="Test Mgmt"         />
-            <Tab to="/admin/lucky-wheel"          label="Lucky Wheel"       />
-            <Tab to="/admin/lucky-draw"           label="Lucky Draw"        />
-            <Tab to="/admin/shop"                 label="Shop"              />
-            <Tab to="/admin/blogs"                label="Blogs"             />
-            <Tab to="/admin/news"                 label="News"              />
-            <Tab to="/admin/mining"               label="Mining"            />
-            <Tab to="/admin/invite"               label="Invite Friend"     />
-            <Tab to="/admin/courses"              label="Courses"           />
-            <Tab to="/admin/deposits"             label="Deposits"          />
-            <Tab to="/admin/withdraws"            label="Withdraws"         />
-            <Tab to="/admin/users"                label="Users"             />
-            <Tab to="/admin/leaderboard"          label="Leaderboard"       />
-            <Tab to="/admin/homepage"             label="Post Generator"    />
-            <Tab to="/admin/AdminHome"            label="AdminHome"         />
-            <Tab to="/admin/adminfaqs"            label="FAQs"              />
-            <Tab to="/admin/FeedAdmin"            label="Forum Admin"       />
-            <Tab to="/admin/AdminStudyMaterials"  label="Study Materials"   />
-            <Tab to="/admin/AutoBlogTab"          label="Auto Blog"         />
-            <Tab to="/admin/AutoNewsTab"          label="Auto News"         />
-            <Tab to="/admin/dailyquizz"           label="Daily Quiz"        />
-            <Tab to="/admin/battle"               label="Battle Arena"      />
-            <Tab to="/admin/AdminProjects"             label="Projects"          />
-            <Tab to="/admin/reviews"                  label="Reviews"           />
-            <Tab to="/admin/email-blast"              label="Email Blast"       />
-          </nav>
-        </div>
-      </header>
-
-      <main className="admin-main">
-        <div className="outlet-card-2060">
-          {children}   {/* ← replaces <Outlet /> */}
+        <div className="adm-content">
+          <div className="adm-card">{children}</div>
         </div>
       </main>
     </div>

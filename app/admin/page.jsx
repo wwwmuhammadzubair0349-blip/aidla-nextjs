@@ -1,78 +1,159 @@
-// app/admin/pool/page.jsx
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase.js";
 
-export default function AdminPool() {
-  const [view, setView] = useState("transfer"); // "transfer" | "history"
+const startOfToday = () => {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
 
-  // Dashboard State
+const nfmt = n => Number(n || 0).toLocaleString();
+const shortDate = v => v ? new Date(v).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
+
+function isOut(tx) {
+  return tx?.direction === "OUT"
+    || String(tx?.txn_type || "").toUpperCase().includes("SEND")
+    || String(tx?.txn_no || "").startsWith("RES-APR");
+}
+
+async function safe(label, fn) {
+  try { return { label, data: await fn(), error: null }; }
+  catch (e) { return { label, data: null, error: e?.message || String(e) }; }
+}
+
+function Stat({ label, value, tone = "blue", hint }) {
+  return (
+    <div className={`ad-stat ${tone}`}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+      {hint && <small>{hint}</small>}
+    </div>
+  );
+}
+
+function QueueCard({ title, count, href, tone = "amber", meta }) {
+  return (
+    <Link href={href} className={`ad-queue ${tone}`}>
+      <div>
+        <span>{title}</span>
+        {meta && <small>{meta}</small>}
+      </div>
+      <strong>{count}</strong>
+    </Link>
+  );
+}
+
+function MiniBars({ items }) {
+  const max = Math.max(...items.map(i => Number(i.value || 0)), 1);
+  return (
+    <div className="ad-chart-bars">
+      {items.map(item => (
+        <div className="ad-bar-row" key={item.label}>
+          <span>{item.label}</span>
+          <div><i style={{ width: `${Math.max(3, (Number(item.value || 0) / max) * 100)}%` }} /></div>
+          <b>{nfmt(item.value)}</b>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Donut({ pending }) {
+  const pct = Math.min(100, pending * 8);
+  return (
+    <div className="ad-donut-wrap">
+      <div className="ad-donut" style={{ "--pct": `${pct}%` }}>
+        <strong>{nfmt(pending)}</strong>
+        <span>open</span>
+      </div>
+      <div className="ad-donut-meta">
+        <b>{pending ? "Attention required" : "Queues clear"}</b>
+        <span>Tracked across withdrawals, shop, content, FAQs, and reviews</span>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminCommandCenter() {
+  const [tab, setTab] = useState("overview");
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState([]);
+  const [users, setUsers] = useState([]);
   const [pool, setPool] = useState(null);
+  const [txs, setTxs] = useState([]);
+  const [withdraws, setWithdraws] = useState([]);
+  const [shop, setShop] = useState({ orders: [], cashbacks: [], products: [] });
+  const [study, setStudy] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [emailLogs, setEmailLogs] = useState([]);
+
   const [email, setEmail] = useState("");
   const [userFound, setUserFound] = useState(null);
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
-
   const [loadingUser, setLoadingUser] = useState(false);
   const [sending, setSending] = useState(false);
   const [msg, setMsg] = useState("");
+  const [ledgerOpen, setLedgerOpen] = useState(false);
+  const [recentOpen, setRecentOpen] = useState(false);
 
-  // History State
-  const [transactions, setTransactions] = useState([]);
-  const [loadingTxns, setLoadingTxns] = useState(false);
+  async function loadDashboard() {
+    setLoading(true);
+    const results = await Promise.all([
+      safe("users", async () => (await supabase.from("users_profiles").select("user_id,full_name,email,total_aidla_coins,created_at,city,country").order("created_at", { ascending: false })).data || []),
+      safe("pool", async () => (await supabase.from("admin_pool").select("total_aidla_coins").eq("id", 1).single()).data),
+      safe("transactions", async () => (await supabase.from("admin_pool_transactions").select("*").order("created_at", { ascending: false }).limit(250)).data || []),
+      safe("withdraws", async () => (await supabase.rpc("wd_admin_get_all")).data?.requests || []),
+      safe("shop", async () => (await supabase.rpc("shop_admin_load")).data || {}),
+      safe("study", async () => (await supabase.from("study_materials").select("id,approval_status,uploader_type,created_at")).data || []),
+      safe("projects", async () => (await supabase.from("project_ideas").select("id,approval_status,uploader_type,created_at")).data || []),
+      safe("questions", async () => (await supabase.from("user_questions").select("id,status,created_at")).data || []),
+      safe("reviews", async () => (await supabase.from("user_reviews").select("id,is_approved,created_at")).data || []),
+      safe("emails", async () => (await supabase.from("email_logs").select("id,subject,sent_count,failed_count,status,sent_at,created_at").order("sent_at", { ascending: false }).limit(250)).data || []),
+    ]);
 
-  async function loadPool() {
-    const { data, error } = await supabase
-      .from("admin_pool")
-      .select("total_aidla_coins")
-      .eq("id", 1)
-      .single();
-    if (!error) setPool(data?.total_aidla_coins ?? null);
+    const by = Object.fromEntries(results.map(r => [r.label, r]));
+    setUsers(by.users.data || []);
+    setPool(by.pool.data?.total_aidla_coins ?? null);
+    setTxs(by.transactions.data || []);
+    setWithdraws(by.withdraws.data || []);
+    setShop({
+      orders: by.shop.data?.orders || [],
+      cashbacks: by.shop.data?.cashbacks || [],
+      products: by.shop.data?.products || [],
+    });
+    setStudy(by.study.data || []);
+    setProjects(by.projects.data || []);
+    setQuestions(by.questions.data || []);
+    setReviews(by.reviews.data || []);
+    setEmailLogs(by.emails.data || []);
+    setErrors(results.filter(r => r.error).map(r => `${r.label}: ${r.error}`));
+    setLoading(false);
   }
 
-  async function loadTransactions() {
-    setLoadingTxns(true);
-    const { data, error } = await supabase
-      .from("admin_pool_transactions")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      setTransactions(data);
-    }
-    setLoadingTxns(false);
-  }
-
-  useEffect(() => {
-    loadPool();
-    loadTransactions();
-  }, []);
+  useEffect(() => { loadDashboard(); }, []);
 
   async function findUser() {
     setMsg("");
     setUserFound(null);
     setLoadingUser(true);
-
     try {
       const clean = email.trim().toLowerCase();
       if (!clean) throw new Error("Enter user email");
-
       const { data, error } = await supabase
         .from("users_profiles")
         .select("full_name,email,total_aidla_coins,user_id")
         .eq("email", clean)
         .single();
-
-      if (error) {
-        if (error.code === "PGRST116") {
-          throw new Error("❌ No account found on this email. User not available.");
-        }
-        throw error;
-      }
+      if (error) throw new Error(error.code === "PGRST116" ? "No account found for this email." : error.message);
       setUserFound(data);
     } catch (e) {
-      setMsg(e.message || "User not available on this email");
+      setMsg(e.message || "User lookup failed");
     } finally {
       setLoadingUser(false);
     }
@@ -81,29 +162,23 @@ export default function AdminPool() {
   async function doTransfer(mode) {
     setMsg("");
     setSending(true);
-
     try {
       if (!userFound?.email) throw new Error("Find a user first");
       const amt = Number(amount);
       if (!amt || amt <= 0) throw new Error("Enter a valid amount");
-
       const { data, error } = await supabase.rpc("admin_transfer_coins", {
         target_email: userFound.email,
         amount: amt,
         mode,
         note: note || null,
       });
-
       if (error) throw error;
-
       const res = Array.isArray(data) ? data[0] : data;
-      setMsg(`Success ✅ Transaction: ${res.txn_no}`);
+      setMsg(`Success. Transaction: ${res?.txn_no || "created"}`);
       setAmount("");
       setNote("");
-
-      await loadPool();
-      await findUser(); // refresh user balance
-      await loadTransactions(); // refresh history
+      await loadDashboard();
+      await findUser();
     } catch (e) {
       setMsg(e.message || "Transfer failed");
     } finally {
@@ -111,313 +186,287 @@ export default function AdminPool() {
     }
   }
 
-  function formatDate(isoStr) {
-    const d = new Date(isoStr);
-    return d.toLocaleString(undefined, {
-      year: "numeric", month: "short", day: "numeric",
-      hour: "2-digit", minute: "2-digit"
-    });
-  }
+  const stats = useMemo(() => {
+    const today = startOfToday();
+    const todayUsers = users.filter(u => new Date(u.created_at) >= today).length;
+    const userCoins = users.reduce((s, u) => s + Number(u.total_aidla_coins || 0), 0);
+    const sent = txs.filter(isOut).reduce((s, t) => s + Number(t.amount || 0), 0);
+    const received = txs.filter(t => !isOut(t)).reduce((s, t) => s + Number(t.amount || 0), 0);
+    const todaySent = txs.filter(t => isOut(t) && new Date(t.created_at) >= today).reduce((s, t) => s + Number(t.amount || 0), 0);
+    const todayReceived = txs.filter(t => !isOut(t) && new Date(t.created_at) >= today).reduce((s, t) => s + Number(t.amount || 0), 0);
+    const pendingWithdraws = withdraws.filter(r => r.status === "pending");
+    const pendingOrders = shop.orders.filter(o => o.status === "pending");
+    const pendingCashbacks = shop.cashbacks.filter(c => c.status === "pending");
+    const lowStock = shop.products.filter(p => !p.unlimited_stock && Number(p.stock) <= Number(p.low_stock_threshold || 0));
+    const pendingStudy = study.filter(x => x.uploader_type === "user" && x.approval_status !== "approved");
+    const pendingProjects = projects.filter(x => x.uploader_type === "user" && x.approval_status !== "approved");
+    const pendingQuestions = questions.filter(q => !q.status || q.status === "pending" || q.status === "new");
+    const pendingReviews = reviews.filter(r => !r.is_approved);
+    const emailsToday = emailLogs.filter(e => new Date(e.sent_at || e.created_at) >= today).reduce((s, e) => s + Number(e.sent_count || 0), 0);
+    const emailFailedToday = emailLogs.filter(e => new Date(e.sent_at || e.created_at) >= today).reduce((s, e) => s + Number(e.failed_count || 0), 0);
+    return {
+      todayUsers, userCoins, sent, received, todaySent, todayReceived,
+      pendingWithdraws, pendingOrders, pendingCashbacks, lowStock,
+      pendingStudy, pendingProjects, pendingQuestions, pendingReviews,
+      emailsToday, emailFailedToday,
+    };
+  }, [users, txs, withdraws, shop, study, projects, questions, reviews, emailLogs]);
 
-  // --- 2060 3D NEUMORPHIC CSS ---
-  const css = `
-    * { box-sizing: border-box; }
-
-    .admin-pool-wrapper {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      color: #0f172a;
-      animation: fadeIn 0.4s ease forwards;
-    }
-
-    .page-title {
-      font-size: 2.2rem;
-      font-weight: 900;
-      letter-spacing: -1px;
-      color: #1e3a8a;
-      margin-bottom: 25px;
-      margin-top: 0;
-      text-shadow: 2px 2px 4px rgba(30, 58, 138, 0.1);
-    }
-
-    /* Inner Tabs System */
-    .tab-container {
-      display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap;
-    }
-    .pill-tab {
-      padding: 12px 20px; border-radius: 14px; font-weight: 700; font-size: 0.95rem;
-      cursor: pointer; transition: all 0.2s ease; border: none; outline: none;
-      background: #f1f5f9; color: #64748b;
-      box-shadow: 4px 4px 8px rgba(15, 23, 42, 0.05), -4px -4px 8px rgba(255, 255, 255, 1);
-    }
-    .pill-tab:hover { color: #1e3a8a; transform: translateY(-2px); }
-    .pill-tab.active {
-      background: #e0e7ff; color: #1e3a8a; font-weight: 800;
-      box-shadow: inset 3px 3px 6px rgba(15, 23, 42, 0.08), inset -3px -3px 6px rgba(255, 255, 255, 1);
-      transform: translateY(1px);
-    }
-
-    /* 3D Glass Cards */
-    .grid-layout { display: grid; gap: 25px; grid-template-columns: 1fr; }
-    
-    .card-2060 {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 
-        10px 10px 25px rgba(15, 23, 42, 0.05), 
-        -10px -10px 25px rgba(255, 255, 255, 0.9),
-        inset 0 0 0 1px rgba(255, 255, 255, 1);
-    }
-
-    .section-title { font-weight: 800; font-size: 1.1rem; color: #1e3a8a; margin-bottom: 15px; }
-
-    /* Pool Balance Highlight */
-    .balance-highlight {
-      font-size: 2.8rem; font-weight: 900; color: #3b82f6;
-      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-top: 5px; filter: drop-shadow(1px 2px 3px rgba(30,58,138,0.2));
-    }
-
-    /* 3D Inputs */
-    .input-3d {
-      width: 100%; padding: 14px 16px; border-radius: 14px; border: 2px solid transparent;
-      background: #f8fafc; color: #0f172a; font-size: 1rem; font-weight: 600;
-      box-shadow: inset 4px 4px 8px rgba(15, 23, 42, 0.06), inset -4px -4px 8px rgba(255, 255, 255, 1);
-      transition: all 0.2s ease; font-family: inherit; margin-bottom: 15px;
-    }
-    .input-3d::placeholder { color: #94a3b8; font-weight: 500; }
-    .input-3d:focus { outline: none; background: #ffffff; border-color: rgba(59, 130, 246, 0.3); box-shadow: inset 2px 2px 5px rgba(15, 23, 42, 0.03), inset -2px -2px 5px rgba(255, 255, 255, 1), 0 0 0 4px rgba(59, 130, 246, 0.1); }
-
-    /* Buttons */
-    .btn-3d {
-      padding: 14px 24px; border-radius: 12px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer;
-      box-shadow: 0 6px 0 #1e3a8a, 0 10px 15px rgba(30, 58, 138, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.2);
-      transition: all 0.1s ease; display: inline-flex; justify-content: center; align-items: center; gap: 8px;
-    }
-    .btn-3d:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 0 #1e3a8a, 0 15px 20px rgba(30, 58, 138, 0.3), inset 0 2px 0 rgba(255,255,255,0.2); }
-    .btn-3d:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0px 0 #1e3a8a, 0 2px 5px rgba(30, 58, 138, 0.3), inset 0 2px 0 rgba(255,255,255,0.2); }
-    .btn-3d:disabled { background: #94a3b8; box-shadow: 0 6px 0 #64748b; cursor: not-allowed; opacity: 0.8; transform: translateY(0); }
-
-    .btn-primary { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #fff; }
-    .btn-secondary { background: linear-gradient(135deg, #475569, #64748b); color: #fff; box-shadow: 0 6px 0 #334155, 0 10px 15px rgba(15, 23, 42, 0.2); }
-    .btn-secondary:hover:not(:disabled) { box-shadow: 0 8px 0 #334155, 0 15px 20px rgba(15, 23, 42, 0.3); }
-    .btn-secondary:active:not(:disabled) { box-shadow: 0 0px 0 #334155, 0 2px 5px rgba(15, 23, 42, 0.3); }
-
-    /* Flex Row Groups */
-    .input-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
-    .input-row > input { margin-bottom: 0; flex: 1; min-width: 200px; }
-
-    /* User Found Card */
-    .user-card {
-      margin-top: 15px; padding: 15px 20px; border-radius: 14px;
-      background: #f8fafc; border: 1px solid #e2e8f0;
-      box-shadow: inset 2px 2px 5px rgba(15, 23, 42, 0.03);
-    }
-    .user-card div { margin-bottom: 8px; font-size: 0.95rem; }
-    .user-card b { color: #1e3a8a; display: inline-block; width: 70px; }
-
-    /* Messages */
-    .msg-box { margin-top: 15px; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem; width: 100%; text-align: center; }
-
-    /* Transactions Table */
-    .table-container {
-      width: 100%; overflow-x: auto; border-radius: 16px;
-      box-shadow: inset 4px 4px 8px rgba(15, 23, 42, 0.05), inset -4px -4px 8px rgba(255, 255, 255, 1);
-      background: #f8fafc; padding: 2px;
-      -webkit-overflow-scrolling: touch;
-    }
-    .table-2060 { width: 100%; border-collapse: collapse; min-width: 900px; font-size: 0.85rem; }
-    @media (max-width: 768px) {
-      .table-2060 { font-size: 0.8rem; }
-      .table-2060 th, .table-2060 td { padding: 10px 12px; }
-    }
-    @media (max-width: 600px) {
-      .table-container { border-radius: 12px; padding: 1px; }
-      .table-2060 { font-size: 0.75rem; min-width: 800px; }
-      .table-2060 th, .table-2060 td { padding: 8px 10px; }
-    }
-    .table-2060 th { background: #e2e8f0; color: #1e3a8a; font-weight: 800; text-align: left; padding: 14px 16px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #cbd5e1; }
-    .table-2060 td { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; color: #334155; font-weight: 500; }
-    .table-2060 tr:last-child td { border-bottom: none; }
-    .table-2060 tr:hover td { background: rgba(59, 130, 246, 0.05); }
-
-    /* Badges */
-    .badge { padding: 6px 10px; border-radius: 8px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
-    .badge-send { background: #fee2e2; color: #b91c1c; box-shadow: inset 1px 1px 3px rgba(185, 28, 28, 0.2); }
-    .badge-receive { background: #dcfce7; color: #15803d; box-shadow: inset 1px 1px 3px rgba(21, 128, 61, 0.2); }
-    .amount-text { font-weight: 800; font-size: 0.95rem; color: #0f172a; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  `;
+  const recent = useMemo(() => [
+    ...txs.slice(0, 8).map(t => ({ type: isOut(t) ? "Coins sent" : "Coins received", text: `${isOut(t) ? "-" : "+"}${nfmt(t.amount)} AIDLA`, sub: t.target_user_email || t.note || t.txn_no, date: t.created_at })),
+    ...withdraws.slice(0, 4).map(w => ({ type: "Withdrawal", text: `${w.status} - ${nfmt(w.coins_requested)} coins`, sub: w.user_email, date: w.created_at })),
+    ...shop.orders.slice(0, 4).map(o => ({ type: "Shop order", text: `${o.status} - ${o.product_name}`, sub: o.user_email, date: o.created_at })),
+    ...emailLogs.slice(0, 4).map(e => ({ type: "Email blast", text: `${nfmt(e.sent_count)} sent`, sub: e.subject, date: e.sent_at || e.created_at })),
+  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10), [txs, withdraws, shop.orders, emailLogs]);
 
   return (
-    <div className="admin-pool-wrapper">
-      <style>{css}</style>
+    <div className="ad-root">
+      <style>{CSS}</style>
+      <header className="ad-hero">
+        <div>
+          <span>Dashboard</span>
+          <h2>Admin Dashboard</h2>
+          <p>Live platform health, financial movement, pending queues, and admin workload.</p>
+        </div>
+        <button className="ad-refresh" onClick={loadDashboard} disabled={loading}>{loading ? "Loading..." : "Refresh"}</button>
+      </header>
 
-      <h2 className="page-title">Admin Pool & Logistics</h2>
-
-      <div className="tab-container">
-        <button className={`pill-tab ${view === "transfer" ? "active" : ""}`} onClick={() => setView("transfer")}>
-          <svg style={{width: 16, height: 16, marginRight: 6, verticalAlign: "-3px"}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M17 3v18"/><path d="M10 14 3 21l7 7"/><path d="M7 3v18"/><path d="M14 10l7-7-7-7"/></svg>
-          Transfers & Dashboard
-        </button>
-        <button className={`pill-tab ${view === "history" ? "active" : ""}`} onClick={() => setView("history")}>
-          <svg style={{width: 16, height: 16, marginRight: 6, verticalAlign: "-3px"}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          Transaction History
-        </button>
-      </div>
-
-      {view === "transfer" && (
-        <div className="grid-layout">
-          
-          {/* Admin Pool Balance */}
-          <div className="card-2060" style={{ textAlign: "center", padding: "35px 20px" }}>
-            <div style={{ color: "#64748b", fontSize: "1rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
-              Total Admin Pool Balance
-            </div>
-            <div className="balance-highlight">
-              {pool === null ? "Loading..." : `${Number(pool).toLocaleString()} AIDLA`}
-            </div>
-          </div>
-
-          {/* User Search */}
-          <div className="card-2060">
-            <div className="section-title">Step 1: Locate Target User</div>
-            <div className="input-row">
-              <input
-                className="input-3d"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter user email (e.g. name@example.com)"
-              />
-              <button className="btn-3d btn-primary" onClick={findUser} disabled={loadingUser}>
-                {loadingUser ? "Searching..." : "🔍 Search User"}
-              </button>
-            </div>
-
-            {userFound && (
-              <div className="user-card">
-                <div><b>Name:</b> {userFound.full_name}</div>
-                <div><b>Email:</b> {userFound.email}</div>
-                <div><b>Balance:</b> <span style={{fontWeight: 800, color:"#1e3a8a"}}>{Number(userFound.total_aidla_coins).toLocaleString()} AIDLA</span></div>
-              </div>
-            )}
-          </div>
-
-          {/* Transfer Actions */}
-          <div className="card-2060">
-            <div className="section-title">Step 2: Execute Transaction</div>
-            
-            <div className="input-row">
-              <input
-                className="input-3d"
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Amount to transfer (e.g. 1500)"
-              />
-              <input
-                className="input-3d"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Reference Note (Optional)"
-              />
-            </div>
-
-            <div className="input-row" style={{ marginTop: "20px" }}>
-              <button className="btn-3d btn-primary" onClick={() => doTransfer("SEND")} disabled={sending || !userFound}>
-                <svg style={{width: 18, height: 18}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                Send to User
-              </button>
-
-              <button className="btn-3d btn-secondary" onClick={() => doTransfer("RECEIVE")} disabled={sending || !userFound}>
-                <svg style={{width: 18, height: 18}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 10 20 15 15 20"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg>
-                Receive from User
-              </button>
-            </div>
-
-            {msg && (
-              <div
-                className="msg-box"
-                style={{
-                  color: msg.includes("✅") ? "#047857" : "#b91c1c",
-                  background: msg.includes("✅") ? "#d1fae5" : "#fee2e2",
-                  boxShadow: msg.includes("✅") ? "inset 0 0 0 2px #34d399" : "inset 0 0 0 2px #f87171"
-                }}
-              >
-                {msg}
-              </div>
-            )}
-          </div>
-
+      {errors.length > 0 && (
+        <div className="ad-alert">
+          Some dashboard sources could not load: {errors.slice(0, 2).join(" | ")}
         </div>
       )}
 
-      {view === "history" && (
-        <div className="card-2060">
-          <div className="section-title" style={{ marginBottom: "20px" }}>Transaction Ledger</div>
-          
-          {loadingTxns ? (
-            <div style={{ padding: "40px", textAlign: "center", fontWeight: 600, color: "#64748b" }}>
-              Loading transactions...
-            </div>
-          ) : transactions.length === 0 ? (
-            <div style={{ padding: "40px", textAlign: "center", fontWeight: 600, color: "#64748b" }}>
-              No transactions found in the database.
-            </div>
-          ) : (
-            <div className="table-container">
-              <table className="table-2060">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Txn ID</th>
-                    <th>Action</th>
-                    <th>User Email</th>
-                    <th>Amount</th>
-                    <th>Pool Bal After</th>
-                    <th>User Bal After</th>
-                    <th>Note</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((tx) => {
-                    // RES-APR = admin pays reward to user (outflow); RES-BUY = admin receives purchase (inflow)
-                    const isSend = tx.direction === "OUT"
-                      || (typeof tx.txn_type === "string" && tx.txn_type.toUpperCase().includes("SEND"))
-                      || (typeof tx.txn_no === "string" && tx.txn_no.startsWith("RES-APR"));
+      <nav className="ad-tabs" aria-label="Admin command center">
+        {[
+          ["overview", "Overview"],
+          ["pool", "Pool Transfer"],
+          ["history", "Coin Ledger"],
+        ].map(([id, label]) => (
+          <button key={id} className={tab === id ? "on" : ""} onClick={() => setTab(id)}>{label}</button>
+        ))}
+      </nav>
 
-                    return (
-                      <tr key={tx.id}>
-                        <td style={{ whiteSpace: "nowrap" }}>{formatDate(tx.created_at)}</td>
-                        <td style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "#64748b" }}>{tx.txn_no}</td>
-                        <td>
-                          <span className={`badge ${isSend ? "badge-send" : "badge-receive"}`}>
-                            {isSend ? "Send" : "Received"}
-                          </span>
-                        </td>
-                        <td>
-                          <div style={{ fontWeight: 700, color: "#1e3a8a" }}>{tx.target_user_name || "Unknown"}</div>
-                          <div style={{ fontSize: "0.75rem", color: "#64748b" }}>{tx.target_user_email}</div>
-                        </td>
-                        <td className="amount-text" style={{ color: isSend ? "#b91c1c" : "#15803d", fontWeight: 800 }}>
-  {isSend ? "-" : "+"}{Number(tx.amount).toLocaleString()} AIDLA
-</td>
-                        <td>{Number(tx.pool_balance_after).toLocaleString()}</td>
-                        <td>{tx.user_balance_after !== null ? Number(tx.user_balance_after).toLocaleString() : "-"}</td>
-                        <td style={{ fontStyle: tx.note ? "normal" : "italic", color: tx.note ? "inherit" : "#94a3b8" }}>
-                          {tx.note || "No note"}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+      {tab === "overview" && (
+        <>
+          <section className="ad-grid">
+            <Stat label="Total Users" value={nfmt(users.length)} />
+            <Stat label="Joined Today" value={nfmt(stats.todayUsers)} tone="green" />
+            <Stat label="Admin Pool" value={pool === null ? "-" : nfmt(pool)} hint="AIDLA coins" tone="indigo" />
+            <Stat label="User Coins" value={nfmt(stats.userCoins)} hint="total balances" tone="gold" />
+            <Stat label="Coins Sent" value={nfmt(stats.sent)} tone="red" />
+            <Stat label="Coins Received" value={nfmt(stats.received)} tone="green" />
+            <Stat label="Today Sent" value={nfmt(stats.todaySent)} tone="red" />
+            <Stat label="Today Received" value={nfmt(stats.todayReceived)} tone="green" />
+            <Stat label="Emails Today" value={nfmt(stats.emailsToday)} hint="manual logs" tone="blue" />
+            <Stat label="Email Failed" value={nfmt(stats.emailFailedToday)} hint="today" tone="red" />
+          </section>
+
+          <section className="ad-insights">
+            <div className="ad-panel">
+              <div className="ad-panel-head">
+                <h3>Financial Flow</h3>
+                <small>All-time and today</small>
+              </div>
+              <MiniBars items={[
+                { label: "Coins sent", value: stats.sent },
+                { label: "Coins received", value: stats.received },
+                { label: "Today sent", value: stats.todaySent },
+                { label: "Today received", value: stats.todayReceived },
+              ]} />
             </div>
+            <div className="ad-panel">
+              <div className="ad-panel-head">
+                <h3>Workload Clearance</h3>
+                <small>Pending queues</small>
+              </div>
+              <Donut pending={stats.pendingWithdraws.length + stats.pendingOrders.length + stats.pendingCashbacks.length + stats.lowStock.length + stats.pendingStudy.length + stats.pendingProjects.length + stats.pendingQuestions.length + stats.pendingReviews.length} />
+            </div>
+          </section>
+
+          <section className="ad-split">
+            <div className="ad-panel">
+              <div className="ad-panel-head">
+                <h3>Action Inbox</h3>
+                <small>Highest priority pending work</small>
+              </div>
+              <div className="ad-queues">
+                <QueueCard title="Withdrawals" count={stats.pendingWithdraws.length} href="/admin/withdraws" />
+                <QueueCard title="Shop Orders" count={stats.pendingOrders.length} href="/admin/shop" />
+                <QueueCard title="Cashbacks" count={stats.pendingCashbacks.length} href="/admin/shop" tone="violet" />
+                <QueueCard title="Low Stock" count={stats.lowStock.length} href="/admin/shop" tone="red" />
+                <QueueCard title="Study Uploads" count={stats.pendingStudy.length} href="/admin/AdminStudyMaterials" tone="blue" />
+                <QueueCard title="Project Ideas" count={stats.pendingProjects.length} href="/admin/AdminProjects" tone="blue" />
+                <QueueCard title="FAQ Questions" count={stats.pendingQuestions.length} href="/admin/adminfaqs" tone="slate" />
+                <QueueCard title="Reviews" count={stats.pendingReviews.length} href="/admin/reviews" tone="slate" />
+              </div>
+            </div>
+
+            <div className="ad-panel">
+              <div className="ad-panel-head">
+                <h3>Recent Activity</h3>
+                <small>{recent.length} latest events</small>
+              </div>
+              <div className="ad-feed">
+                {recent.length === 0 && <div className="ad-empty">No activity yet.</div>}
+                {(recentOpen ? recent : recent.slice(0, 4)).map((item, i) => (
+                  <div className="ad-feed-item" key={`${item.type}-${i}`}>
+                    <div>
+                      <strong>{item.type}</strong>
+                      <span>{item.sub || "-"}</span>
+                    </div>
+                    <div>
+                      <b>{item.text}</b>
+                      <small>{shortDate(item.date)}</small>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {recent.length > 4 && (
+                <button className="ad-expand" onClick={() => setRecentOpen(v => !v)}>
+                  {recentOpen ? "Show less" : `Expand ${recent.length - 4} more events`}
+                </button>
+              )}
+            </div>
+          </section>
+        </>
+      )}
+
+      {tab === "pool" && (
+        <section className="ad-panel">
+          <div className="ad-panel-head">
+            <h3>Admin Pool Transfer</h3>
+            <small>Current pool: {pool === null ? "-" : `${nfmt(pool)} AIDLA`}</small>
+          </div>
+          <div className="ad-form-grid">
+            <div>
+              <label>User email</label>
+              <div className="ad-inline">
+                <input value={email} onChange={e => setEmail(e.target.value)} placeholder="name@example.com" />
+                <button onClick={findUser} disabled={loadingUser}>{loadingUser ? "Searching" : "Search"}</button>
+              </div>
+              {userFound && (
+                <div className="ad-user">
+                  <b>{userFound.full_name || "User"}</b>
+                  <span>{userFound.email}</span>
+                  <strong>{nfmt(userFound.total_aidla_coins)} AIDLA</strong>
+                </div>
+              )}
+            </div>
+            <div>
+              <label>Amount</label>
+              <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="1500" />
+            </div>
+            <div>
+              <label>Reference note</label>
+              <input value={note} onChange={e => setNote(e.target.value)} placeholder="Optional" />
+            </div>
+          </div>
+          <div className="ad-actions">
+            <button onClick={() => doTransfer("SEND")} disabled={sending || !userFound}>Send to User</button>
+            <button className="secondary" onClick={() => doTransfer("RECEIVE")} disabled={sending || !userFound}>Receive from User</button>
+          </div>
+          {msg && <div className={`ad-msg ${msg.startsWith("Success") ? "ok" : "err"}`}>{msg}</div>}
+        </section>
+      )}
+
+      {tab === "history" && (
+        <section className="ad-panel">
+          <div className="ad-panel-head">
+            <h3>Coin Ledger</h3>
+            <small>{txs.length} recent transactions</small>
+          </div>
+          <div className="ad-ledger">
+            {(ledgerOpen ? txs : txs.slice(0, 8)).map(tx => {
+              const out = isOut(tx);
+              return (
+                <div className="ad-ledger-row" key={tx.id || tx.txn_no}>
+                  <div>
+                    <strong>{tx.target_user_name || tx.target_user_email || "Unknown user"}</strong>
+                    <span>{tx.txn_no} - {shortDate(tx.created_at)}</span>
+                  </div>
+                  <div className={out ? "out" : "in"}>
+                    {out ? "-" : "+"}{nfmt(tx.amount)} AIDLA
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {txs.length > 8 && (
+            <button className="ad-expand" onClick={() => setLedgerOpen(v => !v)}>
+              {ledgerOpen ? "Show less" : `Expand ${txs.length - 8} more transactions`}
+            </button>
           )}
-        </div>
+        </section>
       )}
     </div>
   );
 }
+
+const CSS = `
+.ad-root{font-family:Inter,system-ui,sans-serif;color:#172033}
+.ad-hero{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #e5eaf3}
+.ad-hero span{font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.08em;color:#2563eb}
+.ad-hero h2{font-size:clamp(22px,5vw,34px);line-height:1.05;margin:4px 0 6px;font-weight:900;letter-spacing:-.03em;color:#0f172a}
+.ad-hero p{margin:0;color:#65758b;font-size:13px;line-height:1.5;max-width:620px}
+.ad-refresh,.ad-tabs button,.ad-actions button,.ad-inline button{border:0;border-radius:9px;background:#1f3b8f;color:white;font-weight:800;padding:10px 13px;cursor:pointer}
+.ad-refresh{min-width:96px}
+.ad-refresh:disabled,.ad-actions button:disabled,.ad-inline button:disabled{opacity:.55;cursor:not-allowed}
+.ad-alert{background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;font-weight:700}
+.ad-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;scrollbar-width:none}
+.ad-tabs::-webkit-scrollbar{display:none}
+.ad-tabs button{background:#f1f5fb;color:#334155;white-space:nowrap;border:1px solid #e5eaf3}
+.ad-tabs button.on{background:#1f3b8f;color:#fff;border-color:#1f3b8f}
+.ad-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:12px}
+.ad-stat{background:#fff;border:1px solid #dfe7f2;border-radius:12px;padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.ad-stat span{font-size:10px;font-weight:900;color:#64748b;text-transform:uppercase;letter-spacing:.07em}
+.ad-stat strong{display:block;font-size:clamp(22px,6vw,30px);line-height:1.05;margin-top:8px;color:#1f3b8f}
+.ad-stat small{display:block;color:#8b9aaf;font-weight:700;margin-top:4px;font-size:12px}
+.ad-stat.green strong{color:#15803d}.ad-stat.red strong{color:#b91c1c}.ad-stat.gold strong{color:#b45309}.ad-stat.indigo strong{color:#3730a3}
+.ad-split{display:grid;grid-template-columns:1fr;gap:12px}
+.ad-insights{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
+.ad-panel{background:#fff;border:1px solid #dfe7f2;border-radius:12px;padding:14px;box-shadow:0 1px 2px rgba(15,23,42,.04);margin-bottom:12px}
+.ad-panel-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+.ad-panel-head h3{margin:0;font-size:16px;font-weight:900;color:#0f172a}
+.ad-panel-head small{color:#64748b;font-weight:700;text-align:right;font-size:12px}
+.ad-queues{display:grid;grid-template-columns:1fr;gap:8px}
+.ad-queue{display:flex;justify-content:space-between;align-items:center;gap:12px;text-decoration:none;color:#0f172a;background:#f8fafc;border:1px solid #e5eaf3;border-left:3px solid #f59e0b;border-radius:10px;padding:11px 12px}
+.ad-queue span{font-weight:850;font-size:13px}.ad-queue small{display:block;color:#64748b;margin-top:3px}.ad-queue strong{font-size:22px;color:#92400e}
+.ad-queue.red{border-left-color:#ef4444}.ad-queue.red strong{color:#b91c1c}.ad-queue.green{border-left-color:#22c55e}.ad-queue.violet{border-left-color:#8b5cf6}.ad-queue.violet strong{color:#6d28d9}.ad-queue.blue{border-left-color:#3b82f6}.ad-queue.blue strong{color:#1e40af}.ad-queue.slate{border-left-color:#64748b}.ad-queue.slate strong{color:#334155}
+.ad-feed,.ad-ledger{display:grid;gap:8px}
+.ad-feed-item,.ad-ledger-row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;background:#f8fafc;border:1px solid #edf2f7}
+.ad-feed-item span,.ad-ledger-row span{display:block;color:#64748b;font-size:12px;margin-top:3px;word-break:break-word}
+.ad-feed-item b,.ad-ledger-row .in,.ad-ledger-row .out{font-weight:900;text-align:right;white-space:nowrap}
+.ad-feed-item small{display:block;color:#94a3b8;margin-top:3px;text-align:right}
+.ad-ledger-row .in{color:#15803d}.ad-ledger-row .out{color:#b91c1c}
+.ad-chart-bars{display:grid;gap:11px}
+.ad-bar-row{display:grid;grid-template-columns:112px 1fr auto;gap:10px;align-items:center}
+.ad-bar-row span{font-size:12px;font-weight:850;color:#64748b}
+.ad-bar-row div{height:10px;background:#eef2f7;border-radius:999px;overflow:hidden}
+.ad-bar-row i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#1e3a8a,#d4af37)}
+.ad-bar-row b{font-size:12px;color:#0f172a;text-align:right}
+.ad-donut-wrap{display:flex;align-items:center;gap:18px;min-height:138px}
+.ad-donut{width:118px;height:118px;border-radius:50%;display:grid;place-content:center;text-align:center;background:conic-gradient(#1e3a8a var(--pct),#e8eef7 0);position:relative;flex:0 0 auto}
+.ad-donut:after{content:"";position:absolute;inset:13px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 1px #e5edf7}
+.ad-donut strong,.ad-donut span{position:relative;z-index:1}
+.ad-donut strong{font-size:26px;font-weight:950;color:#1e3a8a;line-height:1}
+.ad-donut span{font-size:11px;font-weight:900;text-transform:uppercase;color:#8b9aaf;margin-top:4px}
+.ad-donut-meta b{display:block;font-size:17px;color:#0f172a;margin-bottom:5px}
+.ad-donut-meta span{display:block;font-size:13px;color:#64748b;line-height:1.5}
+.ad-expand{margin-top:10px;width:100%;border:1px solid #dbe5f3;background:#f8fafc;color:#1e3a8a;border-radius:10px;padding:11px 12px;font-weight:850;cursor:pointer}
+.ad-expand:hover{background:#eef4ff}
+.ad-form-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.ad-form-grid label{display:block;font-size:12px;font-weight:900;text-transform:uppercase;color:#64748b;margin-bottom:6px}
+.ad-form-grid input{width:100%;border:1px solid #cbd5e1;border-radius:9px;padding:11px 12px;font:inherit;color:#0f172a;background:#fff}
+.ad-inline{display:grid;grid-template-columns:1fr;gap:8px}
+.ad-user{margin-top:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:12px}
+.ad-user span{display:block;color:#64748b;font-size:13px;margin:3px 0}.ad-user strong{color:#1e3a8a}
+.ad-actions{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.ad-actions .secondary{background:#334155}
+.ad-msg{margin-top:12px;padding:12px;border-radius:12px;font-weight:800}.ad-msg.ok{background:#dcfce7;color:#166534}.ad-msg.err{background:#fee2e2;color:#991b1b}
+.ad-empty{padding:24px;text-align:center;color:#94a3b8;font-weight:700}
+@media(min-width:420px){.ad-grid{grid-template-columns:repeat(2,1fr)}.ad-queues{grid-template-columns:repeat(2,1fr)}.ad-inline{grid-template-columns:1fr auto}.ad-actions{flex-direction:row}}
+@media(min-width:900px){.ad-grid{grid-template-columns:repeat(5,1fr)}.ad-split,.ad-insights{grid-template-columns:1.05fr .95fr}.ad-form-grid{grid-template-columns:1.4fr .8fr 1fr}.ad-panel{padding:16px}}
+@media(max-width:520px){.ad-bar-row{grid-template-columns:1fr}.ad-bar-row b{text-align:left}.ad-donut-wrap{align-items:flex-start;flex-direction:column}}
+@media(max-width:380px){.ad-hero{display:block}.ad-refresh{margin-top:12px;width:100%}.ad-feed-item,.ad-ledger-row{align-items:flex-start;flex-direction:column}.ad-feed-item b,.ad-ledger-row .in,.ad-ledger-row .out{text-align:left}}
+`;

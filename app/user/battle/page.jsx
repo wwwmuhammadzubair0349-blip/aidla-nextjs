@@ -106,6 +106,7 @@ export default function BattlePage() {
   const pollRef           = useRef(null);
   const roomSyncRef       = useRef(null);
   const roomChannelRef    = useRef(null);
+  const roomChannelReadyRef = useRef(false);
   const openRoomsPollRef  = useRef(null);
   const botTimerRef       = useRef(null);
   const timerRef          = useRef(null);
@@ -190,6 +191,7 @@ export default function BattlePage() {
       supabase.removeChannel(roomChannelRef.current);
       roomChannelRef.current = null;
     }
+    roomChannelReadyRef.current = false;
     cleanupVoiceResources();
   }
 
@@ -295,17 +297,35 @@ export default function BattlePage() {
     return pc;
   }
 
+  function addLocalTracks(pc) {
+    if (!localStreamRef.current) return;
+    localStreamRef.current.getAudioTracks().forEach(track => {
+      const sender = pc.getSenders().find(s => s.track?.kind === "audio");
+      if (sender) sender.replaceTrack(track).catch(() => {});
+      else pc.addTrack(track, localStreamRef.current);
+    });
+  }
+
+  async function waitForRoomChannel(timeout = 2000) {
+    let waited = 0;
+    while (!roomChannelReadyRef.current && waited < timeout) {
+      await new Promise(r => setTimeout(r, 100));
+      waited += 100;
+    }
+    return roomChannelReadyRef.current;
+  }
+
   async function initiateOffer() {
+    if (!(await waitForRoomChannel())) return;
     const pc = createPC();
-    if (localStreamRef.current)
-      localStreamRef.current.getTracks().forEach(t => { try { pc.addTrack(t, localStreamRef.current); } catch(_){} });
+    addLocalTracks(pc);
     if (pc.signalingState !== "stable") return;
     try {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      roomChannelRef.current?.send({
+      await roomChannelRef.current?.send({
         type:"broadcast", event:"webrtc-offer",
-        payload:{ from:"player1", sdp:pc.localDescription.sdp },
+        payload:{ from:myRoleRef.current, sdp:pc.localDescription.sdp },
       });
     } catch (_) {}
   }
@@ -327,9 +347,9 @@ export default function BattlePage() {
         const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
         localStreamRef.current = stream;
         setMicOn(true);
-        if (pcRef.current)
-          stream.getTracks().forEach(t => { try { pcRef.current.addTrack(t, stream); } catch(_){} });
-        roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
+        if (pcRef.current) addLocalTracks(pcRef.current);
+        if (await waitForRoomChannel())
+          await roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
         if (myRoleRef.current === "player1") await initiateOffer();
       } catch (err) {
         if (err?.name === "NotAllowedError" || err?.name === "PermissionDeniedError") {
@@ -361,13 +381,8 @@ export default function BattlePage() {
     sentEmojiTimeoutRef.current = setTimeout(() => setSentEmoji(null), 2500);
     const ch = roomChannelRef.current;
     if (!ch) return;
-    // Wait up to 2s for channel to be subscribed before sending
-    let waited = 0;
-    while (ch.state !== "joined" && waited < 2000) {
-      await new Promise(r => setTimeout(r, 100));
-      waited += 100;
-    }
-    ch.send({ type:"broadcast", event:"emoji", payload:{ from:myRoleRef.current, emoji } });
+    if (!(await waitForRoomChannel())) return;
+    await ch.send({ type:"broadcast", event:"emoji", payload:{ from:myRoleRef.current, emoji } });
   }
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -445,6 +460,7 @@ export default function BattlePage() {
     forfeitLockRef.current = false;
     const { data, error } = await supabase.rpc("battle_find_or_create", { p_mode: mode });
     if (error || !data?.ok) { flash(data?.error || error?.message); setView("lobby"); return; }
+    myRoleRef.current = data.role;
     setMyRole(data.role);
     setCurrentRoomId(data.room_id);
     watchRoom(data.room_id);
@@ -456,6 +472,7 @@ export default function BattlePage() {
     setJoiningRoomId(roomId);
     const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: roomId });
     if (error || !data?.ok) { flash(data?.error || error?.message); setJoiningRoomId(null); return; }
+    myRoleRef.current = "player2";
     setMyRole("player2");
     setCurrentRoomId(data.room_id);
     setIsPrivateRoom(false);
@@ -627,6 +644,7 @@ export default function BattlePage() {
   function watchRoom(roomId) {
     clearInterval(roomSyncRef.current);
     if (roomChannelRef.current) supabase.removeChannel(roomChannelRef.current);
+    roomChannelReadyRef.current = false;
     roomSyncRef.current = setInterval(() => syncRoom(roomId), 5000);
     roomChannelRef.current = supabase
       .channel(`battle-room:${roomId}`, { config: { broadcast: { ack: false, self: false } } })
@@ -653,15 +671,13 @@ export default function BattlePage() {
       // ── WebRTC signaling broadcasts ───────────────────────────────────────
       .on("broadcast", { event:"mic-on" }, ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
-        // When opponent enables mic, player1 initiates the offer
         if (myRoleRef.current === "player1") initiateOffer();
-        else createPC(); // player2 prepares the connection object
+        else createPC();
       })
       .on("broadcast", { event:"webrtc-offer" }, async ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
         const pc = createPC();
-        if (localStreamRef.current)
-          localStreamRef.current.getTracks().forEach(t => { try { pc.addTrack(t, localStreamRef.current); } catch(_){} });
+        addLocalTracks(pc);
         try {
           await pc.setRemoteDescription({ type:"offer", sdp:payload.sdp });
           for (const c of iceCandidateQueueRef.current)
@@ -669,7 +685,7 @@ export default function BattlePage() {
           iceCandidateQueueRef.current = [];
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
-          roomChannelRef.current?.send({
+          await roomChannelRef.current?.send({
             type:"broadcast", event:"webrtc-answer",
             payload:{ from:myRoleRef.current, sdp:pc.localDescription.sdp },
           });
@@ -695,7 +711,9 @@ export default function BattlePage() {
           iceCandidateQueueRef.current.push(payload.candidate);
         }
       })
-      .subscribe();
+      .subscribe((status) => {
+        roomChannelReadyRef.current = status === "SUBSCRIBED";
+      });
   }
 
   function startTimer(sec) {
@@ -848,8 +866,10 @@ export default function BattlePage() {
         const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
         localStreamRef.current = stream;
         setMicOn(true);
-        roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
-        if (myRoleRef.current === "player1") initiateOffer();
+        if (pcRef.current) addLocalTracks(pcRef.current);
+        if (await waitForRoomChannel())
+          await roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
+        if (myRoleRef.current === "player1") await initiateOffer();
       } catch (_) {}
     };
     run();
@@ -1009,6 +1029,7 @@ export default function BattlePage() {
       setIsPrivateRoom(false);
       return;
     }
+    myRoleRef.current = "player1";
     setMyRole("player1");
     setCurrentRoomId(data.room_id);
     setIsPrivateRoom(true);
@@ -1023,6 +1044,7 @@ export default function BattlePage() {
     setIsPrivateRoom(false);
     const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: rid });
     if (error || !data?.ok) { flash(data?.error || error?.message || "Room not found or full"); setView("lobby"); return; }
+    myRoleRef.current = "player2";
     setMyRole("player2");
     setCurrentRoomId(rid);
     opponentFetchedRef.current = false;

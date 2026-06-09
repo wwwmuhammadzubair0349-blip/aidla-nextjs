@@ -821,6 +821,25 @@ export default function BattlePage() {
     return () => window.removeEventListener("beforeunload", onUnload);
   }, [view, room?.id, myRole]);
 
+  // Auto-request mic permission when battle becomes active
+  useEffect(() => {
+    if (view !== "in_progress") return;
+    navigator.permissions.query({ name:"microphone" }).then(perm => {
+      if (perm.state === "prompt") {
+        navigator.mediaDevices.getUserMedia({ audio:true, video:false })
+          .then(stream => {
+            localStreamRef.current = stream;
+            setMicOn(true);
+            if (pcRef.current)
+              stream.getTracks().forEach(t => { try { pcRef.current.addTrack(t, stream); } catch(_){} });
+            roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
+            if (myRoleRef.current === "player1") initiateOffer();
+          })
+          .catch(() => {});
+      }
+    }).catch(() => {});
+  }, [view]);
+
   // H9: Selection countdown — auto-forfeit if selector doesn't pick in 60s
   useEffect(() => {
     if (view !== "selecting" || !isMySelectorTurn()) { setSelectionTimeLeft(0); return; }

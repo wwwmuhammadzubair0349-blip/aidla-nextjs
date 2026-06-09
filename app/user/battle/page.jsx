@@ -1357,19 +1357,35 @@ export default function BattlePage() {
     <div style={S.wrap}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       <style>{`
+        *{box-sizing:border-box}
         @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
-        @keyframes wobble{0%,100%{transform:rotate(-6deg) scale(1.05)}50%{transform:rotate(6deg) scale(1.1)}}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes timerPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.5)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+        @keyframes wobble{0%,100%{transform:rotate(-5deg) scale(1.04)}50%{transform:rotate(5deg) scale(1.08)}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes popIn{0%{opacity:0;transform:scale(0.86)}60%{transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+        @keyframes timerPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.55)}50%{box-shadow:0 0 0 7px rgba(239,68,68,0)}}
         @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-        @keyframes hbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-        @keyframes hbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
-        @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(90px) rotate(360deg);opacity:0}}
-        @keyframes liveBlip{0%,100%{opacity:1}50%{opacity:0.3}}
-        @keyframes glow{0%,100%{box-shadow:0 0 12px rgba(99,102,241,0.4)}50%{box-shadow:0 0 24px rgba(99,102,241,0.7)}}
-        .cat-icon{display:block}
-        @media(max-width:380px){.cat-icon{display:none}}
+        @keyframes hbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+        @keyframes hbPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+        @keyframes confettiFall{0%{transform:translateY(-8px) rotate(0deg);opacity:1}100%{transform:translateY(80px) rotate(360deg);opacity:0}}
+        @keyframes liveBlip{0%,100%{opacity:1}50%{opacity:0.25}}
+        @keyframes glow{0%,100%{box-shadow:0 0 10px rgba(99,102,241,0.4)}50%{box-shadow:0 0 22px rgba(99,102,241,0.75)}}
+        @keyframes glowGreen{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.35)}50%{box-shadow:0 0 12px 3px rgba(34,197,94,0.5)}}
+        @keyframes correctFlash{0%{background:#f0fdf4}40%{background:#bbf7d0}100%{background:#f0fdf4}}
+        @keyframes wrongShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-3px)}40%,80%{transform:translateX(3px)}}
+        @keyframes scoreJump{0%{transform:scale(1) translateY(0)}40%{transform:scale(1.35) translateY(-5px)}70%{transform:scale(0.95) translateY(0)}100%{transform:scale(1)}}
+        @keyframes orbFloat{0%,100%{transform:translate(0,0)}33%{transform:translate(5px,-7px)}66%{transform:translate(-4px,4px)}}
         @keyframes emojiPop{0%{opacity:0;transform:translateX(-50%) scale(0.4) translateY(0)}20%{opacity:1;transform:translateX(-50%) scale(1.2) translateY(-4px)}80%{opacity:1;transform:translateX(-50%) scale(1) translateY(-8px)}100%{opacity:0;transform:translateX(-50%) scale(0.8) translateY(-16px)}}
+        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        .cat-icon{display:block}
+        @media(max-width:360px){.cat-icon{display:none}}
+        .battle-btn{transition:transform 0.12s,box-shadow 0.12s}
+        .battle-btn:active{transform:scale(0.96)}
+        /* No body scroll on battle */
+        html,body{overscroll-behavior:none}
+        /* Hide scrollbars on inner scroll containers */
+        .inner-scroll{scrollbar-width:none;-ms-overflow-style:none}
+        .inner-scroll::-webkit-scrollbar{display:none}
       `}</style>
 
       {/* Hidden audio element for opponent voice */}
@@ -1383,13 +1399,13 @@ export default function BattlePage() {
       {/* Forfeit confirm dialog */}
       {confirmForfeit && (
         <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9000, padding:20 }}>
-          <div style={{ background:"#1e1b4b", borderRadius:16, padding:"24px 20px", maxWidth:300, width:"100%", textAlign:"center" }}>
-            <div style={{ fontSize:32, marginBottom:10 }}>🏳️</div>
-            <div style={{ color:"white", fontWeight:800, fontSize:17, marginBottom:8 }}>Forfeit Battle?</div>
-            <div style={{ color:"rgba(255,255,255,0.6)", fontSize:13, marginBottom:20 }}>Your opponent wins and you lose any coins at stake.</div>
-            <div style={{ display:"flex", gap:10 }}>
-              <button style={{ flex:1, padding:"10px 0", borderRadius:10, border:"1px solid rgba(255,255,255,0.2)", background:"transparent", color:"white", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }} onClick={() => setConfirmForfeit(false)}>Stay</button>
-              <button style={{ flex:1, padding:"10px 0", borderRadius:10, border:"none", background:"#ef4444", color:"white", fontWeight:800, cursor:"pointer", fontFamily:"inherit" }} onClick={() => { setConfirmForfeit(false); goLobby(); }}>Forfeit</button>
+          <div style={{ background:"#1e1b4b", borderRadius:14, padding:"18px 16px", maxWidth:280, width:"100%", textAlign:"center" }}>
+            <div style={{ fontSize:28, marginBottom:7 }}>🏳️</div>
+            <div style={{ color:"white", fontWeight:800, fontSize:15, marginBottom:6 }}>Forfeit Battle?</div>
+            <div style={{ color:"rgba(255,255,255,0.6)", fontSize:12, marginBottom:16 }}>Your opponent wins and you lose any coins at stake.</div>
+            <div style={{ display:"flex", gap:8 }}>
+              <button style={{ flex:1, padding:"9px 0", borderRadius:9, border:"1px solid rgba(255,255,255,0.2)", background:"transparent", color:"white", fontWeight:700, cursor:"pointer", fontFamily:"inherit", fontSize:13 }} onClick={() => setConfirmForfeit(false)}>Stay</button>
+              <button style={{ flex:1, padding:"9px 0", borderRadius:9, border:"none", background:"#ef4444", color:"white", fontWeight:800, cursor:"pointer", fontFamily:"inherit", fontSize:13 }} onClick={() => { setConfirmForfeit(false); goLobby(); }}>Forfeit</button>
             </div>
           </div>
         </div>
@@ -1409,16 +1425,19 @@ export default function BattlePage() {
       </div>
 
       {msg && (
-        <div style={{ position:"fixed", top:64, left:"50%", transform:"translateX(-50%)", background:"#1e293b", color:"white", padding:"10px 20px", borderRadius:24, fontSize:13, fontWeight:700, zIndex:9999, boxShadow:"0 4px 20px rgba(0,0,0,0.3)", animation:"fadeUp 0.2s ease" }}>
+        <div style={{ position:"fixed", top:56, left:"50%", transform:"translateX(-50%)", background:"#1e293b", color:"white", padding:"8px 18px", borderRadius:22, fontSize:12, fontWeight:700, zIndex:9999, boxShadow:"0 4px 20px rgba(0,0,0,0.3)", animation:"fadeUp 0.2s ease", whiteSpace:"nowrap" }}>
           {msg}
         </div>
       )}
+
+      {/* Scrollable view container */}
+      <div className="inner-scroll" style={{ flex:1, overflowY:"auto", overflowX:"hidden", WebkitOverflowScrolling:"touch", display:"flex", flexDirection:"column" }}>
 
       {/* ══════════════════════════════════════════════════════════
           LOBBY
       ══════════════════════════════════════════════════════════ */}
       {view === "lobby" && (
-        <div style={{ padding:"16px 14px" }}>
+        <div style={{ padding:"10px 12px", animation:"slideUp 0.25s ease" }}>
           {/* Tabs */}
           <div style={S.tabs}>
             {[["play","⚔️ Play"],["open","🌐 Open"],["history","📜 History"],["leaderboard","🏆 Board"]].map(([id,label]) => (
@@ -1438,19 +1457,19 @@ export default function BattlePage() {
             <div style={{ animation:"fadeUp 0.3s ease" }}>
               {/* Stats */}
               {myStats && (
-                <div style={{ ...S.card, background:"linear-gradient(135deg,#1e1b4b,#312e81)", marginBottom:14 }}>
-                  <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:12 }}>My Battle Stats</div>
-                  <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8 }}>
+                <div style={{ ...S.card, background:"linear-gradient(135deg,#1e1b4b,#312e81)", marginBottom:8, animation:"popIn 0.3s ease" }}>
+                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:8 }}>My Battle Stats</div>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:5 }}>
                     {[
                       ["⚔️","Battles", myStats.total,    "#a5b4fc"],
                       ["🏆","Wins",    myStats.wins,     "#6ee7b7"],
                       ["💀","Losses",  myStats.losses,   "#fca5a5"],
                       ["🪙","Earned", `+${myStats.coins_earned}`,"#fcd34d"],
                     ].map(([icon,label,val,color]) => (
-                      <div key={label} style={{ background:"rgba(255,255,255,0.08)", borderRadius:12, padding:"10px 6px", textAlign:"center" }}>
-                        <div style={{ fontSize:18, marginBottom:3 }}>{icon}</div>
-                        <div style={{ fontWeight:900, fontSize:15, color }}>{val}</div>
-                        <div style={{ fontSize:9, color:"rgba(255,255,255,0.45)", marginTop:2, textTransform:"uppercase", letterSpacing:"0.05em" }}>{label}</div>
+                      <div key={label} style={{ background:"rgba(255,255,255,0.08)", borderRadius:10, padding:"7px 4px", textAlign:"center" }}>
+                        <div style={{ fontSize:15, marginBottom:2 }}>{icon}</div>
+                        <div style={{ fontWeight:900, fontSize:13, color }}>{val}</div>
+                        <div style={{ fontSize:8, color:"rgba(255,255,255,0.4)", marginTop:2, textTransform:"uppercase", letterSpacing:"0.05em" }}>{label}</div>
                       </div>
                     ))}
                   </div>
@@ -1458,23 +1477,23 @@ export default function BattlePage() {
               )}
 
               {/* Mode selection */}
-              <div style={{ ...S.card, marginBottom:10 }}>
+              <div style={{ ...S.card, marginBottom:8 }}>
                 <div style={S.cardTitle}>Choose Battle Mode</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
                   {MODES.map(m => (
-                    <button key={m.id}
-                      style={{ width:"100%", padding:"14px 16px", borderRadius:14, border:`1.5px solid ${m.color}44`, background:`linear-gradient(135deg,${m.glow},transparent)`, textAlign:"left", cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:12 }}
+                    <button key={m.id} className="battle-btn"
+                      style={{ width:"100%", padding:"9px 12px", borderRadius:11, border:`1.5px solid ${m.color}44`, background:`linear-gradient(135deg,${m.glow},transparent)`, textAlign:"left", cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:9 }}
                       onClick={() => { setSelectedMode(m); setView("pre_waiting"); }}>
-                      <div style={{ width:42, height:42, borderRadius:12, background:`${m.color}22`, border:`1.5px solid ${m.color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, flexShrink:0 }}>
+                      <div style={{ width:34, height:34, borderRadius:10, background:`${m.color}22`, border:`1.5px solid ${m.color}44`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:17, flexShrink:0 }}>
                         {m.icon}
                       </div>
-                      <div style={{ flex:1 }}>
-                        <div style={{ fontWeight:800, fontSize:15, color:"#0f172a", marginBottom:2 }}>{m.label}</div>
-                        <div style={{ fontSize:11, color:"#64748b" }}>
-                          {m.stake === 0 ? "Free entry" : `Stake ${m.stake} coins`} · Win <strong style={{ color: m.color }}>{m.prize} coins</strong>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ fontWeight:800, fontSize:13, color:"#0f172a", marginBottom:1 }}>{m.label}</div>
+                        <div style={{ fontSize:10, color:"#64748b" }}>
+                          {m.stake === 0 ? "Free" : `Stake ${m.stake}🪙`} · Win <strong style={{ color: m.color }}>{m.prize}🪙</strong>
                         </div>
                       </div>
-                      <div style={{ background: m.color, color:"white", fontSize:11, fontWeight:900, padding:"4px 10px", borderRadius:20, flexShrink:0 }}>
+                      <div style={{ background: m.color, color:"white", fontSize:9, fontWeight:900, padding:"3px 7px", borderRadius:16, flexShrink:0 }}>
                         {m.badge}
                       </div>
                     </button>
@@ -1482,8 +1501,8 @@ export default function BattlePage() {
                 </div>
               </div>
 
-              <div style={{ background:"#fffbeb", border:"1px solid #fde68a", borderRadius:12, padding:"10px 14px", fontSize:12, color:"#92400e", fontWeight:600 }}>
-                💡 Hints: 1st=2.5 · 2nd=5 · 3rd=10 · 4th=20 · 5th=40 coins — eliminates one wrong option
+              <div style={{ background:"#fffbeb", border:"1px solid #fde68a", borderRadius:10, padding:"7px 11px", fontSize:10, color:"#92400e", fontWeight:600 }}>
+                💡 Hints: 1st=2.5 · 2nd=5 · 3rd=10 · 4th=20 · 5th=40 🪙 — eliminates a wrong option
               </div>
             </div>
           )}
@@ -1509,7 +1528,7 @@ export default function BattlePage() {
                   <button style={S.smBtn} onClick={loadOpenRooms}>↻ Refresh</button>
                 </div>
                 {openRooms.length === 0 ? (
-                  <div style={{ textAlign:"center", padding:"32px 0" }}>
+                  <div style={{ textAlign:"center", padding:"18px 0" }}>
                     <div style={{ fontSize:36, marginBottom:8 }}>🎮</div>
                     <div style={{ color:"#94a3b8", fontSize:13 }}>No open battles right now.</div>
                     <div style={{ color:"#cbd5e1", fontSize:12, marginTop:4 }}>Create one from the Play tab!</div>
@@ -1538,7 +1557,7 @@ export default function BattlePage() {
             <div style={{ ...S.card, animation:"fadeUp 0.3s ease" }}>
               <div style={S.cardTitle}>Battle History</div>
               {history.length === 0 ? (
-                <div style={{ textAlign:"center", padding:"32px 0" }}>
+                <div style={{ textAlign:"center", padding:"18px 0" }}>
                   <div style={{ fontSize:36, marginBottom:8 }}>⚔️</div>
                   <div style={{ color:"#94a3b8", fontSize:13 }}>No battles yet. Go win some!</div>
                 </div>
@@ -1602,35 +1621,35 @@ export default function BattlePage() {
           PRE-WAITING — mode selected, pick match type
       ══════════════════════════════════════════════════════════ */}
       {view === "pre_waiting" && selectedMode && (
-        <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
+        <div style={{ padding:"10px 12px", animation:"slideUp 0.25s ease" }}>
           {/* Mode hero */}
-          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:18, padding:"22px 20px", marginBottom:16, textAlign:"center", position:"relative", overflow:"hidden" }}>
-            <div style={{ position:"absolute", top:-20, right:-20, width:80, height:80, borderRadius:"50%", background:`${selectedMode.color}22` }} />
-            <div style={{ fontSize:44, marginBottom:8 }}>{selectedMode.icon}</div>
-            <div style={{ fontSize:24, fontWeight:900, color:"white", marginBottom:4 }}>{selectedMode.label} Mode</div>
-            <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:16 }}>
-              {selectedMode.stake === 0 ? "Free to play" : `Stake: ${selectedMode.stake} coins`} · Winner takes <span style={{ color:"#fbbf24", fontWeight:800 }}>{selectedMode.prize} coins</span>
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:14, padding:"14px 16px", marginBottom:10, textAlign:"center", position:"relative", overflow:"hidden" }}>
+            <div style={{ position:"absolute", top:-16, right:-16, width:60, height:60, borderRadius:"50%", background:`${selectedMode.color}22`, animation:"orbFloat 6s ease-in-out infinite" }} />
+            <div style={{ fontSize:34, marginBottom:5 }}>{selectedMode.icon}</div>
+            <div style={{ fontSize:18, fontWeight:900, color:"white", marginBottom:2 }}>{selectedMode.label} Mode</div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.6)", marginBottom:10 }}>
+              {selectedMode.stake === 0 ? "Free to play" : `Stake: ${selectedMode.stake}🪙`} · Win <span style={{ color:"#fbbf24", fontWeight:800 }}>{selectedMode.prize}🪙</span>
             </div>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6 }}>
               {[["Entry",selectedMode.stake===0?"Free":`${selectedMode.stake}`],["Prize",`${selectedMode.prize}`],["Tax",`${selectedMode.tax}`]].map(([l,v]) => (
-                <div key={l} style={{ background:"rgba(255,255,255,0.08)", borderRadius:10, padding:"8px 4px" }}>
-                  <div style={{ fontWeight:800, fontSize:16, color:"white" }}>{v}</div>
-                  <div style={{ fontSize:9, color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.05em", marginTop:2 }}>{l}</div>
+                <div key={l} style={{ background:"rgba(255,255,255,0.08)", borderRadius:8, padding:"6px 4px" }}>
+                  <div style={{ fontWeight:800, fontSize:13, color:"white" }}>{v}</div>
+                  <div style={{ fontSize:8, color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.05em", marginTop:1 }}>{l}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <button style={{ ...S.btn, marginBottom:10 }} onClick={() => findBattle(selectedMode.id)}>
+          <button className="battle-btn" style={{ ...S.btn, marginBottom:7 }} onClick={() => findBattle(selectedMode.id)}>
             🌐 Find Public Match
           </button>
-          <button style={{ ...S.btnGhost, marginBottom:14 }} onClick={createPrivateRoom}>
+          <button className="battle-btn" style={{ ...S.btnGhost, marginBottom:10 }} onClick={createPrivateRoom}>
             🔒 Create Private Room
           </button>
 
           <div style={S.card}>
             <div style={S.cardTitle}>Join Private Room</div>
-            <div style={{ display:"flex", gap:8 }}>
+            <div style={{ display:"flex", gap:7 }}>
               <input style={S.input} placeholder="Paste room ID..." value={joinRoomInput}
                 onChange={e => setJoinRoomInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && joinByRoomId()} />
@@ -1648,39 +1667,39 @@ export default function BattlePage() {
           WAITING — searching for opponent
       ══════════════════════════════════════════════════════════ */}
       {view === "waiting" && (
-        <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
-          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:20, padding:"36px 20px", textAlign:"center", marginBottom:14 }}>
+        <div style={{ padding:"10px 12px", animation:"slideUp 0.25s ease" }}>
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:16, padding:"20px 16px", textAlign:"center", marginBottom:10 }}>
             {/* Players row */}
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:20, marginBottom:28 }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:16, marginBottom:18 }}>
               {/* You */}
-              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:5 }}>
                 <div style={{ position:"relative" }}>
-                  <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={64} ring="#818cf8" />
-                  <div style={{ position:"absolute", bottom:-2, right:-2, width:18, height:18, borderRadius:"50%", background:"#22c55e", border:"2px solid #1e1b4b", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9 }}>✓</div>
+                  <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={52} ring="#818cf8" />
+                  <div style={{ position:"absolute", bottom:-2, right:-2, width:15, height:15, borderRadius:"50%", background:"#22c55e", border:"2px solid #1e1b4b", display:"flex", alignItems:"center", justifyContent:"center", fontSize:8 }}>✓</div>
                 </div>
-                <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.8)", maxWidth:80, textOverflow:"ellipsis", overflow:"hidden", whiteSpace:"nowrap" }}>{myFirstName}</div>
+                <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.8)", maxWidth:72, textOverflow:"ellipsis", overflow:"hidden", whiteSpace:"nowrap" }}>{myFirstName}</div>
               </div>
 
-              <div style={{ fontSize:22, fontWeight:900, color:"#f59e0b", animation:"wobble 1.5s ease-in-out infinite" }}>VS</div>
+              <div style={{ fontSize:18, fontWeight:900, color:"#f59e0b", animation:"wobble 1.5s ease-in-out infinite" }}>VS</div>
 
               {/* Opponent */}
-              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
-                <div style={{ width:64, height:64, borderRadius:"50%", background:"rgba(255,255,255,0.08)", border:"3px dashed rgba(255,255,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:26 }}>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:5 }}>
+                <div style={{ width:52, height:52, borderRadius:"50%", background:"rgba(255,255,255,0.08)", border:"2px dashed rgba(255,255,255,0.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22 }}>
                   ?
                 </div>
-                <div style={{ fontSize:12, fontWeight:700, color:"rgba(255,255,255,0.45)" }}>Searching...</div>
+                <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.45)" }}>Searching...</div>
               </div>
             </div>
 
-            <div style={{ fontSize:14, color:"rgba(255,255,255,0.6)", marginBottom:20 }}>
+            <div style={{ fontSize:12, color:"rgba(255,255,255,0.6)", marginBottom:14 }}>
               Matching you with the best challenger...
             </div>
-            <div style={{ display:"flex", justifyContent:"center", gap:8, marginBottom:24 }}>
+            <div style={{ display:"flex", justifyContent:"center", gap:6, marginBottom:16 }}>
               {[0,1,2,3,4].map(i => (
-                <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#818cf8", animation:`bounce 1.2s ease-in-out ${i*0.15}s infinite` }} />
+                <div key={i} style={{ width:7, height:7, borderRadius:"50%", background:"#818cf8", animation:`bounce 1.2s ease-in-out ${i*0.15}s infinite` }} />
               ))}
             </div>
-            <button style={{ ...S.btnGhost, maxWidth:200, margin:"0 auto", background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.7)", border:"1px solid rgba(255,255,255,0.15)" }} onClick={goLobby}>
+            <button style={{ ...S.btnGhost, maxWidth:180, margin:"0 auto", background:"rgba(255,255,255,0.08)", color:"rgba(255,255,255,0.7)", border:"1px solid rgba(255,255,255,0.15)", fontSize:12 }} onClick={goLobby}>
               Cancel
             </button>
           </div>
@@ -1710,9 +1729,9 @@ export default function BattlePage() {
           SELECTING
       ══════════════════════════════════════════════════════════ */}
       {view === "selecting" && room && (
-        <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
+        <div style={{ padding:"10px 12px", animation:"slideUp 0.25s ease" }}>
           {/* Battle header */}
-          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:16, padding:"14px 16px", marginBottom:14 }}>
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:13, padding:"10px 13px", marginBottom:10 }}>
             <div style={{ display:"flex", alignItems:"center", gap:12 }}>
               <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={36} ring="#818cf8" />
               <div style={{ flex:1, textAlign:"center" }}>
@@ -1736,48 +1755,48 @@ export default function BattlePage() {
           </div>
 
           {isMySelectorTurn() ? (
-            <div style={{ ...S.card, padding:16 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
-                <div style={{ background:"#eff0ff", color:"#4338ca", fontSize:11, fontWeight:800, padding:"4px 12px", borderRadius:20 }}>Your Pick</div>
-                <div style={S.cardTitle}>Round {currentRound} — Choose Category</div>
+            <div style={{ ...S.card, padding:11 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:9 }}>
+                <div style={{ background:"#eff0ff", color:"#4338ca", fontSize:9, fontWeight:800, padding:"3px 9px", borderRadius:16, flexShrink:0 }}>Your Pick</div>
+                <div style={{ fontWeight:800, fontSize:11, color:"#0f172a" }}>R{currentRound} — Category</div>
                 {selectionTimeLeft > 0 && (
-                  <div style={{ marginLeft:"auto", background: selectionTimeLeft <= 10 ? "#fef2f2" : "#f0fdf4", color: selectionTimeLeft <= 10 ? "#dc2626" : "#16a34a", fontSize:11, fontWeight:900, padding:"2px 10px", borderRadius:20, flexShrink:0 }}>
+                  <div style={{ marginLeft:"auto", background: selectionTimeLeft <= 10 ? "#fef2f2" : "#f0fdf4", color: selectionTimeLeft <= 10 ? "#dc2626" : "#16a34a", fontSize:10, fontWeight:900, padding:"2px 8px", borderRadius:16, flexShrink:0 }}>
                     {selectionTimeLeft}s
                   </div>
                 )}
               </div>
 
               {/* Category grid */}
-              <div style={{ fontSize:10, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:6 }}>Category</div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:4, marginBottom:12 }}>
+              <div style={{ fontSize:9, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>Category</div>
+              <div className="inner-scroll" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:3, marginBottom:9, maxHeight:130, overflowY:"auto" }}>
                 {categories.map(c => (
                   <button key={c.id}
-                    style={{ padding:"5px 2px", border: selCategory?.id===c.id ? "2px solid #6366f1" : "1.5px solid #e2e8f0", borderRadius:8, background: selCategory?.id===c.id ? "#eff0ff" : "white", fontSize:9, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color: selCategory?.id===c.id ? "#4338ca" : "#334155", textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:1, transition:"all 0.15s", minWidth:0 }}
+                    style={{ padding:"4px 2px", border: selCategory?.id===c.id ? "2px solid #6366f1" : "1.5px solid #e2e8f0", borderRadius:7, background: selCategory?.id===c.id ? "#eff0ff" : "white", fontSize:8, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color: selCategory?.id===c.id ? "#4338ca" : "#334155", textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:1, transition:"all 0.12s", minWidth:0 }}
                     onClick={() => setSelCategory(c)}>
-                    <span className="cat-icon" style={{ fontSize:13, lineHeight:1.3 }}>{c.icon}</span>
+                    <span className="cat-icon" style={{ fontSize:12, lineHeight:1.3 }}>{c.icon}</span>
                     <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", width:"100%", display:"block" }}>{c.name}</span>
                   </button>
                 ))}
               </div>
 
               {/* Difficulty + Questions */}
-              <div style={{ display:"flex", gap:10, marginBottom:14 }}>
+              <div style={{ display:"flex", gap:8, marginBottom:10 }}>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:10, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>Difficulty</div>
-                  <div style={{ display:"flex", gap:4 }}>
+                  <div style={{ fontSize:9, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:4 }}>Difficulty</div>
+                  <div style={{ display:"flex", gap:3 }}>
                     {[["easy","🟢"],["medium","🟡"],["hard","🔴"]].map(([d,dot]) => (
-                      <button key={d} style={{ flex:1, padding:"7px 2px", border:"1.5px solid #e2e8f0", borderRadius:8, background: selDifficulty===d ? "#6366f1" : "white", color: selDifficulty===d ? "white" : "#334155", fontSize:10, fontWeight:800, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}
+                      <button key={d} style={{ flex:1, padding:"5px 2px", border:"1.5px solid #e2e8f0", borderRadius:7, background: selDifficulty===d ? "#6366f1" : "white", color: selDifficulty===d ? "white" : "#334155", fontSize:9, fontWeight:800, cursor:"pointer", fontFamily:"inherit", transition:"all 0.12s" }}
                         onClick={() => setSelDifficulty(d)}>
-                        {dot} {d.charAt(0).toUpperCase()+d.slice(1)}
+                        {dot}
                       </button>
                     ))}
                   </div>
                 </div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontSize:10, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>Questions</div>
-                  <div style={{ display:"flex", gap:4 }}>
+                  <div style={{ fontSize:9, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:4 }}>Questions</div>
+                  <div style={{ display:"flex", gap:3 }}>
                     {[5,10,15,20].map(n => (
-                      <button key={n} style={{ flex:1, padding:"7px 2px", border:"1.5px solid #e2e8f0", borderRadius:8, background: selQuestions===n ? "#6366f1" : "white", color: selQuestions===n ? "white" : "#334155", fontSize:10, fontWeight:800, cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s" }}
+                      <button key={n} style={{ flex:1, padding:"5px 2px", border:"1.5px solid #e2e8f0", borderRadius:7, background: selQuestions===n ? "#6366f1" : "white", color: selQuestions===n ? "white" : "#334155", fontSize:9, fontWeight:800, cursor:"pointer", fontFamily:"inherit", transition:"all 0.12s" }}
                         onClick={() => setSelQuestions(n)}>
                         {n}
                       </button>
@@ -1786,28 +1805,28 @@ export default function BattlePage() {
                 </div>
               </div>
 
-              <button style={{ ...S.btn, opacity: (!selCategory||submittingSelection) ? 0.6 : 1 }} onClick={submitSelection} disabled={!selCategory||submittingSelection}>
-                {generatingQ ? "⚙️ Generating Questions..." : submittingSelection ? "⏳ Confirming..." : "⚔️ Lock In Selection"}
+              <button className="battle-btn" style={{ ...S.btn, opacity: (!selCategory||submittingSelection) ? 0.6 : 1 }} onClick={submitSelection} disabled={!selCategory||submittingSelection}>
+                {generatingQ ? "⚙️ Generating..." : submittingSelection ? "⏳ Confirming..." : "⚔️ Lock In Selection"}
               </button>
             </div>
           ) : (
-            <div style={{ ...S.card, textAlign:"center", padding:"44px 20px" }}>
-              <div style={{ display:"flex", justifyContent:"center", marginBottom:16 }}>
-                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={56} ring="#f87171" />
+            <div style={{ ...S.card, textAlign:"center", padding:"28px 16px" }}>
+              <div style={{ display:"flex", justifyContent:"center", marginBottom:11 }}>
+                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={46} ring="#f87171" />
               </div>
-              <div style={{ fontSize:17, fontWeight:800, color:"#0f172a", marginBottom:6 }}>
+              <div style={{ fontSize:14, fontWeight:800, color:"#0f172a", marginBottom:5 }}>
                 {oppFirstName} is picking Round {currentRound}
               </div>
               {room[`round${currentRound}_category`] ? (
-                <div style={{ display:"inline-block", background:"#eff0ff", color:"#4338ca", fontSize:12, fontWeight:700, padding:"4px 14px", borderRadius:20, marginBottom:16 }}>
+                <div style={{ display:"inline-block", background:"#eff0ff", color:"#4338ca", fontSize:11, fontWeight:700, padding:"3px 12px", borderRadius:16, marginBottom:12 }}>
                   Category: {room[`round${currentRound}_category`]}
                 </div>
               ) : (
-                <div style={{ fontSize:12, color:"#94a3b8", marginBottom:20 }}>Waiting for their selection...</div>
+                <div style={{ fontSize:11, color:"#94a3b8", marginBottom:14 }}>Waiting for their selection...</div>
               )}
               <div style={{ display:"flex", justifyContent:"center", gap:6 }}>
                 {[0,1,2].map(i => (
-                  <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#6366f1", animation:`bounce 1.2s ease-in-out ${i*0.2}s infinite` }} />
+                  <div key={i} style={{ width:7, height:7, borderRadius:"50%", background:"#6366f1", animation:`bounce 1.2s ease-in-out ${i*0.2}s infinite` }} />
                 ))}
               </div>
             </div>
@@ -1819,29 +1838,29 @@ export default function BattlePage() {
           WAITING FOR OPPONENT ROUND 1
       ══════════════════════════════════════════════════════════ */}
       {(view === "waiting_round" || view === "waiting_round2") && (
-        <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
-          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:20, padding:"40px 20px", textAlign:"center" }}>
-            <div style={{ fontSize:52, marginBottom:12, animation:"hbFloat 2s ease-in-out infinite" }}>✅</div>
-            <div style={{ fontSize:20, fontWeight:900, color:"white", marginBottom:6 }}>Round {currentRound} Complete!</div>
-            <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:24 }}>
+        <div style={{ padding:"10px 12px", animation:"slideUp 0.25s ease" }}>
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:16, padding:"24px 16px", textAlign:"center" }}>
+            <div style={{ fontSize:40, marginBottom:9, animation:"hbFloat 2s ease-in-out infinite" }}>✅</div>
+            <div style={{ fontSize:17, fontWeight:900, color:"white", marginBottom:5 }}>Round {currentRound} Complete!</div>
+            <div style={{ fontSize:12, color:"rgba(255,255,255,0.6)", marginBottom:16 }}>
               Waiting for <strong style={{ color:"#fbbf24" }}>{oppFirstName}</strong> to finish...
             </div>
-            <div style={{ display:"flex", justifyContent:"center", gap:6, marginBottom:20 }}>
+            <div style={{ display:"flex", justifyContent:"center", gap:5, marginBottom:14 }}>
               {[0,1,2,3,4].map(i => (
-                <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#818cf8", animation:`bounce 1.2s ease-in-out ${i*0.15}s infinite` }} />
+                <div key={i} style={{ width:7, height:7, borderRadius:"50%", background:"#818cf8", animation:`bounce 1.2s ease-in-out ${i*0.15}s infinite` }} />
               ))}
             </div>
-            <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>
+            <div style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>
               {view === "waiting_round2" ? "Calculating final results once both finish..." : "Round 2 selection begins once both players finish"}
             </div>
             {!room?.is_bot && (
-              <div style={{ marginTop:20, paddingTop:16, borderTop:"1px solid rgba(255,255,255,0.12)", display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
-                <span style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.6)", marginRight:4 }}>🎧 Voice Chat</span>
-                {micOn && <span style={{ fontSize:9, fontWeight:800, color:"#22c55e", letterSpacing:"0.06em", animation:"liveBlip 1.2s ease-in-out infinite" }}>● LIVE</span>}
-                <button onClick={toggleMic} style={{ width:30, height:30, borderRadius:"50%", border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.3)"}`, background:micOn?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.08)", fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+              <div style={{ marginTop:14, paddingTop:12, borderTop:"1px solid rgba(255,255,255,0.12)", display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
+                <span style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.6)", marginRight:3 }}>🎧 Voice</span>
+                {micOn && <span style={{ fontSize:8, fontWeight:800, color:"#22c55e", letterSpacing:"0.06em", animation:"liveBlip 1.2s ease-in-out infinite" }}>● LIVE</span>}
+                <button onClick={toggleMic} style={{ width:27, height:27, borderRadius:"50%", border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.3)"}`, background:micOn?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.08)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   {micOn ? "🎤" : "🎙️"}
                 </button>
-                <button onClick={toggleSpeaker} style={{ width:30, height:30, borderRadius:"50%", border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.3)"}`, background:speakerOn?"rgba(99,102,241,0.18)":"rgba(255,255,255,0.08)", fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                <button onClick={toggleSpeaker} style={{ width:27, height:27, borderRadius:"50%", border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.3)"}`, background:speakerOn?"rgba(99,102,241,0.18)":"rgba(255,255,255,0.08)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
                   {speakerOn ? "🔊" : "🔇"}
                 </button>
               </div>
@@ -1854,9 +1873,9 @@ export default function BattlePage() {
           IN PROGRESS — Battle HUD
       ══════════════════════════════════════════════════════════ */}
       {view === "in_progress" && !q && (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:"50vh", gap:12 }}>
-          <div style={{ fontSize:32, animation:"spin 1s linear infinite" }}>⚔️</div>
-          <div style={{ color:"rgba(255,255,255,0.6)", fontSize:13, fontWeight:600 }}>Loading question...</div>
+        <div style={{ display:"flex", flex:1, flexDirection:"column", alignItems:"center", justifyContent:"center", gap:10, padding:"24px" }}>
+          <div style={{ fontSize:28, animation:"spin 1s linear infinite" }}>⚔️</div>
+          <div style={{ color:"#64748b", fontSize:12, fontWeight:600 }}>Loading question...</div>
         </div>
       )}
 
@@ -2028,71 +2047,71 @@ export default function BattlePage() {
           RESULT
       ══════════════════════════════════════════════════════════ */}
       {view === "result" && result && (
-        <div style={{ padding:"16px 14px" }}>
+        <div style={{ padding:"10px 12px" }}>
           {/* ── WIN ── */}
           {result.won && (
-            <div style={{ background:"linear-gradient(145deg,#064e3b,#065f46,#047857)", borderRadius:20, padding:"28px 18px", textAlign:"center", position:"relative", overflow:"hidden", animation:"fadeUp 0.4s ease" }}>
-              <div style={{ position:"absolute", top:-20, right:-20, width:100, height:100, borderRadius:"50%", background:"rgba(52,211,153,0.15)" }} />
-              <div style={{ position:"absolute", bottom:-15, left:-15, width:80, height:80, borderRadius:"50%", background:"rgba(16,185,129,0.12)" }} />
-              <div style={{ fontSize:58, marginBottom:8, animation:"hbFloat 2s ease-in-out infinite" }}>🏆</div>
-              <div style={{ fontSize:32, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.02em" }}>You Won!</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{""}</div>
+            <div style={{ background:"linear-gradient(145deg,#064e3b,#065f46,#047857)", borderRadius:16, padding:"18px 14px", textAlign:"center", position:"relative", overflow:"hidden", animation:"popIn 0.35s ease" }}>
+              <div style={{ position:"absolute", top:-16, right:-16, width:72, height:72, borderRadius:"50%", background:"rgba(52,211,153,0.15)", animation:"orbFloat 8s ease-in-out infinite" }} />
+              <div style={{ position:"absolute", bottom:-12, left:-12, width:56, height:56, borderRadius:"50%", background:"rgba(16,185,129,0.12)", animation:"orbFloat 10s ease-in-out infinite reverse" }} />
+              <div style={{ fontSize:44, marginBottom:5, animation:"hbFloat 2s ease-in-out infinite" }}>🏆</div>
+              <div style={{ fontSize:24, fontWeight:900, color:"#fff", marginBottom:2, letterSpacing:"-0.02em" }}>You Won!</div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.65)", marginBottom:14 }}>vs {result.oppName}</div>
 
               {/* Round breakdown */}
-              <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:14, padding:"14px 16px", marginBottom:14, textAlign:"left" }}>
-                <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Score Breakdown</div>
-                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:4 }}>
+              <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:11, padding:"10px 12px", marginBottom:10, textAlign:"left" }}>
+                <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.45)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:7 }}>Score Breakdown</div>
+                <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:3 }}>
                   <div />
-                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.4)", textAlign:"center", textTransform:"uppercase", letterSpacing:"0.06em" }}>You</div>
-                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.4)", textAlign:"center", textTransform:"uppercase", letterSpacing:"0.06em" }}>Opponent</div>
+                  <div style={{ fontSize:8, fontWeight:800, color:"rgba(255,255,255,0.4)", textAlign:"center", textTransform:"uppercase" }}>You</div>
+                  <div style={{ fontSize:8, fontWeight:800, color:"rgba(255,255,255,0.4)", textAlign:"center", textTransform:"uppercase" }}>Opp</div>
                 </div>
                 {result.round1.total > 0 && (
-                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:6, alignItems:"center" }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.55)" }}>Round 1</div>
-                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.my}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>/{result.round1.total}</span>
+                  <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:4, alignItems:"center" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.55)" }}>Round 1</div>
+                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round1.my}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>/{result.round1.total}</span>
                     </div>
-                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.opp}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>/{result.round1.total}</span>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round1.opp}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>/{result.round1.total}</span>
                     </div>
                   </div>
                 )}
                 {result.round2.total > 0 && (
-                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:10, alignItems:"center" }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.55)" }}>Round 2</div>
-                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.my}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>/{result.round2.total}</span>
+                  <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:7, alignItems:"center" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.55)" }}>Round 2</div>
+                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round2.my}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>/{result.round2.total}</span>
                     </div>
-                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.opp}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>/{result.round2.total}</span>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round2.opp}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>/{result.round2.total}</span>
                     </div>
                   </div>
                 )}
-                <div style={{ height:1, background:"rgba(255,255,255,0.12)", marginBottom:8 }} />
-                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, alignItems:"center" }}>
-                  <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.75)" }}>Total</div>
-                  <div style={{ background:"rgba(52,211,153,0.2)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
-                    <span style={{ fontWeight:900, fontSize:18, color:"#6ee7b7" }}>{result.myScore}</span>
-                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(110,231,183,0.6)" }}>/{result.totalQuestions}</span>}
+                <div style={{ height:1, background:"rgba(255,255,255,0.12)", marginBottom:6 }} />
+                <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, alignItems:"center" }}>
+                  <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.75)" }}>Total</div>
+                  <div style={{ background:"rgba(52,211,153,0.2)", borderRadius:7, padding:"6px 3px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:15, color:"#6ee7b7" }}>{result.myScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:10, color:"rgba(110,231,183,0.6)" }}>/{result.totalQuestions}</span>}
                   </div>
-                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
-                    <span style={{ fontWeight:900, fontSize:18, color:"#fff" }}>{result.oppScore}</span>
-                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
+                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:7, padding:"6px 3px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.oppScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
                   </div>
                 </div>
               </div>
 
-              <div style={{ background:"rgba(52,211,153,0.15)", borderRadius:12, padding:"12px", marginBottom:20, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-                <span style={{ fontSize:22 }}>🪙</span>
-                <span style={{ fontWeight:900, fontSize:22, color:"#6ee7b7" }}>+{result.coinsChange}</span>
-                <span style={{ fontSize:12, color:"rgba(255,255,255,0.55)" }}>coins earned</span>
+              <div style={{ background:"rgba(52,211,153,0.15)", borderRadius:10, padding:"9px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                <span style={{ fontSize:18 }}>🪙</span>
+                <span style={{ fontWeight:900, fontSize:18, color:"#6ee7b7" }}>+{result.coinsChange}</span>
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.55)" }}>coins earned</span>
               </div>
 
-              <button style={{ ...S.btn, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)", color:"#fff", marginBottom:8 }} onClick={() => setShowShare(true)}>
+              <button className="battle-btn" style={{ ...S.btn, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)", color:"#fff", marginBottom:7 }} onClick={() => setShowShare(true)}>
                 Share Victory 🎉
               </button>
               <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.7)", border:"1px solid rgba(255,255,255,0.12)" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
@@ -2103,76 +2122,76 @@ export default function BattlePage() {
 
           {/* ── LOSE ── */}
           {!result.won && !result.tie && (
-            <div style={{ background:"linear-gradient(145deg,#1a0533,#4a044e 35%,#7f1d1d 70%,#1e1b4b)", borderRadius:20, padding:"28px 18px", textAlign:"center", position:"relative", overflow:"hidden", animation:"fadeUp 0.4s ease" }}>
-              <div style={{ position:"absolute", top:-20, left:-20, width:100, height:100, borderRadius:"50%", background:"rgba(220,38,38,0.18)" }} />
+            <div style={{ background:"linear-gradient(145deg,#1a0533,#4a044e 35%,#7f1d1d 70%,#1e1b4b)", borderRadius:16, padding:"18px 14px", textAlign:"center", position:"relative", overflow:"hidden", animation:"popIn 0.35s ease" }}>
+              <div style={{ position:"absolute", top:-16, left:-16, width:72, height:72, borderRadius:"50%", background:"rgba(220,38,38,0.18)" }} />
               {[...Array(6)].map((_,i) => (
-                <div key={i} style={{ position:"absolute", top:0, left:`${8+i*16}%`, width:6, height:6, borderRadius:2, background:["#f87171","#c084fc","#fb923c","#e879f9","#f472b6","#a78bfa"][i], animation:`confettiFall ${1.5+i*0.3}s ease-in ${i*0.2}s infinite`, opacity:0 }} />
+                <div key={i} style={{ position:"absolute", top:0, left:`${8+i*16}%`, width:5, height:5, borderRadius:2, background:["#f87171","#c084fc","#fb923c","#e879f9","#f472b6","#a78bfa"][i], animation:`confettiFall ${1.5+i*0.3}s ease-in ${i*0.2}s infinite`, opacity:0 }} />
               ))}
-              <div style={{ fontSize:58, marginBottom:8, animation:"hbPulse 1.4s ease-in-out infinite" }}>💔</div>
-              <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.02em" }}>You Lost</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.55)", marginBottom:16 }}>vs {result.oppName}{""}</div>
+              <div style={{ fontSize:42, marginBottom:5, animation:"hbPulse 1.4s ease-in-out infinite" }}>💔</div>
+              <div style={{ fontSize:22, fontWeight:900, color:"#fff", marginBottom:2, letterSpacing:"-0.02em" }}>You Lost</div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.55)", marginBottom:10 }}>vs {result.oppName}</div>
 
-              <div style={{ background:"rgba(255,255,255,0.06)", borderRadius:12, padding:"10px 14px", marginBottom:14, border:"1px solid rgba(255,255,255,0.08)" }}>
-                <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)", fontStyle:"italic", lineHeight:1.6 }}>
+              <div style={{ background:"rgba(255,255,255,0.06)", borderRadius:10, padding:"8px 12px", marginBottom:10, border:"1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.5)", fontStyle:"italic", lineHeight:1.5 }}>
                   {["Every champion was once a challenger. Get back up! 🔥","The road to victory is paved with losses. Keep going! 💪","Defeat is just a detour, not a dead end. Try again! ⚡","Your next battle starts now. Don't stop! 🚀"][Math.floor(Math.random()*4)]}
                 </div>
               </div>
 
               {/* Round breakdown */}
-              <div style={{ background:"rgba(0,0,0,0.25)", borderRadius:14, padding:"14px 16px", marginBottom:14, textAlign:"left" }}>
-                <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Score Breakdown</div>
-                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:4 }}>
+              <div style={{ background:"rgba(0,0,0,0.25)", borderRadius:11, padding:"10px 12px", marginBottom:10, textAlign:"left" }}>
+                <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:7 }}>Score Breakdown</div>
+                <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:3 }}>
                   <div />
-                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>You</div>
-                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>Opponent</div>
+                  <div style={{ fontSize:8, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>You</div>
+                  <div style={{ fontSize:8, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>Opp</div>
                 </div>
                 {result.round1.total > 0 && (
-                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:6, alignItems:"center" }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 1</div>
-                    <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.my}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
+                  <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:4, alignItems:"center" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 1</div>
+                    <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round1.my}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
                     </div>
-                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.opp}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round1.opp}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
                     </div>
                   </div>
                 )}
                 {result.round2.total > 0 && (
-                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:10, alignItems:"center" }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 2</div>
-                    <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.my}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
+                  <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:7, alignItems:"center" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 2</div>
+                    <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round2.my}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
                     </div>
-                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.opp}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round2.opp}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
                     </div>
                   </div>
                 )}
-                <div style={{ height:1, background:"rgba(255,255,255,0.1)", marginBottom:8 }} />
-                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, alignItems:"center" }}>
-                  <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.7)" }}>Total</div>
-                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
-                    <span style={{ fontWeight:900, fontSize:18, color:"#fff" }}>{result.myScore}</span>
-                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(255,255,255,0.4)" }}>/{result.totalQuestions}</span>}
+                <div style={{ height:1, background:"rgba(255,255,255,0.1)", marginBottom:6 }} />
+                <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, alignItems:"center" }}>
+                  <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.7)" }}>Total</div>
+                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:7, padding:"6px 3px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.myScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.totalQuestions}</span>}
                   </div>
-                  <div style={{ background:"rgba(239,68,68,0.2)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
-                    <span style={{ fontWeight:900, fontSize:18, color:"#fca5a5" }}>{result.oppScore}</span>
-                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(252,165,165,0.5)" }}>/{result.totalQuestions}</span>}
+                  <div style={{ background:"rgba(239,68,68,0.2)", borderRadius:7, padding:"6px 3px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:15, color:"#fca5a5" }}>{result.oppScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:10, color:"rgba(252,165,165,0.5)" }}>/{result.totalQuestions}</span>}
                   </div>
                 </div>
               </div>
 
-              <div style={{ background:"rgba(239,68,68,0.18)", borderRadius:12, padding:"12px", marginBottom:20, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-                <span style={{ fontSize:18 }}>🪙</span>
-                <span style={{ fontWeight:900, fontSize:22, color:"#fca5a5" }}>{result.coinsChange}</span>
-                <span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>coins lost</span>
+              <div style={{ background:"rgba(239,68,68,0.18)", borderRadius:10, padding:"9px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                <span style={{ fontSize:16 }}>🪙</span>
+                <span style={{ fontWeight:900, fontSize:18, color:"#fca5a5" }}>{result.coinsChange}</span>
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>coins lost</span>
               </div>
 
-              <button style={{ ...S.btn, background:"linear-gradient(135deg,#7c3aed,#db2777)", border:"none", marginBottom:8 }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
+              <button className="battle-btn" style={{ ...S.btn, background:"linear-gradient(135deg,#7c3aed,#db2777)", border:"none", marginBottom:7 }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
                 Try Again 🔁
               </button>
               <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.06)", color:"rgba(255,255,255,0.6)", border:"1px solid rgba(255,255,255,0.1)" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
@@ -2183,64 +2202,64 @@ export default function BattlePage() {
 
           {/* ── TIE ── */}
           {result.tie && (
-            <div style={{ background:"linear-gradient(135deg,#1e3a5f,#1e40af,#0369a1)", borderRadius:20, padding:"28px 18px", textAlign:"center", position:"relative", overflow:"hidden", animation:"fadeUp 0.4s ease" }}>
-              <div style={{ position:"absolute", top:-15, right:-15, width:80, height:80, borderRadius:"50%", background:"rgba(96,165,250,0.2)" }} />
-              <div style={{ fontSize:54, marginBottom:8 }}>🤝</div>
-              <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4 }}>It&apos;s a Tie!</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{""}</div>
+            <div style={{ background:"linear-gradient(135deg,#1e3a5f,#1e40af,#0369a1)", borderRadius:16, padding:"18px 14px", textAlign:"center", position:"relative", overflow:"hidden", animation:"popIn 0.35s ease" }}>
+              <div style={{ position:"absolute", top:-12, right:-12, width:60, height:60, borderRadius:"50%", background:"rgba(96,165,250,0.2)", animation:"orbFloat 7s ease-in-out infinite" }} />
+              <div style={{ fontSize:40, marginBottom:5 }}>🤝</div>
+              <div style={{ fontSize:22, fontWeight:900, color:"#fff", marginBottom:2 }}>It&apos;s a Tie!</div>
+              <div style={{ fontSize:11, color:"rgba(255,255,255,0.65)", marginBottom:14 }}>vs {result.oppName}</div>
 
               {/* Round breakdown */}
-              <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:14, padding:"14px 16px", marginBottom:14, textAlign:"left" }}>
-                <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:10 }}>Score Breakdown</div>
-                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:4 }}>
+              <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:11, padding:"10px 12px", marginBottom:10, textAlign:"left" }}>
+                <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.4)", textTransform:"uppercase", letterSpacing:"0.08em", marginBottom:7 }}>Score Breakdown</div>
+                <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:3 }}>
                   <div />
-                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>You</div>
-                  <div style={{ fontSize:9, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>Opponent</div>
+                  <div style={{ fontSize:8, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>You</div>
+                  <div style={{ fontSize:8, fontWeight:800, color:"rgba(255,255,255,0.35)", textAlign:"center", textTransform:"uppercase" }}>Opp</div>
                 </div>
                 {result.round1.total > 0 && (
-                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:6, alignItems:"center" }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 1</div>
-                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.my}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
+                  <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:4, alignItems:"center" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 1</div>
+                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round1.my}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
                     </div>
-                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round1.opp}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round1.opp}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.round1.total}</span>
                     </div>
                   </div>
                 )}
                 {result.round2.total > 0 && (
-                  <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, marginBottom:10, alignItems:"center" }}>
-                    <div style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 2</div>
-                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.my}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
+                  <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, marginBottom:7, alignItems:"center" }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.5)" }}>Round 2</div>
+                    <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round2.my}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
                     </div>
-                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:8, padding:"6px 4px", textAlign:"center" }}>
-                      <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.round2.opp}</span>
-                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
+                    <div style={{ background:"rgba(255,255,255,0.07)", borderRadius:7, padding:"5px 3px", textAlign:"center" }}>
+                      <span style={{ fontWeight:900, fontSize:13, color:"#fff" }}>{result.round2.opp}</span>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.4)" }}>/{result.round2.total}</span>
                     </div>
                   </div>
                 )}
-                <div style={{ height:1, background:"rgba(255,255,255,0.12)", marginBottom:8 }} />
-                <div style={{ display:"grid", gridTemplateColumns:"70px 1fr 1fr", gap:6, alignItems:"center" }}>
-                  <div style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.75)" }}>Total</div>
-                  <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
-                    <span style={{ fontWeight:900, fontSize:18, color:"#fff" }}>{result.myScore}</span>
-                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
+                <div style={{ height:1, background:"rgba(255,255,255,0.12)", marginBottom:6 }} />
+                <div style={{ display:"grid", gridTemplateColumns:"58px 1fr 1fr", gap:5, alignItems:"center" }}>
+                  <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.75)" }}>Total</div>
+                  <div style={{ background:"rgba(255,255,255,0.12)", borderRadius:7, padding:"6px 3px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.myScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
                   </div>
-                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:8, padding:"8px 4px", textAlign:"center" }}>
-                    <span style={{ fontWeight:900, fontSize:18, color:"#fff" }}>{result.oppScore}</span>
-                    {result.totalQuestions>0&&<span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
+                  <div style={{ background:"rgba(255,255,255,0.08)", borderRadius:7, padding:"6px 3px", textAlign:"center" }}>
+                    <span style={{ fontWeight:900, fontSize:15, color:"#fff" }}>{result.oppScore}</span>
+                    {result.totalQuestions>0&&<span style={{ fontSize:10, color:"rgba(255,255,255,0.45)" }}>/{result.totalQuestions}</span>}
                   </div>
                 </div>
               </div>
 
-              <div style={{ background:"rgba(251,191,36,0.15)", borderRadius:12, padding:"12px", marginBottom:20, display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-                <span style={{ fontSize:18 }}>🪙</span>
-                <span style={{ fontWeight:900, fontSize:22, color:"#fcd34d" }}>{result.coinsChange < 0 ? result.coinsChange : `+${result.coinsChange}`}</span>
-                <span style={{ fontSize:12, color:"rgba(255,255,255,0.5)" }}>coins</span>
+              <div style={{ background:"rgba(251,191,36,0.15)", borderRadius:10, padding:"9px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+                <span style={{ fontSize:16 }}>🪙</span>
+                <span style={{ fontWeight:900, fontSize:18, color:"#fcd34d" }}>{result.coinsChange < 0 ? result.coinsChange : `+${result.coinsChange}`}</span>
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>coins</span>
               </div>
 
               <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.12)", color:"#fff", border:"1px solid rgba(255,255,255,0.2)" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
@@ -2250,6 +2269,8 @@ export default function BattlePage() {
           )}
         </div>
       )}
+
+      </div>{/* /inner-scroll */}
     </div>
   );
 }
@@ -2338,19 +2359,19 @@ function BattleShareCard({ profile, result, onClose }) {
 
 // ── STYLES ─────────────────────────────────────────────────────────
 const S = {
-  wrap:       { fontFamily:"'DM Sans',sans-serif", maxWidth:560, margin:"0 auto", minHeight:"100vh", background:"#f0f2ff" },
-  header:     { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 16px", background:"linear-gradient(135deg,#1e1b4b,#312e81)", position:"sticky", top:0, zIndex:100 },
-  backBtn:    { background:"rgba(255,255,255,0.12)", border:"none", color:"white", fontWeight:800, fontSize:18, cursor:"pointer", width:36, height:36, borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center" },
-  headerTitle:{ fontWeight:800, fontSize:15, color:"white", letterSpacing:"-0.01em" },
-  coinsBadge: { background:"rgba(245,158,11,0.2)", border:"1px solid rgba(245,158,11,0.4)", borderRadius:20, padding:"5px 10px", display:"flex", alignItems:"center", gap:5 },
-  tabs:       { display:"flex", gap:4, marginBottom:14, background:"white", borderRadius:14, padding:4, boxShadow:"0 1px 4px rgba(0,0,0,0.06)" },
-  tab:        { flex:1, padding:"8px 4px", border:"none", background:"transparent", fontWeight:700, fontSize:11, cursor:"pointer", fontFamily:"inherit", color:"#64748b", borderRadius:10, transition:"all 0.15s" },
-  tabActive:  { background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"white", boxShadow:"0 2px 8px rgba(99,102,241,0.35)" },
-  card:       { background:"white", borderRadius:16, padding:18, marginBottom:12, boxShadow:"0 2px 12px rgba(0,0,0,0.06)" },
-  cardTitle:  { fontWeight:800, fontSize:14, marginBottom:12, color:"#0f172a" },
-  btn:        { width:"100%", padding:"13px", background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"white", border:"none", borderRadius:13, fontWeight:800, fontSize:15, cursor:"pointer", fontFamily:"inherit", boxShadow:"0 4px 15px rgba(99,102,241,0.35)" },
-  btnGhost:   { width:"100%", padding:"12px", background:"white", color:"#334155", border:"1.5px solid #e2e8f0", borderRadius:13, fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit" },
-  smBtn:      { padding:"8px 14px", border:"1.5px solid #e2e8f0", background:"white", borderRadius:10, fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color:"#334155", display:"flex", alignItems:"center", justifyContent:"center" },
-  lbRow:      { display:"flex", alignItems:"center", gap:10, padding:"9px 0", borderBottom:"1px solid #f1f5f9" },
-  input:      { flex:1, border:"1.5px solid #e2e8f0", borderRadius:11, padding:"10px 12px", fontSize:13, outline:"none", fontFamily:"inherit", minWidth:0, background:"#fafafa" },
+  wrap:       { fontFamily:"'DM Sans',sans-serif", maxWidth:480, margin:"0 auto", height:"100dvh", maxHeight:"100dvh", overflow:"hidden", background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column" },
+  header:     { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 14px", background:"linear-gradient(135deg,#1e1b4b,#312e81)", flexShrink:0, boxShadow:"0 2px 12px rgba(30,27,75,0.35)" },
+  backBtn:    { background:"rgba(255,255,255,0.13)", border:"none", color:"white", fontWeight:800, fontSize:16, cursor:"pointer", width:32, height:32, borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 },
+  headerTitle:{ fontWeight:800, fontSize:14, color:"white", letterSpacing:"-0.01em" },
+  coinsBadge: { background:"rgba(245,158,11,0.18)", border:"1px solid rgba(245,158,11,0.38)", borderRadius:18, padding:"4px 8px", display:"flex", alignItems:"center", gap:4 },
+  tabs:       { display:"flex", gap:3, marginBottom:10, background:"white", borderRadius:12, padding:3, boxShadow:"0 1px 4px rgba(0,0,0,0.06)", flexShrink:0 },
+  tab:        { flex:1, padding:"6px 4px", border:"none", background:"transparent", fontWeight:700, fontSize:11, cursor:"pointer", fontFamily:"inherit", color:"#64748b", borderRadius:9, transition:"all 0.15s" },
+  tabActive:  { background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"white", boxShadow:"0 2px 7px rgba(99,102,241,0.35)" },
+  card:       { background:"white", borderRadius:14, padding:12, marginBottom:8, boxShadow:"0 2px 10px rgba(0,0,0,0.055)" },
+  cardTitle:  { fontWeight:800, fontSize:12, marginBottom:8, color:"#0f172a" },
+  btn:        { width:"100%", padding:"10px", background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"white", border:"none", borderRadius:11, fontWeight:800, fontSize:14, cursor:"pointer", fontFamily:"inherit", boxShadow:"0 3px 12px rgba(99,102,241,0.35)" },
+  btnGhost:   { width:"100%", padding:"9px", background:"white", color:"#334155", border:"1.5px solid #e2e8f0", borderRadius:11, fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit" },
+  smBtn:      { padding:"6px 11px", border:"1.5px solid #e2e8f0", background:"white", borderRadius:9, fontSize:11, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color:"#334155", display:"flex", alignItems:"center", justifyContent:"center" },
+  lbRow:      { display:"flex", alignItems:"center", gap:8, padding:"7px 0", borderBottom:"1px solid #f1f5f9" },
+  input:      { flex:1, border:"1.5px solid #e2e8f0", borderRadius:10, padding:"8px 10px", fontSize:12, outline:"none", fontFamily:"inherit", minWidth:0, background:"#fafafa" },
 };

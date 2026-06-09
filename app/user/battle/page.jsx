@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable react-hooks/immutability, react-hooks/purity, react-hooks/exhaustive-deps, @typescript-eslint/no-unused-vars, @next/next/no-img-element, @next/next/no-page-custom-font */
+/* eslint-disable react-hooks/exhaustive-deps, @typescript-eslint/no-unused-vars, @next/next/no-img-element, @next/next/no-page-custom-font */
 import { useEffect, useState, useRef, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -142,6 +142,7 @@ export default function BattlePage() {
   const botCountdownTimerRef  = useRef(null);
   const sentEmojiIdRef        = useRef(0);
   const receivedEmojiIdRef    = useRef(0);
+  const selectionResetKeyRef  = useRef("");
 
   const [selectedMode,   setSelectedMode]   = useState(null);
   const [joinRoomInput,  setJoinRoomInput]  = useState("");
@@ -235,6 +236,7 @@ export default function BattlePage() {
     roundTotalsRef.current    = { 1:0, 2:0 };
     hintLockRef.current       = false;
     setOpponentProfile(null);
+    resetSelectionState();
     cleanupVoice();
     setView("lobby");
     setActiveTab("play");
@@ -275,6 +277,12 @@ export default function BattlePage() {
     setReceivedEmoji(null);
     emojiRateLimitRef.current = 0;
     hintLockRef.current = false;
+  }
+
+  function resetSelectionState() {
+    setSelCategory(null);
+    setSubmittingSelection(false);
+    setGeneratingQ(false);
   }
 
   function createPC() {
@@ -455,6 +463,7 @@ export default function BattlePage() {
     setView("waiting");
     setIsPrivateRoom(false);
     setRoom(null);
+    resetSelectionState();
     startedRoundsRef.current.clear();
     completedRoundsRef.current.clear();
     botAnsweredRef.current.clear();
@@ -471,6 +480,7 @@ export default function BattlePage() {
   async function joinRoom(roomId) {
     if (joiningRoomId) return;
     setJoiningRoomId(roomId);
+    resetSelectionState();
     const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: roomId });
     if (error || !data?.ok) { flash(data?.error || error?.message); setJoiningRoomId(null); return; }
     myRoleRef.current = "player2";
@@ -540,6 +550,16 @@ export default function BattlePage() {
     const isRound2 = !!room.round1_category;
     return isRound2 ? myRole === "player1" : myRole === "player2";
   }
+
+  useEffect(() => {
+    const round = room?.round1_category ? 2 : 1;
+    const key = view === "selecting" && room?.id && isMySelectorTurn()
+      ? `${room.id}:${round}:${myRole}`
+      : "";
+    if (!key || selectionResetKeyRef.current === key) return;
+    selectionResetKeyRef.current = key;
+    resetSelectionState();
+  }, [view, room?.id, room?.round1_category, myRole]);
 
   async function submitSelection() {
     if (!selCategory) { flash("Pick a category"); return; }
@@ -762,7 +782,7 @@ export default function BattlePage() {
       await supabase.rpc("battle_finish_round", { p_room_id: room.id, p_round: currentRound, p_is_bot: false });
       if (room.is_bot) await supabase.rpc("battle_finish_round", { p_room_id: room.id, p_round: currentRound, p_is_bot: true });
       if (currentRound === 1) {
-        setSelCategory(null);
+        resetSelectionState();
         setQIndex(0);
         setFeedback(null);
         setSelected(null);
@@ -878,36 +898,49 @@ export default function BattlePage() {
 
   // H9: Selection countdown — auto-forfeit if selector doesn't pick in 60s
   useEffect(() => {
-    if (view !== "selecting" || !isMySelectorTurn()) { setSelectionTimeLeft(0); return; }
-    setSelectionTimeLeft(60);
     clearInterval(selectionTimerRef.current);
-    selectionTimerRef.current = setInterval(() => {
-      setSelectionTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(selectionTimerRef.current);
-          goLobby();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(selectionTimerRef.current);
+    const start = setTimeout(() => {
+      if (view !== "selecting" || !isMySelectorTurn()) {
+        setSelectionTimeLeft(0);
+        return;
+      }
+      setSelectionTimeLeft(60);
+      selectionTimerRef.current = setInterval(() => {
+        setSelectionTimeLeft(prev => {
+          if (prev <= 1) {
+            clearInterval(selectionTimerRef.current);
+            goLobby();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }, 0);
+    return () => {
+      clearTimeout(start);
+      clearInterval(selectionTimerRef.current);
+    };
   }, [view, myRole, room?.round1_category]);
 
   // M14: Bot wait countdown
   useEffect(() => {
-    if (view !== "waiting" || isPrivateRoom) { setBotWaitSecs(12); return; }
-    setBotWaitSecs(12);
     clearTimeout(botCountdownTimerRef.current);
-    const tick = () => {
-      setBotWaitSecs(prev => {
-        if (prev <= 1) return 0;
-        botCountdownTimerRef.current = setTimeout(tick, 1000);
-        return prev - 1;
-      });
+    const start = setTimeout(() => {
+      setBotWaitSecs(12);
+      if (view !== "waiting" || isPrivateRoom) return;
+      const tick = () => {
+        setBotWaitSecs(prev => {
+          if (prev <= 1) return 0;
+          botCountdownTimerRef.current = setTimeout(tick, 1000);
+          return prev - 1;
+        });
+      };
+      botCountdownTimerRef.current = setTimeout(tick, 1000);
+    }, 0);
+    return () => {
+      clearTimeout(start);
+      clearTimeout(botCountdownTimerRef.current);
     };
-    botCountdownTimerRef.current = setTimeout(tick, 1000);
-    return () => clearTimeout(botCountdownTimerRef.current);
   }, [view, isPrivateRoom]);
 
   async function submitBotAnswerForQuestion(r, roundNum, index, q, latestRoom, userCorrect) {
@@ -1020,6 +1053,7 @@ export default function BattlePage() {
     setView("waiting");
     setIsPrivateRoom(true);
     setRoom(null);
+    resetSelectionState();
     startedRoundsRef.current.clear();
     completedRoundsRef.current.clear();
     forfeitLockRef.current = false;
@@ -1043,6 +1077,7 @@ export default function BattlePage() {
     const rid = joinRoomInput.trim();
     setView("waiting");
     setIsPrivateRoom(false);
+    resetSelectionState();
     const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: rid });
     if (error || !data?.ok) { flash(data?.error || error?.message || "Room not found or full"); setView("lobby"); return; }
     myRoleRef.current = "player2";
@@ -1894,7 +1929,7 @@ export default function BattlePage() {
             <div style={{ background:"linear-gradient(135deg,#1e3a5f,#1e40af,#0369a1)", borderRadius:20, padding:"28px 18px", textAlign:"center", position:"relative", overflow:"hidden", animation:"fadeUp 0.4s ease" }}>
               <div style={{ position:"absolute", top:-15, right:-15, width:80, height:80, borderRadius:"50%", background:"rgba(96,165,250,0.2)" }} />
               <div style={{ fontSize:54, marginBottom:8 }}>🤝</div>
-              <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4 }}>It's a Tie!</div>
+              <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4 }}>It&apos;s a Tie!</div>
               <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{""}</div>
 
               {/* Round breakdown */}

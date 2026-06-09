@@ -313,6 +313,11 @@ export default function BattlePage() {
       setMicOn(false);
     } else {
       try {
+        const perm = await navigator.permissions.query({ name:"microphone" }).catch(() => null);
+        if (perm?.state === "denied") {
+          flash("Microphone blocked — click the lock 🔒 in your address bar to allow it");
+          return;
+        }
         const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
         localStreamRef.current = stream;
         setMicOn(true);
@@ -320,8 +325,12 @@ export default function BattlePage() {
           stream.getTracks().forEach(t => { try { pcRef.current.addTrack(t, stream); } catch(_){} });
         roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
         if (myRoleRef.current === "player1") await initiateOffer();
-      } catch (_) {
-        flash("Microphone permission denied");
+      } catch (err) {
+        if (err?.name === "NotAllowedError" || err?.name === "PermissionDeniedError") {
+          flash("Microphone blocked — click the lock 🔒 in your address bar to allow it");
+        } else {
+          flash("Could not access microphone");
+        }
       }
     }
   }
@@ -1342,11 +1351,6 @@ export default function BattlePage() {
 
             <div style={{ fontSize:14, color:"rgba(255,255,255,0.6)", marginBottom:20 }}>
               Matching you with the best challenger...
-              {!isPrivateRoom && botWaitSecs > 0 && (
-                <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginTop:4 }}>
-                  Bot joins in {botWaitSecs}s if no one found
-                </div>
-              )}
             </div>
             <div style={{ display:"flex", justifyContent:"center", gap:8, marginBottom:24 }}>
               {[0,1,2,3,4].map(i => (
@@ -1508,7 +1512,7 @@ export default function BattlePage() {
       )}
 
       {view === "in_progress" && q && (
-        <div style={{ padding:"6px 10px", paddingBottom:52 }}>
+        <div style={{ padding:"6px 10px" }}>
           {/* ── Battle HUD ── */}
           <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:14, padding:"8px 12px", marginBottom:8 }}>
             {/* Round + question info bar */}
@@ -1537,6 +1541,36 @@ export default function BattlePage() {
                 <div style={{ display:"flex", alignItems:"baseline", gap:1 }}>
                   <span style={{ fontSize:22, fontWeight:900, color:"#a5b4fc", lineHeight:1 }}>{myScore}</span>
                   <span style={{ fontSize:11, fontWeight:700, color:"rgba(165,180,252,0.55)", lineHeight:1 }}>/{questions.length}</span>
+                </div>
+                {/* Inline comms controls */}
+                <div style={{ position:"relative" }}>
+                  {showEmojiPicker && (
+                    <div style={{ position:"absolute", bottom:"100%", left:"50%", transform:"translateX(-50%)", marginBottom:4, background:"rgba(15,15,26,0.97)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:12, padding:"6px 7px", display:"flex", flexWrap:"wrap", gap:4, width:168, boxShadow:"0 -4px 20px rgba(0,0,0,0.6)", zIndex:200 }}>
+                      {CHAT_EMOJIS.map(e => (
+                        <button key={e} onClick={() => sendEmoji(e)}
+                          style={{ width:26, height:26, borderRadius:6, border:"none", background:"rgba(255,255,255,0.07)", fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}
+                          onMouseEnter={ev => ev.currentTarget.style.background="rgba(255,255,255,0.16)"}
+                          onMouseLeave={ev => ev.currentTarget.style.background="rgba(255,255,255,0.07)"}>
+                          {e}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  <div style={{ display:"flex", alignItems:"center", gap:4 }}>
+                    <button onClick={toggleMic} title={micOn?"Mute":"Unmute"}
+                      style={{ width:24, height:24, borderRadius:"50%", border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.2)"}`, background:micOn?"rgba(34,197,94,0.22)":"rgba(255,255,255,0.08)", fontSize:11, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
+                      {micOn?"🎤":"🎙️"}
+                    </button>
+                    <button onClick={toggleSpeaker} title={speakerOn?"Mute speaker":"Unmute speaker"}
+                      style={{ width:24, height:24, borderRadius:"50%", border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.2)"}`, background:speakerOn?"rgba(99,102,241,0.18)":"rgba(255,255,255,0.08)", fontSize:11, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
+                      {speakerOn?"🔊":"🔇"}
+                    </button>
+                    <button onClick={() => setShowEmojiPicker(v => !v)}
+                      style={{ width:24, height:24, borderRadius:"50%", border:`1.5px solid ${showEmojiPicker?"#f59e0b55":"rgba(255,255,255,0.2)"}`, background:showEmojiPicker?"rgba(245,158,11,0.18)":"rgba(255,255,255,0.08)", fontSize:11, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
+                      😀
+                    </button>
+                    {micOn && <span style={{ width:5, height:5, borderRadius:"50%", background:"#22c55e", animation:"liveBlip 1s ease-in-out infinite", flexShrink:0 }} />}
+                  </div>
                 </div>
               </div>
 
@@ -1640,44 +1674,6 @@ export default function BattlePage() {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════════════════
-          BATTLE COMMS BAR — visible during all active battle views
-      ══════════════════════════════════════════════════════════ */}
-      {room?.id && ["selecting","in_progress","waiting_round","waiting_round2"].includes(view) && (
-        <div style={{ position:"fixed", bottom:14, right:14, display:"flex", flexDirection:"column", alignItems:"flex-end", gap:6, zIndex:300 }}>
-
-          {/* Emoji picker popup */}
-          {showEmojiPicker && (
-            <div style={{ background:"rgba(15,15,26,0.97)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:14, padding:"7px 8px", display:"flex", flexWrap:"wrap", gap:5, width:196, boxShadow:"0 -4px 24px rgba(0,0,0,0.6)" }}>
-              {CHAT_EMOJIS.map(e => (
-                <button key={e} onClick={() => sendEmoji(e)}
-                  style={{ width:30, height:30, borderRadius:7, border:"none", background:"rgba(255,255,255,0.07)", fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}
-                  onMouseEnter={ev => ev.currentTarget.style.background="rgba(255,255,255,0.16)"}
-                  onMouseLeave={ev => ev.currentTarget.style.background="rgba(255,255,255,0.07)"}>
-                  {e}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Pill row: mic + speaker + emoji + live dot */}
-          <div style={{ background:"rgba(15,15,26,0.92)", borderRadius:40, padding:"5px 7px", display:"flex", alignItems:"center", gap:5, border:"1px solid rgba(255,255,255,0.1)", boxShadow:"0 4px 20px rgba(0,0,0,0.5)" }}>
-            <button onClick={toggleMic} title={micOn?"Mute":"Unmute"}
-              style={{ width:28, height:28, borderRadius:"50%", border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.18)"}`, background:micOn?"rgba(34,197,94,0.22)":"rgba(255,255,255,0.07)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
-              {micOn?"🎤":"🎙️"}
-            </button>
-            <button onClick={toggleSpeaker} title={speakerOn?"Mute speaker":"Unmute speaker"}
-              style={{ width:28, height:28, borderRadius:"50%", border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.15)"}`, background:speakerOn?"rgba(99,102,241,0.18)":"rgba(255,255,255,0.07)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
-              {speakerOn?"🔊":"🔇"}
-            </button>
-            <button onClick={() => setShowEmojiPicker(v => !v)}
-              style={{ width:28, height:28, borderRadius:"50%", border:`1.5px solid ${showEmojiPicker?"#f59e0b55":"rgba(255,255,255,0.15)"}`, background:showEmojiPicker?"rgba(245,158,11,0.18)":"rgba(255,255,255,0.07)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
-              😀
-            </button>
-            {micOn && <span style={{ width:6, height:6, borderRadius:"50%", background:"#22c55e", animation:"liveBlip 1s ease-in-out infinite", flexShrink:0 }} />}
-          </div>
-        </div>
-      )}
 
       {/* ══════════════════════════════════════════════════════════
           RESULT

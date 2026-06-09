@@ -1,6 +1,6 @@
 "use client";
 /* eslint-disable react-hooks/immutability, react-hooks/purity, react-hooks/exhaustive-deps, @typescript-eslint/no-unused-vars, @next/next/no-img-element, @next/next/no-page-custom-font */
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 
 const MODES = [
@@ -11,30 +11,15 @@ const MODES = [
 ];
 
 const HINT_COSTS  = [2.5, 5, 10, 20, 40];
-const BOT_EMOJIS  = ["🤖","👾","🎮","🦾","🧠","⚡","🎯","💻"];
 const CHAT_EMOJIS = ["😀","😂","😎","😡","😭","🔥","💯","👍","👎","❤️","🎉"];
 const STUN        = { iceServers:[{ urls:"stun:stun.l.google.com:19302" }] };
 
-function getBotEmoji(name) {
-  return BOT_EMOJIS[(name || "").charCodeAt(0) % BOT_EMOJIS.length] || "🤖";
-}
-
-function AvatarCircle({ url, name, size = 44, ring = "#6366f1", isBot = false }) {
-  if (url && !isBot) {
+function AvatarCircle({ url, name, size = 44, ring = "#6366f1" }) {
+  if (url) {
     return (
       <img src={url} alt={name || "Player"}
         style={{ width:size, height:size, borderRadius:"50%", objectFit:"cover",
           border:`3px solid ${ring}`, flexShrink:0, display:"block" }} />
-    );
-  }
-  if (isBot) {
-    return (
-      <div style={{ width:size, height:size, borderRadius:"50%",
-        background:"linear-gradient(135deg,#334155,#1e293b)",
-        display:"flex", alignItems:"center", justifyContent:"center",
-        fontSize:size * 0.42, border:`3px solid ${ring}`, flexShrink:0 }}>
-        {getBotEmoji(name)}
-      </div>
     );
   }
   const initials = (name || "?").split(" ").filter(Boolean).map(w => w[0]).join("").slice(0,2).toUpperCase() || "?";
@@ -102,6 +87,16 @@ export default function BattlePage() {
   const [sentEmoji,       setSentEmoji]       = useState(null);
   const [receivedEmoji,   setReceivedEmoji]   = useState(null);
 
+  // UI state
+  const [lbLoading,         setLbLoading]         = useState(false);
+  const [lbLoaded,          setLbLoaded]          = useState(false);
+  const [joiningRoomId,     setJoiningRoomId]     = useState(null);
+  const [selectionTimeLeft, setSelectionTimeLeft] = useState(0);
+  const [confirmForfeit,    setConfirmForfeit]    = useState(false);
+  const [botWaitSecs,       setBotWaitSecs]       = useState(12);
+  const [copiedId,          setCopiedId]          = useState(false);
+  const [copiedLink,        setCopiedLink]        = useState(false);
+
   const pollRef           = useRef(null);
   const roomSyncRef       = useRef(null);
   const roomChannelRef    = useRef(null);
@@ -110,7 +105,6 @@ export default function BattlePage() {
   const timerRef          = useRef(null);
   const submitLock        = useRef(false);
   const roomTimeoutRef    = useRef(null);
-  const tabHideTimerRef   = useRef(null);
   const sessionRef        = useRef(null);
   const roomRef           = useRef(null);
   const currentRoomIdRef  = useRef(null);
@@ -120,24 +114,32 @@ export default function BattlePage() {
   const completedRoundsRef= useRef(new Set());
   const forfeitLockRef    = useRef(false);
   const botAnsweredRef    = useRef(new Set());
-  // NEW refs
   const roundTotalsRef        = useRef({ 1:0, 2:0 });
   const opponentFetchedRef    = useRef(false);
 
   // Voice + emoji refs
-  const pcRef                 = useRef(null);         // RTCPeerConnection
-  const localStreamRef        = useRef(null);         // local MediaStream
-  const remoteAudioRef        = useRef(null);         // <audio> element
-  const speakerOnRef          = useRef(true);         // mirror of speakerOn for callbacks
-  const iceCandidateQueueRef  = useRef([]);           // ICE candidates before remote SDP
+  const pcRef                 = useRef(null);
+  const localStreamRef        = useRef(null);
+  const remoteAudioRef        = useRef(null);
+  const speakerOnRef          = useRef(true);
+  const iceCandidateQueueRef  = useRef([]);
   const emojiTimeoutRef       = useRef(null);
   const sentEmojiTimeoutRef   = useRef(null);
+
+  // New refs for fixes
+  const botR2TimerRef         = useRef(null);
+  const flashTimeoutRef       = useRef(null);
+  const emojiRateLimitRef     = useRef(0);
+  const hintLockRef           = useRef(false);
+  const selectionTimerRef     = useRef(null);
+  const botCountdownTimerRef  = useRef(null);
+  const sentEmojiIdRef        = useRef(0);
+  const receivedEmojiIdRef    = useRef(0);
 
   const [selectedMode,   setSelectedMode]   = useState(null);
   const [joinRoomInput,  setJoinRoomInput]  = useState("");
   const [currentRoomId,  setCurrentRoomId]  = useState(null);
   const [isPrivateRoom,  setIsPrivateRoom]  = useState(false);
-  const [copied,         setCopied]         = useState(false);
 
   useEffect(() => {
     init();
@@ -159,7 +161,7 @@ export default function BattlePage() {
     if (view === "lobby" && activeTab === "open") {
       loadOpenRooms();
       clearInterval(openRoomsPollRef.current);
-      openRoomsPollRef.current = setInterval(loadOpenRooms, 1000);
+      openRoomsPollRef.current = setInterval(loadOpenRooms, 5000);
     } else {
       clearInterval(openRoomsPollRef.current);
     }
@@ -171,10 +173,13 @@ export default function BattlePage() {
     clearInterval(botTimerRef.current);
     clearInterval(timerRef.current);
     clearInterval(openRoomsPollRef.current);
+    clearInterval(selectionTimerRef.current);
     clearTimeout(roomTimeoutRef.current);
-    clearTimeout(tabHideTimerRef.current);
+    clearTimeout(botR2TimerRef.current);
+    clearTimeout(flashTimeoutRef.current);
     clearTimeout(emojiTimeoutRef.current);
     clearTimeout(sentEmojiTimeoutRef.current);
+    clearTimeout(botCountdownTimerRef.current);
     if (roomChannelRef.current) {
       supabase.removeChannel(roomChannelRef.current);
       roomChannelRef.current = null;
@@ -204,9 +209,12 @@ export default function BattlePage() {
     const r    = roomRef.current;
     const role = myRoleRef.current;
     clearAllTimers();
+    setConfirmForfeit(false);
+    setSelectionTimeLeft(0);
+    setBotWaitSecs(12);
     if ((r?.id || currentRoomIdRef.current) && viewRef.current === "waiting")
       await supabase.rpc("battle_cancel_room", { p_room_id: r?.id || currentRoomIdRef.current });
-    if (r?.id && role && ["selecting","in_progress"].includes(viewRef.current))
+    if (r?.id && role && ["selecting","in_progress","waiting_round","waiting_round2"].includes(viewRef.current))
       await supabase.rpc("battle_forfeit", { p_room_id: r.id, p_role: role });
     setRoom(null);
     setCurrentRoomId(null);
@@ -217,6 +225,7 @@ export default function BattlePage() {
     forfeitLockRef.current    = false;
     opponentFetchedRef.current= false;
     roundTotalsRef.current    = { 1:0, 2:0 };
+    hintLockRef.current       = false;
     setOpponentProfile(null);
     cleanupVoice();
     setView("lobby");
@@ -256,6 +265,8 @@ export default function BattlePage() {
     setShowEmojiPicker(false);
     setSentEmoji(null);
     setReceivedEmoji(null);
+    emojiRateLimitRef.current = 0;
+    hintLockRef.current = false;
   }
 
   function createPC() {
@@ -325,8 +336,12 @@ export default function BattlePage() {
   }
 
   function sendEmoji(emoji) {
+    const now = Date.now();
+    if (now - emojiRateLimitRef.current < 800) return;
+    emojiRateLimitRef.current = now;
     roomChannelRef.current?.send({ type:"broadcast", event:"emoji", payload:{ from:myRoleRef.current, emoji } });
     setShowEmojiPicker(false);
+    sentEmojiIdRef.current += 1;
     setSentEmoji(emoji);
     clearTimeout(sentEmojiTimeoutRef.current);
     sentEmojiTimeoutRef.current = setTimeout(() => setSentEmoji(null), 2500);
@@ -348,7 +363,32 @@ export default function BattlePage() {
     setLoading(false);
     const params  = new URLSearchParams(window.location.search);
     const urlRoom = params.get("room");
-    if (urlRoom) setJoinRoomInput(urlRoom);
+    if (urlRoom) { setJoinRoomInput(urlRoom); return; }
+    // Reconnect: rejoin any room left in progress after a browser crash/refresh
+    const uid = session.user.id;
+    const { data: active } = await supabase
+      .from("battle_rooms")
+      .select("*")
+      .or(`player1_id.eq.${uid},player2_id.eq.${uid}`)
+      .in("status", ["selecting","in_progress"])
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const activeRoom = active?.[0];
+    if (activeRoom) {
+      const role = activeRoom.player1_id === uid ? "player1" : "player2";
+      myRoleRef.current = role;
+      setMyRole(role);
+      setCurrentRoomId(activeRoom.id);
+      setRoom(activeRoom);
+      startedRoundsRef.current.clear();
+      completedRoundsRef.current.clear();
+      botAnsweredRef.current.clear();
+      forfeitLockRef.current    = false;
+      opponentFetchedRef.current= false;
+      fetchOpponentProfile(activeRoom);
+      watchRoom(activeRoom.id);
+      await pollRoom(activeRoom.id, false);
+    }
   }
 
   async function loadOpenRooms() {
@@ -362,8 +402,12 @@ export default function BattlePage() {
   }
 
   async function loadLeaderboard(period = lbPeriod) {
+    if (lbLoaded && period === lbPeriod) return;
+    setLbLoading(true);
     const { data } = await supabase.rpc("battle_leaderboard", { p_period: period });
     setLeaderboard(data || []);
+    setLbLoaded(true);
+    setLbLoading(false);
   }
 
   async function findBattle(mode) {
@@ -385,15 +429,21 @@ export default function BattlePage() {
   }
 
   async function joinRoom(roomId) {
+    if (joiningRoomId) return;
+    setJoiningRoomId(roomId);
     const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: roomId });
-    if (error || !data?.ok) { flash(data?.error || error?.message); return; }
+    if (error || !data?.ok) { flash(data?.error || error?.message); setJoiningRoomId(null); return; }
     setMyRole("player2");
     setCurrentRoomId(data.room_id);
     setIsPrivateRoom(false);
     startedRoundsRef.current.clear();
     completedRoundsRef.current.clear();
     botAnsweredRef.current.clear();
-    forfeitLockRef.current = false;
+    forfeitLockRef.current    = false;
+    opponentFetchedRef.current= false;
+    setOpponentProfile(null);
+    setJoiningRoomId(null);
+    setView("waiting");
     watchRoom(data.room_id);
     await pollRoom(data.room_id, false);
   }
@@ -472,7 +522,8 @@ export default function BattlePage() {
     }
     // Keep submittingSelection=true so the Lock button does not re-appear while waiting for in_progress
     if (room.is_bot && round === 1) {
-      setTimeout(async () => {
+      clearTimeout(botR2TimerRef.current);
+      botR2TimerRef.current = setTimeout(async () => {
         const botCat = categories[Math.floor(Math.random() * categories.length)];
         const diffs  = ["easy","medium","hard"];
         const qs     = [5,10,15,20];
@@ -553,7 +604,7 @@ export default function BattlePage() {
   function watchRoom(roomId) {
     clearInterval(roomSyncRef.current);
     if (roomChannelRef.current) supabase.removeChannel(roomChannelRef.current);
-    roomSyncRef.current = setInterval(() => syncRoom(roomId), 1000);
+    roomSyncRef.current = setInterval(() => syncRoom(roomId), 5000);
     roomChannelRef.current = supabase
       .channel(`battle-room:${roomId}`)
       .on("postgres_changes", { event:"UPDATE", schema:"public", table:"battle_rooms", filter:`id=eq.${roomId}` }, ({ new: r }) => {
@@ -571,6 +622,7 @@ export default function BattlePage() {
       // ── Emoji broadcast ───────────────────────────────────────────────────
       .on("broadcast", { event:"emoji" }, ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
+        receivedEmojiIdRef.current += 1;
         setReceivedEmoji(payload.emoji);
         clearTimeout(emojiTimeoutRef.current);
         emojiTimeoutRef.current = setTimeout(() => setReceivedEmoji(null), 2500);
@@ -603,7 +655,13 @@ export default function BattlePage() {
       .on("broadcast", { event:"webrtc-answer" }, async ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
         if (pcRef.current?.signalingState === "have-local-offer") {
-          try { await pcRef.current.setRemoteDescription({ type:"answer", sdp:payload.sdp }); } catch (_) {}
+          try {
+            await pcRef.current.setRemoteDescription({ type:"answer", sdp:payload.sdp });
+            // Flush any ICE candidates that arrived before the answer
+            for (const c of iceCandidateQueueRef.current)
+              await pcRef.current.addIceCandidate(c).catch(() => {});
+            iceCandidateQueueRef.current = [];
+          } catch (_) {}
         }
       })
       .on("broadcast", { event:"webrtc-ice" }, async ({ payload }) => {
@@ -733,18 +791,11 @@ export default function BattlePage() {
     if (view !== "in_progress" || !room?.id) return;
     const onVisibility = () => {
       if (document.visibilityState === "hidden") { submitLock.current = true; forfeitNow(); }
-      else clearTimeout(tabHideTimerRef.current);
     };
     document.addEventListener("visibilitychange", onVisibility);
-    return () => { document.removeEventListener("visibilitychange", onVisibility); clearTimeout(tabHideTimerRef.current); };
+    return () => { document.removeEventListener("visibilitychange", onVisibility); };
   }, [view, room?.id, myRole, qIndex]);
 
-  useEffect(() => {
-    if (view !== "in_progress" || !room?.id) return;
-    const fail = () => forfeitNow();
-    window.addEventListener("blur", fail);
-    return () => window.removeEventListener("blur", fail);
-  }, [view, room?.id, myRole]);
 
   useEffect(() => {
     if (!room?.id || !["in_progress","selecting"].includes(view)) return;
@@ -761,6 +812,40 @@ export default function BattlePage() {
     return () => window.removeEventListener("beforeunload", onUnload);
   }, [view, room?.id, myRole]);
 
+  // H9: Selection countdown — auto-forfeit if selector doesn't pick in 60s
+  useEffect(() => {
+    if (view !== "selecting" || !isMySelectorTurn()) { setSelectionTimeLeft(0); return; }
+    setSelectionTimeLeft(60);
+    clearInterval(selectionTimerRef.current);
+    selectionTimerRef.current = setInterval(() => {
+      setSelectionTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(selectionTimerRef.current);
+          goLobby();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(selectionTimerRef.current);
+  }, [view, myRole, room?.round1_category]);
+
+  // M14: Bot wait countdown
+  useEffect(() => {
+    if (view !== "waiting" || isPrivateRoom) { setBotWaitSecs(12); return; }
+    setBotWaitSecs(12);
+    clearTimeout(botCountdownTimerRef.current);
+    const tick = () => {
+      setBotWaitSecs(prev => {
+        if (prev <= 1) return 0;
+        botCountdownTimerRef.current = setTimeout(tick, 1000);
+        return prev - 1;
+      });
+    };
+    botCountdownTimerRef.current = setTimeout(tick, 1000);
+    return () => clearTimeout(botCountdownTimerRef.current);
+  }, [view, isPrivateRoom]);
+
   async function submitBotAnswerForQuestion(r, roundNum, index, q, latestRoom, userCorrect) {
     const key = `${r.id}:${roundNum}:${index + 1}`;
     if (botAnsweredRef.current.has(key)) return;
@@ -769,7 +854,9 @@ export default function BattlePage() {
     const sourceRoom = latestRoom || roomRef.current || r;
     const userScore  = Number(sourceRoom[`player1_round${roundNum}_score`]) || 0;
     const botScore   = Number(sourceRoom[`player2_round${roundNum}_score`]) || 0;
-    const botCorrect = userScore > botScore || userCorrect || Math.random() < 0.7;
+    const gap = userScore - botScore;
+    const botAcc = gap > 2 ? 0.72 : gap > 0 ? 0.60 : 0.50;
+    const botCorrect = Math.random() < botAcc;
     const chosen     = botCorrect ? q.correct_option_index : (q.correct_option_index + 1) % 4;
     await supabase.rpc("battle_submit_answer", {
       p_room_id: r.id, p_round: roundNum,
@@ -781,6 +868,7 @@ export default function BattlePage() {
   }
 
   function handleResult(r) {
+    clearAllTimers();
     cleanupVoice();
     const iWon    = r.winner_id === (myRole === "player1" ? r.player1_id : r.player2_id);
     const myTotal = myRole === "player1"
@@ -818,11 +906,18 @@ export default function BattlePage() {
     });
     setView("result");
     loadHistory();
+    // Refresh coin balance shown in header
+    if (sessionRef.current?.user?.id) {
+      supabase.from("users_profiles").select("*").eq("user_id", sessionRef.current.user.id).single()
+        .then(({ data: prof }) => { if (prof) setProfile(prof); });
+    }
   }
 
   async function useHint() {
+    if (hintLockRef.current || submitLock.current) return;
+    hintLockRef.current = true;
     const cost = HINT_COSTS[hintsUsed] || 40;
-    if ((profile?.total_aidla_coins || 0) < cost) { flash("Insufficient coins"); return; }
+    if ((profile?.total_aidla_coins || 0) < cost) { flash("Insufficient coins"); hintLockRef.current = false; return; }
     const q    = questions[qIndex];
     const wrong= [0,1,2,3].filter(i => i !== q.correct_option_index && !eliminated.includes(i));
     if (wrong.length === 0) return;
@@ -845,11 +940,13 @@ export default function BattlePage() {
       pool_balance_before: poolBal, pool_balance_after: poolBal + cost,
       user_balance_before: profile?.total_aidla_coins || 0, user_balance_after: newBal, note:"Hint fee collected from battle",
     });
+    hintLockRef.current = false;
   }
 
   function flash(text) {
+    clearTimeout(flashTimeoutRef.current);
     setMsg(text);
-    setTimeout(() => setMsg(""), 3500);
+    flashTimeoutRef.current = setTimeout(() => setMsg(""), 3500);
   }
 
   async function createPrivateRoom() {
@@ -881,25 +978,29 @@ export default function BattlePage() {
     const rid = joinRoomInput.trim();
     setView("waiting");
     setIsPrivateRoom(false);
-    setCurrentRoomId(rid);
     const { data, error } = await supabase.rpc("battle_join_room", { p_room_id: rid });
     if (error || !data?.ok) { flash(data?.error || error?.message || "Room not found or full"); setView("lobby"); return; }
     setMyRole("player2");
+    setCurrentRoomId(rid);
+    opponentFetchedRef.current = false;
+    setOpponentProfile(null);
     watchRoom(rid);
     await pollRoom(rid, false);
   }
 
   function copyRoomId() {
     if (!currentRoomId) return;
-    navigator.clipboard.writeText(currentRoomId);
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(currentRoomId)
+      .then(() => { setCopiedId(true); setTimeout(() => setCopiedId(false), 2000); })
+      .catch(() => flash("Copy failed — try manually"));
   }
 
   function copyRoomLink() {
     if (!currentRoomId) return;
     const link = `${window.location.origin}/user/battle?room=${currentRoomId}`;
-    navigator.clipboard.writeText(link);
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(link)
+      .then(() => { setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000); })
+      .catch(() => flash("Copy failed — try manually"));
   }
 
   // ── Derived values ──────────────────────────────────────────────
@@ -910,6 +1011,7 @@ export default function BattlePage() {
   const opponentScore = room ? (Number(myRole === "player1" ? room[`player2_round${currentRound}_score`] : room[`player1_round${currentRound}_score`]) || 0) : 0;
   const myFirstName   = (profile?.full_name || "You").split(" ")[0];
   const oppFirstName  = (opponentName || "Opponent").split(" ")[0];
+  const quoteIdx      = useMemo(() => Math.floor(Math.random() * 4), []);
 
   if (loading) return (
     <div style={{ minHeight:"100vh", background:"#0f0f1a", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif" }}>
@@ -946,9 +1048,24 @@ export default function BattlePage() {
         <BattleShareCard profile={profile} result={result} onClose={() => setShowShare(false)} />
       )}
 
+      {/* Forfeit confirm dialog */}
+      {confirmForfeit && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9000, padding:20 }}>
+          <div style={{ background:"#1e1b4b", borderRadius:16, padding:"24px 20px", maxWidth:300, width:"100%", textAlign:"center" }}>
+            <div style={{ fontSize:32, marginBottom:10 }}>🏳️</div>
+            <div style={{ color:"white", fontWeight:800, fontSize:17, marginBottom:8 }}>Forfeit Battle?</div>
+            <div style={{ color:"rgba(255,255,255,0.6)", fontSize:13, marginBottom:20 }}>Your opponent wins and you lose any coins at stake.</div>
+            <div style={{ display:"flex", gap:10 }}>
+              <button style={{ flex:1, padding:"10px 0", borderRadius:10, border:"1px solid rgba(255,255,255,0.2)", background:"transparent", color:"white", fontWeight:700, cursor:"pointer", fontFamily:"inherit" }} onClick={() => setConfirmForfeit(false)}>Stay</button>
+              <button style={{ flex:1, padding:"10px 0", borderRadius:10, border:"none", background:"#ef4444", color:"white", fontWeight:800, cursor:"pointer", fontFamily:"inherit" }} onClick={() => { setConfirmForfeit(false); goLobby(); }}>Forfeit</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── HEADER ─────────────────────────────────────────────── */}
       <div style={S.header}>
-        <button style={S.backBtn} onClick={goLobby}>←</button>
+        <button style={S.backBtn} onClick={() => { if (["selecting","in_progress","waiting_round","waiting_round2"].includes(view)) { setConfirmForfeit(true); } else { goLobby(); } }}>←</button>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <span style={{ fontSize:18 }}>⚔️</span>
           <span style={S.headerTitle}>1v1 Battle Arena</span>
@@ -1065,17 +1182,17 @@ export default function BattlePage() {
                     <div style={{ color:"#94a3b8", fontSize:13 }}>No open battles right now.</div>
                     <div style={{ color:"#cbd5e1", fontSize:12, marginTop:4 }}>Create one from the Play tab!</div>
                   </div>
-                ) : openRooms.map((r, i) => {
+                ) : openRooms.filter(r => r.player1_id !== user?.id).map((r, i) => {
                   const m = MODES.find(md => md.id === r.mode);
                   return (
-                    <div key={i} style={{ ...S.lbRow, padding:"10px 0" }}>
+                    <div key={r.id || i} style={{ ...S.lbRow, padding:"10px 0" }}>
                       <AvatarCircle name={r.player1_name} size={36} ring={m?.color || "#6366f1"} />
                       <div style={{ flex:1 }}>
                         <div style={{ fontWeight:700, fontSize:14, color:"#0f172a" }}>{r.player1_name}</div>
                         <div style={{ fontSize:11, color:"#64748b" }}>{m?.label} mode · Win {m?.prize} coins</div>
                       </div>
-                      <button style={{ ...S.smBtn, background:"#6366f1", color:"white", border:"none" }} onClick={() => joinRoom(r.id)}>
-                        Join ⚔️
+                      <button style={{ ...S.smBtn, background: joiningRoomId === r.id ? "#94a3b8" : "#6366f1", color:"white", border:"none" }} disabled={!!joiningRoomId} onClick={() => joinRoom(r.id)}>
+                        {joiningRoomId === r.id ? "Joining..." : "Join ⚔️"}
                       </button>
                     </div>
                   );
@@ -1120,19 +1237,21 @@ export default function BattlePage() {
               <div style={{ display:"flex", gap:6, marginBottom:14 }}>
                 {["daily","weekly","monthly"].map(p => (
                   <button key={p} style={{ ...S.smBtn, ...(lbPeriod===p?{background:"#6366f1",color:"white",border:"1px solid #6366f1"}:{}) }}
-                    onClick={() => { setLbPeriod(p); loadLeaderboard(p); }}>
+                    onClick={() => { setLbPeriod(p); setLbLoaded(false); loadLeaderboard(p); }}>
                     {p.charAt(0).toUpperCase()+p.slice(1)}
                   </button>
                 ))}
               </div>
-              {leaderboard.length === 0 ? (
+              {lbLoading ? (
+                <div style={{ textAlign:"center", padding:"24px 0", color:"#94a3b8", fontSize:13 }}>Loading...</div>
+              ) : leaderboard.length === 0 ? (
                 <div style={{ textAlign:"center", padding:"24px 0", color:"#94a3b8", fontSize:13 }}>No data yet.</div>
               ) : leaderboard.slice(0,20).map((l, i) => {
                 const medals = ["🥇","🥈","🥉"];
                 return (
                   <div key={i} style={{ ...S.lbRow, background: i<3 ? "linear-gradient(90deg,rgba(245,158,11,0.06),transparent)" : "none", borderRadius:10, padding:"8px 6px" }}>
                     <span style={{ fontWeight:900, fontSize:16, width:28, textAlign:"center", flexShrink:0 }}>
-                      {medals[i] || <span style={{ color:"#94a3b8", fontSize:13 }}>#{i+1}</span>}
+                      {i < 3 ? medals[i] : <span style={{ color:"#94a3b8", fontSize:13 }}>#{i+1}</span>}
                     </span>
                     {l.avatar_url
                       ? <img src={l.avatar_url} alt="" style={{ width:32, height:32, borderRadius:"50%", objectFit:"cover", border:"2px solid #e2e8f0" }} />
@@ -1223,6 +1342,11 @@ export default function BattlePage() {
 
             <div style={{ fontSize:14, color:"rgba(255,255,255,0.6)", marginBottom:20 }}>
               Matching you with the best challenger...
+              {!isPrivateRoom && botWaitSecs > 0 && (
+                <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)", marginTop:4 }}>
+                  Bot joins in {botWaitSecs}s if no one found
+                </div>
+              )}
             </div>
             <div style={{ display:"flex", justifyContent:"center", gap:8, marginBottom:24 }}>
               {[0,1,2,3,4].map(i => (
@@ -1246,8 +1370,8 @@ export default function BattlePage() {
                 <div style={{ fontSize:13, fontWeight:800, color:"#0f172a", fontFamily:"monospace", wordBreak:"break-all" }}>{currentRoomId}</div>
               </div>
               <div style={{ display:"flex", gap:8 }}>
-                <button style={{ ...S.smBtn, flex:1, justifyContent:"center" }} onClick={copyRoomId}>{copied ? "✓ Copied!" : "Copy ID"}</button>
-                <button style={{ ...S.smBtn, flex:1, background:"#6366f1", color:"white", border:"none" }} onClick={copyRoomLink}>{copied ? "✓ Copied!" : "Copy Link"}</button>
+                <button style={{ ...S.smBtn, flex:1, justifyContent:"center" }} onClick={copyRoomId}>{copiedId ? "✓ Copied!" : "Copy ID"}</button>
+                <button style={{ ...S.smBtn, flex:1, background:"#6366f1", color:"white", border:"none" }} onClick={copyRoomLink}>{copiedLink ? "✓ Copied!" : "Copy Link"}</button>
               </div>
               <div style={{ fontSize:11, color:"#94a3b8", marginTop:8 }}>Share the link or ID with your opponent</div>
             </div>
@@ -1275,6 +1399,11 @@ export default function BattlePage() {
               <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:12 }}>
                 <div style={{ background:"#eff0ff", color:"#4338ca", fontSize:11, fontWeight:800, padding:"4px 12px", borderRadius:20 }}>Your Pick</div>
                 <div style={S.cardTitle}>Round {currentRound} — Choose Category</div>
+                {selectionTimeLeft > 0 && (
+                  <div style={{ marginLeft:"auto", background: selectionTimeLeft <= 10 ? "#fef2f2" : "#f0fdf4", color: selectionTimeLeft <= 10 ? "#dc2626" : "#16a34a", fontSize:11, fontWeight:900, padding:"2px 10px", borderRadius:20, flexShrink:0 }}>
+                    {selectionTimeLeft}s
+                  </div>
+                )}
               </div>
 
               {/* Category grid */}
@@ -1371,97 +1500,111 @@ export default function BattlePage() {
       {/* ══════════════════════════════════════════════════════════
           IN PROGRESS — Battle HUD
       ══════════════════════════════════════════════════════════ */}
+      {view === "in_progress" && !q && (
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:"50vh", gap:12 }}>
+          <div style={{ fontSize:32, animation:"spin 1s linear infinite" }}>⚔️</div>
+          <div style={{ color:"rgba(255,255,255,0.6)", fontSize:13, fontWeight:600 }}>Loading question...</div>
+        </div>
+      )}
+
       {view === "in_progress" && q && (
-        <div style={{ padding:"12px 14px" }}>
+        <div style={{ padding:"6px 10px", paddingBottom:52 }}>
           {/* ── Battle HUD ── */}
-          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:18, padding:"14px 16px", marginBottom:12 }}>
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:14, padding:"8px 12px", marginBottom:8 }}>
             {/* Round + question info bar */}
-            <div style={{ display:"flex", justifyContent:"center", marginBottom:12 }}>
-              <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:20, padding:"3px 14px", display:"flex", alignItems:"center", gap:8 }}>
-                <span style={{ width:6, height:6, borderRadius:"50%", background:"#22c55e", animation:"liveBlip 1.2s ease-in-out infinite", flexShrink:0 }} />
-                <span style={{ fontSize:11, fontWeight:800, color:"rgba(255,255,255,0.8)", letterSpacing:"0.04em" }}>
+            <div style={{ display:"flex", justifyContent:"center", marginBottom:8 }}>
+              <div style={{ background:"rgba(255,255,255,0.1)", borderRadius:20, padding:"2px 12px", display:"flex", alignItems:"center", gap:6 }}>
+                <span style={{ width:5, height:5, borderRadius:"50%", background:"#22c55e", animation:"liveBlip 1.2s ease-in-out infinite", flexShrink:0 }} />
+                <span style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.8)", letterSpacing:"0.04em" }}>
                   ROUND {currentRound}/2 &nbsp;·&nbsp; Q {qIndex+1}/{questions.length}
                 </span>
               </div>
             </div>
 
             {/* Players + timer row */}
-            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:4 }}>
               {/* You */}
-              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:5, position:"relative" }}>
+              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:3, position:"relative" }}>
                 {sentEmoji && (
-                  <div key={sentEmoji+Date.now()} style={{ position:"absolute", top:-28, left:"50%", fontSize:22, animation:"emojiPop 2.5s ease-out forwards", pointerEvents:"none" }}>
+                  <div key={`sent-${sentEmojiIdRef.current}`} style={{ position:"absolute", top:-22, left:"50%", fontSize:20, animation:"emojiPop 2.5s ease-out forwards", pointerEvents:"none" }}>
                     {sentEmoji}
                   </div>
                 )}
-                <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={46} ring="#818cf8" />
-                <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.65)", maxWidth:80, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={34} ring="#818cf8" />
+                <div style={{ fontSize:9, fontWeight:700, color:"rgba(255,255,255,0.65)", maxWidth:72, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {myFirstName}
                 </div>
                 <div style={{ display:"flex", alignItems:"baseline", gap:1 }}>
-                  <span style={{ fontSize:30, fontWeight:900, color:"#a5b4fc", lineHeight:1 }}>{myScore}</span>
-                  <span style={{ fontSize:13, fontWeight:700, color:"rgba(165,180,252,0.55)", lineHeight:1 }}>/{questions.length}</span>
+                  <span style={{ fontSize:22, fontWeight:900, color:"#a5b4fc", lineHeight:1 }}>{myScore}</span>
+                  <span style={{ fontSize:11, fontWeight:700, color:"rgba(165,180,252,0.55)", lineHeight:1 }}>/{questions.length}</span>
                 </div>
               </div>
 
               {/* Center timer circle */}
-              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, flexShrink:0 }}>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:3, flexShrink:0 }}>
                 <div style={{
-                  width:56, height:56, borderRadius:"50%",
-                  border:`3px solid ${timeLeft<=5?"#ef4444":timeLeft<=10?"#f59e0b":"rgba(255,255,255,0.25)"}`,
+                  width:44, height:44, borderRadius:"50%",
+                  border:`2.5px solid ${timeLeft<=5?"#ef4444":timeLeft<=10?"#f59e0b":"rgba(255,255,255,0.25)"}`,
                   display:"flex", alignItems:"center", justifyContent:"center",
                   background: timeLeft<=5?"rgba(239,68,68,0.18)":"rgba(255,255,255,0.06)",
                   animation: timeLeft<=5?"timerPulse 0.6s ease-in-out infinite":"none",
                   transition:"border-color 0.3s, background 0.3s",
                 }}>
-                  <span style={{ fontSize:20, fontWeight:900, color:timeLeft<=5?"#f87171":timeLeft<=10?"#fbbf24":"white", lineHeight:1 }}>{timeLeft}</span>
+                  <span style={{ fontSize:16, fontWeight:900, color:timeLeft<=5?"#f87171":timeLeft<=10?"#fbbf24":"white", lineHeight:1 }}>{timeLeft}</span>
                 </div>
-                <span style={{ fontSize:10, fontWeight:700, color:"#f59e0b", letterSpacing:"0.05em" }}>VS</span>
+                <span style={{ fontSize:9, fontWeight:700, color:"#f59e0b", letterSpacing:"0.05em" }}>VS</span>
               </div>
 
               {/* Opponent */}
-              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:5, position:"relative" }}>
+              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:3, position:"relative" }}>
                 {receivedEmoji && (
-                  <div key={receivedEmoji+Date.now()} style={{ position:"absolute", top:-28, left:"50%", fontSize:22, animation:"emojiPop 2.5s ease-out forwards", pointerEvents:"none" }}>
+                  <div key={`recv-${receivedEmojiIdRef.current}`} style={{ position:"absolute", top:-22, left:"50%", fontSize:20, animation:"emojiPop 2.5s ease-out forwards", pointerEvents:"none" }}>
                     {receivedEmoji}
                   </div>
                 )}
-                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={46} ring="#f87171" />
-                <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.65)", maxWidth:80, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={34} ring="#f87171" />
+                <div style={{ fontSize:9, fontWeight:700, color:"rgba(255,255,255,0.65)", maxWidth:72, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {oppFirstName}
                 </div>
                 <div style={{ display:"flex", alignItems:"baseline", gap:1 }}>
-                  <span style={{ fontSize:30, fontWeight:900, color:"#fca5a5", lineHeight:1 }}>{opponentScore}</span>
-                  <span style={{ fontSize:13, fontWeight:700, color:"rgba(252,165,165,0.55)", lineHeight:1 }}>/{questions.length}</span>
+                  <span style={{ fontSize:22, fontWeight:900, color:"#fca5a5", lineHeight:1 }}>{opponentScore}</span>
+                  <span style={{ fontSize:11, fontWeight:700, color:"rgba(252,165,165,0.55)", lineHeight:1 }}>/{questions.length}</span>
                 </div>
               </div>
             </div>
 
             {/* Timer progress bar */}
-            <div style={{ marginTop:12, height:3, background:"rgba(255,255,255,0.1)", borderRadius:4, overflow:"hidden" }}>
+            <div style={{ marginTop:8, height:2, background:"rgba(255,255,255,0.1)", borderRadius:4, overflow:"hidden" }}>
               <div style={{ height:"100%", width:`${timePct}%`, background:timeLeft<=5?"#ef4444":timeLeft<=10?"#f59e0b":"#818cf8", borderRadius:4, transition:"width 1s linear" }} />
             </div>
           </div>
 
           {/* ── Question Card ── */}
-          <div style={{ background:"white", borderRadius:16, padding:"16px", marginBottom:10, boxShadow:"0 4px 20px rgba(0,0,0,0.07)" }} onContextMenu={e => e.preventDefault()}>
-            {/* Badges */}
-            <div style={{ display:"flex", gap:6, marginBottom:12, flexWrap:"wrap" }}>
-              <span style={{ background:"#eff0ff", color:"#4338ca", fontSize:10, fontWeight:800, padding:"3px 10px", borderRadius:20, textTransform:"uppercase", letterSpacing:"0.04em" }}>
+          <div style={{ background:"white", borderRadius:12, padding:"10px 12px", boxShadow:"0 2px 12px rgba(0,0,0,0.07)" }} onContextMenu={e => e.preventDefault()}>
+            {/* Badges + inline hint */}
+            <div style={{ display:"flex", alignItems:"center", gap:5, marginBottom:7, flexWrap:"wrap" }}>
+              <span style={{ background:"#eff0ff", color:"#4338ca", fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:20, textTransform:"uppercase", letterSpacing:"0.04em" }}>
                 {room?.[`round${currentRound}_category`]}
               </span>
               {(() => {
                 const diff  = room?.[`round${currentRound}_difficulty`];
                 const [bg,  color] = diffBadge(diff);
                 return (
-                  <span style={{ background:bg, color, fontSize:10, fontWeight:800, padding:"3px 10px", borderRadius:20, textTransform:"capitalize" }}>
+                  <span style={{ background:bg, color, fontSize:9, fontWeight:800, padding:"2px 8px", borderRadius:20, textTransform:"capitalize" }}>
                     {diff}
                   </span>
                 );
               })()}
+              <div style={{ flex:1 }} />
+              {!feedback && hintsUsed < HINT_COSTS.length && (
+                <button onClick={useHint}
+                  style={{ padding:"2px 8px", background:"#fffbeb", border:"1px solid #fde068", borderRadius:20, fontSize:9, fontWeight:800, color:"#92400e", cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
+                  💡 {HINT_COSTS[Math.min(hintsUsed, HINT_COSTS.length-1)]}🪙
+                </button>
+              )}
             </div>
 
-            <p style={{ fontWeight:700, fontSize:15, lineHeight:1.6, margin:"0 0 14px", color:"#0f172a", userSelect:"none" }}>
+            <p style={{ fontWeight:700, fontSize:13, lineHeight:1.5, margin:"0 0 8px", color:"#0f172a", userSelect:"none" }}>
               {q.question_text}
             </p>
 
@@ -1477,11 +1620,11 @@ export default function BattlePage() {
               return (
                 <button key={i} disabled={!!feedback||elim}
                   onClick={() => { if (!feedback) { setSelected(i); handleAnswer(i); } }}
-                  style={{ width:"100%", padding:"11px 13px", margin:"5px 0", borderRadius:12, textAlign:"left", fontSize:14, fontFamily:"inherit", cursor:elim?"default":"pointer", background:bg, border, color, opacity:elim?0.25:1, textDecoration:elim?"line-through":"none", userSelect:"none", display:"flex", gap:10, alignItems:"center", boxShadow:shadow, transition:"all 0.15s" }}>
-                  <span style={{ width:26, height:26, borderRadius:7, background:letterBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:800, color:letterColor, flexShrink:0, transition:"all 0.15s" }}>
+                  style={{ width:"100%", padding:"7px 10px", margin:"3px 0", borderRadius:10, textAlign:"left", fontSize:13, fontFamily:"inherit", cursor:elim?"default":"pointer", background:bg, border, color, opacity:elim?0.25:1, textDecoration:elim?"line-through":"none", userSelect:"none", display:"flex", gap:8, alignItems:"center", boxShadow:shadow, transition:"all 0.15s" }}>
+                  <span style={{ width:22, height:22, borderRadius:6, background:letterBg, display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:800, color:letterColor, flexShrink:0, transition:"all 0.15s" }}>
                     {String.fromCharCode(65+i)}
                   </span>
-                  <span style={{ flex:1, lineHeight:1.4 }}>{opt}</span>
+                  <span style={{ flex:1, lineHeight:1.35 }}>{opt}</span>
                   {feedback && i===feedback.correctIndex && <span style={{ flexShrink:0 }}>✓</span>}
                   {feedback && i===selected && !feedback.correct && <span style={{ flexShrink:0 }}>✗</span>}
                 </button>
@@ -1489,20 +1632,11 @@ export default function BattlePage() {
             })}
 
             {feedback && (
-              <div style={{ textAlign:"center", marginTop:12, fontWeight:900, fontSize:15, color:feedback.correct?"#059669":"#dc2626" }}>
+              <div style={{ textAlign:"center", marginTop:8, fontWeight:900, fontSize:13, color:feedback.correct?"#059669":"#dc2626" }}>
                 {feedback.correct ? "✓ Correct!" : `✗ Correct answer: ${String.fromCharCode(65+feedback.correctIndex)}`}
               </div>
             )}
           </div>
-
-          {/* Hint button */}
-          {!feedback && hintsUsed < HINT_COSTS.length && (
-            <button style={{ width:"100%", padding:"11px", background:"linear-gradient(135deg,#fffbeb,#fef9c3)", border:"1.5px solid #fde068", borderRadius:12, color:"#92400e", fontWeight:800, fontSize:13, cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}
-              onClick={useHint}>
-              💡 Hint #{hintsUsed+1} — costs <strong>{HINT_COSTS[Math.min(hintsUsed, HINT_COSTS.length-1)]} coins</strong> · eliminates 1 wrong option
-            </button>
-          )}
-          <div style={{ height:60 }} />
         </div>
       )}
 
@@ -1510,47 +1644,38 @@ export default function BattlePage() {
           BATTLE COMMS BAR — visible during all active battle views
       ══════════════════════════════════════════════════════════ */}
       {room?.id && ["selecting","in_progress","waiting_round","waiting_round2"].includes(view) && (
-        <div style={{ position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:560, background:"rgba(15,15,26,0.96)", borderTop:"1px solid rgba(255,255,255,0.08)", padding:"8px 16px 10px", display:"flex", alignItems:"center", justifyContent:"center", gap:10, zIndex:300, boxSizing:"border-box" }}>
+        <div style={{ position:"fixed", bottom:14, right:14, display:"flex", flexDirection:"column", alignItems:"flex-end", gap:6, zIndex:300 }}>
 
-          {/* Mic */}
-          <button onClick={toggleMic} title={micOn ? "Mic On" : "Mic Off"}
-            style={{ width:40, height:40, borderRadius:12, border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.2)"}`, background: micOn?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.07)", color:micOn?"#86efac":"rgba(255,255,255,0.55)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
-            {micOn ? "🎤" : "🎙️"}
-          </button>
-
-          {/* Speaker */}
-          <button onClick={toggleSpeaker} title={speakerOn ? "Speaker On" : "Speaker Off"}
-            style={{ width:40, height:40, borderRadius:12, border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.15)"}`, background: speakerOn?"rgba(99,102,241,0.14)":"rgba(255,255,255,0.07)", color:speakerOn?"#a5b4fc":"rgba(255,255,255,0.4)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
-            {speakerOn ? "🔊" : "🔇"}
-          </button>
-
-          {/* Emoji picker */}
-          <div style={{ position:"relative" }}>
-            <button onClick={() => setShowEmojiPicker(v => !v)}
-              style={{ width:40, height:40, borderRadius:12, border:`1.5px solid ${showEmojiPicker?"#f59e0b44":"rgba(255,255,255,0.15)"}`, background: showEmojiPicker?"rgba(245,158,11,0.16)":"rgba(255,255,255,0.07)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
-              😀
-            </button>
-            {showEmojiPicker && (
-              <div style={{ position:"absolute", bottom:"calc(100% + 8px)", left:"50%", transform:"translateX(-50%)", background:"#1e1b4b", border:"1px solid rgba(255,255,255,0.12)", borderRadius:14, padding:"8px 10px", display:"flex", flexWrap:"wrap", gap:6, width:220, boxShadow:"0 -8px 32px rgba(0,0,0,0.5)", zIndex:400 }}>
-                {CHAT_EMOJIS.map(e => (
-                  <button key={e} onClick={() => sendEmoji(e)}
-                    style={{ width:34, height:34, borderRadius:8, border:"none", background:"rgba(255,255,255,0.07)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"background 0.12s" }}
-                    onMouseEnter={ev => ev.currentTarget.style.background="rgba(255,255,255,0.16)"}
-                    onMouseLeave={ev => ev.currentTarget.style.background="rgba(255,255,255,0.07)"}>
-                    {e}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Mic indicator label */}
-          {micOn && (
-            <div style={{ fontSize:10, fontWeight:700, color:"#86efac", letterSpacing:"0.04em", display:"flex", alignItems:"center", gap:4 }}>
-              <span style={{ width:6, height:6, borderRadius:"50%", background:"#22c55e", animation:"liveBlip 1s ease-in-out infinite", display:"inline-block" }} />
-              LIVE
+          {/* Emoji picker popup */}
+          {showEmojiPicker && (
+            <div style={{ background:"rgba(15,15,26,0.97)", border:"1px solid rgba(255,255,255,0.12)", borderRadius:14, padding:"7px 8px", display:"flex", flexWrap:"wrap", gap:5, width:196, boxShadow:"0 -4px 24px rgba(0,0,0,0.6)" }}>
+              {CHAT_EMOJIS.map(e => (
+                <button key={e} onClick={() => sendEmoji(e)}
+                  style={{ width:30, height:30, borderRadius:7, border:"none", background:"rgba(255,255,255,0.07)", fontSize:16, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}
+                  onMouseEnter={ev => ev.currentTarget.style.background="rgba(255,255,255,0.16)"}
+                  onMouseLeave={ev => ev.currentTarget.style.background="rgba(255,255,255,0.07)"}>
+                  {e}
+                </button>
+              ))}
             </div>
           )}
+
+          {/* Pill row: mic + speaker + emoji + live dot */}
+          <div style={{ background:"rgba(15,15,26,0.92)", borderRadius:40, padding:"5px 7px", display:"flex", alignItems:"center", gap:5, border:"1px solid rgba(255,255,255,0.1)", boxShadow:"0 4px 20px rgba(0,0,0,0.5)" }}>
+            <button onClick={toggleMic} title={micOn?"Mute":"Unmute"}
+              style={{ width:28, height:28, borderRadius:"50%", border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.18)"}`, background:micOn?"rgba(34,197,94,0.22)":"rgba(255,255,255,0.07)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
+              {micOn?"🎤":"🎙️"}
+            </button>
+            <button onClick={toggleSpeaker} title={speakerOn?"Mute speaker":"Unmute speaker"}
+              style={{ width:28, height:28, borderRadius:"50%", border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.15)"}`, background:speakerOn?"rgba(99,102,241,0.18)":"rgba(255,255,255,0.07)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
+              {speakerOn?"🔊":"🔇"}
+            </button>
+            <button onClick={() => setShowEmojiPicker(v => !v)}
+              style={{ width:28, height:28, borderRadius:"50%", border:`1.5px solid ${showEmojiPicker?"#f59e0b55":"rgba(255,255,255,0.15)"}`, background:showEmojiPicker?"rgba(245,158,11,0.18)":"rgba(255,255,255,0.07)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.15s" }}>
+              😀
+            </button>
+            {micOn && <span style={{ width:6, height:6, borderRadius:"50%", background:"#22c55e", animation:"liveBlip 1s ease-in-out infinite", flexShrink:0 }} />}
+          </div>
         </div>
       )}
 
@@ -1788,6 +1913,7 @@ export default function BattlePage() {
 function BattleShareCard({ profile, result, onClose }) {
   const cardRef = useRef(null);
   const [imgUrl, setImgUrl] = useState(null);
+  const [captionCopied, setCaptionCopied] = useState(false);
   const name = profile?.full_name || "Player";
   const date = new Date().toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
 
@@ -1855,9 +1981,9 @@ function BattleShareCard({ profile, result, onClose }) {
           {imgUrl
             ? <a href={imgUrl} download="aidla-battle.png" style={{ flex:1, padding:"11px", background:"#6366f1", color:"white", borderRadius:10, fontWeight:700, fontSize:13, textDecoration:"none", textAlign:"center" }}>Download</a>
             : <div style={{ flex:1, padding:"11px", background:"#e2e8f0", color:"#94a3b8", borderRadius:10, fontSize:13, textAlign:"center" }}>Generating...</div>}
-          <button style={{ flex:1, padding:"11px", background:"#059669", color:"white", border:"none", borderRadius:10, fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit" }}
-            onClick={() => navigator.clipboard.writeText(caption).then(() => alert("Copied!"))}>
-            Copy
+          <button style={{ flex:1, padding:"11px", background: captionCopied ? "#16a34a" : "#059669", color:"white", border:"none", borderRadius:10, fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit" }}
+            onClick={() => navigator.clipboard.writeText(caption).then(() => { setCaptionCopied(true); setTimeout(() => setCaptionCopied(false), 2000); }).catch(() => {})}>
+            {captionCopied ? "✓ Copied!" : "Copy"}
           </button>
         </div>
       </div>

@@ -1711,15 +1711,18 @@ export default function BattlePage() {
                 <span style={{ fontSize:14 }}>🔒</span>
                 <div style={S.cardTitle}>Private Room Ready</div>
               </div>
-              <div style={{ background:"#f8fafc", borderRadius:12, padding:"12px 14px", marginBottom:10 }}>
-                <div style={{ fontSize:10, color:"#94a3b8", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:4 }}>Room ID</div>
-                <div style={{ fontSize:13, fontWeight:800, color:"#0f172a", fontFamily:"monospace", wordBreak:"break-all" }}>{currentRoomId}</div>
+              <div style={{ background:"linear-gradient(135deg,#eff0ff,#f5f3ff)", borderRadius:11, padding:"10px 12px", marginBottom:10, border:"1px solid #e0e7ff" }}>
+                <div style={{ fontSize:9, color:"#94a3b8", fontWeight:700, textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>Share this code</div>
+                <div style={{ fontSize:22, fontWeight:900, color:"#4338ca", letterSpacing:"0.08em", marginBottom:3 }}>
+                  Room-{(parseInt((currentRoomId||"0").replace(/-/g,"").slice(-6),16)%9000+1000)}
+                </div>
+                <div style={{ fontSize:9, color:"#94a3b8", fontFamily:"monospace", wordBreak:"break-all" }}>{currentRoomId}</div>
               </div>
-              <div style={{ display:"flex", gap:8 }}>
-                <button style={{ ...S.smBtn, flex:1, justifyContent:"center" }} onClick={copyRoomId}>{copiedId ? "✓ Copied!" : "Copy ID"}</button>
-                <button style={{ ...S.smBtn, flex:1, background:"#6366f1", color:"white", border:"none" }} onClick={copyRoomLink}>{copiedLink ? "✓ Copied!" : "Copy Link"}</button>
+              <div style={{ display:"flex", gap:7 }}>
+                <button style={{ ...S.smBtn, flex:1, justifyContent:"center", fontSize:11 }} onClick={copyRoomId}>{copiedId ? "✓ Copied!" : "Copy ID"}</button>
+                <button style={{ ...S.smBtn, flex:1, background:"#6366f1", color:"white", border:"none", fontSize:11 }} onClick={copyRoomLink}>{copiedLink ? "✓ Copied!" : "Copy Link"}</button>
               </div>
-              <div style={{ fontSize:11, color:"#94a3b8", marginTop:8 }}>Share the link or ID with your opponent</div>
+              <div style={{ fontSize:10, color:"#94a3b8", marginTop:7 }}>Share the code or link with your opponent</div>
             </div>
           )}
         </div>
@@ -1768,7 +1771,7 @@ export default function BattlePage() {
 
               {/* Category grid */}
               <div style={{ fontSize:9, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>Category</div>
-              <div className="inner-scroll" style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:3, marginBottom:9, maxHeight:130, overflowY:"auto" }}>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:3, marginBottom:9 }}>
                 {categories.map(c => (
                   <button key={c.id}
                     style={{ padding:"4px 2px", border: selCategory?.id===c.id ? "2px solid #6366f1" : "1.5px solid #e2e8f0", borderRadius:7, background: selCategory?.id===c.id ? "#eff0ff" : "white", fontSize:8, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color: selCategory?.id===c.id ? "#4338ca" : "#334155", textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:1, transition:"all 0.12s", minWidth:0 }}
@@ -1784,10 +1787,10 @@ export default function BattlePage() {
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:9, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:4 }}>Difficulty</div>
                   <div style={{ display:"flex", gap:3 }}>
-                    {[["easy","🟢"],["medium","🟡"],["hard","🔴"]].map(([d,dot]) => (
+                    {[["easy","🟢","Easy"],["medium","🟡","Med"],["hard","🔴","Hard"]].map(([d,dot,label]) => (
                       <button key={d} style={{ flex:1, padding:"5px 2px", border:"1.5px solid #e2e8f0", borderRadius:7, background: selDifficulty===d ? "#6366f1" : "white", color: selDifficulty===d ? "white" : "#334155", fontSize:9, fontWeight:800, cursor:"pointer", fontFamily:"inherit", transition:"all 0.12s" }}
                         onClick={() => setSelDifficulty(d)}>
-                        {dot}
+                        {dot} {label}
                       </button>
                     ))}
                   </div>
@@ -2359,7 +2362,7 @@ function BattleShareCard({ profile, result, onClose }) {
 
 // ── STYLES ─────────────────────────────────────────────────────────
 const S = {
-  wrap:       { fontFamily:"'DM Sans',sans-serif", maxWidth:480, margin:"0 auto", height:"100dvh", maxHeight:"100dvh", overflow:"hidden", background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column" },
+  wrap:       { fontFamily:"'DM Sans',sans-serif", position:"fixed", top:0, bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:480, zIndex:999, overflow:"hidden", background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column" },
   header:     { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 14px", background:"linear-gradient(135deg,#1e1b4b,#312e81)", flexShrink:0, boxShadow:"0 2px 12px rgba(30,27,75,0.35)" },
   backBtn:    { background:"rgba(255,255,255,0.13)", border:"none", color:"white", fontWeight:800, fontSize:16, cursor:"pointer", width:32, height:32, borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 },
   headerTitle:{ fontWeight:800, fontSize:14, color:"white", letterSpacing:"-0.01em" },

@@ -289,6 +289,11 @@ export default function BattlePage() {
     audioChunkQueueRef.current = [];
     audioChunkPlayingRef.current = false;
     nextAudioPlayTimeRef.current = 0;
+    if (audioContextRef.current) {
+      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
+    audioUnlockedRef.current = false;
     webrtcConnectedRef.current = false;
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
   }
@@ -464,55 +469,30 @@ export default function BattlePage() {
     recordSlice();
   }
 
-  async function playNextAudioChunk() {
-    if (audioChunkPlayingRef.current || !speakerOnRef.current) return;
-    const item = audioChunkQueueRef.current.shift();
-    if (!item) return;
-    audioChunkPlayingRef.current = true;
-    await unlockAudio();
-    if (audioContextRef.current) {
-      try {
-        const raw = base64ToBlob(item.data, item.mime);
-        const buffer = await raw.arrayBuffer();
-        const audioBuffer = await audioContextRef.current.decodeAudioData(buffer);
-        const source = audioContextRef.current.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(audioContextRef.current.destination);
-        const now = audioContextRef.current.currentTime;
-        // If scheduled time drifted more than 200ms into the past, reset to avoid
-        // playing a backlog of stale audio
-        if (nextAudioPlayTimeRef.current < now - 0.2) nextAudioPlayTimeRef.current = 0;
-        const startAt = Math.max(now + 0.015, nextAudioPlayTimeRef.current);
-        nextAudioPlayTimeRef.current = startAt + audioBuffer.duration;
-        source.onended = () => {
-          audioChunkPlayingRef.current = false;
-          playNextAudioChunk();
-        };
-        source.start(startAt);
-        return;
-      } catch (_) {}
-    }
-    const url = URL.createObjectURL(base64ToBlob(item.data, item.mime));
-    const audio = new Audio(url);
-    audio.onended = audio.onerror = () => {
-      URL.revokeObjectURL(url);
-      audioChunkPlayingRef.current = false;
-      playNextAudioChunk();
-    };
-    try {
-      await audio.play();
-    } catch (_) {
-      URL.revokeObjectURL(url);
-      audioChunkPlayingRef.current = false;
-    }
-  }
-
-  function enqueueAudioChunk(payload) {
+  // Direct AudioContext scheduling — no queue, no lock, no gap between chunks.
+  // Each chunk is decoded as it arrives and scheduled at an exact future time.
+  // The AudioContext scheduler (running on the audio thread) handles gapless
+  // playback with sample-accurate timing regardless of JS main-thread jank.
+  async function enqueueAudioChunk(payload) {
     if (!payload?.data || !speakerOnRef.current) return;
-    audioChunkQueueRef.current.push({ data:payload.data, mime:payload.mime });
-    // Keep at most 2 chunks buffered — drop oldest when lagging to stay live
-    while (audioChunkQueueRef.current.length > 2) audioChunkQueueRef.current.shift();
-    playNextAudioChunk();
+    await unlockAudio();
+    const ctx = audioContextRef.current;
+    if (!ctx) return;
+    try {
+      const blob = base64ToBlob(payload.data, payload.mime);
+      const arrayBuf = await blob.arrayBuffer();
+      const audioBuffer = await ctx.decodeAudioData(arrayBuf);
+      const now = ctx.currentTime;
+      // If scheduled clock drifted >150ms into the past (network gap / tab hidden),
+      // reset it so we play immediately instead of dumping stale audio.
+      if (nextAudioPlayTimeRef.current < now - 0.15) nextAudioPlayTimeRef.current = 0;
+      const startAt = Math.max(now + 0.01, nextAudioPlayTimeRef.current);
+      nextAudioPlayTimeRef.current = startAt + audioBuffer.duration;
+      const source = ctx.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(ctx.destination);
+      source.start(startAt);
+    } catch (_) {}
   }
 
   async function initiateOffer() {
@@ -589,7 +569,6 @@ export default function BattlePage() {
       if (next) {
         unlockAudio();
         remoteAudioRef.current?.play().catch(() => {});
-        playNextAudioChunk();
       }
       return next;
     });

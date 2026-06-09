@@ -12,7 +12,13 @@ const MODES = [
 
 const HINT_COSTS  = [2.5, 5, 10, 20, 40];
 const CHAT_EMOJIS = ["😀","😂","😎","😡","😭","🔥","💯","👍","👎","❤️","🎉"];
-const STUN        = { iceServers:[{ urls:"stun:stun.l.google.com:19302" }] };
+const STUN        = { iceServers:[
+  { urls:"stun:stun.l.google.com:19302" },
+  { urls:"stun:stun1.l.google.com:19302" },
+  { urls:"turn:openrelay.metered.ca:80",     username:"openrelayproject", credential:"openrelayproject" },
+  { urls:"turn:openrelay.metered.ca:443",    username:"openrelayproject", credential:"openrelayproject" },
+  { urls:"turn:openrelay.metered.ca:443?transport=tcp", username:"openrelayproject", credential:"openrelayproject" },
+] };
 
 function AvatarCircle({ url, name, size = 44, ring = "#6366f1" }) {
   if (url) {
@@ -344,16 +350,24 @@ export default function BattlePage() {
     });
   }
 
-  function sendEmoji(emoji) {
+  async function sendEmoji(emoji) {
     const now = Date.now();
     if (now - emojiRateLimitRef.current < 800) return;
     emojiRateLimitRef.current = now;
-    roomChannelRef.current?.send({ type:"broadcast", event:"emoji", payload:{ from:myRoleRef.current, emoji } });
     setShowEmojiPicker(false);
     sentEmojiIdRef.current += 1;
     setSentEmoji(emoji);
     clearTimeout(sentEmojiTimeoutRef.current);
     sentEmojiTimeoutRef.current = setTimeout(() => setSentEmoji(null), 2500);
+    const ch = roomChannelRef.current;
+    if (!ch) return;
+    // Wait up to 2s for channel to be subscribed before sending
+    let waited = 0;
+    while (ch.state !== "joined" && waited < 2000) {
+      await new Promise(r => setTimeout(r, 100));
+      waited += 100;
+    }
+    ch.send({ type:"broadcast", event:"emoji", payload:{ from:myRoleRef.current, emoji } });
   }
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -615,7 +629,7 @@ export default function BattlePage() {
     if (roomChannelRef.current) supabase.removeChannel(roomChannelRef.current);
     roomSyncRef.current = setInterval(() => syncRoom(roomId), 5000);
     roomChannelRef.current = supabase
-      .channel(`battle-room:${roomId}`)
+      .channel(`battle-room:${roomId}`, { config: { broadcast: { ack: false, self: false } } })
       .on("postgres_changes", { event:"UPDATE", schema:"public", table:"battle_rooms", filter:`id=eq.${roomId}` }, ({ new: r }) => {
         setRoom(r);
         const rn = roundFromRoom(r);
@@ -824,20 +838,21 @@ export default function BattlePage() {
   // Auto-request mic permission when battle becomes active
   useEffect(() => {
     if (view !== "in_progress") return;
-    navigator.permissions.query({ name:"microphone" }).then(perm => {
-      if (perm.state === "prompt") {
-        navigator.mediaDevices.getUserMedia({ audio:true, video:false })
-          .then(stream => {
-            localStreamRef.current = stream;
-            setMicOn(true);
-            if (pcRef.current)
-              stream.getTracks().forEach(t => { try { pcRef.current.addTrack(t, stream); } catch(_){} });
-            roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
-            if (myRoleRef.current === "player1") initiateOffer();
-          })
-          .catch(() => {});
-      }
-    }).catch(() => {});
+    const run = async () => {
+      try {
+        const perm = await navigator.permissions.query({ name:"microphone" }).catch(() => null);
+        if (perm?.state === "denied") return;
+        // Small delay to ensure Supabase channel is subscribed
+        await new Promise(r => setTimeout(r, 800));
+        if (viewRef.current !== "in_progress") return;
+        const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
+        localStreamRef.current = stream;
+        setMicOn(true);
+        roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
+        if (myRoleRef.current === "player1") initiateOffer();
+      } catch (_) {}
+    };
+    run();
   }, [view]);
 
   // H9: Selection countdown — auto-forfeit if selector doesn't pick in 60s

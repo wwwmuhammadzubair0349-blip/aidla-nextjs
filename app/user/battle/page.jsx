@@ -159,6 +159,16 @@ export default function BattlePage() {
   const [isPrivateRoom,  setIsPrivateRoom]  = useState(false);
 
   useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+      document.documentElement.style.overflow = "";
+    };
+  }, []);
+
+  useEffect(() => {
     init();
     return () => {
       clearAllTimers();
@@ -2362,7 +2372,7 @@ function BattleShareCard({ profile, result, onClose }) {
 
 // ── STYLES ─────────────────────────────────────────────────────────
 const S = {
-  wrap:       { fontFamily:"'DM Sans',sans-serif", position:"fixed", top:0, bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:480, zIndex:999, overflow:"hidden", background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column" },
+  wrap:       { fontFamily:"'DM Sans',sans-serif", maxWidth:480, margin:"0 auto", height:"100dvh", overflow:"hidden", background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column" },
   header:     { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 14px", background:"linear-gradient(135deg,#1e1b4b,#312e81)", flexShrink:0, boxShadow:"0 2px 12px rgba(30,27,75,0.35)" },
   backBtn:    { background:"rgba(255,255,255,0.13)", border:"none", color:"white", fontWeight:800, fontSize:16, cursor:"pointer", width:32, height:32, borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 },
   headerTitle:{ fontWeight:800, fontSize:14, color:"white", letterSpacing:"-0.01em" },

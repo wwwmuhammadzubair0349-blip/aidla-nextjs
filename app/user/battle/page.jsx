@@ -10,8 +10,10 @@ const MODES = [
   { id:"100",   label:"100 Coins",  stake:100, prize:180, tax:20, color:"#ef4444", glow:"rgba(239,68,68,0.25)",  icon:"👑", badge:"100" },
 ];
 
-const HINT_COSTS = [2.5, 5, 10, 20, 40];
+const HINT_COSTS  = [2.5, 5, 10, 20, 40];
 const BOT_EMOJIS  = ["🤖","👾","🎮","🦾","🧠","⚡","🎯","💻"];
+const CHAT_EMOJIS = ["😀","😂","😎","😡","😭","🔥","💯","👍","👎","❤️","🎉"];
+const STUN        = { iceServers:[{ urls:"stun:stun.l.google.com:19302" }] };
 
 function getBotEmoji(name) {
   return BOT_EMOJIS[(name || "").charCodeAt(0) % BOT_EMOJIS.length] || "🤖";
@@ -91,11 +93,19 @@ export default function BattlePage() {
   const [lbPeriod,    setLbPeriod]    = useState("daily");
 
   // NEW
-  const [opponentProfile, setOpponentProfile] = useState(null);
+  const [opponentProfile,  setOpponentProfile]  = useState(null);
+
+  // Voice + emoji
+  const [micOn,           setMicOn]           = useState(false);
+  const [speakerOn,       setSpeakerOn]       = useState(true);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [sentEmoji,       setSentEmoji]       = useState(null);
+  const [receivedEmoji,   setReceivedEmoji]   = useState(null);
 
   const pollRef           = useRef(null);
   const roomSyncRef       = useRef(null);
   const roomChannelRef    = useRef(null);
+  const openRoomsPollRef  = useRef(null);
   const botTimerRef       = useRef(null);
   const timerRef          = useRef(null);
   const submitLock        = useRef(false);
@@ -111,8 +121,17 @@ export default function BattlePage() {
   const forfeitLockRef    = useRef(false);
   const botAnsweredRef    = useRef(new Set());
   // NEW refs
-  const roundTotalsRef      = useRef({ 1:0, 2:0 });
-  const opponentFetchedRef  = useRef(false);
+  const roundTotalsRef        = useRef({ 1:0, 2:0 });
+  const opponentFetchedRef    = useRef(false);
+
+  // Voice + emoji refs
+  const pcRef                 = useRef(null);         // RTCPeerConnection
+  const localStreamRef        = useRef(null);         // local MediaStream
+  const remoteAudioRef        = useRef(null);         // <audio> element
+  const speakerOnRef          = useRef(true);         // mirror of speakerOn for callbacks
+  const iceCandidateQueueRef  = useRef([]);           // ICE candidates before remote SDP
+  const emojiTimeoutRef       = useRef(null);
+  const sentEmojiTimeoutRef   = useRef(null);
 
   const [selectedMode,   setSelectedMode]   = useState(null);
   const [joinRoomInput,  setJoinRoomInput]  = useState("");
@@ -133,16 +152,34 @@ export default function BattlePage() {
   useEffect(() => { myRoleRef.current     = myRole;       }, [myRole]);
   useEffect(() => { viewRef.current       = view;         }, [view]);
 
+  useEffect(() => { speakerOnRef.current = speakerOn; }, [speakerOn]);
+
+  // Auto-refresh open rooms every 1 s while on that tab
+  useEffect(() => {
+    if (view === "lobby" && activeTab === "open") {
+      loadOpenRooms();
+      clearInterval(openRoomsPollRef.current);
+      openRoomsPollRef.current = setInterval(loadOpenRooms, 1000);
+    } else {
+      clearInterval(openRoomsPollRef.current);
+    }
+    return () => clearInterval(openRoomsPollRef.current);
+  }, [activeTab, view]);
+
   function clearAllTimers() {
     clearInterval(pollRef.current);
     clearInterval(botTimerRef.current);
     clearInterval(timerRef.current);
+    clearInterval(openRoomsPollRef.current);
     clearTimeout(roomTimeoutRef.current);
     clearTimeout(tabHideTimerRef.current);
+    clearTimeout(emojiTimeoutRef.current);
+    clearTimeout(sentEmojiTimeoutRef.current);
     if (roomChannelRef.current) {
       supabase.removeChannel(roomChannelRef.current);
       roomChannelRef.current = null;
     }
+    cleanupVoiceResources();
   }
 
   function roundFromRoom(r) {
@@ -181,6 +218,7 @@ export default function BattlePage() {
     opponentFetchedRef.current= false;
     roundTotalsRef.current    = { 1:0, 2:0 };
     setOpponentProfile(null);
+    cleanupVoice();
     setView("lobby");
     setActiveTab("play");
   }
@@ -196,6 +234,105 @@ export default function BattlePage() {
     if (finalRoom) handleResult(finalRoom);
     else { flash("Eliminated - opponent wins."); setView("lobby"); }
   }
+
+  // ── Voice + emoji helpers ───────────────────────────────────────────────────
+
+  function cleanupVoiceResources() {
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(t => t.stop());
+      localStreamRef.current = null;
+    }
+    if (pcRef.current) {
+      try { pcRef.current.close(); } catch (_) {}
+      pcRef.current = null;
+    }
+    iceCandidateQueueRef.current = [];
+    if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
+  }
+
+  function cleanupVoice() {
+    cleanupVoiceResources();
+    setMicOn(false);
+    setShowEmojiPicker(false);
+    setSentEmoji(null);
+    setReceivedEmoji(null);
+  }
+
+  function createPC() {
+    if (pcRef.current) return pcRef.current;
+    const pc = new RTCPeerConnection(STUN);
+    pcRef.current = pc;
+    pc.onicecandidate = (e) => {
+      if (!e.candidate || !roomChannelRef.current) return;
+      roomChannelRef.current.send({
+        type:"broadcast", event:"webrtc-ice",
+        payload:{ from:myRoleRef.current, candidate:e.candidate.toJSON() },
+      });
+    };
+    pc.ontrack = (e) => {
+      if (!remoteAudioRef.current) return;
+      remoteAudioRef.current.srcObject = e.streams[0];
+      remoteAudioRef.current.muted = !speakerOnRef.current;
+      remoteAudioRef.current.play().catch(() => {});
+    };
+    return pc;
+  }
+
+  async function initiateOffer() {
+    const pc = createPC();
+    if (localStreamRef.current)
+      localStreamRef.current.getTracks().forEach(t => { try { pc.addTrack(t, localStreamRef.current); } catch(_){} });
+    if (pc.signalingState !== "stable") return;
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      roomChannelRef.current?.send({
+        type:"broadcast", event:"webrtc-offer",
+        payload:{ from:"player1", sdp:pc.localDescription.sdp },
+      });
+    } catch (_) {}
+  }
+
+  async function toggleMic() {
+    if (micOn) {
+      if (localStreamRef.current) {
+        localStreamRef.current.getTracks().forEach(t => t.stop());
+        localStreamRef.current = null;
+      }
+      setMicOn(false);
+    } else {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
+        localStreamRef.current = stream;
+        setMicOn(true);
+        if (pcRef.current)
+          stream.getTracks().forEach(t => { try { pcRef.current.addTrack(t, stream); } catch(_){} });
+        roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
+        if (myRoleRef.current === "player1") await initiateOffer();
+      } catch (_) {
+        flash("Microphone permission denied");
+      }
+    }
+  }
+
+  function toggleSpeaker() {
+    setSpeakerOn(s => {
+      const next = !s;
+      speakerOnRef.current = next;
+      if (remoteAudioRef.current) remoteAudioRef.current.muted = !next;
+      return next;
+    });
+  }
+
+  function sendEmoji(emoji) {
+    roomChannelRef.current?.send({ type:"broadcast", event:"emoji", payload:{ from:myRoleRef.current, emoji } });
+    setShowEmojiPicker(false);
+    setSentEmoji(emoji);
+    clearTimeout(sentEmojiTimeoutRef.current);
+    sentEmojiTimeoutRef.current = setTimeout(() => setSentEmoji(null), 2500);
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────
 
   async function init() {
     const { data: { session } } = await supabase.auth.getSession();
@@ -333,7 +470,7 @@ export default function BattlePage() {
       setSubmittingSelection(false);
       return;
     }
-    setSubmittingSelection(false);
+    // Keep submittingSelection=true so the Lock button does not re-appear while waiting for in_progress
     if (room.is_bot && round === 1) {
       setTimeout(async () => {
         const botCat = categories[Math.floor(Math.random() * categories.length)];
@@ -405,7 +542,12 @@ export default function BattlePage() {
     const rn = roundFromRoom(r);
     setCurrentRound(rn);
     setMyScore(myRoundScore(r, rn));
-    if (r.status === "completed") { clearAllTimers(); handleResult(r); }
+    if (r.status === "completed") {
+      // Don't interrupt the local player if they are still actively playing round 2
+      if (viewRef.current === "in_progress" && !completedRoundsRef.current.has(rn)) return;
+      clearAllTimers();
+      handleResult(r);
+    }
   }
 
   function watchRoom(roomId) {
@@ -419,7 +561,58 @@ export default function BattlePage() {
         const rn = roundFromRoom(r);
         setCurrentRound(rn);
         setMyScore(myRoundScore(r, rn));
-        if (r.status === "completed") { clearAllTimers(); handleResult(r); }
+        if (r.status === "completed") {
+          // Don't interrupt the local player if they are still actively playing round 2
+          if (viewRef.current === "in_progress" && !completedRoundsRef.current.has(rn)) return;
+          clearAllTimers();
+          handleResult(r);
+        }
+      })
+      // ── Emoji broadcast ───────────────────────────────────────────────────
+      .on("broadcast", { event:"emoji" }, ({ payload }) => {
+        if (!payload || payload.from === myRoleRef.current) return;
+        setReceivedEmoji(payload.emoji);
+        clearTimeout(emojiTimeoutRef.current);
+        emojiTimeoutRef.current = setTimeout(() => setReceivedEmoji(null), 2500);
+      })
+      // ── WebRTC signaling broadcasts ───────────────────────────────────────
+      .on("broadcast", { event:"mic-on" }, ({ payload }) => {
+        if (!payload || payload.from === myRoleRef.current) return;
+        // When opponent enables mic, player1 initiates the offer
+        if (myRoleRef.current === "player1") initiateOffer();
+        else createPC(); // player2 prepares the connection object
+      })
+      .on("broadcast", { event:"webrtc-offer" }, async ({ payload }) => {
+        if (!payload || payload.from === myRoleRef.current) return;
+        const pc = createPC();
+        if (localStreamRef.current)
+          localStreamRef.current.getTracks().forEach(t => { try { pc.addTrack(t, localStreamRef.current); } catch(_){} });
+        try {
+          await pc.setRemoteDescription({ type:"offer", sdp:payload.sdp });
+          for (const c of iceCandidateQueueRef.current)
+            await pc.addIceCandidate(c).catch(() => {});
+          iceCandidateQueueRef.current = [];
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          roomChannelRef.current?.send({
+            type:"broadcast", event:"webrtc-answer",
+            payload:{ from:myRoleRef.current, sdp:pc.localDescription.sdp },
+          });
+        } catch (_) {}
+      })
+      .on("broadcast", { event:"webrtc-answer" }, async ({ payload }) => {
+        if (!payload || payload.from === myRoleRef.current) return;
+        if (pcRef.current?.signalingState === "have-local-offer") {
+          try { await pcRef.current.setRemoteDescription({ type:"answer", sdp:payload.sdp }); } catch (_) {}
+        }
+      })
+      .on("broadcast", { event:"webrtc-ice" }, async ({ payload }) => {
+        if (!payload || payload.from === myRoleRef.current) return;
+        if (pcRef.current?.remoteDescription) {
+          await pcRef.current.addIceCandidate(payload.candidate).catch(() => {});
+        } else {
+          iceCandidateQueueRef.current.push(payload.candidate);
+        }
       })
       .subscribe();
   }
@@ -491,10 +684,37 @@ export default function BattlePage() {
         }, 2000);
       } else {
         clearInterval(pollRef.current);
-        const { data: comp } = await supabase.rpc("battle_complete", { p_room_id: room.id });
-        if (comp?.already_done || comp?.ok) {
-          const { data: finalRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
-          handleResult(finalRoom || { ...room });
+        const { data: latestRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
+        if (latestRoom) setRoom(latestRoom);
+        if (latestRoom?.status === "completed") {
+          handleResult(latestRoom);
+          return;
+        }
+        const bothDone = latestRoom?.player1_round2_done && latestRoom?.player2_round2_done;
+        if (bothDone) {
+          const { data: comp } = await supabase.rpc("battle_complete", { p_room_id: room.id });
+          if (comp?.ok || comp?.already_done) {
+            const { data: finalRoom } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
+            handleResult(finalRoom || latestRoom);
+          }
+        } else {
+          setView("waiting_round2");
+          pollRef.current = setInterval(async () => {
+            const { data: r } = await supabase.rpc("battle_get_room", { p_room_id: room.id });
+            if (!r) return;
+            setRoom(r);
+            if (r.status === "completed") {
+              clearInterval(pollRef.current);
+              handleResult(r);
+            } else if (r.player1_round2_done && r.player2_round2_done) {
+              clearInterval(pollRef.current);
+              const { data: comp } = await supabase.rpc("battle_complete", { p_room_id: r.id });
+              if (comp?.ok || comp?.already_done) {
+                const { data: finalRoom } = await supabase.rpc("battle_get_room", { p_room_id: r.id });
+                handleResult(finalRoom || r);
+              }
+            }
+          }, 2000);
         }
       }
     } else {
@@ -529,6 +749,8 @@ export default function BattlePage() {
   useEffect(() => {
     if (!room?.id || !["in_progress","selecting"].includes(view)) return;
     const onUnload = () => {
+      if (localStreamRef.current) localStreamRef.current.getTracks().forEach(t => t.stop());
+      try { if (pcRef.current) pcRef.current.close(); } catch (_) {}
       fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/battle_forfeit`, {
         method: "POST", keepalive: true,
         headers: { "Content-Type":"application/json", apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, Authorization: `Bearer ${sessionRef.current?.access_token || ""}` },
@@ -559,6 +781,7 @@ export default function BattlePage() {
   }
 
   function handleResult(r) {
+    cleanupVoice();
     const iWon    = r.winner_id === (myRole === "player1" ? r.player1_id : r.player2_id);
     const myTotal = myRole === "player1"
       ? (r.player1_round1_score||0) + (r.player1_round2_score||0)
@@ -710,7 +933,13 @@ export default function BattlePage() {
         @keyframes confettiFall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(90px) rotate(360deg);opacity:0}}
         @keyframes liveBlip{0%,100%{opacity:1}50%{opacity:0.3}}
         @keyframes glow{0%,100%{box-shadow:0 0 12px rgba(99,102,241,0.4)}50%{box-shadow:0 0 24px rgba(99,102,241,0.7)}}
+        .cat-icon{display:block}
+        @media(max-width:380px){.cat-icon{display:none}}
+        @keyframes emojiPop{0%{opacity:0;transform:translateX(-50%) scale(0.4) translateY(0)}20%{opacity:1;transform:translateX(-50%) scale(1.2) translateY(-4px)}80%{opacity:1;transform:translateX(-50%) scale(1) translateY(-8px)}100%{opacity:0;transform:translateX(-50%) scale(0.8) translateY(-16px)}}
       `}</style>
+
+      {/* Hidden audio element for opponent voice */}
+      <audio ref={remoteAudioRef} autoPlay playsInline style={{ display:"none" }} />
 
       {/* Share Card */}
       {showShare && result && (
@@ -907,8 +1136,8 @@ export default function BattlePage() {
                     </span>
                     {l.avatar_url
                       ? <img src={l.avatar_url} alt="" style={{ width:32, height:32, borderRadius:"50%", objectFit:"cover", border:"2px solid #e2e8f0" }} />
-                      : <AvatarCircle name={l.full_name} size={32} ring="#e2e8f0" isBot={l.is_bot} />}
-                    <span style={{ flex:1, fontWeight:700, fontSize:13, color:"#0f172a" }}>{l.full_name}{l.is_bot?" 🤖":""}</span>
+                      : <AvatarCircle name={l.full_name} size={32} ring="#e2e8f0" />}
+                    <span style={{ flex:1, fontWeight:700, fontSize:13, color:"#0f172a" }}>{l.full_name}</span>
                     <span style={{ fontSize:12, fontWeight:700, color:"#6366f1" }}>{l.wins} W</span>
                   </div>
                 );
@@ -1038,7 +1267,7 @@ export default function BattlePage() {
               <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.08em" }}>Round {currentRound} of 2</div>
               <div style={{ fontSize:16, fontWeight:900, color:"#f59e0b", letterSpacing:"0.04em" }}>⚔️ VS ⚔️</div>
             </div>
-            <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={36} ring="#f87171" isBot={!!room.is_bot} />
+            <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={36} ring="#f87171" />
           </div>
 
           {isMySelectorTurn() ? (
@@ -1050,13 +1279,13 @@ export default function BattlePage() {
 
               {/* Category grid */}
               <div style={{ fontSize:10, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:6 }}>Category</div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:5, maxHeight:180, overflowY:"auto", marginBottom:12, paddingRight:2 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:4, marginBottom:12 }}>
                 {categories.map(c => (
                   <button key={c.id}
-                    style={{ padding:"7px 4px", border: selCategory?.id===c.id ? "2px solid #6366f1" : "1.5px solid #e2e8f0", borderRadius:10, background: selCategory?.id===c.id ? "#eff0ff" : "white", fontSize:10, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color: selCategory?.id===c.id ? "#4338ca" : "#334155", textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:2, transition:"all 0.15s" }}
+                    style={{ padding:"5px 2px", border: selCategory?.id===c.id ? "2px solid #6366f1" : "1.5px solid #e2e8f0", borderRadius:8, background: selCategory?.id===c.id ? "#eff0ff" : "white", fontSize:9, fontWeight:700, cursor:"pointer", fontFamily:"inherit", color: selCategory?.id===c.id ? "#4338ca" : "#334155", textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", gap:1, transition:"all 0.15s", minWidth:0 }}
                     onClick={() => setSelCategory(c)}>
-                    <span style={{ fontSize:16 }}>{c.icon}</span>
-                    <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", width:"100%" }}>{c.name}</span>
+                    <span className="cat-icon" style={{ fontSize:13, lineHeight:1.3 }}>{c.icon}</span>
+                    <span style={{ overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", width:"100%", display:"block" }}>{c.name}</span>
                   </button>
                 ))}
               </div>
@@ -1094,7 +1323,7 @@ export default function BattlePage() {
           ) : (
             <div style={{ ...S.card, textAlign:"center", padding:"44px 20px" }}>
               <div style={{ display:"flex", justifyContent:"center", marginBottom:16 }}>
-                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={56} ring="#f87171" isBot={!!room.is_bot} />
+                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={56} ring="#f87171" />
               </div>
               <div style={{ fontSize:17, fontWeight:800, color:"#0f172a", marginBottom:6 }}>
                 {oppFirstName} is picking Round {currentRound}
@@ -1119,11 +1348,11 @@ export default function BattlePage() {
       {/* ══════════════════════════════════════════════════════════
           WAITING FOR OPPONENT ROUND 1
       ══════════════════════════════════════════════════════════ */}
-      {view === "waiting_round" && (
+      {(view === "waiting_round" || view === "waiting_round2") && (
         <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
           <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:20, padding:"40px 20px", textAlign:"center" }}>
             <div style={{ fontSize:52, marginBottom:12, animation:"hbFloat 2s ease-in-out infinite" }}>✅</div>
-            <div style={{ fontSize:20, fontWeight:900, color:"white", marginBottom:6 }}>Round 1 Complete!</div>
+            <div style={{ fontSize:20, fontWeight:900, color:"white", marginBottom:6 }}>Round {currentRound} Complete!</div>
             <div style={{ fontSize:13, color:"rgba(255,255,255,0.6)", marginBottom:24 }}>
               Waiting for <strong style={{ color:"#fbbf24" }}>{oppFirstName}</strong> to finish...
             </div>
@@ -1132,7 +1361,9 @@ export default function BattlePage() {
                 <div key={i} style={{ width:8, height:8, borderRadius:"50%", background:"#818cf8", animation:`bounce 1.2s ease-in-out ${i*0.15}s infinite` }} />
               ))}
             </div>
-            <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>Round 2 selection begins once both players finish</div>
+            <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>
+              {view === "waiting_round2" ? "Calculating final results once both finish..." : "Round 2 selection begins once both players finish"}
+            </div>
           </div>
         </div>
       )}
@@ -1157,7 +1388,12 @@ export default function BattlePage() {
             {/* Players + timer row */}
             <div style={{ display:"flex", alignItems:"center", gap:6 }}>
               {/* You */}
-              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:5 }}>
+              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:5, position:"relative" }}>
+                {sentEmoji && (
+                  <div key={sentEmoji+Date.now()} style={{ position:"absolute", top:-28, left:"50%", fontSize:22, animation:"emojiPop 2.5s ease-out forwards", pointerEvents:"none" }}>
+                    {sentEmoji}
+                  </div>
+                )}
                 <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={46} ring="#818cf8" />
                 <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.65)", maxWidth:80, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {myFirstName}
@@ -1184,8 +1420,13 @@ export default function BattlePage() {
               </div>
 
               {/* Opponent */}
-              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:5 }}>
-                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={46} ring="#f87171" isBot={!!room?.is_bot} />
+              <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:5, position:"relative" }}>
+                {receivedEmoji && (
+                  <div key={receivedEmoji+Date.now()} style={{ position:"absolute", top:-28, left:"50%", fontSize:22, animation:"emojiPop 2.5s ease-out forwards", pointerEvents:"none" }}>
+                    {receivedEmoji}
+                  </div>
+                )}
+                <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={46} ring="#f87171" />
                 <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.65)", maxWidth:80, textAlign:"center", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {oppFirstName}
                 </div>
@@ -1261,6 +1502,55 @@ export default function BattlePage() {
               💡 Hint #{hintsUsed+1} — costs <strong>{HINT_COSTS[Math.min(hintsUsed, HINT_COSTS.length-1)]} coins</strong> · eliminates 1 wrong option
             </button>
           )}
+          <div style={{ height:60 }} />
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════
+          BATTLE COMMS BAR — visible during all active battle views
+      ══════════════════════════════════════════════════════════ */}
+      {room?.id && ["selecting","in_progress","waiting_round","waiting_round2"].includes(view) && (
+        <div style={{ position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:560, background:"rgba(15,15,26,0.96)", borderTop:"1px solid rgba(255,255,255,0.08)", padding:"8px 16px 10px", display:"flex", alignItems:"center", justifyContent:"center", gap:10, zIndex:300, boxSizing:"border-box" }}>
+
+          {/* Mic */}
+          <button onClick={toggleMic} title={micOn ? "Mic On" : "Mic Off"}
+            style={{ width:40, height:40, borderRadius:12, border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.2)"}`, background: micOn?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.07)", color:micOn?"#86efac":"rgba(255,255,255,0.55)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
+            {micOn ? "🎤" : "🎙️"}
+          </button>
+
+          {/* Speaker */}
+          <button onClick={toggleSpeaker} title={speakerOn ? "Speaker On" : "Speaker Off"}
+            style={{ width:40, height:40, borderRadius:12, border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.15)"}`, background: speakerOn?"rgba(99,102,241,0.14)":"rgba(255,255,255,0.07)", color:speakerOn?"#a5b4fc":"rgba(255,255,255,0.4)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
+            {speakerOn ? "🔊" : "🔇"}
+          </button>
+
+          {/* Emoji picker */}
+          <div style={{ position:"relative" }}>
+            <button onClick={() => setShowEmojiPicker(v => !v)}
+              style={{ width:40, height:40, borderRadius:12, border:`1.5px solid ${showEmojiPicker?"#f59e0b44":"rgba(255,255,255,0.15)"}`, background: showEmojiPicker?"rgba(245,158,11,0.16)":"rgba(255,255,255,0.07)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, transition:"all 0.15s" }}>
+              😀
+            </button>
+            {showEmojiPicker && (
+              <div style={{ position:"absolute", bottom:"calc(100% + 8px)", left:"50%", transform:"translateX(-50%)", background:"#1e1b4b", border:"1px solid rgba(255,255,255,0.12)", borderRadius:14, padding:"8px 10px", display:"flex", flexWrap:"wrap", gap:6, width:220, boxShadow:"0 -8px 32px rgba(0,0,0,0.5)", zIndex:400 }}>
+                {CHAT_EMOJIS.map(e => (
+                  <button key={e} onClick={() => sendEmoji(e)}
+                    style={{ width:34, height:34, borderRadius:8, border:"none", background:"rgba(255,255,255,0.07)", fontSize:18, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", transition:"background 0.12s" }}
+                    onMouseEnter={ev => ev.currentTarget.style.background="rgba(255,255,255,0.16)"}
+                    onMouseLeave={ev => ev.currentTarget.style.background="rgba(255,255,255,0.07)"}>
+                    {e}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Mic indicator label */}
+          {micOn && (
+            <div style={{ fontSize:10, fontWeight:700, color:"#86efac", letterSpacing:"0.04em", display:"flex", alignItems:"center", gap:4 }}>
+              <span style={{ width:6, height:6, borderRadius:"50%", background:"#22c55e", animation:"liveBlip 1s ease-in-out infinite", display:"inline-block" }} />
+              LIVE
+            </div>
+          )}
         </div>
       )}
 
@@ -1276,7 +1566,7 @@ export default function BattlePage() {
               <div style={{ position:"absolute", bottom:-15, left:-15, width:80, height:80, borderRadius:"50%", background:"rgba(16,185,129,0.12)" }} />
               <div style={{ fontSize:58, marginBottom:8, animation:"hbFloat 2s ease-in-out infinite" }}>🏆</div>
               <div style={{ fontSize:32, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.02em" }}>You Won!</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{result.isBot ? " 🤖" : ""}</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{""}</div>
 
               {/* Round breakdown */}
               <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:14, padding:"14px 16px", marginBottom:14, textAlign:"left" }}>
@@ -1350,7 +1640,7 @@ export default function BattlePage() {
               ))}
               <div style={{ fontSize:58, marginBottom:8, animation:"hbPulse 1.4s ease-in-out infinite" }}>💔</div>
               <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4, letterSpacing:"-0.02em" }}>You Lost</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.55)", marginBottom:16 }}>vs {result.oppName}{result.isBot?" 🤖":""}</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.55)", marginBottom:16 }}>vs {result.oppName}{""}</div>
 
               <div style={{ background:"rgba(255,255,255,0.06)", borderRadius:12, padding:"10px 14px", marginBottom:14, border:"1px solid rgba(255,255,255,0.08)" }}>
                 <div style={{ fontSize:12, color:"rgba(255,255,255,0.5)", fontStyle:"italic", lineHeight:1.6 }}>
@@ -1427,7 +1717,7 @@ export default function BattlePage() {
               <div style={{ position:"absolute", top:-15, right:-15, width:80, height:80, borderRadius:"50%", background:"rgba(96,165,250,0.2)" }} />
               <div style={{ fontSize:54, marginBottom:8 }}>🤝</div>
               <div style={{ fontSize:30, fontWeight:900, color:"#fff", marginBottom:4 }}>It's a Tie!</div>
-              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{result.isBot?" 🤖":""}</div>
+              <div style={{ fontSize:13, color:"rgba(255,255,255,0.65)", marginBottom:20 }}>vs {result.oppName}{""}</div>
 
               {/* Round breakdown */}
               <div style={{ background:"rgba(0,0,0,0.2)", borderRadius:14, padding:"14px 16px", marginBottom:14, textAlign:"left" }}>
@@ -1513,7 +1803,7 @@ function BattleShareCard({ profile, result, onClose }) {
 
   const caption = [
     `I just WON a 1v1 Battle on AIDLA!`,``,
-    `vs ${result.oppName}${result.isBot?" (Bot)":""}`,
+    `vs ${result.oppName}`,
     `Score: ${result.myScore} vs ${result.oppScore}`,
     `Earned: +${result.coinsChange} coins`,``,
     `Can you beat me? Challenge now`,

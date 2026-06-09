@@ -323,17 +323,29 @@ export default function BattlePage() {
       });
     };
     pc.ontrack = (e) => {
+      console.log("[WebRTC] ontrack", e.track.kind, "streams:", e.streams.length);
       if (!remoteAudioRef.current) return;
       const stream = e.streams?.[0] || new MediaStream([e.track]);
       remoteAudioRef.current.srcObject = stream;
       remoteAudioRef.current.muted = !speakerOnRef.current;
-      remoteAudioRef.current.play().catch(() => {});
+      remoteAudioRef.current.play().catch(() => {
+        const tryPlay = () => { remoteAudioRef.current?.play().catch(() => {}); };
+        window.addEventListener("pointerdown", tryPlay, { once: true });
+        window.addEventListener("keydown", tryPlay, { once: true });
+      });
     };
     pc.onconnectionstatechange = () => {
+      console.log("[WebRTC] connectionState:", pc.connectionState);
       webrtcConnectedRef.current = pc.connectionState === "connected";
     };
     pc.oniceconnectionstatechange = () => {
+      console.log("[WebRTC] iceState:", pc.iceConnectionState);
       webrtcConnectedRef.current = ["connected", "completed"].includes(pc.iceConnectionState);
+    };
+    pc.onnegotiationneeded = async () => {
+      if (myRoleRef.current !== "player1" || !localStreamRef.current) return;
+      console.log("[WebRTC] onnegotiationneeded, signalingState:", pc.signalingState);
+      await initiateOffer();
     };
     return pc;
   }
@@ -341,18 +353,19 @@ export default function BattlePage() {
   function addLocalTracks(pc) {
     if (!localStreamRef.current) return;
     localStreamRef.current.getAudioTracks().forEach(track => {
-      const sender = pc.getSenders().find(s =>
-        s.track?.kind === "audio" ||
-        pc.getTransceivers().some(t => t.sender === s && t.receiver?.track?.kind === "audio")
-      );
-      if (sender) sender.replaceTrack(track).catch(() => {});
-      else pc.addTrack(track, localStreamRef.current);
+      const audioSender = pc.getSenders().find(s => s.track?.kind === "audio");
+      if (audioSender) {
+        audioSender.replaceTrack(track).catch(() => {});
+      } else {
+        // addTrack reuses the sendrecv transceiver from addTransceiver and triggers onnegotiationneeded
+        pc.addTrack(track, localStreamRef.current);
+      }
     });
   }
 
   function detachLocalTracks() {
     pcRef.current?.getSenders()
-      .filter(s => s.track?.kind === "audio" || pcRef.current?.getTransceivers().some(t => t.sender === s && t.receiver?.track?.kind === "audio"))
+      .filter(s => s.track?.kind === "audio")
       .forEach(s => s.replaceTrack(null).catch(() => {}));
   }
 
@@ -431,6 +444,7 @@ export default function BattlePage() {
           const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" });
           const data = await blobToBase64(blob).catch(() => "");
           if (data) {
+            console.log("[Voice] fallback chunk tx size:", data.length, "type:", blob.type);
             await roomChannelRef.current.send({
               type:"broadcast", event:"voice-chunk",
               payload:{ from:myRoleRef.current, mime:blob.type, data },
@@ -499,15 +513,22 @@ export default function BattlePage() {
     if (!(await waitForRoomChannel())) return;
     const pc = createPC();
     addLocalTracks(pc);
-    if (pc.signalingState !== "stable") return;
+    if (pc.signalingState !== "stable") {
+      console.log("[WebRTC] offer skipped, signalingState:", pc.signalingState);
+      return;
+    }
+    console.log("[WebRTC] creating offer, senders:", pc.getSenders().map(s => s.track?.kind ?? "null"));
     try {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
+      console.log("[WebRTC] offer sent");
       await roomChannelRef.current?.send({
         type:"broadcast", event:"webrtc-offer",
         payload:{ from:myRoleRef.current, sdp:pc.localDescription.sdp },
       });
-    } catch (_) {}
+    } catch (err) {
+      console.error("[WebRTC] offer error:", err);
+    }
   }
 
   async function toggleMic() {
@@ -528,6 +549,7 @@ export default function BattlePage() {
         }
         const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
         localStreamRef.current = stream;
+        console.log("[Mic] acquired (toggle), tracks:", stream.getAudioTracks().map(t => `${t.label} ${t.readyState}`));
         startRealtimeVoice(stream);
         setMicOn(true);
         if (pcRef.current) addLocalTracks(pcRef.current);
@@ -870,16 +892,25 @@ export default function BattlePage() {
       })
       .on("broadcast", { event:"voice-chunk" }, ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
+        console.log("[Voice] chunk rx size:", payload.data?.length, "webrtc:", webrtcConnectedRef.current);
         enqueueAudioChunk(payload);
       })
       // ── WebRTC signaling broadcasts ───────────────────────────────────────
       .on("broadcast", { event:"mic-on" }, ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
-        if (myRoleRef.current === "player1") initiateOffer();
-        else createPC();
+        console.log("[WebRTC] mic-on from", payload.from, "myRole:", myRoleRef.current);
+        if (myRoleRef.current === "player1") {
+          // Offer now (will include our mic if we have it) and retry in 2.5s
+          // in case first offer/answer cycle is still in flight
+          initiateOffer();
+          setTimeout(() => initiateOffer(), 2500);
+        } else {
+          createPC();
+        }
       })
       .on("broadcast", { event:"webrtc-offer" }, async ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
+        console.log("[WebRTC] offer rx from", payload.from);
         const pc = createPC();
         addLocalTracks(pc);
         try {
@@ -889,22 +920,28 @@ export default function BattlePage() {
           iceCandidateQueueRef.current = [];
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
+          console.log("[WebRTC] answer sent, senders:", pc.getSenders().map(s => s.track?.kind ?? "null"));
           await roomChannelRef.current?.send({
             type:"broadcast", event:"webrtc-answer",
             payload:{ from:myRoleRef.current, sdp:pc.localDescription.sdp },
           });
-        } catch (_) {}
+        } catch (err) {
+          console.error("[WebRTC] offer-handle error:", err);
+        }
       })
       .on("broadcast", { event:"webrtc-answer" }, async ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
+        console.log("[WebRTC] answer rx from", payload.from, "signalingState:", pcRef.current?.signalingState);
         if (pcRef.current?.signalingState === "have-local-offer") {
           try {
             await pcRef.current.setRemoteDescription({ type:"answer", sdp:payload.sdp });
-            // Flush any ICE candidates that arrived before the answer
             for (const c of iceCandidateQueueRef.current)
               await pcRef.current.addIceCandidate(c).catch(() => {});
             iceCandidateQueueRef.current = [];
-          } catch (_) {}
+            console.log("[WebRTC] answer applied, iceState:", pcRef.current?.iceConnectionState);
+          } catch (err) {
+            console.error("[WebRTC] answer error:", err);
+          }
         }
       })
       .on("broadcast", { event:"webrtc-ice" }, async ({ payload }) => {
@@ -916,9 +953,10 @@ export default function BattlePage() {
         }
       })
       .subscribe((status) => {
+        console.log("[Channel] status:", status, "role:", myRoleRef.current);
         roomChannelReadyRef.current = status === "SUBSCRIBED";
-        if (status === "SUBSCRIBED" && myRoleRef.current === "player1")
-          setTimeout(() => initiateOffer(), 300);
+        // Intentionally NOT offering here — offer only after mic is acquired
+        // so the SDP actually contains an audio track.
       });
   }
 
@@ -1071,13 +1109,16 @@ export default function BattlePage() {
         if (viewRef.current !== "in_progress") return;
         const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
         localStreamRef.current = stream;
+        console.log("[Mic] auto-acquired, role:", myRoleRef.current, "tracks:", stream.getAudioTracks().length);
         startRealtimeVoice(stream);
         setMicOn(true);
         if (pcRef.current) addLocalTracks(pcRef.current);
         if (await waitForRoomChannel())
           await roomChannelRef.current?.send({ type:"broadcast", event:"mic-on", payload:{ from:myRoleRef.current } });
         if (myRoleRef.current === "player1") await initiateOffer();
-      } catch (_) {}
+      } catch (err) {
+        console.error("[Mic] auto-acquire error:", err?.name, err?.message);
+      }
     };
     run();
   }, [view]);

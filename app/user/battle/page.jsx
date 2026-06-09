@@ -1093,14 +1093,15 @@ export default function BattlePage() {
 
   // Auto-request mic permission when battle becomes active
   useEffect(() => {
-    if (view !== "in_progress") return;
+    if (!["selecting", "in_progress"].includes(view)) return;
+    if (localStreamRef.current) return; // mic already active from a previous view — keep it
     const run = async () => {
       try {
         const perm = await navigator.permissions.query({ name:"microphone" }).catch(() => null);
         if (perm?.state === "denied") return;
         // Small delay to ensure Supabase channel is subscribed
         await new Promise(r => setTimeout(r, 800));
-        if (viewRef.current !== "in_progress") return;
+        if (!["selecting", "in_progress"].includes(viewRef.current)) return;
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             echoCancellation: true,
@@ -1711,13 +1712,27 @@ export default function BattlePage() {
       {view === "selecting" && room && (
         <div style={{ padding:"16px 14px", animation:"fadeUp 0.3s ease" }}>
           {/* Battle header */}
-          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:16, padding:"14px 16px", marginBottom:14, display:"flex", alignItems:"center", gap:12 }}>
-            <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={36} ring="#818cf8" />
-            <div style={{ flex:1, textAlign:"center" }}>
-              <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.08em" }}>Round {currentRound} of 2</div>
-              <div style={{ fontSize:16, fontWeight:900, color:"#f59e0b", letterSpacing:"0.04em" }}>⚔️ VS ⚔️</div>
+          <div style={{ background:"linear-gradient(135deg,#1e1b4b,#312e81)", borderRadius:16, padding:"14px 16px", marginBottom:14 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+              <AvatarCircle url={profile?.avatar_url} name={profile?.full_name||"You"} size={36} ring="#818cf8" />
+              <div style={{ flex:1, textAlign:"center" }}>
+                <div style={{ fontSize:10, fontWeight:800, color:"rgba(255,255,255,0.5)", textTransform:"uppercase", letterSpacing:"0.08em" }}>Round {currentRound} of 2</div>
+                <div style={{ fontSize:16, fontWeight:900, color:"#f59e0b", letterSpacing:"0.04em" }}>⚔️ VS ⚔️</div>
+              </div>
+              <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={36} ring="#f87171" />
             </div>
-            <AvatarCircle url={opponentProfile?.avatar_url} name={opponentName} size={36} ring="#f87171" />
+            {!room?.is_bot && (
+              <div style={{ marginTop:10, paddingTop:10, borderTop:"1px solid rgba(255,255,255,0.12)", display:"flex", alignItems:"center", gap:8 }}>
+                <span style={{ flex:1, fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.6)" }}>🎧 Voice Chat</span>
+                {micOn && <span style={{ fontSize:9, fontWeight:800, color:"#22c55e", letterSpacing:"0.06em", animation:"liveBlip 1.2s ease-in-out infinite" }}>● LIVE</span>}
+                <button onClick={toggleMic} style={{ width:28, height:28, borderRadius:"50%", border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.3)"}`, background:micOn?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.08)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {micOn ? "🎤" : "🎙️"}
+                </button>
+                <button onClick={toggleSpeaker} style={{ width:28, height:28, borderRadius:"50%", border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.3)"}`, background:speakerOn?"rgba(99,102,241,0.18)":"rgba(255,255,255,0.08)", fontSize:13, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {speakerOn ? "🔊" : "🔇"}
+                </button>
+              </div>
+            )}
           </div>
 
           {isMySelectorTurn() ? (
@@ -1819,6 +1834,18 @@ export default function BattlePage() {
             <div style={{ fontSize:11, color:"rgba(255,255,255,0.4)" }}>
               {view === "waiting_round2" ? "Calculating final results once both finish..." : "Round 2 selection begins once both players finish"}
             </div>
+            {!room?.is_bot && (
+              <div style={{ marginTop:20, paddingTop:16, borderTop:"1px solid rgba(255,255,255,0.12)", display:"flex", alignItems:"center", justifyContent:"center", gap:10 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.6)", marginRight:4 }}>🎧 Voice Chat</span>
+                {micOn && <span style={{ fontSize:9, fontWeight:800, color:"#22c55e", letterSpacing:"0.06em", animation:"liveBlip 1.2s ease-in-out infinite" }}>● LIVE</span>}
+                <button onClick={toggleMic} style={{ width:30, height:30, borderRadius:"50%", border:`1.5px solid ${micOn?"#22c55e":"rgba(255,255,255,0.3)"}`, background:micOn?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.08)", fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {micOn ? "🎤" : "🎙️"}
+                </button>
+                <button onClick={toggleSpeaker} style={{ width:30, height:30, borderRadius:"50%", border:`1.5px solid ${speakerOn?"rgba(99,102,241,0.5)":"rgba(255,255,255,0.3)"}`, background:speakerOn?"rgba(99,102,241,0.18)":"rgba(255,255,255,0.08)", fontSize:14, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  {speakerOn ? "🔊" : "🔇"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

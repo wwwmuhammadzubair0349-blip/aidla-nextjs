@@ -137,6 +137,10 @@ export default function BattlePage() {
   const realtimeVoiceActiveRef= useRef(false);
   const audioChunkQueueRef    = useRef([]);
   const audioChunkPlayingRef  = useRef(false);
+  const audioContextRef       = useRef(null);
+  const audioUnlockedRef      = useRef(false);
+  const nextAudioPlayTimeRef  = useRef(0);
+  const webrtcConnectedRef    = useRef(false);
 
   // New refs for fixes
   const botR2TimerRef         = useRef(null);
@@ -168,6 +172,16 @@ export default function BattlePage() {
   useEffect(() => { viewRef.current       = view;         }, [view]);
 
   useEffect(() => { speakerOnRef.current = speakerOn; }, [speakerOn]);
+
+  useEffect(() => {
+    const unlock = () => unlockAudio();
+    window.addEventListener("pointerdown", unlock, { once:true });
+    window.addEventListener("keydown", unlock, { once:true });
+    return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("keydown", unlock);
+    };
+  }, []);
 
   // Auto-refresh open rooms every 1 s while on that tab
   useEffect(() => {
@@ -274,6 +288,8 @@ export default function BattlePage() {
     iceCandidateQueueRef.current = [];
     audioChunkQueueRef.current = [];
     audioChunkPlayingRef.current = false;
+    nextAudioPlayTimeRef.current = 0;
+    webrtcConnectedRef.current = false;
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
   }
 
@@ -297,6 +313,7 @@ export default function BattlePage() {
     if (pcRef.current) return pcRef.current;
     const pc = new RTCPeerConnection(STUN);
     pcRef.current = pc;
+    try { pc.addTransceiver("audio", { direction:"sendrecv" }); } catch (_) {}
     pc.onicecandidate = async (e) => {
       if (!e.candidate || !roomChannelRef.current) return;
       if (!(await waitForRoomChannel(5000))) return;
@@ -307,9 +324,16 @@ export default function BattlePage() {
     };
     pc.ontrack = (e) => {
       if (!remoteAudioRef.current) return;
-      remoteAudioRef.current.srcObject = e.streams[0];
+      const stream = e.streams?.[0] || new MediaStream([e.track]);
+      remoteAudioRef.current.srcObject = stream;
       remoteAudioRef.current.muted = !speakerOnRef.current;
       remoteAudioRef.current.play().catch(() => {});
+    };
+    pc.onconnectionstatechange = () => {
+      webrtcConnectedRef.current = pc.connectionState === "connected";
+    };
+    pc.oniceconnectionstatechange = () => {
+      webrtcConnectedRef.current = ["connected", "completed"].includes(pc.iceConnectionState);
     };
     return pc;
   }
@@ -317,10 +341,19 @@ export default function BattlePage() {
   function addLocalTracks(pc) {
     if (!localStreamRef.current) return;
     localStreamRef.current.getAudioTracks().forEach(track => {
-      const sender = pc.getSenders().find(s => s.track?.kind === "audio");
+      const sender = pc.getSenders().find(s =>
+        s.track?.kind === "audio" ||
+        pc.getTransceivers().some(t => t.sender === s && t.receiver?.track?.kind === "audio")
+      );
       if (sender) sender.replaceTrack(track).catch(() => {});
       else pc.addTrack(track, localStreamRef.current);
     });
+  }
+
+  function detachLocalTracks() {
+    pcRef.current?.getSenders()
+      .filter(s => s.track?.kind === "audio" || pcRef.current?.getTransceivers().some(t => t.sender === s && t.receiver?.track?.kind === "audio"))
+      .forEach(s => s.replaceTrack(null).catch(() => {}));
   }
 
   async function waitForRoomChannel(timeout = 5000) {
@@ -334,8 +367,20 @@ export default function BattlePage() {
 
   function getAudioMimeType() {
     if (typeof MediaRecorder === "undefined") return "";
-    return ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"]
+    return ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus", "audio/mp4"]
       .find(t => MediaRecorder.isTypeSupported(t)) || "";
+  }
+
+  async function unlockAudio() {
+    if (audioUnlockedRef.current || typeof window === "undefined") return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        audioContextRef.current ||= new AC();
+        await audioContextRef.current.resume();
+      }
+      audioUnlockedRef.current = true;
+    } catch (_) {}
   }
 
   function blobToBase64(blob) {
@@ -382,7 +427,7 @@ export default function BattlePage() {
       mediaRecorderRef.current = recorder;
       recorder.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
       recorder.onstop = async () => {
-        if (chunks.length && roomChannelRef.current && await waitForRoomChannel(1000)) {
+        if (!webrtcConnectedRef.current && chunks.length && roomChannelRef.current && await waitForRoomChannel(1000)) {
           const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" });
           const data = await blobToBase64(blob).catch(() => "");
           if (data) {
@@ -408,6 +453,26 @@ export default function BattlePage() {
     const item = audioChunkQueueRef.current.shift();
     if (!item) return;
     audioChunkPlayingRef.current = true;
+    await unlockAudio();
+    if (audioContextRef.current) {
+      try {
+        const raw = base64ToBlob(item.data, item.mime);
+        const buffer = await raw.arrayBuffer();
+        const audioBuffer = await audioContextRef.current.decodeAudioData(buffer);
+        const source = audioContextRef.current.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContextRef.current.destination);
+        const now = audioContextRef.current.currentTime;
+        const startAt = Math.max(now + 0.02, nextAudioPlayTimeRef.current);
+        nextAudioPlayTimeRef.current = startAt + audioBuffer.duration;
+        source.onended = () => {
+          audioChunkPlayingRef.current = false;
+          playNextAudioChunk();
+        };
+        source.start(startAt);
+        return;
+      } catch (_) {}
+    }
     const url = URL.createObjectURL(base64ToBlob(item.data, item.mime));
     const audio = new Audio(url);
     audio.onended = audio.onerror = () => {
@@ -448,6 +513,7 @@ export default function BattlePage() {
   async function toggleMic() {
     if (micOn) {
       stopRealtimeVoice();
+      detachLocalTracks();
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(t => t.stop());
         localStreamRef.current = null;
@@ -484,6 +550,7 @@ export default function BattlePage() {
       speakerOnRef.current = next;
       if (remoteAudioRef.current) remoteAudioRef.current.muted = !next;
       if (next) {
+        unlockAudio();
         remoteAudioRef.current?.play().catch(() => {});
         playNextAudioChunk();
       }
@@ -850,6 +917,8 @@ export default function BattlePage() {
       })
       .subscribe((status) => {
         roomChannelReadyRef.current = status === "SUBSCRIBED";
+        if (status === "SUBSCRIBED" && myRoleRef.current === "player1")
+          setTimeout(() => initiateOffer(), 300);
       });
   }
 

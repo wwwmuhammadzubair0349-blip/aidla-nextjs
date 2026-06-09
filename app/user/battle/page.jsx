@@ -124,6 +124,8 @@ export default function BattlePage() {
   const roundTotalsRef        = useRef({ 1:0, 2:0 });
   const opponentFetchedRef    = useRef(false);
 
+  const wrapRef               = useRef(null);
+
   // Voice + emoji refs
   const pcRef                 = useRef(null);
   const localStreamRef        = useRef(null);
@@ -166,6 +168,18 @@ export default function BattlePage() {
       document.body.style.overflow = prev;
       document.documentElement.style.overflow = "";
     };
+  }, []);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const fit = () => {
+      const top = el.getBoundingClientRect().top;
+      el.style.height = `${window.innerHeight - top}px`;
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
   }, []);
 
   useEffect(() => {
@@ -1364,7 +1378,7 @@ export default function BattlePage() {
   );
 
   return (
-    <div style={S.wrap}>
+    <div ref={wrapRef} style={S.wrap}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       <style>{`
         *{box-sizing:border-box}

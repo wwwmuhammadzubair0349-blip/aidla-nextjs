@@ -389,7 +389,8 @@ export default function BattlePage() {
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (AC) {
-        audioContextRef.current ||= new AC();
+        // latencyHint:'interactive' minimises AudioContext output buffering
+        audioContextRef.current ||= new AC({ latencyHint: "interactive" });
         await audioContextRef.current.resume();
       }
       audioUnlockedRef.current = true;
@@ -425,6 +426,7 @@ export default function BattlePage() {
     if (!stream || realtimeVoiceActiveRef.current || typeof MediaRecorder === "undefined") return;
     realtimeVoiceActiveRef.current = true;
     const mimeType = getAudioMimeType();
+    const SLICE_MS = 200; // 200ms slices → ~300ms end-to-end latency vs 900ms before
     const recordSlice = () => {
       if (!realtimeVoiceActiveRef.current || !stream.getAudioTracks().some(t => t.readyState === "live")) return;
       const chunks = [];
@@ -432,7 +434,7 @@ export default function BattlePage() {
       try {
         recorder = new MediaRecorder(stream, {
           ...(mimeType ? { mimeType } : {}),
-          audioBitsPerSecond: 16000,
+          audioBitsPerSecond: 32000,
         });
       } catch (_) {
         return;
@@ -452,12 +454,12 @@ export default function BattlePage() {
           }
         }
         if (realtimeVoiceActiveRef.current)
-          voiceSliceTimerRef.current = setTimeout(recordSlice, 40);
+          voiceSliceTimerRef.current = setTimeout(recordSlice, 10);
       };
       recorder.start();
       voiceSliceTimerRef.current = setTimeout(() => {
         if (recorder.state !== "inactive") recorder.stop();
-      }, 900);
+      }, SLICE_MS);
     };
     recordSlice();
   }
@@ -477,7 +479,10 @@ export default function BattlePage() {
         source.buffer = audioBuffer;
         source.connect(audioContextRef.current.destination);
         const now = audioContextRef.current.currentTime;
-        const startAt = Math.max(now + 0.02, nextAudioPlayTimeRef.current);
+        // If scheduled time drifted more than 200ms into the past, reset to avoid
+        // playing a backlog of stale audio
+        if (nextAudioPlayTimeRef.current < now - 0.2) nextAudioPlayTimeRef.current = 0;
+        const startAt = Math.max(now + 0.015, nextAudioPlayTimeRef.current);
         nextAudioPlayTimeRef.current = startAt + audioBuffer.duration;
         source.onended = () => {
           audioChunkPlayingRef.current = false;
@@ -505,7 +510,8 @@ export default function BattlePage() {
   function enqueueAudioChunk(payload) {
     if (!payload?.data || !speakerOnRef.current) return;
     audioChunkQueueRef.current.push({ data:payload.data, mime:payload.mime });
-    if (audioChunkQueueRef.current.length > 4) audioChunkQueueRef.current.shift();
+    // Keep at most 2 chunks buffered — drop oldest when lagging to stay live
+    while (audioChunkQueueRef.current.length > 2) audioChunkQueueRef.current.shift();
     playNextAudioChunk();
   }
 
@@ -519,7 +525,7 @@ export default function BattlePage() {
     }
     console.log("[WebRTC] creating offer, senders:", pc.getSenders().map(s => s.track?.kind ?? "null"));
     try {
-      const offer = await pc.createOffer();
+      const offer = await pc.createOffer({ voiceActivityDetection: false });
       await pc.setLocalDescription(offer);
       console.log("[WebRTC] offer sent");
       await roomChannelRef.current?.send({
@@ -547,7 +553,16 @@ export default function BattlePage() {
           flash("Microphone blocked — click the lock 🔒 in your address bar to allow it");
           return;
         }
-        const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+            channelCount: 1,
+            sampleRate: { ideal: 16000 },
+          },
+          video: false,
+        });
         localStreamRef.current = stream;
         console.log("[Mic] acquired (toggle), tracks:", stream.getAudioTracks().map(t => `${t.label} ${t.readyState}`));
         startRealtimeVoice(stream);
@@ -1107,7 +1122,16 @@ export default function BattlePage() {
         // Small delay to ensure Supabase channel is subscribed
         await new Promise(r => setTimeout(r, 800));
         if (viewRef.current !== "in_progress") return;
-        const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+            channelCount: 1,
+            sampleRate: { ideal: 16000 },
+          },
+          video: false,
+        });
         localStreamRef.current = stream;
         console.log("[Mic] auto-acquired, role:", myRoleRef.current, "tracks:", stream.getAudioTracks().length);
         startRealtimeVoice(stream);

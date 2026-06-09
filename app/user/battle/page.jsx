@@ -132,6 +132,11 @@ export default function BattlePage() {
   const iceCandidateQueueRef  = useRef([]);
   const emojiTimeoutRef       = useRef(null);
   const sentEmojiTimeoutRef   = useRef(null);
+  const mediaRecorderRef      = useRef(null);
+  const voiceSliceTimerRef    = useRef(null);
+  const realtimeVoiceActiveRef= useRef(false);
+  const audioChunkQueueRef    = useRef([]);
+  const audioChunkPlayingRef  = useRef(false);
 
   // New refs for fixes
   const botR2TimerRef         = useRef(null);
@@ -257,6 +262,7 @@ export default function BattlePage() {
   // ── Voice + emoji helpers ───────────────────────────────────────────────────
 
   function cleanupVoiceResources() {
+    stopRealtimeVoice();
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach(t => t.stop());
       localStreamRef.current = null;
@@ -266,6 +272,8 @@ export default function BattlePage() {
       pcRef.current = null;
     }
     iceCandidateQueueRef.current = [];
+    audioChunkQueueRef.current = [];
+    audioChunkPlayingRef.current = false;
     if (remoteAudioRef.current) remoteAudioRef.current.srcObject = null;
   }
 
@@ -324,6 +332,104 @@ export default function BattlePage() {
     return roomChannelReadyRef.current;
   }
 
+  function getAudioMimeType() {
+    if (typeof MediaRecorder === "undefined") return "";
+    return ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"]
+      .find(t => MediaRecorder.isTypeSupported(t)) || "";
+  }
+
+  function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(String(reader.result || "").split(",")[1] || "");
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  function base64ToBlob(data, mime) {
+    const raw = atob(data);
+    const bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
+    return new Blob([bytes], { type: mime || "audio/webm" });
+  }
+
+  function stopRealtimeVoice() {
+    realtimeVoiceActiveRef.current = false;
+    clearTimeout(voiceSliceTimerRef.current);
+    if (mediaRecorderRef.current?.state && mediaRecorderRef.current.state !== "inactive") {
+      try { mediaRecorderRef.current.stop(); } catch (_) {}
+    }
+    mediaRecorderRef.current = null;
+  }
+
+  function startRealtimeVoice(stream) {
+    if (!stream || realtimeVoiceActiveRef.current || typeof MediaRecorder === "undefined") return;
+    realtimeVoiceActiveRef.current = true;
+    const mimeType = getAudioMimeType();
+    const recordSlice = () => {
+      if (!realtimeVoiceActiveRef.current || !stream.getAudioTracks().some(t => t.readyState === "live")) return;
+      const chunks = [];
+      let recorder;
+      try {
+        recorder = new MediaRecorder(stream, {
+          ...(mimeType ? { mimeType } : {}),
+          audioBitsPerSecond: 16000,
+        });
+      } catch (_) {
+        return;
+      }
+      mediaRecorderRef.current = recorder;
+      recorder.ondataavailable = e => { if (e.data?.size) chunks.push(e.data); };
+      recorder.onstop = async () => {
+        if (chunks.length && roomChannelRef.current && await waitForRoomChannel(1000)) {
+          const blob = new Blob(chunks, { type: recorder.mimeType || mimeType || "audio/webm" });
+          const data = await blobToBase64(blob).catch(() => "");
+          if (data) {
+            await roomChannelRef.current.send({
+              type:"broadcast", event:"voice-chunk",
+              payload:{ from:myRoleRef.current, mime:blob.type, data },
+            }).catch(() => {});
+          }
+        }
+        if (realtimeVoiceActiveRef.current)
+          voiceSliceTimerRef.current = setTimeout(recordSlice, 40);
+      };
+      recorder.start();
+      voiceSliceTimerRef.current = setTimeout(() => {
+        if (recorder.state !== "inactive") recorder.stop();
+      }, 900);
+    };
+    recordSlice();
+  }
+
+  async function playNextAudioChunk() {
+    if (audioChunkPlayingRef.current || !speakerOnRef.current) return;
+    const item = audioChunkQueueRef.current.shift();
+    if (!item) return;
+    audioChunkPlayingRef.current = true;
+    const url = URL.createObjectURL(base64ToBlob(item.data, item.mime));
+    const audio = new Audio(url);
+    audio.onended = audio.onerror = () => {
+      URL.revokeObjectURL(url);
+      audioChunkPlayingRef.current = false;
+      playNextAudioChunk();
+    };
+    try {
+      await audio.play();
+    } catch (_) {
+      URL.revokeObjectURL(url);
+      audioChunkPlayingRef.current = false;
+    }
+  }
+
+  function enqueueAudioChunk(payload) {
+    if (!payload?.data || !speakerOnRef.current) return;
+    audioChunkQueueRef.current.push({ data:payload.data, mime:payload.mime });
+    if (audioChunkQueueRef.current.length > 4) audioChunkQueueRef.current.shift();
+    playNextAudioChunk();
+  }
+
   async function initiateOffer() {
     if (!(await waitForRoomChannel())) return;
     const pc = createPC();
@@ -341,6 +447,7 @@ export default function BattlePage() {
 
   async function toggleMic() {
     if (micOn) {
+      stopRealtimeVoice();
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(t => t.stop());
         localStreamRef.current = null;
@@ -355,6 +462,7 @@ export default function BattlePage() {
         }
         const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
         localStreamRef.current = stream;
+        startRealtimeVoice(stream);
         setMicOn(true);
         if (pcRef.current) addLocalTracks(pcRef.current);
         if (await waitForRoomChannel())
@@ -375,6 +483,10 @@ export default function BattlePage() {
       const next = !s;
       speakerOnRef.current = next;
       if (remoteAudioRef.current) remoteAudioRef.current.muted = !next;
+      if (next) {
+        remoteAudioRef.current?.play().catch(() => {});
+        playNextAudioChunk();
+      }
       return next;
     });
   }
@@ -689,6 +801,10 @@ export default function BattlePage() {
         clearTimeout(emojiTimeoutRef.current);
         emojiTimeoutRef.current = setTimeout(() => setReceivedEmoji(null), 2500);
       })
+      .on("broadcast", { event:"voice-chunk" }, ({ payload }) => {
+        if (!payload || payload.from === myRoleRef.current) return;
+        enqueueAudioChunk(payload);
+      })
       // ── WebRTC signaling broadcasts ───────────────────────────────────────
       .on("broadcast", { event:"mic-on" }, ({ payload }) => {
         if (!payload || payload.from === myRoleRef.current) return;
@@ -886,6 +1002,7 @@ export default function BattlePage() {
         if (viewRef.current !== "in_progress") return;
         const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
         localStreamRef.current = stream;
+        startRealtimeVoice(stream);
         setMicOn(true);
         if (pcRef.current) addLocalTracks(pcRef.current);
         if (await waitForRoomChannel())

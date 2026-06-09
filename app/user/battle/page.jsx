@@ -281,9 +281,10 @@ export default function BattlePage() {
     if (pcRef.current) return pcRef.current;
     const pc = new RTCPeerConnection(STUN);
     pcRef.current = pc;
-    pc.onicecandidate = (e) => {
+    pc.onicecandidate = async (e) => {
       if (!e.candidate || !roomChannelRef.current) return;
-      roomChannelRef.current.send({
+      if (!(await waitForRoomChannel(5000))) return;
+      await roomChannelRef.current.send({
         type:"broadcast", event:"webrtc-ice",
         payload:{ from:myRoleRef.current, candidate:e.candidate.toJSON() },
       });
@@ -306,7 +307,7 @@ export default function BattlePage() {
     });
   }
 
-  async function waitForRoomChannel(timeout = 2000) {
+  async function waitForRoomChannel(timeout = 5000) {
     let waited = 0;
     while (!roomChannelReadyRef.current && waited < timeout) {
       await new Promise(r => setTimeout(r, 100));

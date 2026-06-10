@@ -6,10 +6,12 @@
 import { NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/adminAuth";
 
-const FROM_EMAIL = "noreply@aidla.online";
-const FROM_NAME  = "AIDLA";
-const SITE_URL   = process.env.NEXT_PUBLIC_SITE_URL || "https://aidla.online";
-const TEST_URL   = `${SITE_URL}/user/test`;
+const FROM_EMAIL   = "noreply@aidla.online";
+const FROM_NAME    = "AIDLA";
+const SITE_URL     = process.env.NEXT_PUBLIC_SITE_URL || "https://aidla.online";
+const TEST_URL     = `${SITE_URL}/user/test`;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 function fmtUAE(iso) {
   if (!iso) return "—";
@@ -84,10 +86,13 @@ function qualifiedHtml(test, userName) {
 // ── Helper ─────────────────────────────────────────────────────────────────────
 
 async function sendEmail(admin, to, subject, html) {
-  const { data, error } = await admin.functions.invoke("send-blast-email", {
-    body: { to, subject, html, from_email: FROM_EMAIL, from_name: FROM_NAME },
-  });
-  if (error) throw new Error(error.message);
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-blast-email`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ to, subject, html, from_email: FROM_EMAIL, from_name: FROM_NAME }),
+  }).catch(() => null);
+  const data = res ? await res.json().catch(() => null) : null;
+  if (!res?.ok && !data) throw new Error("Failed to invoke send-blast-email");
 
   await admin.from("email_logs").insert({
     subject, html_body: html,

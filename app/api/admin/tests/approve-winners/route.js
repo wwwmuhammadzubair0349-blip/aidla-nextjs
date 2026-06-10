@@ -4,9 +4,11 @@
 import { NextResponse } from "next/server";
 import { verifyAdmin } from "@/lib/adminAuth";
 
-const FROM_EMAIL = "noreply@aidla.online";
-const FROM_NAME  = "AIDLA";
-const SITE_URL   = process.env.NEXT_PUBLIC_SITE_URL || "https://aidla.online";
+const FROM_EMAIL   = "noreply@aidla.online";
+const FROM_NAME    = "AIDLA";
+const SITE_URL     = process.env.NEXT_PUBLIC_SITE_URL || "https://aidla.online";
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 function winnerHtml(testTitle, rankNo, prizeText) {
   const medal = rankNo === 1 ? "🥇 1st Place" : rankNo === 2 ? "🥈 2nd Place" : rankNo === 3 ? "🥉 3rd Place" : `#${rankNo}`;
@@ -88,9 +90,12 @@ export async function POST(request) {
       const subject = `🏆 You won! — ${test?.title || "AIDLA Test"}`;
       const html    = winnerHtml(test?.title || "AIDLA Test", w.rank_no, w.prize_text);
 
-      const { data: result } = await auth.admin.functions.invoke("send-blast-email", {
-        body: { to: [email], subject, html, from_email: FROM_EMAIL, from_name: FROM_NAME },
-      }).catch(() => ({ data: null }));
+      const _res = await fetch(`${SUPABASE_URL}/functions/v1/send-blast-email`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ to: [email], subject, html, from_email: FROM_EMAIL, from_name: FROM_NAME }),
+      }).catch(() => null);
+      const result = _res ? await _res.json().catch(() => null) : null;
 
       await auth.admin.from("email_logs").insert({
         subject, html_body: html,

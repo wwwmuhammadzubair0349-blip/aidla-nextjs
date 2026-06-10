@@ -70,9 +70,12 @@ export async function GET(request) {
     const subject = `⏰ Test starts in 30 minutes — ${test.title} ${reminderKey}`;
     const html    = reminderHtml(test);
 
-    const { data: result } = await admin.functions.invoke("send-blast-email", {
-      body: { to: emails, subject, html, from_email: "noreply@aidla.online", from_name: "AIDLA" },
-    }).catch(() => ({ data: null }));
+    const _res = await fetch(`${SUPABASE_URL}/functions/v1/send-blast-email`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ to: emails, subject, html, from_email: "noreply@aidla.online", from_name: "AIDLA" }),
+    }).catch(() => null);
+    const result = _res ? await _res.json().catch(() => null) : null;
 
     await admin.from("email_logs").insert({
       subject, html_body: html,

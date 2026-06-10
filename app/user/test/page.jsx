@@ -377,8 +377,33 @@ function PrizesSection({ prizes }) {
   );
 }
 
+// ── Error Boundary ────────────────────────────────────────────────────────────
+class TestErrorBoundary extends React.Component {
+  state = { hasError: false, error: null };
+  static getDerivedStateFromError(e) { return { hasError: true, error: e }; }
+  componentDidCatch(e, info) { console.error("[TestArena]", e, info); }
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    return (
+      <div style={{ padding: 40, textAlign: "center" }}>
+        <div style={{ fontSize: 48, marginBottom: 12 }}>⚠️</div>
+        <div style={{ fontWeight: 800, fontSize: "1.2rem", marginBottom: 8 }}>Something went wrong</div>
+        <div style={{ color: "#64748b", marginBottom: 20, fontSize: "0.88rem" }}>
+          {String(this.state.error?.message || "An unexpected error occurred")}
+        </div>
+        <button
+          onClick={() => this.setState({ hasError: false, error: null })}
+          style={{ padding: "10px 22px", borderRadius: 10, border: "1px solid #e2e8f0", cursor: "pointer", fontWeight: 700, fontSize: "0.9rem" }}
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
-export default function TestArena() {
+function TestArenaInner() {
   const [loading, setLoading]           = useState(true);
   const [msg, setMsg]                   = useState("");
   const [tests, setTests]               = useState([]);
@@ -425,11 +450,41 @@ export default function TestArena() {
   const selectedTestIdRef = useRef(null);
   const shownWinRef       = useRef(false);
   const uidRef            = useRef(null);
+  const sessionIdRef      = useRef(null); // kept in sync for sendBeacon
+  const submittingRef     = useRef(false); // submit-once guard
+  const realtimeRef       = useRef(null); // Supabase Realtime channel
 
   const { playTick, playFail, playSuccess } = useCountdownSound();
   const lastTickRef = useRef(null);
 
   const nowMs = Date.now();
+
+  // Keep sessionIdRef in sync for sendBeacon (can't close over state in beforeunload)
+  useEffect(() => { sessionIdRef.current = sessionId; }, [sessionId]);
+
+  // Session heartbeat: refresh token every 4 minutes during active test
+  // Prevents TOKEN_REFRESH_FAILED mid-test on long sessions
+  useEffect(() => {
+    if (!inTest) return;
+    const iv = setInterval(() => { supabase.auth.refreshSession().catch(() => {}); }, 4 * 60 * 1000);
+    return () => clearInterval(iv);
+  }, [inTest]);
+
+  // Realtime helpers
+  const stopRealtime = useCallback(() => {
+    if (realtimeRef.current) { supabase.removeChannel(realtimeRef.current); realtimeRef.current = null; }
+  }, []);
+
+  const startRealtime = useCallback((testId, uid) => {
+    stopRealtime();
+    realtimeRef.current = supabase
+      .channel(`test-live-${testId}`)
+      .on("postgres_changes", { event: "*",      schema: "public", table: "test_leaderboard", filter: `test_id=eq.${testId}` },
+          () => loadLeaderboard(testId, uid))
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "test_winners",     filter: `test_id=eq.${testId}` },
+          () => loadWinners(testId, uid, true))
+      .subscribe();
+  }, [stopRealtime]);
 
   // ── Tick ──
   useEffect(() => {
@@ -437,28 +492,28 @@ export default function TestArena() {
     return () => clearInterval(iv);
   }, []);
 
-  // ── Phase ──
+  // ── Phase — registration closes at test_start_at (not registration_close_at) ──
   const phase = useMemo(() => {
     if (!selectedTest) return "NONE";
-    const t = selectedTest;
-    const ro  = t.registration_open_at  ? new Date(t.registration_open_at).getTime()  : 0;
-    const rc  = t.registration_close_at ? new Date(t.registration_close_at).getTime() : 0;
-    const end = t.test_end_at           ? new Date(t.test_end_at).getTime()            : 0;
-    if (ro && nowMs < ro)                return "BEFORE_REG";
-    if (rc && nowMs >= ro && nowMs < rc) return "REG_OPEN";
-    if (end && nowMs >= rc && nowMs < end) return "TEST_LIVE";
-    if (end && nowMs >= end)             return "ENDED";
+    const t  = selectedTest;
+    const ro  = t.registration_open_at ? new Date(t.registration_open_at).getTime() : 0;
+    const ts  = t.test_start_at        ? new Date(t.test_start_at).getTime()        : 0;
+    const end = t.test_end_at          ? new Date(t.test_end_at).getTime()           : 0;
+    if (ro && nowMs < ro)               return "BEFORE_REG";
+    if (ts && nowMs >= ro && nowMs < ts) return "REG_OPEN";
+    if (end && ts && nowMs >= ts && nowMs < end) return "TEST_LIVE";
+    if (end && nowMs >= end)            return "ENDED";
     return "UNKNOWN";
   }, [selectedTest, tick]);
 
   const countdownMs = useMemo(() => {
     if (!selectedTest) return 0;
-    const t = selectedTest;
-    const ro  = t.registration_open_at  ? new Date(t.registration_open_at).getTime()  : 0;
-    const rc  = t.registration_close_at ? new Date(t.registration_close_at).getTime() : 0;
-    const end = t.test_end_at           ? new Date(t.test_end_at).getTime()            : 0;
+    const t  = selectedTest;
+    const ro  = t.registration_open_at ? new Date(t.registration_open_at).getTime() : 0;
+    const ts  = t.test_start_at        ? new Date(t.test_start_at).getTime()        : 0;
+    const end = t.test_end_at          ? new Date(t.test_end_at).getTime()           : 0;
     if (phase === "BEFORE_REG") return ro  - nowMs;
-    if (phase === "REG_OPEN")   return rc  - nowMs;
+    if (phase === "REG_OPEN")   return ts  - nowMs; // counts to test start
     if (phase === "TEST_LIVE")  return end - nowMs;
     return 0;
   }, [selectedTest, phase, tick]);
@@ -531,17 +586,19 @@ export default function TestArena() {
     return null;
   };
 
-  // ── Polling ──
+  // ── Initial load ──
+  useEffect(() => { loadTests(); }, []);
+
+  // ── Realtime cleanup on unmount ──
+  useEffect(() => () => stopRealtime(), [stopRealtime]);
+
+  // ── 30-second fallback poll (Realtime handles most updates) ──
   useEffect(() => {
-    loadTests();
     const iv = setInterval(() => {
       const tid = selectedTestIdRef.current;
       const uid = uidRef.current;
-      if (tid && uid) {
-        loadLeaderboard(tid, uid);
-        loadWinners(tid, uid, true);
-      }
-    }, 3000);
+      if (tid && uid) { loadLeaderboard(tid, uid); loadWinners(tid, uid, true); }
+    }, 30000);
     return () => clearInterval(iv);
   }, []);
 
@@ -557,14 +614,22 @@ export default function TestArena() {
     }
   }, [timeLeft, inTest, runPhase]);
 
-  // ── OUT on page leave ──
+  // ── OUT on page leave — sendBeacon is reliable in beforeunload (unlike async fetch) ──
   useEffect(() => {
-    const beforeUnload = async () => {
-      if (sessionId) { try { await supabase.rpc("test_mark_out", { p_session_id: sessionId, p_reason: "left_page" }); } catch {} }
+    const beforeUnload = () => {
+      const sid = sessionIdRef.current;
+      if (!sid) return;
+      const body = JSON.stringify({ session_id: sid, reason: "left_page" });
+      // sendBeacon survives page unload; fallback to keepalive fetch if unavailable
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/test/mark-out", new Blob([body], { type: "application/json" }));
+      } else {
+        fetch("/api/test/mark-out", { method: "POST", body, headers: { "Content-Type": "application/json" }, keepalive: true }).catch(() => {});
+      }
     };
     window.addEventListener("beforeunload", beforeUnload);
     return () => window.removeEventListener("beforeunload", beforeUnload);
-  }, [sessionId]);
+  }, []);
 
   // ── Block copy/paste in test ──
   useEffect(() => {
@@ -586,21 +651,25 @@ export default function TestArena() {
     setSelectedTest(t);
     selectedTestIdRef.current = t.id;
     setMsg(""); setRegistered(false); setStatusOverlay(null); setMyWinnerData(null); setWinners([]);
-    setPrizes([]); // clear old prizes
+    setPrizes([]);
     resetRunState();
     const uid = uidRef.current;
     if (!uid) return;
 
-    const ro  = t.registration_open_at  ? new Date(t.registration_open_at).getTime()  : 0;
-    const rc  = t.registration_close_at ? new Date(t.registration_close_at).getTime() : 0;
-    const end = t.test_end_at           ? new Date(t.test_end_at).getTime()            : 0;
+    // Registration closes at test_start_at (not registration_close_at)
+    const ro  = t.registration_open_at ? new Date(t.registration_open_at).getTime() : 0;
+    const ts  = t.test_start_at        ? new Date(t.test_start_at).getTime()        : 0;
+    const end = t.test_end_at          ? new Date(t.test_end_at).getTime()           : 0;
     const now = Date.now();
-    const tPhase = !ro ? "UNKNOWN" : now < ro ? "BEFORE_REG" : now < rc ? "REG_OPEN" : now < end ? "TEST_LIVE" : "ENDED";
+    const tPhase = !ro ? "UNKNOWN" : now < ro ? "BEFORE_REG" : ts && now < ts ? "REG_OPEN" : end && now < end ? "TEST_LIVE" : "ENDED";
 
-    const isReg = await loadRegistration(t.id, uid);
+    const isReg    = await loadRegistration(t.id, uid);
     const lbStatus = await loadLeaderboard(t.id, uid);
-    const myWin = await loadWinners(t.id, uid, false);
-    await loadPrizes(t.id); // ← fetch prizes for this test
+    const myWin    = await loadWinners(t.id, uid, false);
+    await loadPrizes(t.id);
+
+    // Start Realtime subscription for live updates
+    startRealtime(t.id, uid);
 
     if (myWin) { shownWinRef.current = true; setStatusOverlay("winner"); }
     else if (lbStatus === "qualified" && (tPhase === "ENDED" || tPhase === "TEST_LIVE")) { setStatusOverlay("qualified"); }
@@ -702,13 +771,16 @@ export default function TestArena() {
     try { await loadQuestionAndStart(sessionId, next); } catch { await endTest(); }
   };
 
-  // ── Submit ──
+  // ── Submit — submit-once guard prevents double-submission on fast clicks ──
   const onSubmitAuto = async (chosen) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setMsg("");
-    if (!sessionId || !question || runPhase !== "PLAYING") return;
+    if (!sessionId || !question || runPhase !== "PLAYING") { submittingRef.current = false; return; }
     stopTimer();
     const tt = Date.now() - startedAtRef.current;
     const { data, error } = await supabase.rpc("test_submit_answer", { p_session_id: sessionId, p_question_id: question.question_id, p_selected: chosen, p_time_taken_ms: Number(tt), p_used_powerup: "none" });
+    submittingRef.current = false;
     if (error) { setMsg("Submit failed: " + error.message); setRunPhase("PLAYING"); return; }
     if (!data?.ok) { setMsg(data?.error || "Submit failed"); setRunPhase("PLAYING"); return; }
     if (data?.is_correct === false) { playFail(); setFailReason("WRONG"); setRunPhase("WAITING_DECISION"); setShowFailModal(true); return; }
@@ -768,6 +840,8 @@ export default function TestArena() {
   return (
     <div style={{ padding: "clamp(8px,3vw,12px)", maxWidth: 1100, margin: "0 auto", minHeight: "100vh" }}>
       <style>{mainCSS}</style>
+      {/* prefers-reduced-motion: FireworksCanvas respects user preference */}
+      <style>{`@media (prefers-reduced-motion: reduce) { canvas { display: none !important; } }`}</style>
 
       {statusOverlay && selectedTest && (
         <StatusOverlay
@@ -810,10 +884,10 @@ export default function TestArena() {
             {tests.length === 0 ? <div className="ta-empty">No tests available.</div> : (
               <div className="ta-tests-scroll">
                 {tests.map(t => {
-                  const ro  = t.registration_open_at  ? new Date(t.registration_open_at).getTime()  : 0;
-                  const rc  = t.registration_close_at ? new Date(t.registration_close_at).getTime() : 0;
-                  const end = t.test_end_at           ? new Date(t.test_end_at).getTime()            : 0;
-                  const tPhase = !ro ? "unknown" : nowMs < ro ? "soon" : nowMs < rc ? "reg" : nowMs < end ? "live" : "ended";
+                  const ro  = t.registration_open_at ? new Date(t.registration_open_at).getTime() : 0;
+                  const ts  = t.test_start_at        ? new Date(t.test_start_at).getTime()        : 0;
+                  const end = t.test_end_at          ? new Date(t.test_end_at).getTime()           : 0;
+                  const tPhase = !ro ? "unknown" : nowMs < ro ? "soon" : ts && nowMs < ts ? "reg" : end && nowMs < end ? "live" : "ended";
                   return (
                     <button key={t.id} onClick={() => selectTest(t)} className={`ta-test-item ${selectedTest?.id === t.id ? "ta-test-item-active" : ""}`}>
                       <div className="ta-test-item-top">
@@ -888,9 +962,9 @@ export default function TestArena() {
                     <div className="ta-section-title">📅 Schedule</div>
                     <div className="ta-timeline">
                       {[
-                        { label: "Reg Opens",  iso: selectedTest.registration_open_at,  icon: "🟢" },
-                        { label: "Reg Closes", iso: selectedTest.registration_close_at, icon: "🔒" },
-                        { label: "Test Ends",  iso: selectedTest.test_end_at,           icon: "🏁" },
+                        { label: "Reg Opens",  iso: selectedTest.registration_open_at, icon: "🟢" },
+                        { label: "Test Starts", iso: selectedTest.test_start_at,       icon: "🚀" },
+                        { label: "Test Ends",  iso: selectedTest.test_end_at,          icon: "🏁" },
                       ].map((s, i) => {
                         const ms = s.iso ? new Date(s.iso).getTime() : 0;
                         const past = ms && nowMs > ms;
@@ -1022,6 +1096,15 @@ export default function TestArena() {
         </div>
       )}
     </div>
+  );
+}
+
+// ── Public export — wraps inner component in error boundary ──────────────────
+export default function TestArena() {
+  return (
+    <TestErrorBoundary>
+      <TestArenaInner />
+    </TestErrorBoundary>
   );
 }
 

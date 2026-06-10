@@ -4,6 +4,21 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
+// ── Server-side API helper (passes auth token to protected routes) ─────────────
+async function adminFetch(path, opts = {}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || "";
+  const res = await fetch(path, {
+    ...opts,
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      ...(opts.headers || {}),
+    },
+  });
+  return res.json();
+}
+
 const UAE_TZ = "Asia/Dubai";
 
 function fmtUAE(iso) {
@@ -183,26 +198,67 @@ export default function AdminTests() {
 
     if (!payload.title?.trim()) { showMsg("Title required", "error"); return; }
 
+    // Block saves on live tests (server also enforces this)
+    if (selectedTest?.status === "live" && form.status === "live") {
+      showMsg("Test is live — only status and schedule fields can be changed.", "error"); return;
+    }
+
     if (!editingId) {
-      const { data, error } = await supabase.from("test_tests").insert([{ ...payload, title: payload.title.trim() }]).select("*").single();
-      if (error) { showMsg("Create failed: " + error.message, "error"); return; }
-      showMsg("Created ✅", "success");
+      // ── CREATE via server-side API ──
+      const result = await adminFetch("/api/admin/tests", {
+        method: "POST",
+        body: JSON.stringify({ ...payload, title: payload.title.trim() }),
+      });
+      if (result.error) { showMsg("Create failed: " + result.error, "error"); return; }
+      showMsg("Created ✅ — sending announcement email…", "success");
       await loadTests();
-      await startEdit(data);
+      await startEdit(result.data);
+      // Send new test announcement email (non-blocking)
+      adminFetch("/api/admin/tests/notify", {
+        method: "POST",
+        body: JSON.stringify({ test_id: result.data.id, type: "new_test" }),
+      }).then(r => r.ok ? showMsg("Created ✅ — announcement email sent", "success") : null).catch(() => {});
       return;
     }
 
-    const { error } = await supabase.from("test_tests").update(payload).eq("id", editingId);
-    if (error) { showMsg("Save failed: " + error.message, "error"); return; }
+    // ── UPDATE via server-side API ──
+    const prevStatus = selectedTest?.status;
+    const result = await adminFetch("/api/admin/tests", {
+      method: "PUT",
+      body: JSON.stringify({ id: editingId, ...payload }),
+    });
+    if (result.error) { showMsg("Save failed: " + result.error, "error"); return; }
     showMsg("Saved ✅", "success");
     await loadTests();
+
+    // Email triggers on status transitions
+    if (prevStatus !== form.status) {
+      if (form.status === "live") {
+        showMsg("Saved ✅ — sending 'test started' emails to registered users…", "success");
+        adminFetch("/api/admin/tests/notify", {
+          method: "POST",
+          body: JSON.stringify({ test_id: editingId, type: "test_started" }),
+        }).then(r => r.sent != null ? showMsg(`Saved ✅ — started email sent to ${r.sent} users`, "success") : null).catch(() => {});
+      } else if (form.status === "ended") {
+        showMsg("Saved ✅ — sending qualification emails…", "success");
+        adminFetch("/api/admin/tests/notify", {
+          method: "POST",
+          body: JSON.stringify({ test_id: editingId, type: "test_ended_qualified" }),
+        }).then(r => r.sent != null ? showMsg(`Saved ✅ — qualification email sent to ${r.sent} users`, "success") : null).catch(() => {});
+      }
+    }
   };
 
   const deleteTest = async (id) => {
-    if (!window.confirm("Delete this test?")) return;
+    const t = tests.find(x => x.id === id);
+    if (t?.status === "live") { showMsg("Cannot delete a live test.", "error"); return; }
+    if (!window.confirm(`Delete "${t?.title || "this test"}"?\n\nThis will also remove all related registrations and leaderboard data. This action cannot be undone.`)) return;
     showMsg("", "info");
-    const { error } = await supabase.from("test_tests").update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq("id", id);
-    if (error) { showMsg("Delete failed: " + error.message, "error"); return; }
+    const result = await adminFetch("/api/admin/tests", {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+    });
+    if (result.error) { showMsg("Delete failed: " + result.error, "error"); return; }
     showMsg("Deleted ✅", "success");
     setEditingId(null); setForm(emptyTest());
     await loadTests();
@@ -226,7 +282,14 @@ export default function AdminTests() {
       difficulty: q.difficulty ?? null,
       tags: q.tags ?? null,
       is_active: q.is_active !== false,
-    })).filter((x) => x.question_text && x.correct_option);
+    })).filter((x) => {
+      if (!x.question_text || !x.correct_option) return false;
+      if (!x.options || typeof x.options !== "object") return false;
+      const optKeys = Object.keys(x.options);
+      if (optKeys.length < 2) return false;
+      if (!optKeys.includes(x.correct_option)) return false; // correct_option must be a valid key
+      return true;
+    });
 
     if (rows.length === 0) { showMsg("No valid questions found.", "error"); return; }
     const { error } = await supabase.from("test_questions").insert(rows);
@@ -272,9 +335,11 @@ export default function AdminTests() {
   const generateCandidates = async () => {
     showMsg("", "info");
     if (!editingId) { showMsg("Select a test first.", "error"); return; }
-    const { data, error } = await supabase.rpc("test_generate_candidates", { p_test_id: editingId });
-    if (error) { showMsg("Generate failed: " + error.message, "error"); return; }
-    if (!data?.ok) { showMsg(data?.error || "Generate failed", "error"); return; }
+    const result = await adminFetch("/api/admin/tests/generate-candidates", {
+      method: "POST",
+      body: JSON.stringify({ test_id: editingId }),
+    });
+    if (result.error) { showMsg("Generate failed: " + result.error, "error"); return; }
     await loadExtras(editingId);
     showMsg("Candidates generated ✅", "success");
   };
@@ -283,10 +348,23 @@ export default function AdminTests() {
     showMsg("", "info");
     if (!editingId) { showMsg("Select a test first.", "error"); return; }
     if (selectedWinners.length === 0) { showMsg("Select winners first.", "error"); return; }
-    const { data, error } = await supabase.rpc("test_approve_winners", { p_test_id: editingId, p_winners: selectedWinners });
-    if (error) { showMsg("Approve failed: " + error.message, "error"); return; }
-    if (!data?.ok) { showMsg(data?.error || "Approve failed", "error"); return; }
-    showMsg("Winners approved ✅", "success");
+
+    // ── Confirmation required (irreversible financial action) ──
+    const names = candidates
+      .filter(c => selectedWinners.includes(c.user_id))
+      .map(c => `${c.rank_no === 1 ? "🥇" : c.rank_no === 2 ? "🥈" : "🥉"} ${c.user_name}`)
+      .join("\n");
+    if (!window.confirm(
+      `Approve ${selectedWinners.length} winner(s)?\n\n${names}\n\nThis action:\n• Cannot be undone\n• Will announce winners publicly\n• Will send winner emails automatically\n\nProceed?`
+    )) return;
+
+    showMsg("Approving winners and sending emails…", "info");
+    const result = await adminFetch("/api/admin/tests/approve-winners", {
+      method: "POST",
+      body: JSON.stringify({ test_id: editingId, winner_ids: selectedWinners }),
+    });
+    if (result.error) { showMsg("Approve failed: " + result.error, "error"); return; }
+    showMsg("Winners approved ✅ — winner emails sent automatically", "success");
     await loadTests(); await loadExtras(editingId);
   };
 
@@ -379,8 +457,15 @@ export default function AdminTests() {
               <div className="at-card-title">{editingId ? "Edit Test" : "Create Test"}</div>
               {selectedTest && <div className="at-id-badge">ID: {selectedTest.id}</div>}
             </div>
-            <button onClick={saveTest} className="at-btn at-btn-save">💾 Save</button>
+            <button onClick={saveTest} disabled={selectedTest?.status === "live" && form.status === "live"} className="at-btn at-btn-save">💾 Save</button>
           </div>
+
+          {/* Live test lock warning */}
+          {selectedTest?.status === "live" && (
+            <div style={{ background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: "0.82rem", fontWeight: 700, color: "#dc2626" }}>
+              🔴 This test is LIVE — editing is locked. Only status and schedule fields can be changed.
+            </div>
+          )}
 
           {/* Tabs */}
           {editingId && (
@@ -446,8 +531,8 @@ export default function AdminTests() {
                   <input className="at-input" type="datetime-local" value={form.registration_open_at} onChange={e => setForm(x => ({ ...x, registration_open_at: e.target.value }))} />
                 </div>
                 <div className="at-field">
-                  <label className="at-label">Registration Closes</label>
-                  <input className="at-input" type="datetime-local" value={form.registration_close_at} onChange={e => setForm(x => ({ ...x, registration_close_at: e.target.value }))} />
+                  <label className="at-label" title="Legacy field — registration now closes automatically at Test Start time">Registration Closes <span style={{ fontSize: 9, color: "#94a3b8", fontWeight: 600 }}>(unused)</span></label>
+                  <input className="at-input" type="datetime-local" value={form.registration_close_at} onChange={e => setForm(x => ({ ...x, registration_close_at: e.target.value }))} style={{ opacity: 0.55 }} />
                 </div>
                 <div className="at-field">
                   <label className="at-label">Test Start</label>

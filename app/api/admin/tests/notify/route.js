@@ -86,27 +86,34 @@ function qualifiedHtml(test, userName) {
 // ── Helper ─────────────────────────────────────────────────────────────────────
 
 async function sendEmail(admin, to, subject, html) {
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/send-blast-email`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ to, subject, html, from_email: FROM_EMAIL, from_name: FROM_NAME }),
-  }).catch(() => null);
-  const data = res ? await res.json().catch(() => null) : null;
-  if (!res?.ok && !data) throw new Error("Failed to invoke send-blast-email");
+  // Send one email per recipient so no user sees others' addresses
+  let sentCount = 0;
+  const failedEmails = [];
+
+  for (const email of to) {
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/send-blast-email`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ to: [email], subject, html, from_email: FROM_EMAIL, from_name: FROM_NAME }),
+    }).catch(() => null);
+    const data = res ? await res.json().catch(() => null) : null;
+    if (res?.ok) sentCount++;
+    else failedEmails.push(email);
+  }
 
   await admin.from("email_logs").insert({
     subject, html_body: html,
     from_email: FROM_EMAIL, from_name: FROM_NAME,
     recipients: to, recipient_count: to.length,
-    sent_count:   data?.sent_count   ?? to.length,
-    failed_count: data?.failed_count ?? 0,
-    failed_emails: data?.failed      ?? [],
-    status: (data?.failed_count ?? 0) > 0
-      ? ((data?.sent_count ?? 0) > 0 ? "partial" : "failed")
+    sent_count:   sentCount,
+    failed_count: failedEmails.length,
+    failed_emails: failedEmails,
+    status: failedEmails.length > 0
+      ? (sentCount > 0 ? "partial" : "failed")
       : "sent",
   }).catch(() => {});
 
-  return { sent: data?.sent_count ?? to.length };
+  return { sent: sentCount };
 }
 
 // ── Handler ────────────────────────────────────────────────────────────────────

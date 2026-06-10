@@ -70,24 +70,29 @@ export async function GET(request) {
     const subject = `⏰ Test starts in 30 minutes — ${test.title} ${reminderKey}`;
     const html    = reminderHtml(test);
 
-    const _res = await fetch(`${SUPABASE_URL}/functions/v1/send-blast-email`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ to: emails, subject, html, from_email: "noreply@aidla.online", from_name: "AIDLA" }),
-    }).catch(() => null);
-    const result = _res ? await _res.json().catch(() => null) : null;
+    let sentCount = 0;
+    const failedEmails = [];
+    for (const email of emails) {
+      const _res = await fetch(`${SUPABASE_URL}/functions/v1/send-blast-email`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${SERVICE_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ to: [email], subject, html, from_email: "noreply@aidla.online", from_name: "AIDLA" }),
+      }).catch(() => null);
+      if (_res?.ok) sentCount++;
+      else failedEmails.push(email);
+    }
 
     await admin.from("email_logs").insert({
       subject, html_body: html,
       from_email: "noreply@aidla.online", from_name: "AIDLA",
       recipients: emails, recipient_count: emails.length,
-      sent_count:   result?.sent_count   ?? emails.length,
-      failed_count: result?.failed_count ?? 0,
-      failed_emails: result?.failed      ?? [],
+      sent_count:   sentCount,
+      failed_count: failedEmails.length,
+      failed_emails: failedEmails,
       status: "sent",
     }).catch(() => {});
 
-    totalSent += emails.length;
+    totalSent += sentCount;
   }
 
   return NextResponse.json({ ok: true, sent: totalSent });

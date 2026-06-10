@@ -1215,15 +1215,15 @@ const CSS = `
 .ls-hint { font-size: 10px; color: ${C.textMute}; }
 .ls-controls { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 
-/* MODEL BUTTONS */
-.ls-model-btn {
-  height: 20px; padding: 0 7px; border-radius: 999px;
-  border: 1px solid ${C.border}; background: transparent;
-  font-size: 10px; font-weight: 600; color: ${C.textMute};
-  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+/* MODEL DROPDOWN */
+.ls-model-select {
+  height: 22px; padding: 0 6px; border-radius: 8px;
+  border: 1px solid ${C.border}; background: ${C.hover};
+  font-size: 10px; font-weight: 600; color: ${C.text};
+  cursor: pointer; outline: none; font-family: inherit;
+  max-width: 160px;
 }
-.ls-model-btn:hover { background: ${C.hover}; color: ${C.text}; }
-.ls-model-btn.active { background: ${C.accent}; color: white; border-color: ${C.accent}; }
+.ls-model-select:focus { border-color: ${C.accent}; }
 
 /* RESEARCH TOGGLE */
 .ls-research-btn {
@@ -1459,44 +1459,39 @@ export default function Learning() {
 
   // ── IMAGE UPLOAD HANDLER ──
 function handleImageUpload(e) {
-  const files = Array.from(e.target.files);
+  const files = Array.from(e.target.files || []);
+  e.target.value = ''; // reset so the same file can be re-selected
   if (!files.length) return;
 
-  // Limit to 3 images max
-  if (images.length + files.length > 3) {
-    alert('Maximum 3 images allowed at once.');
-    return;
-  }
+  const slots = 3 - images.length;
+  if (slots <= 0) return;
+
+  // Only valid images, capped to available slots
+  const validFiles = files
+    .filter(f => f.type.startsWith('image/') && f.size <= 10 * 1024 * 1024)
+    .slice(0, slots);
+
+  if (!validFiles.length) return;
 
   const newImages = [];
-  let loaded = 0;
+  let done = 0;
 
-  files.forEach((file) => {
-    // Check file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      alert(`${file.name} is too large. Max 10MB.`);
-      return;
-    }
-
-    // Check file type
-    if (!file.type.startsWith('image/')) {
-      alert(`${file.name} is not an image.`);
-      return;
-    }
-
+  validFiles.forEach(file => {
     const reader = new FileReader();
-    reader.onload = () => {
-      newImages.push({
-        name: file.name,
-        type: file.type,
-        base64: reader.result, // data:image/png;base64,xxxxx
-      });
-      loaded++;
-
-      if (loaded === files.length) {
-        setImages(prev => [...prev, ...newImages].slice(0, 3));
+    const finish = () => {
+      done++;
+      if (done === validFiles.length) {
+        if (newImages.length > 0) {
+          setImages(prev => [...prev, ...newImages].slice(0, 3));
+          setModelKey('nova'); // vision only works on Nova
+        }
       }
     };
+    reader.onload = () => {
+      newImages.push({ name: file.name, type: file.type, base64: reader.result });
+      finish();
+    };
+    reader.onerror = finish; // count failed reads so we never stall
     reader.readAsDataURL(file);
   });
 }
@@ -1816,11 +1811,16 @@ const handleSend = useCallback(async (overrideText) => {
                     <span className="ls-research-dot" />
                     {research ? 'Research ON' : 'Research'}
                   </button>
-                  {MODELS.map(m => (
-                    <button key={m.key} className={`ls-model-btn ${modelKey === m.key ? 'active' : ''}`} onClick={() => setModelKey(m.key)} title={m.desc}>
-                      {m.label}
-                    </button>
-                  ))}
+                  <select
+                    className="ls-model-select"
+                    value={modelKey}
+                    onChange={e => setModelKey(e.target.value)}
+                    title="Select AI model"
+                  >
+                    {MODELS.map(m => (
+                      <option key={m.key} value={m.key}>{m.label} — {m.desc}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>

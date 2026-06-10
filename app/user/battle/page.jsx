@@ -1358,10 +1358,9 @@ export default function BattlePage() {
   const quoteIdx      = useMemo(() => Math.floor(Math.random() * 4), []);
 
   if (loading) return (
-    <div style={{ minHeight:"100vh", background:"#0f0f1a", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif" }}>
-      <div style={{ fontSize:40, marginBottom:20, animation:"spin 1s linear infinite" }}>⚔️</div>
-      <div style={{ color:"rgba(255,255,255,0.7)", fontSize:15, fontWeight:600 }}>Loading Battle Arena...</div>
-      <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+    <div style={{ width:"100%", maxWidth:480, margin:"0 auto", flex:1, minHeight:0, background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif", borderRadius:"14px 14px 0 0" }}>
+      <div style={{ fontSize:36, marginBottom:14, animation:"spin 1s linear infinite" }}>⚔️</div>
+      <div style={{ color:"#4338ca", fontSize:14, fontWeight:700 }}>Loading Battle Arena...</div>
     </div>
   );
 

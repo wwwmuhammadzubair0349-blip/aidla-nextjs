@@ -1317,7 +1317,18 @@ export default function BattlePage() {
 
   async function joinByRoomId() {
     if (!joinRoomInput.trim()) return;
-    const rid = joinRoomInput.trim();
+    let rid = joinRoomInput.trim();
+
+    // Resolve short code like "1234" or "Room-1234" → actual UUID
+    const shortMatch = rid.match(/^(?:room[-\s]?)?(\d{4})$/i);
+    if (shortMatch) {
+      const code = parseInt(shortMatch[1], 10);
+      const { data: rooms } = await supabase.from("battle_rooms").select("id").eq("status", "waiting").limit(300);
+      const match = (rooms || []).find(r => (parseInt(r.id.replace(/-/g,"").slice(-6), 16) % 9000 + 1000) === code);
+      if (!match) { flash("Room not found or already started"); return; }
+      rid = match.id;
+    }
+
     setView("waiting");
     setIsPrivateRoom(false);
     resetSelectionState();
@@ -1525,7 +1536,7 @@ export default function BattlePage() {
                 <div style={S.cardTitle}>Join by Room ID</div>
                 <div style={{ fontSize:12, color:"#64748b", marginBottom:10 }}>Enter a private room ID shared by a friend.</div>
                 <div style={{ display:"flex", gap:8 }}>
-                  <input style={S.input} placeholder="Paste room ID here..." value={joinRoomInput}
+                  <input style={S.input} placeholder="Enter room code (e.g. 1234)..." value={joinRoomInput}
                     onChange={e => setJoinRoomInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && joinByRoomId()} />
                   <button style={{ ...S.smBtn, background:"#6366f1", color:"white", border:"none" }} onClick={joinByRoomId} disabled={!joinRoomInput.trim()}>
@@ -1661,7 +1672,7 @@ export default function BattlePage() {
           <div style={S.card}>
             <div style={S.cardTitle}>Join Private Room</div>
             <div style={{ display:"flex", gap:7 }}>
-              <input style={S.input} placeholder="Paste room ID..." value={joinRoomInput}
+              <input style={S.input} placeholder="Enter room code (e.g. 1234)..." value={joinRoomInput}
                 onChange={e => setJoinRoomInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && joinByRoomId()} />
               <button style={{ ...S.smBtn, background:"#6366f1", color:"white", border:"none" }} onClick={joinByRoomId} disabled={!joinRoomInput.trim()}>

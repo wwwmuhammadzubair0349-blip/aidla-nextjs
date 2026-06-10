@@ -2330,55 +2330,77 @@ function BattleShareCard({ profile, result, onClose }) {
     `#AIDLA #1v1Battle #LearnAndEarn`,
   ].join("\n");
 
+  const IcoDownload = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
+  const IcoCopy    = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>;
+  const IcoCheck   = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+  const IcoShare   = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>;
+
+  const iconBtn = (extra) => ({ width:34, height:34, border:"none", borderRadius:9, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontFamily:"inherit", ...extra });
+
   return (
-    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.85)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, padding:16 }} onClick={onClose}>
-      <div style={{ width:"100%", maxWidth:400, display:"flex", flexDirection:"column", gap:10 }} onClick={e => e.stopPropagation()}>
+    <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.82)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:9999, padding:14 }} onClick={onClose}>
+      <div style={{ width:"100%", maxWidth:320, display:"flex", flexDirection:"column", gap:8 }} onClick={e => e.stopPropagation()}>
+
+        {/* close row */}
         <div style={{ display:"flex", justifyContent:"flex-end" }}>
-          <button onClick={onClose} style={{ background:"rgba(255,255,255,0.15)", border:"none", color:"white", width:32, height:32, borderRadius:"50%", cursor:"pointer", fontWeight:800, fontSize:16 }}>✕</button>
+          <button onClick={onClose} style={iconBtn({ background:"rgba(255,255,255,0.15)", color:"white", fontSize:14, fontWeight:800 })}>✕</button>
         </div>
-        <div ref={cardRef} style={{ borderRadius:16, overflow:"hidden", background:"white" }}>
-          <div style={{ background:"#1e1b4b", padding:"14px 18px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-              <img src="/logo.png" alt="AIDLA" style={{ width:30, height:30, borderRadius:8 }} />
+
+        {/* card image */}
+        <div ref={cardRef} style={{ borderRadius:13, overflow:"hidden", background:"white" }}>
+          <div style={{ background:"#1e1b4b", padding:"10px 14px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <img src="/logo.png" alt="AIDLA" style={{ width:24, height:24, borderRadius:6 }} />
               <div>
-                <div style={{ fontSize:14, fontWeight:900, color:"white" }}>AIDLA</div>
-                <div style={{ fontSize:9, color:"rgba(255,255,255,0.5)" }}>1v1 Battle</div>
+                <div style={{ fontSize:12, fontWeight:900, color:"white" }}>AIDLA</div>
+                <div style={{ fontSize:8, color:"rgba(255,255,255,0.5)" }}>1v1 Battle</div>
               </div>
             </div>
-            <div style={{ background:"rgba(255,255,255,0.15)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Winner</div>
+            <div style={{ background:"rgba(255,255,255,0.15)", color:"white", fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:20 }}>Winner</div>
           </div>
-          <div style={{ background:"#f8faff", padding:"24px 20px", display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
+          <div style={{ background:"#f8faff", padding:"16px 16px 12px", display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
             {profile?.avatar_url
-              ? <img src={profile.avatar_url} alt="" style={{ width:80, height:80, borderRadius:"50%", objectFit:"cover", border:"3px solid #6366f1" }} crossOrigin="anonymous" />
-              : <div style={{ width:80, height:80, borderRadius:"50%", background:"#6366f1", display:"flex", alignItems:"center", justifyContent:"center", fontSize:30, fontWeight:800, color:"white" }}>{name[0]}</div>}
-            <div style={{ fontSize:18, fontWeight:800, color:"#0f172a" }}>{name}</div>
-            <div style={{ padding:"4px 16px", borderRadius:20, fontSize:12, fontWeight:700, color:"white", background:"#6366f1" }}>Battle Champion</div>
+              ? <img src={profile.avatar_url} alt="" style={{ width:58, height:58, borderRadius:"50%", objectFit:"cover", border:"2.5px solid #6366f1" }} crossOrigin="anonymous" />
+              : <div style={{ width:58, height:58, borderRadius:"50%", background:"#6366f1", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, fontWeight:800, color:"white" }}>{name[0]}</div>}
+            <div style={{ fontSize:15, fontWeight:800, color:"#0f172a" }}>{name}</div>
+            <div style={{ padding:"3px 12px", borderRadius:20, fontSize:10, fontWeight:700, color:"white", background:"#6366f1" }}>Battle Champion</div>
           </div>
           <div style={{ display:"flex", borderTop:"1px solid #f1f5f9" }}>
             {[["Score",`${result.myScore} vs ${result.oppScore}`],["Earned",`+${result.coinsChange}`],["Date",date]].map(([l,v],i) => (
-              <div key={l} style={{ flex:1, padding:"12px 8px", textAlign:"center", borderRight:i<2?"1px solid #f1f5f9":"none" }}>
-                <div style={{ fontSize:13, fontWeight:800, color:"#0f172a" }}>{v}</div>
-                <div style={{ fontSize:9, color:"#94a3b8", marginTop:2, textTransform:"uppercase", letterSpacing:0.5 }}>{l}</div>
+              <div key={l} style={{ flex:1, padding:"8px 4px", textAlign:"center", borderRight:i<2?"1px solid #f1f5f9":"none" }}>
+                <div style={{ fontSize:12, fontWeight:800, color:"#0f172a" }}>{v}</div>
+                <div style={{ fontSize:8, color:"#94a3b8", marginTop:1, textTransform:"uppercase", letterSpacing:0.5 }}>{l}</div>
               </div>
             ))}
           </div>
-          <div style={{ background:"#1e1b4b", padding:"9px", textAlign:"center", fontSize:10, color:"rgba(255,255,255,0.5)", fontWeight:600 }}>
+          <div style={{ background:"#1e1b4b", padding:"7px", textAlign:"center", fontSize:9, color:"rgba(255,255,255,0.45)", fontWeight:600 }}>
             www.aidla.online — Earn While You Learn
           </div>
         </div>
-        <div style={{ background:"#1e293b", borderRadius:12, padding:14 }}>
-          <div style={{ fontSize:11, color:"#64748b", fontWeight:700, textTransform:"uppercase", letterSpacing:0.5, marginBottom:6 }}>Caption</div>
-          <div style={{ fontSize:12, color:"#cbd5e1", lineHeight:1.7, whiteSpace:"pre-wrap", fontFamily:"monospace" }}>{caption}</div>
+
+        {/* caption + action icons */}
+        <div style={{ background:"#1e293b", borderRadius:11, padding:11, display:"flex", flexDirection:"column", gap:8 }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <div style={{ fontSize:10, color:"#64748b", fontWeight:700, textTransform:"uppercase", letterSpacing:0.5 }}>Caption</div>
+            <div style={{ display:"flex", gap:6 }}>
+              {imgUrl
+                ? <a href={imgUrl} download="aidla-battle.png" title="Download image" style={iconBtn({ background:"#6366f1", color:"white", textDecoration:"none" })}><IcoDownload /></a>
+                : <div style={iconBtn({ background:"#334155", color:"#64748b" })}><IcoDownload /></div>}
+              <button title="Copy caption" style={iconBtn({ background: captionCopied ? "#16a34a" : "#059669", color:"white" })}
+                onClick={() => navigator.clipboard.writeText(caption).then(() => { setCaptionCopied(true); setTimeout(() => setCaptionCopied(false), 2000); }).catch(() => {})}>
+                {captionCopied ? <IcoCheck /> : <IcoCopy />}
+              </button>
+              {typeof navigator !== "undefined" && navigator.share && (
+                <button title="Share" style={iconBtn({ background:"#7c3aed", color:"white" })}
+                  onClick={() => navigator.share({ text: caption }).catch(() => {})}>
+                  <IcoShare />
+                </button>
+              )}
+            </div>
+          </div>
+          <div style={{ fontSize:11, color:"#cbd5e1", lineHeight:1.65, whiteSpace:"pre-wrap", fontFamily:"monospace" }}>{caption}</div>
         </div>
-        <div style={{ display:"flex", gap:8 }}>
-          {imgUrl
-            ? <a href={imgUrl} download="aidla-battle.png" style={{ flex:1, padding:"11px", background:"#6366f1", color:"white", borderRadius:10, fontWeight:700, fontSize:13, textDecoration:"none", textAlign:"center" }}>Download</a>
-            : <div style={{ flex:1, padding:"11px", background:"#e2e8f0", color:"#94a3b8", borderRadius:10, fontSize:13, textAlign:"center" }}>Generating...</div>}
-          <button style={{ flex:1, padding:"11px", background: captionCopied ? "#16a34a" : "#059669", color:"white", border:"none", borderRadius:10, fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit" }}
-            onClick={() => navigator.clipboard.writeText(caption).then(() => { setCaptionCopied(true); setTimeout(() => setCaptionCopied(false), 2000); }).catch(() => {})}>
-            {captionCopied ? "✓ Copied!" : "Copy"}
-          </button>
-        </div>
+
       </div>
     </div>
   );

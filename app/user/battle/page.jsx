@@ -1437,7 +1437,7 @@ export default function BattlePage() {
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
       <div style={S.header}>
-        <button style={S.backBtn} onClick={() => { if (["selecting","in_progress","waiting_round","waiting_round2"].includes(view)) { setConfirmForfeit(true); } else { goLobby(); } }}>←</button>
+        <button style={S.backBtn} onClick={() => { if (["selecting","in_progress","waiting_round","waiting_round2"].includes(view)) { setConfirmForfeit(true); } else if (view === "lobby") { window.location.href = "/user"; } else { goLobby(); } }}>←</button>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <span style={{ fontSize:18 }}>⚔️</span>
           <span style={S.headerTitle}>1v1 Battle Arena</span>

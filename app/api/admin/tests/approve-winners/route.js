@@ -10,26 +10,59 @@ const SITE_URL     = process.env.NEXT_PUBLIC_SITE_URL || "https://aidla.online";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
+function wrapEmail(content, title, subtitle) {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f8fafc;margin:0;padding:0;}
+  .wrap{max-width:560px;margin:30px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,0.08);}
+  .header{background:linear-gradient(135deg,#1e3a8a,#3b82f6);padding:28px 32px;text-align:center;}
+  .header h1{color:#fff;margin:0;font-size:26px;letter-spacing:-0.5px;}
+  .header p{color:rgba(255,255,255,0.8);margin:6px 0 0;font-size:14px;}
+  .body{padding:28px 32px;color:#0f172a;line-height:1.7;}
+  .btn{display:inline-block;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff!important;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:700;font-size:15px;margin:18px 0;}
+  .info-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin:16px 0;font-size:14px;}
+  .info-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9;}
+  .info-row:last-child{border-bottom:none;}
+  .footer{background:#f8fafc;padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0;}
+  .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+  .badge-yellow{background:#fef3c7;color:#92400e;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>${title}</h1>
+    <p>${subtitle}</p>
+  </div>
+  <div class="body">${content}</div>
+  <div class="footer">
+    © 2026 AIDLA · <a href="https://aidla.online" style="color:#3b82f6">aidla.online</a><br>
+    You received this because you have an AIDLA account.
+  </div>
+</div>
+</body>
+</html>`;
+}
+
 function winnerHtml(testTitle, rankNo, prizeText) {
   const medal = rankNo === 1 ? "🥇 1st Place" : rankNo === 2 ? "🥈 2nd Place" : rankNo === 3 ? "🥉 3rd Place" : `#${rankNo}`;
-  return `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;background:#0f172a;color:#e2e8f0;padding:32px;border-radius:16px;">
-    <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:56px;margin-bottom:8px;">🏆</div>
-      <h1 style="font-size:1.8rem;font-weight:900;color:#fbbf24;margin:0;">Congratulations!</h1>
-      <p style="color:#94a3b8;margin:8px 0 0;">You are a winner!</p>
+  const content = `
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:56px;">🏆</div>
+      <h2 style="color:#d97706;margin:8px 0;">Congratulations!</h2>
+      <p style="color:#475569;margin:0;">You are a winner!</p>
     </div>
-    <h2 style="color:#60a5fa;text-align:center;margin:0 0 20px;">${testTitle}</h2>
-    <div style="background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:12px;padding:20px;margin:16px 0;text-align:center;">
-      <div style="color:#fbbf24;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:8px;">YOUR RANK</div>
-      <div style="font-size:2rem;font-weight:900;color:#fbbf24;">${medal}</div>
+    <h3 style="color:#1e40af;text-align:center;margin:0 0 16px;">${testTitle}</h3>
+    <div class="info-box">
+      <div class="info-row"><span>Your Rank</span><span><span class="badge badge-yellow">${medal}</span></span></div>
+      ${prizeText ? `<div class="info-row"><span>Prize</span><span><strong>${prizeText}</strong></span></div>` : ""}
     </div>
-    ${prizeText ? `<div style="background:#1e293b;border-radius:10px;padding:16px;margin:16px 0;text-align:center;"><div style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:6px;">YOUR PRIZE</div><div style="color:#f1f5f9;font-size:1.2rem;font-weight:700;">${prizeText}</div></div>` : ""}
-    <p style="color:#94a3b8;text-align:center;font-size:0.85rem;">Please contact AIDLA admin to claim your prize.</p>
-    <div style="text-align:center;margin-top:20px;">
-      <a href="${SITE_URL}/user/test" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">View Results →</a>
-    </div>
-    <p style="text-align:center;color:#475569;font-size:11px;margin-top:24px;">AIDLA · Pakistan's Premier Learning Platform</p>
-  </div>`;
+    <p style="color:#475569;text-align:center;font-size:14px;">Please contact AIDLA admin to claim your prize.</p>
+    <div style="text-align:center;"><a href="${SITE_URL}/user/test" class="btn">View Results →</a></div>`;
+
+  return wrapEmail(content, "🏆 AIDLA Test", "Winner announcement");
 }
 
 export async function POST(request) {

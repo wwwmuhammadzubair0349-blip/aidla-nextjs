@@ -22,6 +22,21 @@ function statusColor(s) {
   return                      { bg: "rgba(220,38,38,0.1)",  color: "#dc2626" };
 }
 
+function getDateLabel(ts) {
+  if (!ts) return "Unknown";
+  const d = new Date(ts);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+  const logDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  if (logDay.getTime() === today.getTime()) return "Today";
+  if (logDay.getTime() === yesterday.getTime()) return "Yesterday";
+  const daysDiff = Math.floor((today - logDay) / (1000 * 60 * 60 * 24));
+  if (daysDiff < 7) return d.toLocaleDateString("en-GB", { weekday: "long" });
+  if (daysDiff < 30) return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 export default function EmailBlastPage() {
   const [tab, setTab] = useState("compose");
 
@@ -54,15 +69,61 @@ export default function EmailBlastPage() {
       .then(({ data }) => { setUsers(data || []); setUsersLoading(false); });
   }, []);
 
-  /* ── fetch logs ── */
+  /* ── fetch logs — all sources ── */
   const fetchLogs = useCallback(async () => {
     setLogsLoading(true);
-    const { data } = await supabase
-      .from("email_logs")
-      .select("*")
-      .order("sent_at", { ascending: false })
-      .limit(100);
-    setLogs(data || []);
+
+    const [{ data: blastLogs }, { data: shopLogs }, { data: faqLogs }] = await Promise.all([
+      supabase.from("email_logs").select("*").order("sent_at", { ascending: false }).limit(300),
+      supabase.from("shop_email_log").select("*").order("sent_at", { ascending: false }).limit(300),
+      supabase.from("user_questions").select("id,email,question,answer,notified_at").not("notified_at", "is", null).order("notified_at", { ascending: false }).limit(100),
+    ]);
+
+    const SHOP_LABEL = {
+      order_submitted:   "🛍️ Order Submitted",
+      order_approved:    "✅ Order Approved",
+      order_rejected:    "❌ Order Rejected",
+      cashback_approved: "🎁 Cashback Approved",
+      cashback_rejected: "Cashback Rejected",
+      new_product:       "🆕 New Product",
+      cart_reminder:     "🛒 Cart Reminder",
+    };
+
+    const normalized = [
+      ...(blastLogs || []).map(l => ({ ...l, _source: "blast" })),
+      ...(shopLogs  || []).map(l => ({
+        id:              `shop-${l.id}`,
+        sent_at:         l.sent_at,
+        subject:         SHOP_LABEL[l.email_type] || l.email_type,
+        from_email:      "noreply@aidla.online",
+        recipient_count: 1,
+        sent_count:      1,
+        failed_count:    0,
+        failed_emails:   [],
+        status:          "sent",
+        recipients:      [l.user_email],
+        html_body:       null,
+        _source:         "shop",
+        _ref:            l.ref_id,
+      })),
+      ...(faqLogs || []).map(l => ({
+        id:              `faq-${l.id}`,
+        sent_at:         l.notified_at,
+        subject:         `💬 FAQ Answer: ${(l.question || "").slice(0, 60)}${(l.question || "").length > 60 ? "…" : ""}`,
+        from_email:      "noreply@aidla.online",
+        recipient_count: 1,
+        sent_count:      1,
+        failed_count:    0,
+        failed_emails:   [],
+        status:          "sent",
+        recipients:      [l.email],
+        html_body:       l.answer ? `<p><strong>Q:</strong> ${l.question}</p><p><strong>A:</strong> ${l.answer}</p>` : null,
+        _source:         "faq",
+        _ref:            null,
+      })),
+    ].sort((a, b) => new Date(b.sent_at) - new Date(a.sent_at));
+
+    setLogs(normalized);
     setLogsLoading(false);
   }, []);
 
@@ -157,7 +218,7 @@ export default function EmailBlastPage() {
               color: tab === t ? "#fff" : "#64748b",
               borderColor: tab === t ? "#1e3a8a" : "#e2e8f0",
             }}>
-              {t === "compose" ? "✉ Compose" : "📋 Sent Logs"}
+              {t === "compose" ? "✉ Compose" : "📋 Email Logs"}
             </button>
           ))}
         </div>
@@ -339,90 +400,114 @@ export default function EmailBlastPage() {
             <p style={{ color: "#94a3b8", textAlign: "center", padding: 40 }}>Loading…</p>
           ) : logs.length === 0 ? (
             <p style={{ color: "#94a3b8", textAlign: "center", padding: 40 }}>No emails sent yet.</p>
-          ) : (
-            <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid #e2e8f0" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead>
-                  <tr style={{ background: "#f8fafc" }}>
-                    <th style={th}>Subject</th>
-                    <th style={th}>From</th>
-                    <th style={th}>Recipients</th>
-                    <th style={th}>Sent</th>
-                    <th style={th}>Failed</th>
-                    <th style={th}>Status</th>
-                    <th style={th}>Date</th>
-                    <th style={th}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {logs.map(log => {
-                    const sc = statusColor(log.status);
-                    const isExpanded = expandedLog === log.id;
-                    return (
-                      <>
-                        <tr key={log.id} style={{ background: "#fff" }}>
-                          <td style={{ ...td, maxWidth: 200, fontWeight: 600 }}>
-                            <span style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                              {log.subject}
-                            </span>
-                          </td>
-                          <td style={{ ...td, fontSize: "0.76rem", color: "#64748b" }}>{log.from_email}</td>
-                          <td style={{ ...td, textAlign: "center", fontWeight: 700 }}>{log.recipient_count}</td>
-                          <td style={{ ...td, textAlign: "center", color: "#047857", fontWeight: 700 }}>{log.sent_count ?? "—"}</td>
-                          <td style={{ ...td, textAlign: "center", color: log.failed_count > 0 ? "#dc2626" : "#94a3b8", fontWeight: 700 }}>
-                            {log.failed_count ?? 0}
-                          </td>
-                          <td style={td}>
-                            <span style={{ padding: "3px 10px", borderRadius: 20, fontSize: "0.72rem", fontWeight: 700, background: sc.bg, color: sc.color }}>
-                              {log.status}
-                            </span>
-                          </td>
-                          <td style={{ ...td, fontSize: "0.76rem", color: "#94a3b8", whiteSpace: "nowrap" }}>{fmtDate(log.sent_at)}</td>
-                          <td style={td}>
-                            <button
-                              onClick={() => setExpandedLog(isExpanded ? null : log.id)}
-                              style={{ fontSize: "0.75rem", color: "#1e3a8a", fontWeight: 700, background: "none", border: "none", cursor: "pointer" }}
-                            >
-                              {isExpanded ? "▲ Hide" : "▼ Details"}
-                            </button>
-                          </td>
-                        </tr>
-                        {isExpanded && (
-                          <tr key={`${log.id}-exp`} style={{ background: "#f8fafc" }}>
-                            <td colSpan={8} style={{ padding: "14px 18px", borderBottom: "1px solid #f1f5f9" }}>
-                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                <div>
-                                  <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b", marginBottom: 6, textTransform: "uppercase" }}>Recipients</div>
-                                  <div style={{ maxHeight: 120, overflowY: "auto", fontSize: "0.78rem", color: "#334155", lineHeight: 1.7 }}>
-                                    {(log.recipients || []).join(", ") || "—"}
-                                  </div>
-                                  {log.failed_emails?.length > 0 && (
-                                    <div style={{ marginTop: 8 }}>
-                                      <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#dc2626", marginBottom: 4, textTransform: "uppercase" }}>Failed</div>
-                                      <div style={{ fontSize: "0.78rem", color: "#dc2626" }}>
-                                        {log.failed_emails.map(f => f.email || f).join(", ")}
+          ) : (() => {
+            const groups = {};
+            const order = [];
+            for (const log of logs) {
+              const label = getDateLabel(log.sent_at);
+              if (!groups[label]) { groups[label] = []; order.push(label); }
+              groups[label].push(log);
+            }
+            return order.map(label => (
+              <div key={label} style={{ marginBottom: 28 }}>
+                <div style={{ fontSize: "0.73rem", fontWeight: 800, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em", padding: "6px 0 10px", borderBottom: "2px solid #e2e8f0", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                  <span>{label}</span>
+                  <span style={{ fontWeight: 600, color: "#94a3b8" }}>· {groups[label].length} email{groups[label].length !== 1 ? "s" : ""}</span>
+                </div>
+                <div style={{ overflowX: "auto", borderRadius: 12, border: "1px solid #e2e8f0" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: "#f8fafc" }}>
+                        <th style={th}>Subject</th>
+                        <th style={th}>Source</th>
+                        <th style={th}>Recipients</th>
+                        <th style={th}>Sent</th>
+                        <th style={th}>Failed</th>
+                        <th style={th}>Status</th>
+                        <th style={th}>Time</th>
+                        <th style={th}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {groups[label].map(log => {
+                        const sc = statusColor(log.status);
+                        const isExpanded = expandedLog === log.id;
+                        return (
+                          <>
+                            <tr key={log.id} style={{ background: "#fff" }}>
+                              <td style={{ ...td, maxWidth: 220, fontWeight: 600 }}>
+                                <span style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                  {log.subject}
+                                </span>
+                                {log._ref && <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: 2 }}>Ref: {log._ref}</div>}
+                              </td>
+                              <td style={td}>
+                                <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 12, fontSize: "0.7rem", fontWeight: 700,
+                                  background: log._source === "shop" ? "rgba(147,51,234,0.08)" : log._source === "faq" ? "rgba(245,158,11,0.1)" : "rgba(30,58,138,0.08)",
+                                  color: log._source === "shop" ? "#7c3aed" : log._source === "faq" ? "#b45309" : "#1e40af" }}>
+                                  {log._source === "shop" ? "Shop" : log._source === "faq" ? "FAQ" : "Blast/Test"}
+                                </span>
+                              </td>
+                              <td style={{ ...td, textAlign: "center", fontWeight: 700 }}>{log.recipient_count}</td>
+                              <td style={{ ...td, textAlign: "center", color: "#047857", fontWeight: 700 }}>{log.sent_count ?? "—"}</td>
+                              <td style={{ ...td, textAlign: "center", color: log.failed_count > 0 ? "#dc2626" : "#94a3b8", fontWeight: 700 }}>
+                                {log.failed_count ?? 0}
+                              </td>
+                              <td style={td}>
+                                <span style={{ padding: "3px 10px", borderRadius: 20, fontSize: "0.72rem", fontWeight: 700, background: sc.bg, color: sc.color }}>
+                                  {log.status}
+                                </span>
+                              </td>
+                              <td style={{ ...td, fontSize: "0.76rem", color: "#94a3b8", whiteSpace: "nowrap" }}>
+                                {new Date(log.sent_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}
+                              </td>
+                              <td style={td}>
+                                <button
+                                  onClick={() => setExpandedLog(isExpanded ? null : log.id)}
+                                  style={{ fontSize: "0.75rem", color: "#1e3a8a", fontWeight: 700, background: "none", border: "none", cursor: "pointer" }}
+                                >
+                                  {isExpanded ? "▲ Hide" : "▼ Details"}
+                                </button>
+                              </td>
+                            </tr>
+                            {isExpanded && (
+                              <tr key={`${log.id}-exp`} style={{ background: "#f8fafc" }}>
+                                <td colSpan={8} style={{ padding: "14px 18px", borderBottom: "1px solid #f1f5f9" }}>
+                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                    <div>
+                                      <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b", marginBottom: 6, textTransform: "uppercase" }}>Recipients</div>
+                                      <div style={{ maxHeight: 120, overflowY: "auto", fontSize: "0.78rem", color: "#334155", lineHeight: 1.7 }}>
+                                        {(log.recipients || []).join(", ") || "—"}
                                       </div>
+                                      {log.failed_emails?.length > 0 && (
+                                        <div style={{ marginTop: 8 }}>
+                                          <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#dc2626", marginBottom: 4, textTransform: "uppercase" }}>Failed</div>
+                                          <div style={{ fontSize: "0.78rem", color: "#dc2626" }}>
+                                            {log.failed_emails.map(f => f.email || f).join(", ")}
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b", marginBottom: 6, textTransform: "uppercase" }}>Email Preview</div>
-                                  <div
-                                    style={{ border: "1px solid #e2e8f0", borderRadius: 8, padding: 12, background: "#fff", fontSize: "0.82rem", maxHeight: 200, overflowY: "auto" }}
-                                    dangerouslySetInnerHTML={{ __html: log.html_body || "" }}
-                                  />
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+                                    <div>
+                                      <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b", marginBottom: 6, textTransform: "uppercase" }}>Email Preview</div>
+                                      <div
+                                        style={{ border: "1px solid #e2e8f0", borderRadius: 8, padding: 12, background: "#fff", fontSize: "0.82rem", maxHeight: 200, overflowY: "auto" }}
+                                        dangerouslySetInnerHTML={{ __html: log.html_body || "" }}
+                                      />
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ));
+          })()}
         </div>
       )}
     </div>

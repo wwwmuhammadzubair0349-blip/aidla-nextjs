@@ -13,74 +13,99 @@ const TEST_URL     = `${SITE_URL}/user/test`;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-function fmtUAE(iso) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Dubai" }) + " UAE";
+// ── Shared email wrapper (same style as shop-notify) ───────────────────────────
+
+function wrapEmail(content, title, subtitle) {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f8fafc;margin:0;padding:0;}
+  .wrap{max-width:560px;margin:30px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,0.08);}
+  .header{background:linear-gradient(135deg,#1e3a8a,#3b82f6);padding:28px 32px;text-align:center;}
+  .header h1{color:#fff;margin:0;font-size:26px;letter-spacing:-0.5px;}
+  .header p{color:rgba(255,255,255,0.8);margin:6px 0 0;font-size:14px;}
+  .body{padding:28px 32px;color:#0f172a;line-height:1.7;}
+  .btn{display:inline-block;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff!important;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:700;font-size:15px;margin:18px 0;}
+  .info-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin:16px 0;font-size:14px;}
+  .info-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9;}
+  .info-row:last-child{border-bottom:none;}
+  .footer{background:#f8fafc;padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0;}
+  .badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+  .badge-green{background:#dcfce7;color:#166534;}
+  .badge-yellow{background:#fef3c7;color:#92400e;}
+  .badge-blue{background:#dbeafe;color:#1e40af;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>${title}</h1>
+    <p>${subtitle}</p>
+  </div>
+  <div class="body">${content}</div>
+  <div class="footer">
+    © 2026 AIDLA · <a href="https://aidla.online" style="color:#3b82f6">aidla.online</a><br>
+    You received this because you have an AIDLA account.
+  </div>
+</div>
+</body>
+</html>`;
 }
 
 // ── Templates ──────────────────────────────────────────────────────────────────
 
 function announcementHtml(test, prizes, sponsors) {
+  const fmtUAE = iso => new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Dubai" }) + " UAE";
   const prizeRows = prizes.map(p => {
     const medal = p.rank_no === 1 ? "🥇" : p.rank_no === 2 ? "🥈" : p.rank_no === 3 ? "🥉" : `#${p.rank_no}`;
     const label = p.prize_text || (p.prize_type === "coins" ? `${p.coins_amount} coins` : "Prize");
-    return `<tr><td style="padding:6px 12px;color:#94a3b8;">${medal} Rank ${p.rank_no}</td><td style="padding:6px 12px;color:#f1f5f9;font-weight:700;">${label}</td></tr>`;
+    return `<div class="info-row"><span>${medal} Rank ${p.rank_no}</span><span><strong>${label}</strong></span></div>`;
   }).join("");
   const sponsorNames = sponsors.map(s => s.name).join(", ");
 
-  return `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;background:#0f172a;color:#e2e8f0;padding:32px;border-radius:16px;">
-    <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:48px;margin-bottom:8px;">⚡</div>
-      <h1 style="font-size:1.6rem;font-weight:900;color:#fff;margin:0;">New Test Available!</h1>
+  const content = `
+    <h2 style="margin:0 0 8px;color:#0f172a;">New Test Available! ⚡</h2>
+    <h3 style="color:#1e40af;margin:0 0 16px;">${test.title}</h3>
+    ${test.description ? `<p style="color:#475569;margin:0 0 16px;">${test.description}</p>` : ""}
+    <div class="info-box">
+      <div class="info-row"><span>📅 Start Time</span><span><strong>${fmtUAE(test.test_start_at)}</strong></span></div>
+      <div class="info-row"><span>📝 Registration</span><span>Open until test starts</span></div>
     </div>
-    <h2 style="color:#60a5fa;margin:0 0 8px;">${test.title}</h2>
-    ${test.description ? `<p style="color:#94a3b8;margin:0 0 16px;">${test.description}</p>` : ""}
-    <div style="background:#1e293b;border-radius:10px;padding:16px;margin:16px 0;">
-      <div style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:6px;">START TIME</div>
-      <div style="color:#f1f5f9;font-size:1.1rem;font-weight:700;">${fmtUAE(test.test_start_at)}</div>
-      <div style="color:#64748b;font-size:11px;margin-top:4px;">Registration open until test starts</div>
-    </div>
-    ${prizes.length > 0 ? `<div style="background:#1e293b;border-radius:10px;padding:16px;margin:16px 0;"><div style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:10px;">🏆 PRIZES</div><table style="width:100%;border-collapse:collapse;">${prizeRows}</table></div>` : ""}
-    ${sponsorNames ? `<div style="color:#64748b;font-size:12px;margin:12px 0;">Sponsored by: <strong style="color:#94a3b8;">${sponsorNames}</strong></div>` : ""}
-    <div style="text-align:center;margin-top:28px;">
-      <a href="${TEST_URL}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:1rem;">Register Now →</a>
-    </div>
-    <p style="text-align:center;color:#475569;font-size:11px;margin-top:24px;">AIDLA · Pakistan's Premier Learning Platform</p>
-  </div>`;
+    ${prizes.length > 0 ? `<div class="info-box"><div style="font-weight:700;margin-bottom:10px;">🏆 Prizes</div>${prizeRows}</div>` : ""}
+    ${sponsorNames ? `<p style="color:#64748b;font-size:13px;">Sponsored by: <strong>${sponsorNames}</strong></p>` : ""}
+    <div style="text-align:center;"><a href="${TEST_URL}" class="btn">Register Now →</a></div>`;
+
+  return wrapEmail(content, "⚡ AIDLA Test", "New test just announced!");
 }
 
 function startedHtml(test) {
-  return `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;background:#0f172a;color:#e2e8f0;padding:32px;border-radius:16px;">
-    <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:48px;margin-bottom:8px;">🚀</div>
-      <h1 style="font-size:1.6rem;font-weight:900;color:#4ade80;margin:0;">Your Test Has Started!</h1>
+  const content = `
+    <div style="text-align:center;margin-bottom:20px;"><div style="font-size:48px;">🚀</div></div>
+    <h2 style="margin:0 0 8px;color:#166534;text-align:center;">Test Has Started!</h2>
+    <h3 style="color:#1e40af;text-align:center;margin:0 0 16px;">${test.title}</h3>
+    <p style="color:#475569;text-align:center;">The test is live now. Join immediately — every second counts!</p>
+    <div class="info-box">
+      <div class="info-row"><span>Status</span><span><span class="badge badge-green">🟢 Live Now</span></span></div>
     </div>
-    <h2 style="color:#60a5fa;text-align:center;margin:0 0 16px;">${test.title}</h2>
-    <p style="color:#94a3b8;text-align:center;">The test is now live. Click below to enter immediately.</p>
-    <div style="text-align:center;margin-top:28px;">
-      <a href="${TEST_URL}" style="display:inline-block;padding:14px 36px;background:linear-gradient(135deg,#15803d,#4ade80);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;font-size:1rem;">Enter Test Now →</a>
-    </div>
-    <p style="text-align:center;color:#475569;font-size:11px;margin-top:24px;">AIDLA · Pakistan's Premier Learning Platform</p>
-  </div>`;
+    <div style="text-align:center;"><a href="${TEST_URL}" class="btn">Enter Test Now →</a></div>`;
+
+  return wrapEmail(content, "🚀 Test is Live!", "Your test has started");
 }
 
 function qualifiedHtml(test, userName) {
-  return `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;background:#0f172a;color:#e2e8f0;padding:32px;border-radius:16px;">
-    <div style="text-align:center;margin-bottom:28px;">
-      <div style="font-size:48px;margin-bottom:8px;">🎓</div>
-      <h1 style="font-size:1.6rem;font-weight:900;color:#4ade80;margin:0;">You Qualified!</h1>
+  const content = `
+    <div style="text-align:center;margin-bottom:20px;"><div style="font-size:48px;">🎓</div></div>
+    <h2 style="margin:0 0 8px;color:#166534;text-align:center;">You Qualified!</h2>
+    ${userName ? `<p style="color:#475569;text-align:center;">Congratulations, <strong>${userName}</strong>!</p>` : ""}
+    <h3 style="color:#1e40af;text-align:center;margin:0 0 16px;">${test.title}</h3>
+    <div class="info-box">
+      <div class="info-row"><span>Result</span><span><span class="badge badge-green">✅ Qualified</span></span></div>
+      <div class="info-row"><span>Next Step</span><span>Awaiting admin approval for prizes</span></div>
     </div>
-    ${userName ? `<p style="color:#94a3b8;text-align:center;margin-bottom:8px;">Congratulations, <strong style="color:#f1f5f9;">${userName}</strong>!</p>` : ""}
-    <h2 style="color:#60a5fa;text-align:center;margin:0 0 16px;">${test.title}</h2>
-    <div style="background:#1e293b;border-radius:10px;padding:16px;margin:16px 0;text-align:center;">
-      <div style="color:#4ade80;font-weight:700;margin-bottom:6px;">✅ Qualification Confirmed</div>
-      <p style="color:#94a3b8;font-size:0.85rem;margin:0;">You passed the test. Awaiting admin approval for final results and prizes.</p>
-    </div>
-    <div style="text-align:center;margin-top:20px;">
-      <a href="${TEST_URL}" style="display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Check Results →</a>
-    </div>
-    <p style="text-align:center;color:#475569;font-size:11px;margin-top:24px;">AIDLA · Pakistan's Premier Learning Platform</p>
-  </div>`;
+    <div style="text-align:center;"><a href="${TEST_URL}" class="btn">Check Results →</a></div>`;
+
+  return wrapEmail(content, "🎓 AIDLA Test", "Qualification confirmed!");
 }
 
 // ── Helper ─────────────────────────────────────────────────────────────────────

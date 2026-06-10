@@ -14,19 +14,55 @@ const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY  || "";
 const CRON_SECRET  = process.env.CRON_SECRET || "";
 const SITE_URL     = process.env.NEXT_PUBLIC_SITE_URL || "https://aidla.online";
 
+function wrapEmail(content, title, subtitle) {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f8fafc;margin:0;padding:0;}
+  .wrap{max-width:560px;margin:30px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(15,23,42,0.08);}
+  .header{background:linear-gradient(135deg,#1e3a8a,#3b82f6);padding:28px 32px;text-align:center;}
+  .header h1{color:#fff;margin:0;font-size:26px;letter-spacing:-0.5px;}
+  .header p{color:rgba(255,255,255,0.8);margin:6px 0 0;font-size:14px;}
+  .body{padding:28px 32px;color:#0f172a;line-height:1.7;}
+  .btn{display:inline-block;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff!important;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:700;font-size:15px;margin:18px 0;}
+  .info-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px 18px;margin:16px 0;font-size:14px;}
+  .info-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f1f5f9;}
+  .info-row:last-child{border-bottom:none;}
+  .footer{background:#f8fafc;padding:16px 32px;text-align:center;font-size:12px;color:#94a3b8;border-top:1px solid #e2e8f0;}
+  .badge-yellow{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#fef3c7;color:#92400e;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h1>${title}</h1>
+    <p>${subtitle}</p>
+  </div>
+  <div class="body">${content}</div>
+  <div class="footer">
+    © 2026 AIDLA · <a href="https://aidla.online" style="color:#3b82f6">aidla.online</a><br>
+    You received this because you have an AIDLA account.
+  </div>
+</div>
+</body>
+</html>`;
+}
+
 function reminderHtml(test) {
   const fmtUAE = iso => new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Dubai" }) + " UAE";
-  return `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;background:#0f172a;color:#e2e8f0;padding:32px;border-radius:16px;">
-    <div style="text-align:center;">
-      <div style="font-size:48px;margin-bottom:8px;">⏰</div>
-      <h1 style="font-size:1.6rem;font-weight:900;color:#fff;margin:0 0 8px;">Test Starts in 30 Minutes!</h1>
-      <h2 style="color:#60a5fa;margin:0 0 16px;">${test.title}</h2>
-      <p style="color:#94a3b8;">Starting: <strong style="color:#f1f5f9;">${fmtUAE(test.test_start_at)}</strong></p>
-      <p style="color:#94a3b8;font-size:0.85rem;">Don't miss it — register now if you haven't already.</p>
-      <a href="${SITE_URL}/user/test" style="display:inline-block;margin-top:20px;padding:14px 36px;background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;text-decoration:none;border-radius:10px;font-weight:700;">Register &amp; Join →</a>
+  const content = `
+    <div style="text-align:center;margin-bottom:20px;"><div style="font-size:48px;">⏰</div></div>
+    <h2 style="color:#92400e;text-align:center;margin:0 0 8px;">Test Starts in 30 Minutes!</h2>
+    <h3 style="color:#1e40af;text-align:center;margin:0 0 16px;">${test.title}</h3>
+    <div class="info-box">
+      <div class="info-row"><span>⏱️ Starting</span><span><strong>${fmtUAE(test.test_start_at)}</strong></span></div>
+      <div class="info-row"><span>Status</span><span><span class="badge-yellow">Starting Soon</span></span></div>
     </div>
-    <p style="text-align:center;color:#475569;font-size:11px;margin-top:24px;">AIDLA · Pakistan's Premier Learning Platform</p>
-  </div>`;
+    <p style="color:#475569;text-align:center;font-size:14px;">Don't miss it — make sure you're registered!</p>
+    <div style="text-align:center;"><a href="${SITE_URL}/user/test" class="btn">Register &amp; Join →</a></div>`;
+
+  return wrapEmail(content, "⏰ AIDLA Reminder", "Your test starts soon");
 }
 
 export async function GET(request) {

@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import FloatingAssistant from "@/components/FloatingAssistant";
 
-const FULLSCREEN_ROUTES = ["/user/learning", "/user/aidla-ai"];
+const FULLSCREEN_ROUTES = ["/user/learning", "/user/aidla-ai", "/user/battle"];
 
 const TABS = [
   { to: "/user",          label: "Home",     icon: "⚡" },
@@ -49,7 +49,7 @@ const CSS = `
   flex-direction: column;
 }
 .ul-wrap-fs .ul-header   { flex-shrink: 0; }
-.ul-wrap-fs .ul-main-fs  { flex: 1; min-height: 0; overflow: hidden; }
+.ul-wrap-fs .ul-main-fs  { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
 
 /* ── Header ── */
 .ul-header {

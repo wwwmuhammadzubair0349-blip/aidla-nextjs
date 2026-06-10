@@ -124,7 +124,6 @@ export default function BattlePage() {
   const roundTotalsRef        = useRef({ 1:0, 2:0 });
   const opponentFetchedRef    = useRef(false);
 
-  const wrapRef               = useRef(null);
 
   // Voice + emoji refs
   const pcRef                 = useRef(null);
@@ -170,17 +169,6 @@ export default function BattlePage() {
     };
   }, []);
 
-  useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const fit = () => {
-      const top = el.getBoundingClientRect().top;
-      el.style.height = `${window.innerHeight - top}px`;
-    };
-    fit();
-    window.addEventListener("resize", fit);
-    return () => window.removeEventListener("resize", fit);
-  }, []);
 
   useEffect(() => {
     init();
@@ -1378,7 +1366,7 @@ export default function BattlePage() {
   );
 
   return (
-    <div ref={wrapRef} style={S.wrap}>
+    <div style={S.wrap}>
       <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       <style>{`
         *{box-sizing:border-box}
@@ -2386,7 +2374,7 @@ function BattleShareCard({ profile, result, onClose }) {
 
 // ── STYLES ─────────────────────────────────────────────────────────
 const S = {
-  wrap:       { fontFamily:"'DM Sans',sans-serif", maxWidth:480, margin:"0 auto", height:"100dvh", overflow:"hidden", background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column" },
+  wrap:       { fontFamily:"'DM Sans',sans-serif", maxWidth:480, margin:"0 auto", flex:1, minHeight:0, overflow:"hidden", background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column" },
   header:     { display:"flex", alignItems:"center", justifyContent:"space-between", padding:"8px 14px", background:"linear-gradient(135deg,#1e1b4b,#312e81)", flexShrink:0, boxShadow:"0 2px 12px rgba(30,27,75,0.35)" },
   backBtn:    { background:"rgba(255,255,255,0.13)", border:"none", color:"white", fontWeight:800, fontSize:16, cursor:"pointer", width:32, height:32, borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 },
   headerTitle:{ fontWeight:800, fontSize:14, color:"white", letterSpacing:"-0.01em" },

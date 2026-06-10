@@ -1210,11 +1210,13 @@ export default function BattlePage() {
   function handleResult(r) {
     clearAllTimers();
     cleanupVoice();
-    const iWon    = r.winner_id === (myRole === "player1" ? r.player1_id : r.player2_id);
-    const myTotal = myRole === "player1"
+    const role    = myRoleRef.current || myRole;
+    const iAmP1   = role === "player1";
+    const iWon    = r.winner_id === (iAmP1 ? r.player1_id : r.player2_id);
+    const myTotal = iAmP1
       ? (r.player1_round1_score||0) + (r.player1_round2_score||0)
       : (r.player2_round1_score||0) + (r.player2_round2_score||0);
-    const oppTotal = myRole === "player1"
+    const oppTotal = iAmP1
       ? (r.player2_round1_score||0) + (r.player2_round2_score||0)
       : (r.player1_round1_score||0) + (r.player1_round2_score||0);
     const modeObj   = MODES.find(m => m.id === r.mode);
@@ -1225,7 +1227,7 @@ export default function BattlePage() {
       tie:        r.is_tie,
       myScore:    myTotal,
       oppScore:   oppTotal,
-      oppName:    myRole === "player1" ? (r.bot_name || r.player2_name) : r.player1_name,
+      oppName:    iAmP1 ? (r.bot_name || r.player2_name) : r.player1_name,
       oppAvatar:  opponentProfile?.avatar_url || null,
       oppIsBot:   r.is_bot,
       coinsChange:r.is_tie ? -(modeObj.tax / 2) : iWon ? modeObj.prize : -modeObj.stake,
@@ -1233,13 +1235,13 @@ export default function BattlePage() {
       mode:       r.mode,
       isBot:      r.is_bot,
       round1: {
-        my:    myRole === "player1" ? (r.player1_round1_score||0) : (r.player2_round1_score||0),
-        opp:   myRole === "player1" ? (r.player2_round1_score||0) : (r.player1_round1_score||0),
+        my:    iAmP1 ? (r.player1_round1_score||0) : (r.player2_round1_score||0),
+        opp:   iAmP1 ? (r.player2_round1_score||0) : (r.player1_round1_score||0),
         total: r1Total,
       },
       round2: {
-        my:    myRole === "player1" ? (r.player1_round2_score||0) : (r.player2_round2_score||0),
-        opp:   myRole === "player1" ? (r.player2_round2_score||0) : (r.player1_round2_score||0),
+        my:    iAmP1 ? (r.player1_round2_score||0) : (r.player2_round2_score||0),
+        opp:   iAmP1 ? (r.player2_round2_score||0) : (r.player1_round2_score||0),
         total: r2Total,
       },
       totalQuestions: r1Total + r2Total,

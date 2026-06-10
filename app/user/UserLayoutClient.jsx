@@ -49,7 +49,7 @@ const CSS = `
   flex-direction: column;
 }
 .ul-wrap-fs .ul-header   { flex-shrink: 0; }
-.ul-wrap-fs .ul-main-fs  { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.ul-wrap-fs .ul-main-fs  { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding-top: 6px; }
 
 /* ── Header ── */
 .ul-header {

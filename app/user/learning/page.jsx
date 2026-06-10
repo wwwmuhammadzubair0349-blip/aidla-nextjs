@@ -732,7 +732,7 @@ const MODELS = [
     model: 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning',
     temperature: 0.7,
     max_tokens: 3000,
-    systemNote: 'You are a powerful multimodal AI that can understand both text and images. Provide detailed analysis of any images shared. Think visually and analytically.',
+    systemNote: 'You are a powerful multimodal AI that can understand both text and images. Provide detailed analysis of any images shared. Think visually and analytically. CRITICAL: Always reply in English. If the user writes in another language, still reply in English unless they explicitly ask otherwise.',
   },
 ];
 

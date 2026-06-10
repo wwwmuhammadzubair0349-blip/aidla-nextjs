@@ -383,20 +383,18 @@ export default function UserDashboard() {
 
       {/* Career */}
       <Section label="💼 Career Toolkit" labelClass="label-purple">
-        <RegCard title="CV Maker"       subtitle="Build, edit & download your CV"    icon="📝" to="/user/cv-maker"     iconClass="ic-purple" />
-        <RegCard title="Cover Letters"  subtitle="AI-crafted professional letters"   icon="✉️" to="/user/cover-letter" iconClass="ic-purple" />
-        <RegCard title="Battle Arena"   subtitle="Compete in skill-based 1v1 battles" icon="⚔️" to="/user/battle"    iconClass="ic-purple" />
-        <RegCard title="Forum"          subtitle="Discuss, ask & connect with peers" icon="💬" to="/user/forum"        iconClass="ic-purple" />
+        <RegCard title="CV Maker"      subtitle="Build, edit & download your CV"  icon="📝" to="/user/cv-maker"     iconClass="ic-purple" />
+        <RegCard title="Cover Letters" subtitle="AI-crafted professional letters" icon="✉️" to="/user/cover-letter" iconClass="ic-purple" />
       </Section>
 
       {/* Earn & Win */}
       <Section label="🏆 Earn & Win" labelClass="label-amber">
-        <RegCard title="Mining"      subtitle="Mine AIDLA coins passively"       icon="💎" to="/user/mining"       iconClass="ic-amber" />
-        <RegCard title="Lucky Draw"  subtitle="Scheduled draws & big prizes"     icon="🎟️" to="/user/lucky-draw"  iconClass="ic-amber" />
-        <RegCard title="Lucky Wheel" subtitle="Spin the wheel & win rewards"     icon="🎡" to="/user/lucky-wheel" iconClass="ic-amber" />
-        <RegCard title="Shop"        subtitle="Spend AIDLA coins on rewards"     icon="🛍️" to="/user/shop"        iconClass="ic-amber" />
-        <RegCard title="Wallet"      subtitle="Manage your coins & transactions" icon="💳" to="/user/wallet"      iconClass="ic-amber" />
-        <RegCard title="Follow Us"   subtitle="Join our social media channels"   icon="📱" to="/user/social"      iconClass="ic-coral" />
+        <RegCard title="Battle Arena" subtitle="Compete in skill-based 1v1 battles" icon="⚔️" to="/user/battle"      iconClass="ic-amber" />
+        <RegCard title="Mining"       subtitle="Mine AIDLA coins passively"         icon="💎" to="/user/mining"       iconClass="ic-amber" />
+        <RegCard title="Lucky Draw"   subtitle="Scheduled draws & big prizes"       icon="🎟️" to="/user/lucky-draw"  iconClass="ic-amber" />
+        <RegCard title="Lucky Wheel"  subtitle="Spin the wheel & win rewards"       icon="🎡" to="/user/lucky-wheel" iconClass="ic-amber" />
+        <RegCard title="Shop"         subtitle="Spend AIDLA coins on rewards"       icon="🛍️" to="/user/shop"        iconClass="ic-amber" />
+        <RegCard title="Follow Us"    subtitle="Join our social media channels"     icon="📱" to="/user/social"      iconClass="ic-coral" />
       </Section>
 
     </div>

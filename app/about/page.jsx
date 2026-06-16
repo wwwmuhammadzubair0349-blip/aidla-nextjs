@@ -12,27 +12,27 @@ const SITE_URL = SITE.url;
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "About AIDLA | AI Powered Learning Platform in Pakistan",
+  title: "About AIDLA | Global AI Learning Platform for Students & Professionals",
   description:
-    "Discover AIDLA's story and mission: a Pakistan-based AI learning platform helping learners access free courses, AI tools, resources and rewards.",
+    "Discover AIDLA's story and mission: a global AI learning platform giving students, professionals, freshers, and career switchers free access to courses, AI tools, and real rewards.",
   keywords: [
-    "About AIDLA", "Pakistan AI powered learning platform",
-    "global AI learning platform", "AI courses", "career tools",
-    "career switching", "startup advice", "career mentoring", "AIDLA rewards",
+    "About AIDLA", "global AI learning platform", "free online learning",
+    "AI courses", "career tools", "professional development",
+    "career switching", "AIDLA mission", "AIDLA rewards",
   ],
   authors: [{ name: "AIDLA", url: `${SITE_URL}/about` }],
   alternates: { canonical: `${SITE_URL}/about` },
   openGraph: {
-    type: "website", siteName: "AIDLA", locale: "en_PK",
+    type: "website", siteName: "AIDLA", locale: "en_US",
     url: `${SITE_URL}/about`,
-    title: "About AIDLA | AI Powered Learning Platform in Pakistan",
-    description: "Free courses, AI tools, career resources, AIDLA Coins and rewards for learners and professionals worldwide.",
+    title: "About AIDLA | Global AI Learning Platform for Students & Professionals",
+    description: "Free courses, AI tools, career resources, AIDLA Coins and rewards for students, professionals, and lifelong learners worldwide.",
     images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "About AIDLA", type: "image/jpeg" }],
   },
   twitter: {
     card: "summary_large_image", site: "@AIDLA_online", creator: "@AIDLA_online",
-    title: "About AIDLA | AI Powered Learning Platform in Pakistan",
-    description: "Free courses, AI tools, AIDLA Coins, career resources and rewards for global learners.",
+    title: "About AIDLA | Global AI Learning Platform for Students & Professionals",
+    description: "Free courses, AI tools, AIDLA Coins, career resources and rewards for students and professionals worldwide.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
 };
@@ -80,8 +80,8 @@ export default async function AboutPage() {
     buildFounderSchema(),
     buildWebPageSchema({
       path: "/about",
-      name: "About AIDLA | AI Powered Learning Platform in Pakistan",
-      description: "Learn about AIDLA's mission, AI tools, courses, career resources, rewards, and how AIDLA supports learners and professionals worldwide.",
+      name: "About AIDLA | Global AI Learning Platform for Students & Professionals",
+      description: "Learn about AIDLA's mission, AI tools, courses, career resources, rewards, and how AIDLA supports students and professionals worldwide.",
     }),
     buildBreadcrumbSchema(
       [{ name: "Home", url: "/" }, { name: "About", url: "/about" }],

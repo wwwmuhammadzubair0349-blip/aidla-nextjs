@@ -11,18 +11,18 @@ import { serverFetch, serverRpc } from "@/lib/supabaseServer";
 import ReviewsSection from "@/components/ReviewsSection";
 
 const SITE_URL = SITE.url;
-const LAST_MODIFIED = "2026-05-09";
+const LAST_MODIFIED = "2026-06-16";
 export const revalidate = 3600;
 
 export const metadata = {
-  title: "AIDLA - AI Powered Learning Platform in Pakistan",
+  title: "AIDLA — Free AI Learning Platform for Students & Professionals",
   description:
-    "AIDLA: free courses, AI tools, quizzes, CV builder & cover letter maker. Earn AIDLA Coins, win rewards, and grow your career — for learners worldwide.",
+    "AIDLA: free courses, AI tools, quizzes, CV builder & cover letter maker. Earn AIDLA Coins, win rewards, and grow your career — for students and professionals worldwide.",
   keywords: [
-    "AIDLA","Pakistan AI powered learning platform","global AI learning platform",
-    "online courses","AI tools","career tools","career switching","freshers CV builder",
-    "cover letter maker","data analytics courses","AI for beginners","AI engineer courses",
-    "startup advice","career mentoring","AIDLA coins","learn and earn",
+    "AIDLA","global AI learning platform","free online courses","AI tools for students",
+    "career tools","career switching","freshers CV builder","cover letter maker",
+    "AI for beginners","professional development","learn and earn","AIDLA coins",
+    "online learning platform","free career tools","AI learning",
   ],
   authors: [{ name: "AIDLA", url: SITE_URL }],
   creator: "AIDLA",
@@ -36,15 +36,15 @@ export const metadata = {
     languages: { "en-PK": `${SITE_URL}/`, "en-US": `${SITE_URL}/`, "x-default": `${SITE_URL}/` },
   },
   openGraph: {
-    type: "website", siteName: "AIDLA", locale: "en_PK", url: `${SITE_URL}/`,
-    title: "AIDLA - AI Powered Learning Platform in Pakistan",
-    description: "Free courses, AI tools, career resources, quizzes, AIDLA Coins and rewards for learners, professionals, freshers and career switchers worldwide.",
+    type: "website", siteName: "AIDLA", locale: "en_US", url: `${SITE_URL}/`,
+    title: "AIDLA — Free AI Learning Platform for Students & Professionals",
+    description: "Free courses, AI tools, career resources, quizzes, AIDLA Coins and rewards for students, professionals, freshers and career switchers worldwide.",
     images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA free AI learning and rewards platform", type: "image/jpeg" }],
   },
   twitter: {
     card: "summary_large_image", site: "@AIDLA_online", creator: "@AIDLA_online",
-    title: "AIDLA - AI Powered Learning Platform in Pakistan",
-    description: "Learn with free courses, AI tools, career resources, quizzes, daily competitions and AIDLA Coins.",
+    title: "AIDLA — Free AI Learning Platform for Students & Professionals",
+    description: "Free courses, AI tools, career resources, quizzes, daily competitions and AIDLA Coins — for students and professionals worldwide.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
 };
@@ -55,7 +55,7 @@ const PLATFORM_STATS = [
   { value: "500+",    label: "Registered Learners",  icon: "👨‍🎓" },
   { value: "10,000+", label: "AIDLA Coins Distributed", icon: "🪙" },
   { value: "100%",    label: "Free to Join",          icon: "🎁" },
-  { value: "#1",      label: "AI Platform from Pakistan", icon: "🏆" },
+  { value: "#1",      label: "AI Learning Platform",       icon: "🏆" },
 ];
 
 const TRUST_ITEMS = [
@@ -165,8 +165,8 @@ export default async function Home() {
   const jsonLd = buildGraph(
     buildWebPageSchema({
       path: "/",
-      name: "AIDLA - AI Powered Learning Platform in Pakistan",
-      description: "AIDLA helps global learners, students, professionals, freshers, and career switchers grow with courses, AI tools, quizzes, AIDLA Coins, and rewards.",
+      name: "AIDLA — Free AI Learning Platform for Students & Professionals",
+      description: "AIDLA helps students, professionals, freshers, and career switchers worldwide grow with free courses, AI tools, quizzes, AIDLA Coins, and rewards.",
       dateModified: LAST_MODIFIED,
       speakableSelectors: ["#hero-heading", "#how-heading", "#faq-heading"],
     }),
@@ -187,7 +187,7 @@ export default async function Home() {
 
             {/* LEFT — copy */}
             <div className="hp-hero-copy">
-              <span className="hp-eyebrow">🇵🇰 Pakistan&apos;s #1 AI Powered Learning Platform</span>
+              <span className="hp-eyebrow">🌐 Global AI Learning Platform for Students &amp; Professionals</span>
 
               <h1 id="hero-heading" className="hp-hero-title">
                 <em>Learn</em> with AI.<br />

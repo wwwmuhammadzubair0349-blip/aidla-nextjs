@@ -69,7 +69,7 @@ const MILESTONES = [
   { year: "2026", title: "The Spark", desc: "Identified the global access gap learners, freshers, and professionals face when premium education and career tools are locked behind paywalls." },
   { year: "2026", title: "Platform Launched", desc: "AIDLA goes live with AI tools, CV maker, and daily quiz competitions — 100% free, no watermarks." },
   { year: "2026", title: "Rewards Engine", desc: "AIDLA Coins system activated - real learn-to-earn rewards for active learners worldwide." },
-  { year: "Now",  title: "500+ Learners", desc: "Pakistan-based AI-powered learning platform with global access." },
+  { year: "Now",  title: "500+ Learners", desc: "A growing global AI learning platform for students, professionals, and lifelong learners worldwide." },
 ];
 
 const VALUES = [
@@ -125,7 +125,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
               <span aria-current="page">About Us</span>
             </nav>
 
-            <span className="ab-eyebrow">🇵🇰 Pakistan&apos;s #1 AI Powered Learning Platform</span>
+            <span className="ab-eyebrow">🌐 Global AI Learning Platform for Students &amp; Professionals</span>
 
             <h1 id="ab-hero-heading" className="ab-hero-title">
               Empowering Global<br />
@@ -244,7 +244,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
               <div className="ab-mv-icon" aria-hidden="true">🎯</div>
               <h3>Our Mission</h3>
               <p>
-                To empower students and professionals across Pakistan by providing
+                To empower students and professionals worldwide by providing
                 free access to AI-powered educational tools, career resources, and
                 learning opportunities. We remove financial barriers from education
                 — helping people build real-world skills and earn real rewards,
@@ -257,7 +257,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
               <h3>Our Vision</h3>
               <p>
                 Talent exists everywhere — but opportunity does not. We envision a
-                Pakistan where every student, regardless of income or location,
+                world where every student and professional, regardless of income or location,
                 has access to powerful AI tools, quality courses, and career-building
                 resources. A future where learning is not a burden, but an opportunity
                 to grow, earn, and thrive.

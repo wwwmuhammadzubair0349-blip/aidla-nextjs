@@ -1,10 +1,10 @@
 # AIDLA
 
-> AIDLA (Artificial Intelligence Digital Learning Academy) is a Pakistan-based online learning platform offering free courses, AI tools, study resources, quizzes, AIDLA Coins, rewards, CV tools, cover letters, and career support.
+> AIDLA (Artificial Intelligence Digital Learning Academy) is a global online learning platform built in Pakistan, offering free courses, AI tools, study resources, quizzes, AIDLA Coins, rewards, CV tools, cover letters, and career support for students, professionals, freshers, career switchers, and lifelong learners worldwide.
 
 Founder: Engineer Muhammad Zubair Afridi, Gold Medalist Electrical Engineer, PEC registered Electrical Engineer (ELECT/109809), founder of AIDLA, alumnus of Sarhad University Peshawar.
 
-Mission: make practical education, AI learning, and career tools accessible to students, job seekers, freshers, career switchers, and lifelong learners.
+Mission: Make practical education, AI learning, and career tools accessible to students, professionals, freshers, career switchers, and lifelong learners everywhere — free, forever.
 
 ## Core Pages
 
@@ -36,11 +36,12 @@ Mission: make practical education, AI learning, and career tools accessible to s
 
 - Founded: 2026
 - Founder: Muhammad Zubair Afridi
-- Founder credentials: Gold Medalist Electrical Engineer; PEC registered; Sarhad University Peshawar alumnus
-- Country: Pakistan
+- Founder credentials: Gold Medalist Electrical Engineer; PEC registered (ELECT/109809); Sarhad University Peshawar alumnus
+- Headquarters: Peshawar, Pakistan
+- Audience: Students, professionals, freshers, career switchers, founders, lifelong learners — worldwide
 - Languages: English, Urdu
-- Price: Free
-- Topics: AI learning, Pakistan EdTech, online courses, quizzes, career tools, CV writing, cover letters, study resources
+- Price: Free — no subscriptions, no paywalls, forever
+- Topics: AI learning, online education, career tools, CV writing, cover letters, interview prep, study resources, professional development, freelancing, remote work, edtech
 
 ## Discovery
 

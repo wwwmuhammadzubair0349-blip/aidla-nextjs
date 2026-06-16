@@ -127,15 +127,16 @@
 
 ---
 
-## Phase 6 — Homepage + About + llms.txt Pivot
+## Phase 6 — Homepage + About + llms.txt Pivot ✅ COMPLETE
 
-- [ ] Rewrite hero copy for global + professional audience
-- [ ] Update sub-sections to mention professionals, freelancers, career switchers
-- [ ] Rewrite About page (remove Pakistan-exclusive framing)
-- [ ] Expand llms.txt with global + professional context
-- [ ] Update all page-level metadata (title, description) for global positioning
-- [ ] Update schema.org Organization, WebSite descriptions
-- [ ] Verify og-home.jpg is appropriate for global audience
+- [x] Rewrite hero eyebrow + metadata title/description for global + professional audience (app/page.jsx)
+- [x] Update PLATFORM_STATS: "AI Platform from Pakistan" → "AI Learning Platform"
+- [x] About page metadata, OG, Twitter: remove Pakistan-exclusive framing (app/about/page.jsx)
+- [x] About client hero eyebrow, mission, vision, milestone: globalized (app/about/about-client.jsx)
+- [x] Expand llms.txt: global description, expanded audience + topics, Headquarters vs Country
+- [x] Update SITE.description in lib/siteConfig.js (source of truth for all schemas)
+- [x] schema.org Organization: alternateName, areaServed (added Worldwide), knowsAbout — globalized
+- [x] OG locale: en_PK → en_US on homepage + about
 
 ---
 

@@ -4,6 +4,47 @@ Newest entries at top.
 
 ---
 
+## 2026-06-16 — Phase 6: Homepage + About + llms.txt Global Pivot ✅ COMPLETE
+
+### app/page.jsx
+- `metadata` title: "AI Powered Learning Platform in Pakistan" → "Free AI Learning Platform for Students & Professionals"
+- `metadata` description, OG description, Twitter description: Pakistan framing removed
+- `metadata` OG `locale`: `"en_PK"` → `"en_US"`
+- `metadata` keywords: removed "Pakistan AI powered learning platform", added global equivalents
+- `PLATFORM_STATS[3]` label: "AI Platform from Pakistan" → "AI Learning Platform"
+- Hero eyebrow: "🇵🇰 Pakistan's #1 AI Powered Learning Platform" → "🌐 Global AI Learning Platform for Students & Professionals"
+- `buildWebPageSchema` name + description: updated to global framing
+- `LAST_MODIFIED`: "2026-05-09" → "2026-06-16"
+
+### app/about/page.jsx
+- `metadata` title: "AI Powered Learning Platform in Pakistan" → "Global AI Learning Platform for Students & Professionals"
+- `metadata` description: "Pakistan-based AI learning platform" → "global AI learning platform"
+- OG + Twitter title/description: same pivot
+- OG `locale`: `"en_PK"` → `"en_US"`
+- `buildWebPageSchema` name: updated
+
+### app/about/about-client.jsx
+- Hero eyebrow: "🇵🇰 Pakistan's #1 AI Powered Learning Platform" → "🌐 Global AI Learning Platform for Students & Professionals"
+- Mission card: "students and professionals across Pakistan" → "students and professionals worldwide"
+- Vision card: "a Pakistan where every student" → "a world where every student and professional"
+- MILESTONES[3] desc: "Pakistan-based AI-powered learning platform" → "A growing global AI learning platform for students, professionals, and lifelong learners worldwide"
+
+### lib/siteConfig.js
+- `SITE.description`: "Pakistan-based AI powered learning platform" → "global AI learning platform built in Pakistan...for students, professionals...worldwide"
+
+### lib/schemas.js
+- Organization `alternateName`: "Pakistan AI Powered Learning Platform" → "Global AI Learning Platform"
+- Organization `areaServed`: added `{ "@type": "Place", name: "Worldwide" }` as first entry; removed "Khyber Pakhtunkhwa" entry
+- Organization `knowsAbout`: "Pakistan Education" → "Global Education"; "KPK Education" → "Professional Development"
+
+### public/llms.txt
+- First line: "Pakistan-based" → "global...built in Pakistan"
+- Mission: added professionals, career switchers, worldwide
+- Key Facts: "Country: Pakistan" → "Headquarters: Peshawar, Pakistan"; added Audience line; expanded Topics
+- No SQL changes required in Phase 6.
+
+---
+
 ## 2026-06-16 — Phase 5: Critical Technical Fixes ✅ COMPLETE
 
 ### app/robots.js

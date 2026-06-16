@@ -198,6 +198,36 @@ UPDATE project_ideas SET approval_status='rejected' WHERE slug IN ('test-fyp-pro
 
 ---
 
+---
+
+## 2026-06-16 — Phase 3: Auto-News Prompts Globalized ✅
+
+### File Changed: `supabase/functions/auto-news/index.ts`
+
+**`scoreNewsContent()`** — Removed 15-pt Pakistan geo term penalty; redistributed to word count (now max 40pts: 1000+ → 40, 700+ → 30, 450+ → 18, else → 8). Total still 100pts.
+**`fetchTrendingNewsWithGroq()`** — System prompt: "Pakistani news researcher" → "global education and career news researcher"; categoryMap rewritten with global topics; headline request globalized with Pakistan/global mix instruction.
+**`fetchNewsDataHeadlines()`** — Removed `country=pk`; now fetches global education + global technology + Pakistan education (3 calls, ~11 headlines).
+**`STATIC_TOPIC_POOL`** — Replaced all-Pakistan pool with 60/40 global/Pakistan mix (7 global + 5 Pakistan topics).
+**`selectBestTopic()`** — System: "Pakistani news editor" → "global education and career news editor"; instruction: "40/60 Pakistan/global balance".
+**`generateMetadata()`** — System: "Pakistani news metadata generator" → "global education and career news metadata generator"; tags rule: removed "second tag must be pakistan"; fallback tags: `[category, "pakistan"]` → `[category, "news"]`.
+**`generateContent()` `sharedSystem`** — "senior Pakistani news journalist" → "senior education and career news journalist for global platform for students and professionals"; STATISTICS rule: "real Pakistani sources" → "real authoritative sources (official bodies, WHO, WEF, UNESCO, World Bank)".
+**Part A H2** — "Why This Matters for Pakistani Students" → "Why This Matters"
+**Part B H2** — "What This Means for Pakistani Students in ${year}" → "What This Means in ${year}"
+**GEO block footer** — "Pakistan's student platform" → "Global platform for students and professionals"
+**Word_count bug fix** — Replaced silent `.update()` (blocked by RLS) with `.rpc("news_update_seo_data", {...})`; new SECURITY DEFINER function bypasses RLS for SEO column updates.
+
+### Migration Created
+- `supabase/migrations/20260616120000_news_seo_update_rpc.sql`
+- **ACTION REQUIRED:** Run this SQL in Supabase SQL Editor to create the `news_update_seo_data()` RPC
+
+### Deployment
+- `npx supabase functions deploy auto-news` ✅ deployed (93.46kB)
+
+### Git Commit
+- TBD
+
+---
+
 ## DB Sync Status
 - Phase 1 SQL: **LOCAL ONLY** — to be run in Supabase SQL Editor
 - No schema changes in Phase 1

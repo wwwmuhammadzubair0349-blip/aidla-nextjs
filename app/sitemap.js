@@ -171,6 +171,18 @@ export default async function sitemap() {
       lastModified: now,
     },
     {
+      url: `${base}/tools/education/cgpa-calculator`,
+      priority: 0.85,
+      changefreq: "monthly",
+      lastModified: now,
+    },
+    {
+      url: `${base}/tools/finance/salary-calculator`,
+      priority: 0.85,
+      changefreq: "monthly",
+      lastModified: now,
+    },
+    {
       url: `${base}/tools/career`,
       priority: 0.55,
       changefreq: "monthly",

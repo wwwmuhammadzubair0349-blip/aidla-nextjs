@@ -159,12 +159,21 @@
 
 ---
 
-## Phase 8 — New High-Traffic Tools
+## Phase 8 — New High-Traffic Tools ✅ COMPLETE
 
-- [ ] CGPA Calculator page (Pakistan + US + UK + percentage conversion)
-- [ ] Salary Calculator page (Pakistan + UAE + US + UK + India)
-- [ ] Study Plan Generator (using existing AI edge function)
-- [ ] Tool comparison pages (5 tools × 3 competitors = 15 pages)
+- [x] CGPA Calculator (app/tools/education/cgpa-calculator/)
+  - Tab 1: Dynamic course rows — select credit hours + grade → instant CGPA (4.0 scale) + % + grade standing
+  - Tab 2: CGPA ↔ Percentage converter + reference table
+  - SoftwareApplication + FAQPage schema, BreadcrumbList
+  - Related tools nav, FAQ accordion
+- [x] Salary Calculator (app/tools/finance/salary-calculator/)
+  - Countries: Pakistan (FBR 2024-25 slabs), UAE (tax-free), US (federal + FICA), UK (income tax + NI), India (new regime 2024-25)
+  - Monthly/annual gross input → monthly take-home, tax deduction, effective rate, bar visualization
+  - Pakistan: collapsible FBR slab reference table
+  - SoftwareApplication + FAQPage schema, BreadcrumbList
+- [x] sitemap.js: added both new tool URLs (priority 0.85)
+- [ ] Study Plan Generator — deferred (existing edge function integration)
+- [ ] Tool comparison pages — deferred
 
 ---
 

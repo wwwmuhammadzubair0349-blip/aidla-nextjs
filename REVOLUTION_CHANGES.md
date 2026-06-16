@@ -4,6 +4,31 @@ Newest entries at top.
 
 ---
 
+## 2026-06-16 — Phase 8: New High-Traffic Tools ✅ COMPLETE
+
+### app/tools/education/cgpa-calculator/ (NEW)
+- `page.jsx`: server component — metadata (title, description, keywords, OG, Twitter), SoftwareApplication schema, FAQPage schema (4 Q&As), breadcrumbs, H1, intro paragraph
+- `CGPAClient.jsx`: "use client" — two tabs:
+  - Tab 1 (CGPA Calculator): dynamic course rows (add/remove), credit hours select (1–6), grade select (A+ 4.0 → F 0.0), instant CGPA + percentage + grade standing
+  - Tab 2 (Convert): CGPA ↔ percentage converter + full reference table (9 rows)
+  - GEO key facts block, related tools links, scoped inline CSS
+
+### app/tools/finance/salary-calculator/ (NEW)
+- `page.jsx`: server component — metadata, SoftwareApplication schema, FAQPage schema (4 Q&As), breadcrumbs, H1
+- `SalaryClient.jsx`: "use client" — 5 country tabs:
+  - Pakistan: FBR 2024-25 6-slab tax, monthly input, monthly/annual breakdown, effective rate bar, collapsible slab table
+  - UAE: No tax, 100% take-home
+  - US: Federal tax (7 brackets) + FICA 7.65%
+  - UK: Income tax (3 bands) + National Insurance (Class 1)
+  - India: New regime 2024-25 (6 slabs + 87A rebate)
+  - Visual: gross/tax/net stat blocks, breakdown table, color bar (green=net, red=tax)
+
+### app/sitemap.js
+- Added `/tools/education/cgpa-calculator` (priority 0.85)
+- Added `/tools/finance/salary-calculator` (priority 0.85)
+
+---
+
 ## 2026-06-16 — Phase 7: Programmatic SEO Templates ✅ COMPLETE
 
 ### app/faqs/category/[category]/page.jsx (NEW — 21 landing pages)

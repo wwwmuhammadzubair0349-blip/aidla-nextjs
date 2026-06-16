@@ -23,6 +23,30 @@
 
 ---
 
+## Post-Phase-10 Production Sync — ✅ LIVE (2026-06-16)
+
+All SQL deployed to Supabase. No manual changes outstanding.
+
+| SQL File | What It Does | Status |
+|----------|-------------|--------|
+| `20260616120000_news_seo_update_rpc.sql` | `news_update_seo_data()` SECURITY DEFINER RPC | ✅ Live |
+| `20260616200000_auto_content_cron.sql` | 4 pg_cron jobs: auto-blog-daily (33), auto-news-6h (34), auto-faq-daily (35), auto-publish-scheduled (36) | ✅ Live |
+| `20260616200001_admin_monitoring_views.sql` | `aidla_content_dashboard` + `aidla_recent_quality` views | ✅ Live |
+
+**Auto-content schedule (UTC):**
+- 6am — `auto-blog-daily` fires (11am PKT)
+- 0am/6am/12pm/6pm — `auto-news-6h` fires
+- 8am — `auto-faq-daily` fires (1pm PKT)
+- Every 5 min — scheduled posts auto-publish
+
+**Monitor:**
+```sql
+SELECT * FROM public.aidla_content_dashboard;
+SELECT * FROM public.aidla_recent_quality LIMIT 20;
+```
+
+---
+
 ## Baseline Metrics (2026-06-16)
 - Clicks: 49 (6-month total)
 - Impressions: 793

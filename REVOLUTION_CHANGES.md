@@ -9,16 +9,19 @@ Newest entries at top.
 ### app/tools/page.jsx
 - OG locale: `en_PK` → `en_US` (caught during 20-page QA sweep)
 
-### supabase/migrations/20260616200000_auto_content_cron.sql (NEW — run in SQL Editor)
-- `auto-blog-daily`: pg_cron `0 6 * * *` → `net.http_post` to `/functions/v1/auto-blog`
-- `auto-news-6h`: pg_cron `0 */6 * * *` → `net.http_post` to `/functions/v1/auto-news`
-- `auto-faq-daily`: pg_cron `0 8 * * *` → `net.http_post` to `/functions/v1/auto-faq-generator`
-- `auto-publish-scheduled`: pg_cron `*/5 * * * *` → `auto_publish_scheduled_posts()` RPC
-- **ACTION REQUIRED:** Replace `YOUR_ANON_KEY_HERE` with `NEXT_PUBLIC_SUPABASE_ANON_KEY`, then run in SQL Editor
+### supabase/migrations/20260616200000_auto_content_cron.sql — ✅ RUN LIVE 2026-06-16
+- `auto-blog-daily` (job 33): pg_cron `0 6 * * *` → `net.http_post` to `/functions/v1/auto-blog` — active: true
+- `auto-news-6h` (job 34): pg_cron `0 */6 * * *` → `net.http_post` to `/functions/v1/auto-news` — active: true
+- `auto-faq-daily` (job 35): pg_cron `0 8 * * *` → `net.http_post` to `/functions/v1/auto-faq-generator` — active: true
+- `auto-publish-scheduled` (job 36): pg_cron `*/5 * * * *` → `auto_publish_scheduled_posts()` RPC — active: true
 
-### supabase/migrations/20260616200001_admin_monitoring_views.sql (NEW — run in SQL Editor)
+### supabase/migrations/20260616120000_news_seo_update_rpc.sql — ✅ RUN LIVE 2026-06-16
+- `news_update_seo_data()` SECURITY DEFINER RPC created — allows auto-news to update word_count/meta without RLS block
+
+### supabase/migrations/20260616200001_admin_monitoring_views.sql — ✅ RUN LIVE 2026-06-16
 - `aidla_content_dashboard` view: total_published, new_last_7d, new_last_30d, avg_word_count, avg_views, last_created_at per content type (blogs, news, faqs, resources, projects)
 - `aidla_recent_quality` view: last 7 days of blog + news posts with status, word_count, view_count for daily QA
+- Both views granted SELECT to `authenticated` and `anon`
 
 ### 20-Page QA Sweep — all clean except tools OG locale (fixed above)
 

@@ -248,6 +248,16 @@
 .np-explore-link{display:inline-flex;align-items:center;gap:5px;background:#fff;color:var(--amber);border:1px solid rgba(217,119,6,0.18);padding:7px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;text-decoration:none;transition:background 0.2s,transform 0.15s;}
 .np-explore-link:hover{background:rgba(217,119,6,0.07);transform:translateY(-1px);}
 
+/* ── Author card ── */
+.np-author-card{display:flex;align-items:center;gap:16px;padding:20px 24px;background:rgba(217,119,6,0.04);border:1px solid rgba(217,119,6,0.2);border-radius:12px;margin:28px 0;}
+.np-author-card-photo{flex-shrink:0;width:52px;height:52px;border-radius:50%;object-fit:cover;}
+.np-author-card-info{flex:1;min-width:0;}
+.np-author-card-name{margin:0 0 2px;font-weight:700;font-size:0.97em;color:#0b1437;}
+.np-author-card-role{margin:0 0 6px;font-size:0.82em;color:#64748b;}
+.np-author-card-links{display:flex;gap:12px;flex-wrap:wrap;}
+.np-author-card-link{font-size:0.8em;color:#92400e;text-decoration:none;}
+.np-author-card-link:hover{text-decoration:underline;}
+
 @media(min-width:1024px){
   .np-container{padding:60px 32px 80px;}
   .np-body,.np-comments{padding:40px 48px;}

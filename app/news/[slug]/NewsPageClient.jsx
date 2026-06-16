@@ -1016,11 +1016,6 @@ export default function NewsPageClient({ post, related }) {
 
               {/* Meta row */}
               <div className="np-meta">
-                <div className="np-author">
-                  <div className="np-author-icon" aria-hidden="true">✍</div>
-                  <span itemProp="author">AIDLA News Desk · Education updates team</span>
-                </div>
-                <div className="np-dot" aria-hidden="true" />
                 {post.published_at && (
                   <span className="np-date-pill">
                     <time dateTime={post.published_at} itemProp="datePublished">
@@ -1086,6 +1081,23 @@ export default function NewsPageClient({ post, related }) {
 
             {/* ── Related posts ── */}
             <div style={{ padding: "0 16px" }}>
+              {/* Author */}
+              <div className="np-author-card">
+                <img
+                  src="https://www.aidla.online/founder-zubair-afridi.jpg"
+                  alt="Engr. Muhammad Zubair Afridi"
+                  className="np-author-card-photo"
+                />
+                <div className="np-author-card-info">
+                  <p className="np-author-card-name">Engr. Muhammad Zubair Afridi</p>
+                  <p className="np-author-card-role">Electrical Engineer &amp; Education Technology Strategist</p>
+                  <div className="np-author-card-links">
+                    <a href="https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/" target="_blank" rel="noopener noreferrer me" className="np-author-card-link">LinkedIn ↗</a>
+                    <a href="https://sites.google.com/view/muhammadzubairafridi/home" target="_blank" rel="noopener noreferrer me" className="np-author-card-link">Author Profile ↗</a>
+                  </div>
+                </div>
+              </div>
+
               <RelatedPosts posts={related} />
 
               {/* Explore More on AIDLA */}

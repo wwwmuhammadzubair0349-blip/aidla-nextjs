@@ -20,17 +20,6 @@ const statusColors = {
   scheduled: { bg: "rgba(245,158,11,0.1)",  color: "#b45309", border: "rgba(245,158,11,0.3)" },
 };
 
-const AUTHOR_BYLINE = `<div class="aidla-author-byline" style="display:flex;align-items:center;gap:16px;padding:20px 24px;background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.2);border-radius:12px;margin:0 0 28px;">
-  <img src="https://www.aidla.online/founder-zubair-afridi.jpg" alt="Engr. Muhammad Zubair Afridi" style="flex-shrink:0;width:52px;height:52px;border-radius:50%;object-fit:cover;" />
-  <div>
-    <p style="margin:0 0 2px;font-weight:700;font-size:0.97em;color:#0b1437;">Engr-Muhammad Zubair</p>
-    <p style="margin:0 0 6px;font-size:0.82em;color:#64748b;">Electrical Engineer &amp; Education Technology Strategist</p>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-      <a href="https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/" target="_blank" rel="noopener noreferrer me" style="font-size:0.8em;color:#92400e;text-decoration:none;">LinkedIn ↗</a>
-      <a href="https://sites.google.com/view/muhammadzubairafridi/home" target="_blank" rel="noopener noreferrer me" style="font-size:0.8em;color:#92400e;text-decoration:none;">Author Profile ↗</a>
-    </div>
-  </div>
-</div>`;
 
 const CATEGORIES = [
   { value: "", label: "No Category" },
@@ -183,9 +172,7 @@ export default function AdminNews() {
     if (!contentHtml.trim()) return showMsg("Content required", "error");
     if (status === "scheduled" && !scheduledAt) return showMsg("Please set a scheduled date & time", "error");
 
-    const finalHtml = contentHtml.includes("aidla-author-byline")
-      ? contentHtml
-      : AUTHOR_BYLINE + "\n" + contentHtml;
+    const finalHtml = contentHtml;
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = finalHtml;

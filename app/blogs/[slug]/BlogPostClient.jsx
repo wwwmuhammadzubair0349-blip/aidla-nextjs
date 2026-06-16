@@ -965,11 +965,6 @@ export default function BlogPostClient({ initialPost, relatedPosts, slug }) {
 
               {/* Meta row */}
               <div className="bp-meta">
-                <div className="bp-author">
-                  <span className="bp-author-icon" aria-hidden="true">✍️</span>
-                  <span itemProp="author">{post.author_name || "AIDLA Team"} · AIDLA Education Team</span>
-                </div>
-                <span className="bp-dot" aria-hidden="true" />
                 {post.published_at && (
                   <span className="bp-date-pill">
                     <time dateTime={post.published_at} itemProp="datePublished">
@@ -1026,6 +1021,23 @@ export default function BlogPostClient({ initialPost, relatedPosts, slug }) {
                   <p>{post.excerpt}</p>
                 </div>
               ) : null}
+
+              {/* Author */}
+              <div className="bp-author-card">
+                <img
+                  src="https://www.aidla.online/founder-zubair-afridi.jpg"
+                  alt="Engr. Muhammad Zubair Afridi"
+                  className="bp-author-card-photo"
+                />
+                <div className="bp-author-card-info">
+                  <p className="bp-author-card-name">Engr. Muhammad Zubair Afridi</p>
+                  <p className="bp-author-card-role">Electrical Engineer &amp; Education Technology Strategist</p>
+                  <div className="bp-author-card-links">
+                    <a href="https://www.linkedin.com/in/muhammad-zubair-afridi-191319216/" target="_blank" rel="noopener noreferrer me" className="bp-author-card-link">LinkedIn ↗</a>
+                    <a href="https://sites.google.com/view/muhammadzubairafridi/home" target="_blank" rel="noopener noreferrer me" className="bp-author-card-link">Author Profile ↗</a>
+                  </div>
+                </div>
+              </div>
 
               {/* Related Posts (extracted — mirrors News) */}
               <RelatedPosts posts={relatedPosts} />

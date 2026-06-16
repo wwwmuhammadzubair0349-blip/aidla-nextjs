@@ -4,6 +4,41 @@ Newest entries at top.
 
 ---
 
+## 2026-06-16 — Post-Revolution: Frontend Author Deduplication ✅ COMPLETE
+
+**Root cause found:** Both admin pages had `AUTHOR_BYLINE` constant that re-injected the author card on every save, defeating the DB SQL cleanup.
+
+### app/admin/blogs/page.jsx
+- Removed `AUTHOR_BYLINE` constant (hardcoded rich HTML card)
+- `onSave`: removed injection logic — `finalHtml` now uses `contentHtml` directly
+
+### app/admin/news/page.jsx
+- Same: removed `AUTHOR_BYLINE` constant and injection logic
+
+### supabase/functions/auto-blog/index.ts
+- Step 7 HTML assembly: removed `authorByline` — `finalHtml` now starts with `geoBlock`
+- **ACTION REQUIRED:** `npx supabase functions deploy auto-blog`
+
+### supabase/functions/auto-news/index.ts
+- Step 8 HTML assembly: removed `authorByline` — `finalHtml` now starts with `geoBlock`
+- **ACTION REQUIRED:** `npx supabase functions deploy auto-news`
+
+### app/blogs/[slug]/BlogPostClient.jsx
+- Removed `bp-author` div + separator dot from meta row (top compact byline gone)
+- Added static `bp-author-card` after article content (before RelatedPosts): photo + name + role + LinkedIn + Author Profile links
+
+### app/blogs/[slug]/BlogPost.css
+- Added `.bp-author-card` and child class styles (blue theme)
+
+### app/news/[slug]/NewsPageClient.jsx
+- Removed `np-author` div + separator dot from meta row
+- Added static `np-author-card` in the padded block before RelatedPosts
+
+### app/news/[slug]/newspage.css
+- Added `.np-author-card` and child class styles (amber theme)
+
+---
+
 ## 2026-06-16 — Phase 10: Resume + Monitoring ✅ COMPLETE
 
 ### app/tools/page.jsx

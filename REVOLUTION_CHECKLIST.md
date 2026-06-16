@@ -54,9 +54,9 @@
 ### 1G. Phase Completion
 - [x] Update REVOLUTION_CHANGES.md with all SQL run
 - [x] Update REVOLUTION_PLAN.md Phase 1 → 🟢 Complete
-- [ ] git add . && git commit -m "Phase 1 complete — junk cleanup + dead-weight removal"
-- [ ] git push && verify
-- [ ] Add commit hash to REVOLUTION_CHANGES.md
+- [x] git add . && git commit -m "Phase 1 complete — junk cleanup + dead-weight removal"
+- [x] git push && verify — commit 699cafe pushed to main
+- [x] Add commit hash to REVOLUTION_CHANGES.md
 
 ---
 

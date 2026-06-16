@@ -1,0 +1,102 @@
+2026-06-07 17:03:34,957 INFO ==================================================
+2026-06-07 17:03:34,959 INFO AIDLA AUTOPILOT STARTED
+2026-06-07 17:03:34,959 INFO Target: 50 uploads | Delay: 8s
+2026-06-07 17:03:34,960 INFO ==================================================
+2026-06-07 17:03:34,960 INFO [SEARCH] physics textbook university
+2026-06-07 17:03:41,560 INFO         Found 100 items
+2026-06-07 17:03:44,135 INFO         Downloading: 39002011210219.med.yale.edu.pdf
+2026-06-07 17:03:56,731 INFO         Done: 13142 KB
+2026-06-07 17:03:56,743 INFO         Asking Grok...
+2026-06-07 17:03:57,616 INFO         Grok title: Electrotherapeutics System
+2026-06-07 17:03:57,620 INFO         Uploading: Electrotherapeutics System
+2026-06-07 17:04:33,893 INFO         UPLOADED! slug=electrotherapeutics-system
+2026-06-07 17:04:33,900 INFO --- Progress: 1/50 ---
+2026-06-07 17:04:44,025 INFO         Downloading: 39002011210235.med.yale.edu.pdf
+2026-06-07 17:04:50,784 INFO         Done: 13899 KB
+2026-06-07 17:04:50,792 INFO         Asking Grok...
+2026-06-07 17:04:52,011 INFO         Grok title: Electrotherapeutics System
+2026-06-07 17:04:52,015 INFO         Uploading: Electrotherapeutics System
+2026-06-07 17:05:25,543 INFO         UPLOADED! slug=electrotherapeutics-system
+2026-06-07 17:05:25,550 INFO --- Progress: 2/50 ---
+2026-06-07 17:05:38,873 INFO         Downloading: A Complete Course for Aeronautical Ground Engineers' Licenses in Categories A - B - C - D & X  -  1934.pdf
+2026-06-07 17:14:58,093 INFO         Done: 299888 KB
+2026-06-07 17:14:58,102 WARNING         Too large, skipping: A Complete Course for Aeronautical Ground Engineers' Licenses in Categories A - B - C - D & X  -  1934.pdf
+2026-06-07 17:15:00,683 INFO         Downloading: 39002011210250.med.yale.edu.pdf
+2026-06-07 17:15:14,246 INFO         Done: 13956 KB
+2026-06-07 17:15:14,253 INFO         Asking Grok...
+2026-06-07 17:15:15,382 INFO         Grok title: Electrotherapeutics System
+2026-06-07 17:15:15,387 INFO         Uploading: Electrotherapeutics System
+2026-06-07 17:15:45,796 INFO         UPLOADED! slug=electrotherapeutics-system
+2026-06-07 17:15:45,802 INFO --- Progress: 3/50 ---
+2026-06-07 17:15:56,297 INFO         Downloading: 244_Textbook_v0_9_F22.pdf
+2026-06-07 17:16:02,351 INFO         Done: 7151 KB
+2026-06-07 17:16:02,359 INFO         Asking Grok...
+2026-06-07 17:16:03,239 INFO         Grok title: Differential Equations for Engineers
+2026-06-07 17:16:03,244 INFO         Uploading: Differential Equations for Engineers
+2026-06-07 17:16:17,896 INFO         UPLOADED! slug=differential-equations-for-engineers
+2026-06-07 17:16:17,901 INFO --- Progress: 4/50 ---
+2026-06-07 17:16:27,719 INFO         Downloading: 45-26813.pdf
+2026-06-07 17:16:31,982 INFO         Done: 429 KB
+2026-06-07 17:16:31,990 INFO         Asking Grok...
+2026-06-07 17:16:32,988 INFO         Grok title: Physics Learning Resources Analysis
+2026-06-07 17:16:32,992 INFO         Uploading: Physics Learning Resources Analysis
+2026-06-07 17:16:37,147 INFO         UPLOADED! slug=physics-learning-resources-analysis
+2026-06-07 17:16:37,152 INFO --- Progress: 5/50 ---
+2026-06-07 17:16:47,077 INFO         Downloading: Air Ministry Publication 1107 - Manual of Rigging for Aircraft - 3rd edition Feb 1931.pdf
+2026-06-07 17:18:58,985 INFO         Done: 75492 KB
+2026-06-07 17:18:58,992 WARNING         Too large, skipping: Air Ministry Publication 1107 - Manual of Rigging for Aircraft - 3rd edition Feb 1931.pdf
+2026-06-07 17:19:00,982 INFO         Downloading: 39002011210201.med.yale.edu.pdf
+2026-06-07 17:19:23,570 INFO         Done: 17552 KB
+2026-06-07 17:19:23,577 INFO         Asking Grok...
+2026-06-07 17:19:24,421 INFO         Grok title: Electrotherapeutics System
+2026-06-07 17:19:24,426 INFO         Uploading: Electrotherapeutics System
+2026-06-07 17:19:52,157 INFO         UPLOADED! slug=electrotherapeutics-system
+2026-06-07 17:19:52,164 INFO --- Progress: 6/50 ---
+2026-06-07 17:20:00,171 INFO [SEARCH] biology notes matric
+2026-06-07 17:20:06,995 INFO         Found 1 items
+2026-06-07 17:20:09,754 INFO         Downloading: 10th Chemistry Full Book Practice 700 Solved MCQs.pdf
+2026-06-07 17:20:14,443 INFO         Done: 2333 KB
+2026-06-07 17:20:14,449 INFO         Asking Grok...
+2026-06-07 17:20:15,519 INFO         Grok title: Matric Chemistry Practice MCQs
+2026-06-07 17:20:15,525 INFO         Uploading: Matric Chemistry Practice MCQs
+2026-06-07 17:20:21,840 INFO         UPLOADED! slug=matric-chemistry-practice-mcqs
+2026-06-07 17:20:21,845 INFO --- Progress: 7/50 ---
+2026-06-07 17:20:29,848 INFO [SEARCH] accounting notes university
+2026-06-07 17:20:31,154 INFO         Found 1 items
+2026-06-07 17:20:33,163 INFO [SEARCH] chemistry notes students
+2026-06-07 17:20:34,525 INFO         Found 1 items
+2026-06-07 17:20:36,596 INFO [SEARCH] islamiyat notes pakistan
+2026-06-07 17:20:38,067 INFO         Found 1 items
+2026-06-07 17:20:40,170 INFO [SEARCH] statistics notes university
+2026-06-07 17:20:41,501 INFO         Found 1 items
+2026-06-07 17:20:43,596 INFO [SEARCH] data science notes python
+2026-06-07 17:20:45,101 INFO         Found 1 items
+2026-06-07 17:20:47,163 INFO [SEARCH] lecture notes data structures
+2026-06-07 17:20:48,541 INFO         Found 1 items
+2026-06-07 17:20:50,594 INFO [SEARCH] past papers intermediate pakistan
+2026-06-07 17:20:51,878 INFO         Found 1 items
+2026-06-07 17:20:53,954 INFO [SEARCH] software engineering textbook
+2026-06-07 17:20:55,421 INFO         Found 1 items
+2026-06-07 17:20:57,505 INFO [SEARCH] economics notes university
+2026-06-07 17:20:58,858 INFO         Found 1 items
+2026-06-07 17:21:00,923 INFO [SEARCH] thesis computer science pakistan
+2026-06-07 17:21:02,297 INFO         Found 1 items
+2026-06-07 17:21:04,471 INFO [SEARCH] artificial intelligence notes
+2026-06-07 17:21:05,765 INFO         Found 1 items
+2026-06-07 17:21:07,779 INFO [SEARCH] electrical engineering notes
+2026-06-07 17:21:09,114 INFO         Found 1 items
+2026-06-07 17:21:11,143 INFO [SEARCH] english notes grammar
+2026-06-07 17:21:12,561 INFO         Found 1 items
+2026-06-07 17:21:14,625 INFO [SEARCH] cv resume template professional
+2026-06-07 17:21:16,021 INFO         Found 1 items
+2026-06-07 17:21:18,052 INFO [SEARCH] computer science textbook
+2026-06-07 17:21:19,358 INFO         Found 1 items
+2026-06-07 17:21:21,373 INFO [SEARCH] past papers matric pakistan
+2026-06-07 17:21:22,709 INFO         Found 1 items
+2026-06-07 17:21:24,794 INFO [SEARCH] mathematics textbook students
+2026-06-07 17:21:26,147 INFO         Found 1 items
+2026-06-07 17:21:28,246 INFO [SEARCH] networking notes CCNA
+2026-06-07 17:21:29,604 INFO         Found 1 items
+2026-06-07 17:21:31,733 INFO ==================================================
+2026-06-07 17:21:31,733 INFO DONE -- 7 files uploaded!
+2026-06-07 17:21:31,733 INFO ==================================================

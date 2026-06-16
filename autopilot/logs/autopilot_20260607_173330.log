@@ -1,0 +1,111 @@
+2026-06-07 17:33:30,776 INFO ==================================================
+2026-06-07 17:33:30,776 INFO AIDLA AUTOPILOT STARTED
+2026-06-07 17:33:30,776 INFO Target: 50 uploads | Delay: 8s
+2026-06-07 17:33:30,777 INFO ==================================================
+2026-06-07 17:33:30,777 INFO [SEARCH] electrical engineering notes (page 1)
+2026-06-07 17:33:33,395 INFO         Found 10 results
+2026-06-07 17:33:37,426 INFO         Downloading: Extrasensory_Perception_Research_Finding.pdf
+2026-06-07 17:33:53,198 INFO         Done: 20370 KB
+2026-06-07 17:33:53,206 WARNING         Too large, skipping: Extrasensory_Perception_Research_Finding.pdf
+2026-06-07 17:33:55,876 INFO         Downloading: 10_Yard_Fight_(72-00049-001).pdf
+2026-06-07 17:34:02,050 INFO         Done: 3306 KB
+2026-06-07 17:34:02,057 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:34:03,615 INFO         SEO title : Electrical Engineering Arcade Game Manuals PDF
+2026-06-07 17:34:03,616 INFO         SEO slug  : electrical-engineering-arcade-game-manuals-pdf-pakistan
+2026-06-07 17:34:03,619 INFO         Uploading: Electrical Engineering Arcade Game Manuals PDF
+2026-06-07 17:34:08,502 INFO         UPLOADED! slug=electrical-engineering-arcade-game-manuals-pdf
+2026-06-07 17:34:08,509 INFO --- Progress: 1/50 ---
+2026-06-07 17:34:19,317 INFO         Downloading: 2011-Leverett-industrial.pdf
+2026-06-07 17:34:24,777 INFO         Done: 2555 KB
+2026-06-07 17:34:24,783 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:34:26,225 INFO         SEO title : Electrical Engineering Notes PDF Pakistan
+2026-06-07 17:34:26,225 INFO         SEO slug  : electrical-engineering-notes-pdf-pakistan
+2026-06-07 17:34:26,228 INFO         Uploading: Electrical Engineering Notes PDF Pakistan
+2026-06-07 17:34:32,400 INFO         UPLOADED! slug=electrical-engineering-notes-pdf-pakistan
+2026-06-07 17:34:32,404 INFO --- Progress: 2/50 ---
+2026-06-07 17:34:42,722 INFO         Downloading: cia-rdp96-00787r000700030001-3.pdf
+2026-06-07 17:34:47,577 INFO         Done: 2887 KB
+2026-06-07 17:34:47,587 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:34:48,774 INFO         SEO title : Electrical Engineering Notes PDF Pakistan
+2026-06-07 17:34:48,781 INFO         SEO slug  : electrical-engineering-notes-pdf-pakistan
+2026-06-07 17:34:48,785 INFO         Duplicate title: Electrical Engineering Notes PDF Pakistan
+2026-06-07 17:34:52,324 INFO         Downloading: aviationpocketbo00matt.pdf
+2026-06-07 17:35:05,868 INFO         Done: 28043 KB
+2026-06-07 17:35:05,874 WARNING         Too large, skipping: aviationpocketbo00matt.pdf
+2026-06-07 17:35:07,886 INFO         Downloading: RadioElectronics.pdf
+2026-06-07 17:35:20,281 INFO         Done: 23453 KB
+2026-06-07 17:35:20,285 WARNING         Too large, skipping: RadioElectronics.pdf
+2026-06-07 17:35:22,479 INFO         Downloading: Bae_Chang_Taeshik_Shon_IT_Convergence_and_Services.pdf
+2026-06-07 17:35:28,863 INFO         Done: 9550 KB
+2026-06-07 17:35:28,868 WARNING         Too large, skipping: Bae_Chang_Taeshik_Shon_IT_Convergence_and_Services.pdf
+2026-06-07 17:35:31,031 INFO         Downloading: theoryandapplica032630mbp.pdf
+2026-06-07 17:35:43,917 INFO         Done: 27311 KB
+2026-06-07 17:35:43,920 WARNING         Too large, skipping: theoryandapplica032630mbp.pdf
+2026-06-07 17:35:45,255 INFO         Downloading: transactionsofen21engi.pdf
+2026-06-07 17:36:31,927 INFO         Done: 77255 KB
+2026-06-07 17:36:31,933 WARNING         Too large, skipping: transactionsofen21engi.pdf
+2026-06-07 17:36:35,366 INFO         Downloading: A01100108.pdf
+2026-06-07 17:36:40,413 INFO         Done: 268 KB
+2026-06-07 17:36:40,418 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:36:41,797 INFO         SEO title : Electrical Engineering Research Journal PDF Pakistan
+2026-06-07 17:36:41,797 INFO         SEO slug  : electrical-engineering-research-journal-pdf-pakistan
+2026-06-07 17:36:41,799 INFO         Uploading: Electrical Engineering Research Journal PDF Pakistan
+2026-06-07 17:36:45,918 INFO         UPLOADED! slug=electrical-engineering-research-journal-pdf-pakistan
+2026-06-07 17:36:45,921 INFO --- Progress: 3/50 ---
+2026-06-07 17:36:55,923 INFO [SEARCH] electrical engineering notes (page 2)
+2026-06-07 17:36:59,206 INFO         Found 10 results
+2026-06-07 17:37:00,785 INFO         Downloading: engineeringjourn26engi.pdf
+2026-06-07 17:37:31,738 INFO         Done: 129579 KB
+2026-06-07 17:37:31,743 WARNING         Too large, skipping: engineeringjourn26engi.pdf
+2026-06-07 17:37:36,616 INFO         Downloading: aeroplan171919lond.pdf
+2026-06-07 17:39:00,175 INFO         Done: 197857 KB
+2026-06-07 17:39:00,182 WARNING         Too large, skipping: aeroplan171919lond.pdf
+2026-06-07 17:39:02,621 INFO         Downloading: transactionsofen28engi.pdf
+2026-06-07 17:39:37,123 INFO         Done: 126117 KB
+2026-06-07 17:39:37,127 WARNING         Too large, skipping: transactionsofen28engi.pdf
+2026-06-07 17:39:39,387 INFO         Downloading: A01110110.pdf
+2026-06-07 17:39:44,246 INFO         Done: 842 KB
+2026-06-07 17:39:44,251 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:39:45,640 INFO         SEO title : Electrical Engineering Notes PDF Pakistan
+2026-06-07 17:39:45,641 INFO         SEO slug  : electrical-engineering-notes-pdf-pakistan
+2026-06-07 17:39:45,644 INFO         Duplicate title: Electrical Engineering Notes PDF Pakistan
+2026-06-07 17:39:48,193 INFO         Downloading: mechanicalworlde00mancrich.pdf
+2026-06-07 17:40:14,126 INFO         Done: 41495 KB
+2026-06-07 17:40:14,131 WARNING         Too large, skipping: mechanicalworlde00mancrich.pdf
+2026-06-07 17:40:18,192 INFO         Downloading: engineeringjourn23engi.pdf
+2026-06-07 17:40:41,843 INFO         Done: 60557 KB
+2026-06-07 17:40:41,850 WARNING         Too large, skipping: engineeringjourn23engi.pdf
+2026-06-07 17:40:44,897 INFO         Downloading: Manual Of Hospital Planning And Design 2022-Garg Dewan.pdf
+2026-06-07 17:40:55,442 INFO         Done: 14593 KB
+2026-06-07 17:40:55,447 WARNING         Too large, skipping: Manual Of Hospital Planning And Design 2022-Garg Dewan.pdf
+2026-06-07 17:40:57,007 INFO         Downloading: 21.pdf
+2026-06-07 17:42:32,595 INFO         Done: 339587 KB
+2026-06-07 17:42:32,600 WARNING         Too large, skipping: 21.pdf
+2026-06-07 17:42:35,415 INFO         Downloading: 22.pdf
+2026-06-07 17:44:11,864 INFO         Done: 317838 KB
+2026-06-07 17:44:11,900 WARNING         Too large, skipping: 22.pdf
+2026-06-07 17:44:17,350 INFO         Downloading: Weston Engineering Notes - Index to Vol1 & 2.pdf
+2026-06-07 17:44:21,284 INFO         Done: 859 KB
+2026-06-07 17:44:21,290 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:44:22,420 INFO         SEO title : Electrical Engineering Notes PDF Pakistan
+2026-06-07 17:44:22,421 INFO         SEO slug  : electrical-engineering-notes-pdf-pakistan
+2026-06-07 17:44:22,423 INFO         Duplicate title: Electrical Engineering Notes PDF Pakistan
+2026-06-07 17:44:24,446 INFO [SEARCH] electrical engineering notes (page 3)
+2026-06-07 17:44:27,597 INFO         Found 10 results
+2026-06-07 17:44:32,389 INFO         Downloading: 26.pdf
+2026-06-07 17:45:33,611 INFO         Done: 206439 KB
+2026-06-07 17:45:33,620 WARNING         Too large, skipping: 26.pdf
+2026-06-07 17:45:35,943 INFO         Downloading: Journal of Borderland Research - Vol XLIV, No 1, January-February 1988.pdf
+2026-06-07 17:45:47,459 INFO         Done: 24295 KB
+2026-06-07 17:45:47,465 WARNING         Too large, skipping: Journal of Borderland Research - Vol XLIV, No 1, January-February 1988.pdf
+2026-06-07 17:45:49,013 INFO         Downloading: historyoftechnol0000sing.pdf
+2026-06-07 17:45:52,260 ERROR Download failed: 403 Client Error: Forbidden for url: https://ia802903.us.archive.org/9/items/historyoftechnol0000sing/historyoftechnol0000sing.pdf
+2026-06-07 17:45:56,746 INFO         Downloading: practicalnotesfo00kennrich.pdf
+2026-06-07 17:46:34,631 INFO         Done: 44112 KB
+2026-06-07 17:46:34,648 WARNING         Too large, skipping: practicalnotesfo00kennrich.pdf
+2026-06-07 17:46:37,577 INFO         Downloading: Journal of Borderland Research - Vol XLIII, No 1, January-February 1987.pdf
+2026-06-07 17:47:00,337 INFO         Done: 27338 KB
+2026-06-07 17:47:00,343 WARNING         Too large, skipping: Journal of Borderland Research - Vol XLIII, No 1, January-February 1987.pdf
+2026-06-07 17:47:02,441 INFO         Downloading: encyclopediaofam0001unse_o6i6.pdf
+2026-06-07 17:47:04,771 ERROR Download failed: 403 Client Error: Forbidden for url: https://ia801908.us.archive.org/17/items/encyclopediaofam0001unse_o6i6/encyclopediaofam0001unse_o6i6.pdf
+2026-06-07 17:47:06,966 INFO         Downloading: proceedings57inst.pdf

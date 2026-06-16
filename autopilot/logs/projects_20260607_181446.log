@@ -1,0 +1,1004 @@
+2026-06-07 18:14:46,543 INFO ==================================================
+2026-06-07 18:14:46,543 INFO AIDLA PROJECTS AUTOPILOT STARTED
+2026-06-07 18:14:46,543 INFO Target: 50 uploads | Delay: 8s
+2026-06-07 18:14:46,544 INFO ==================================================
+2026-06-07 18:14:46,544 INFO [SEARCH] thesis proposal software engineering (page 1)
+2026-06-07 18:14:48,203 INFO         Found 10 results
+2026-06-07 18:14:48,247 WARNING         Irrelevant skipped: Matlab GUI for a Fluid Mixer
+2026-06-07 18:14:49,392 WARNING         Pre-skip (too large 9422KB): proposalformicro00paqu.pdf
+2026-06-07 18:14:49,394 WARNING         Pre-skip (too large 63966KB): proposalformicro00paqu_jp2.zip
+2026-06-07 18:14:49,397 WARNING         No suitable file: proposalformicro00paqu
+2026-06-07 18:14:49,399 WARNING         Irrelevant skipped: Development of a Self-Manageable News Virtual Environment
+2026-06-07 18:14:51,407 INFO         Downloading: proposaltodevelo109454758.pdf
+2026-06-07 18:14:56,035 INFO         Done: 2629 KB
+2026-06-07 18:14:56,039 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:14:57,221 INFO         SEO title : Research Proposal Software Engineering Project
+2026-06-07 18:14:57,221 INFO         SEO slug  : research-proposal-software-engineering-project-pakistan
+2026-06-07 18:14:57,223 INFO         Uploading project: Research Proposal Software Engineering Project
+2026-06-07 18:15:01,082 INFO         UPLOADED! slug=research-proposal-software-engineering-project-pakistan
+2026-06-07 18:15:01,087 INFO         Tracked in uploaded_projects.txt: proposaltodevelo109454758
+2026-06-07 18:15:01,088 INFO --- Progress: 1/50 ---
+2026-06-07 18:15:09,089 WARNING         Irrelevant skipped: Proposal and development plan for aircraft systems integrati
+2026-06-07 18:15:09,090 WARNING         Irrelevant skipped: DTIC ADA138025: Interactive Computer Graphics for System Ana
+2026-06-07 18:15:09,090 WARNING         Irrelevant skipped: DTIC ADA404703: Developing a Conceptual Unmanned Aerial Vehi
+2026-06-07 18:15:09,090 WARNING         Irrelevant skipped: DTIC ADA243766: Comparison of AFITPAC versus NOS and a Packe
+2026-06-07 18:15:09,090 WARNING         Irrelevant skipped: DTIC AD1027568: Using System Architecture, Review Entry Crit
+2026-06-07 18:15:10,981 INFO         Downloading: NASA_NTRS_Archive_20050159699.pdf
+2026-06-07 18:15:14,529 INFO         Done: 229 KB
+2026-06-07 18:15:14,532 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:15:15,800 INFO         SEO title : Matlab GUI Research Proposal Web Project
+2026-06-07 18:15:15,800 INFO         SEO slug  : matlab-gui-research-proposal-web-project
+2026-06-07 18:15:15,802 INFO         Uploading project: Matlab GUI Research Proposal Web Project
+2026-06-07 18:15:18,883 INFO         UPLOADED! slug=matlab-gui-research-proposal-web-project
+2026-06-07 18:15:18,887 INFO         Tracked in uploaded_projects.txt: NASA_NTRS_Archive_20050159699
+2026-06-07 18:15:18,887 INFO --- Progress: 2/50 ---
+2026-06-07 18:15:28,889 INFO [SEARCH] thesis proposal software engineering (page 2)
+2026-06-07 18:15:31,036 INFO         Found 10 results
+2026-06-07 18:15:31,038 WARNING         Irrelevant skipped: DTIC ADA393352: Master of Science in Software Engineering. A
+2026-06-07 18:15:31,038 WARNING         Irrelevant skipped: DTIC ADA121961: The Use of the Marine Corps Standard Account
+2026-06-07 18:15:31,038 WARNING         Irrelevant skipped: DTIC ADA167054: A Graphic Tool for Generating Ada Language S
+2026-06-07 18:15:33,079 WARNING         Pre-skip (too large 9527KB): aproposalformicr1094523366.pdf
+2026-06-07 18:15:33,080 WARNING         Pre-skip (too large 128142KB): aproposalformicr1094523366_jp2.zip
+2026-06-07 18:15:33,082 WARNING         No suitable file: aproposalformicr1094523366
+2026-06-07 18:15:33,082 WARNING         Irrelevant skipped: DTIC ADA196810: A Proposal for a Microcomputer Based System 
+2026-06-07 18:15:34,753 INFO         Downloading: 1604.03184.pdf
+2026-06-07 18:15:39,894 INFO         Done: 3836 KB
+2026-06-07 18:15:39,898 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:15:41,299 INFO         SEO title : Research Proposal Software Engineering Project
+2026-06-07 18:15:41,299 INFO         SEO slug  : research-proposal-software-engineering-project-pakistan
+2026-06-07 18:15:41,302 INFO         Duplicate title: Research Proposal Software Engineering Project
+2026-06-07 18:15:42,104 WARNING         Irrelevant skipped: Media Release - Dorian Codex Protocol For Artificial Intelli
+2026-06-07 18:15:42,105 WARNING         Irrelevant skipped: Presentation Media of the Book: Dorian Codex Protocol For Ar
+2026-06-07 18:15:43,457 INFO         Downloading: ADA243766.pdf
+2026-06-07 18:15:48,209 INFO         Done: 2580 KB
+2026-06-07 18:15:48,213 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:15:49,414 INFO         SEO title : Research Project Proposal Web Development
+2026-06-07 18:15:49,414 INFO         SEO slug  : research-project-proposal-web-development-pakistan
+2026-06-07 18:15:49,416 INFO         Uploading project: Research Project Proposal Web Development
+2026-06-07 18:15:58,168 INFO         UPLOADED! slug=research-project-proposal-web-development-pakistan
+2026-06-07 18:15:58,172 INFO         Tracked in uploaded_projects.txt: ADA243766
+2026-06-07 18:15:58,172 INFO --- Progress: 3/50 ---
+2026-06-07 18:16:06,174 WARNING         Irrelevant skipped: CIA Reading Room 06547185: ASSISTANCE AGREEMENT 2011-1107140
+2026-06-07 18:16:08,175 INFO [SEARCH] thesis proposal software engineering (page 3)
+2026-06-07 18:16:11,302 INFO         Found 5 results
+2026-06-07 18:16:11,307 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88g00186r001301640010-0: WEEKLY REPO
+2026-06-07 18:16:11,307 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00955r000200260001-7: REQUEST FOR
+2026-06-07 18:16:11,308 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp93t01142r000100020004-7: THE ATLANTI
+2026-06-07 18:16:11,308 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp05t00280r000300230001-0: SCIENCE AND
+2026-06-07 18:16:11,308 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00965r000100260007-9: THE DIVIDED
+2026-06-07 18:16:13,308 INFO [SEARCH] semester project computer networks (page 1)
+2026-06-07 18:16:14,957 INFO         Found 10 results
+2026-06-07 18:16:17,034 WARNING         Pre-skip (too large 5546KB): 19930009197.pdf
+2026-06-07 18:16:17,035 WARNING         Pre-skip (too large 14463KB): 19930009197_jp2.zip
+2026-06-07 18:16:17,036 WARNING         No suitable file: nasa_techdoc_19930009197
+2026-06-07 18:16:18,698 INFO         Downloading: ERIC_ED479499.pdf
+2026-06-07 18:16:24,041 INFO         Done: 1543 KB
+2026-06-07 18:16:24,045 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:16:25,098 INFO         SEO title : Networking Semester Project Proposal
+2026-06-07 18:16:25,098 INFO         SEO slug  : networking-semester-project-pakistan
+2026-06-07 18:16:25,100 INFO         Uploading project: Networking Semester Project Proposal
+2026-06-07 18:16:31,474 INFO         UPLOADED! slug=networking-semester-project-pakistan
+2026-06-07 18:16:31,494 INFO         Tracked in uploaded_projects.txt: ERIC_ED479499
+2026-06-07 18:16:31,495 INFO --- Progress: 4/50 ---
+2026-06-07 18:16:41,286 INFO         Downloading: ERIC_ED358875.pdf
+2026-06-07 18:16:45,021 INFO         Done: 315 KB
+2026-06-07 18:16:45,026 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:16:46,272 INFO         SEO title : Semester Project Cybersecurity Networking
+2026-06-07 18:16:46,273 INFO         SEO slug  : semester-project-cybersecurity-networking-pakistan
+2026-06-07 18:16:46,275 INFO         Uploading project: Semester Project Cybersecurity Networking
+2026-06-07 18:16:49,674 INFO         UPLOADED! slug=semester-project-cybersecurity-networking-pakistan
+2026-06-07 18:16:49,678 INFO         Tracked in uploaded_projects.txt: ERIC_ED358875
+2026-06-07 18:16:49,679 INFO --- Progress: 5/50 ---
+2026-06-07 18:17:00,291 INFO         Downloading: ERIC_ED565060.pdf
+2026-06-07 18:17:03,881 INFO         Done: 330 KB
+2026-06-07 18:17:03,885 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:17:05,100 INFO         SEO title : Facebook-Based EFL Semester Project Proposal
+2026-06-07 18:17:05,100 INFO         SEO slug  : facebook-based-efl-semester-project-pakistan
+2026-06-07 18:17:05,102 INFO         Uploading project: Facebook-Based EFL Semester Project Proposal
+2026-06-07 18:17:07,980 INFO         UPLOADED! slug=facebook-based-efl-semester-project-pakistan
+2026-06-07 18:17:07,984 INFO         Tracked in uploaded_projects.txt: ERIC_ED565060
+2026-06-07 18:17:07,984 INFO --- Progress: 6/50 ---
+2026-06-07 18:17:21,774 WARNING         No suitable file: ERIC_EJ999388
+2026-06-07 18:17:21,775 WARNING         Irrelevant skipped: ERIC ED528578: Computer Games Functioning as Motivation Stim
+2026-06-07 18:17:29,835 INFO         Downloading: ERIC_ED364212.pdf
+2026-06-07 18:17:39,646 INFO         Done: 571 KB
+2026-06-07 18:17:39,649 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:17:40,719 INFO         SEO title : Cybersecurity Semester Project Proposal
+2026-06-07 18:17:40,720 INFO         SEO slug  : cybersecurity-semester-project-pakistan
+2026-06-07 18:17:40,722 INFO         Uploading project: Cybersecurity Semester Project Proposal
+2026-06-07 18:17:44,235 INFO         UPLOADED! slug=cybersecurity-semester-project-pakistan
+2026-06-07 18:17:44,241 INFO         Tracked in uploaded_projects.txt: ERIC_ED364212
+2026-06-07 18:17:44,242 INFO --- Progress: 7/50 ---
+2026-06-07 18:17:52,243 WARNING         Irrelevant skipped: ERIC ED456803: Virtual Placement and Other Tools for Facilit
+2026-06-07 18:18:01,291 INFO         Downloading: ERIC_ED393493.pdf
+2026-06-07 18:18:20,562 INFO         Done: 326 KB
+2026-06-07 18:18:20,565 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:18:21,684 INFO         SEO title : Semester Project Cybersecurity Networking
+2026-06-07 18:18:21,685 INFO         SEO slug  : semester-project-cybersecurity-networking-pakistan
+2026-06-07 18:18:21,686 INFO         Duplicate title: Semester Project Cybersecurity Networking
+2026-06-07 18:18:23,840 INFO         Downloading: ERIC_ED421165.pdf
+2026-06-07 18:18:27,284 INFO         Done: 169 KB
+2026-06-07 18:18:27,288 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:18:28,647 INFO         SEO title : Cybersecurity Semester Project Proposal
+2026-06-07 18:18:28,648 INFO         SEO slug  : cybersecurity-semester-project-pakistan
+2026-06-07 18:18:28,650 INFO         Duplicate title: Cybersecurity Semester Project Proposal
+2026-06-07 18:18:30,652 INFO [SEARCH] semester project computer networks (page 2)
+2026-06-07 18:18:33,101 INFO         Found 9 results
+2026-06-07 18:18:35,705 INFO         Downloading: ERIC_ED557328.pdf
+2026-06-07 18:18:40,535 INFO         Done: 871 KB
+2026-06-07 18:18:40,539 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:18:41,559 INFO         SEO title : Cybersecurity Semester Project Proposal
+2026-06-07 18:18:41,559 INFO         SEO slug  : cybersecurity-semester-project-pakistan
+2026-06-07 18:18:41,561 INFO         Duplicate title: Cybersecurity Semester Project Proposal
+2026-06-07 18:18:41,562 WARNING         Irrelevant skipped: DTIC ADA510223: Rewriting History: Historical Research With 
+2026-06-07 18:18:43,545 INFO         Downloading: ERIC_ED557270.pdf
+2026-06-07 18:18:47,410 INFO         Done: 735 KB
+2026-06-07 18:18:47,415 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:18:48,531 INFO         SEO title : Cybersecurity Semester Project Proposal
+2026-06-07 18:18:48,531 INFO         SEO slug  : cybersecurity-semester-project-pakistan
+2026-06-07 18:18:48,533 INFO         Duplicate title: Cybersecurity Semester Project Proposal
+2026-06-07 18:18:48,535 WARNING         Irrelevant skipped: ERIC ED405828: Developing a CWIS--It's Not a Computing Cente
+2026-06-07 18:18:50,710 INFO         Downloading: ERIC_ED425476.pdf
+2026-06-07 18:18:54,773 INFO         Done: 263 KB
+2026-06-07 18:18:54,776 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:18:55,958 INFO         SEO title : Cybersecurity Semester Project Proposal
+2026-06-07 18:18:55,958 INFO         SEO slug  : cybersecurity-semester-project-pakistan
+2026-06-07 18:18:55,961 INFO         Duplicate title: Cybersecurity Semester Project Proposal
+2026-06-07 18:18:57,652 INFO         Downloading: ERIC_ED476208.pdf
+2026-06-07 18:19:01,714 INFO         Done: 205 KB
+2026-06-07 18:19:01,718 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:19:02,922 INFO         SEO title : Cybersecurity Semester Project Proposal
+2026-06-07 18:19:02,922 INFO         SEO slug  : cybersecurity-semester-project-pakistan
+2026-06-07 18:19:02,925 INFO         Duplicate title: Cybersecurity Semester Project Proposal
+2026-06-07 18:19:02,926 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00955r000200260001-7: REQUEST FOR
+2026-06-07 18:19:02,927 WARNING         Irrelevant skipped: BCA Coaching In South Delhi
+2026-06-07 18:19:02,927 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp86-00124r000100090059-9: OC-AMD STAF
+2026-06-07 18:19:04,927 INFO [SEARCH] semester project computer networks (page 3)
+2026-06-07 18:19:06,175 INFO         Found 0 results
+2026-06-07 18:19:06,178 INFO [SEARCH] final year project machine learning proposal (page 1)
+2026-06-07 18:19:13,975 INFO         Found 10 results
+2026-06-07 18:19:13,979 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:19:16,374 INFO         Downloading: RevolutionisingLetterwriting_bookDraft_byMartinKraemer.pdf
+2026-06-07 18:19:21,729 INFO         Done: 2949 KB
+2026-06-07 18:19:21,732 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:19:23,929 INFO         SEO title : AI ML FYP Project Proposal
+2026-06-07 18:19:23,929 INFO         SEO slug  : ai-ml-fyp-project-pakistan
+2026-06-07 18:19:23,931 INFO         Uploading project: AI ML FYP Project Proposal
+2026-06-07 18:19:30,880 INFO         UPLOADED! slug=ai-ml-fyp-project-pakistan
+2026-06-07 18:19:30,884 INFO         Tracked in uploaded_projects.txt: NetworkingClassWar
+2026-06-07 18:19:30,884 INFO --- Progress: 8/50 ---
+2026-06-07 18:19:38,886 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000500020001-6: A PERCEPTUA
+2026-06-07 18:19:38,886 WARNING         Irrelevant skipped: Dorian codex protocol for AI - - Hamiltonian Theoretical Fun
+2026-06-07 18:19:38,887 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00791r000200230016-5: WASHINGTON 
+2026-06-07 18:19:38,887 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp63t00245r000300380001-9: LETTER TO J
+2026-06-07 18:19:38,887 WARNING         Irrelevant skipped: CIA Reading Room 02982260: CURRENT INTELLIGENCE WEEKLY SUMMA
+2026-06-07 18:19:38,887 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90g01353r000200180023-0: ISB FIELD T
+2026-06-07 18:19:38,887 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89g00720r000800160006-0: CONVENTION 
+2026-06-07 18:19:38,887 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90t00155r000500030026-8: ATTACKING T
+2026-06-07 18:19:40,888 INFO [SEARCH] final year project machine learning proposal (page 2)
+2026-06-07 18:19:47,712 INFO         Found 10 results
+2026-06-07 18:19:47,715 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90t00155r000500010005-3: ATTACKING T
+2026-06-07 18:19:47,715 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88t00799r000200160003-1: USSR REVIEW
+2026-06-07 18:19:47,715 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00998r000100210002-3: WEEKLY REPO
+2026-06-07 18:19:47,715 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp08c01297r000800230003-8: REVIEW OF U
+2026-06-07 18:19:47,715 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00078r000100060039-1: REPORT OF S
+2026-06-07 18:19:47,715 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88-00798r000200150008-8: INTERNATION
+2026-06-07 18:19:47,716 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88-00218r000300040001-9: FBIS MODERN
+2026-06-07 18:19:47,716 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp87t00787r000400530010-4: THE SOVIET 
+2026-06-07 18:19:47,716 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp93t00643r000100310001-3: INTERNATION
+2026-06-07 18:19:47,716 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp80s01540r003200080004-0: TRANSLATION
+2026-06-07 18:19:49,717 INFO [SEARCH] final year project machine learning proposal (page 3)
+2026-06-07 18:19:52,028 INFO         Found 1 results
+2026-06-07 18:19:52,030 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88-00798r000400180004-7: INTERNATION
+2026-06-07 18:19:54,031 INFO [SEARCH] semester project database design university (page 1)
+2026-06-07 18:19:56,528 INFO         Found 5 results
+2026-06-07 18:19:57,583 INFO         Downloading: DW-IDOL-REVISED-COURSE-MAY-2018-QP.pdf
+2026-06-07 18:20:03,831 INFO         Done: 1113 KB
+2026-06-07 18:20:03,836 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:20:04,898 INFO         SEO title : Database Systems Semester Project Proposal
+2026-06-07 18:20:04,898 INFO         SEO slug  : database-systems-semester-project-pakistan
+2026-06-07 18:20:04,900 INFO         Uploading project: Database Systems Semester Project Proposal
+2026-06-07 18:20:10,121 INFO         UPLOADED! slug=database-systems-semester-project-pakistan
+2026-06-07 18:20:10,125 INFO         Tracked in uploaded_projects.txt: DW-IDOL-REVISED-COURSE-MAY-2018-QP
+2026-06-07 18:20:10,126 INFO --- Progress: 9/50 ---
+2026-06-07 18:20:18,127 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90g01353r000500570005-4: NMITC - TRA
+2026-06-07 18:20:18,127 WARNING         Irrelevant skipped: BCA Coaching In South Delhi
+2026-06-07 18:20:18,127 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88g01332r001100150039-2: WEEKLY REPO
+2026-06-07 18:20:18,127 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301310023-6: MACARTHUR A
+2026-06-07 18:20:20,128 INFO [SEARCH] semester project database design university (page 2)
+2026-06-07 18:20:21,485 INFO         Found 0 results
+2026-06-07 18:20:21,487 INFO [SEARCH] final year project data science proposal (page 1)
+2026-06-07 18:20:26,569 INFO         Found 10 results
+2026-06-07 18:20:26,572 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:20:26,572 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000200080040-0: RIGHT BRAIN
+2026-06-07 18:20:26,572 WARNING         Irrelevant skipped: Carne GeoStrata (Carne Energy)
+2026-06-07 18:20:28,020 WARNING         Pre-skip (too large 12806KB): ERIC_ED539248.pdf
+2026-06-07 18:20:28,021 WARNING         Pre-skip (too large 96856KB): ERIC_ED539248_jp2.zip
+2026-06-07 18:20:28,022 WARNING         No suitable file: ERIC_ED539248
+2026-06-07 18:20:28,023 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000500020001-6: A PERCEPTUA
+2026-06-07 18:20:28,023 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003800420001-4: ENHANCED HU
+2026-06-07 18:20:28,023 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001300070001-1: PROPOSED GR
+2026-06-07 18:20:28,023 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r002200390001-5: ENHANCED HU
+2026-06-07 18:20:28,023 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003800410001-5: ENHANCED HU
+2026-06-07 18:20:28,024 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp79-01194a000200010001-3: CA PROPAGAN
+2026-06-07 18:20:30,024 INFO [SEARCH] final year project data science proposal (page 2)
+2026-06-07 18:20:35,526 INFO         Found 10 results
+2026-06-07 18:20:35,530 WARNING         Irrelevant skipped: dmca-1
+2026-06-07 18:20:35,530 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp62-00328a000200200002-1: PERIODIC RE
+2026-06-07 18:20:36,632 INFO         Downloading: ERIC_ED361569.pdf
+2026-06-07 18:20:42,042 INFO         Done: 4264 KB
+2026-06-07 18:20:42,045 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:20:43,285 INFO         SEO title : Manufacturing Technology FYP Project Proposal
+2026-06-07 18:20:43,285 INFO         SEO slug  : manufacturing-technology-fyp-project-pakistan
+2026-06-07 18:20:43,288 INFO         Uploading project: Manufacturing Technology FYP Project Proposal
+2026-06-07 18:20:55,330 INFO         UPLOADED! slug=manufacturing-technology-fyp-project-pakistan
+2026-06-07 18:20:55,334 INFO         Tracked in uploaded_projects.txt: ERIC_ED361569
+2026-06-07 18:20:55,334 INFO --- Progress: 10/50 ---
+2026-06-07 18:21:03,335 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp75-00662r000300100001-0: OFFICE OF R
+2026-06-07 18:21:03,336 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003000410001-3: UNIFORM CON
+2026-06-07 18:21:03,336 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp84-00951r000300020003-6: CIA LIBRARY
+2026-06-07 18:21:03,336 WARNING         Irrelevant skipped: Dorian codex protocol for AI - - Hamiltonian Theoretical Fun
+2026-06-07 18:21:03,337 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003000460007-2: SECTION B -
+2026-06-07 18:21:03,337 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp84-00951r000200020001-9: COMBINED PR
+2026-06-07 18:21:03,337 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000100140050-7: PROPOSAL FO
+2026-06-07 18:21:05,337 INFO [SEARCH] final year project data science proposal (page 3)
+2026-06-07 18:21:08,933 INFO         Found 10 results
+2026-06-07 18:21:08,936 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001800220001-9: QRT TASKING
+2026-06-07 18:21:08,937 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp83-00764r000400040016-8: PROLOGUE TH
+2026-06-07 18:21:08,937 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp63-00314r000100350014-0: GEOGRAPHIC 
+2026-06-07 18:21:08,937 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp63-00314r000200240002-4: GRA ACTIVIT
+2026-06-07 18:21:08,937 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000100120003-1: PROPOSAL FO
+2026-06-07 18:21:08,938 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000400070031-9: SOME REFLEC
+2026-06-07 18:21:08,938 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003000450008-2: UNIFORM CON
+2026-06-07 18:21:08,938 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000100120004-0: PROPOSAL FO
+2026-06-07 18:21:08,938 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp63-00314r000200240003-3: GRA ACTIVIT
+2026-06-07 18:21:08,938 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp85-00988r000600060055-1: (UNTITLED)
+2026-06-07 18:21:10,939 INFO [SEARCH] final year project mobile app proposal (page 1)
+2026-06-07 18:21:13,966 INFO         Found 5 results
+2026-06-07 18:21:13,969 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:21:13,969 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp79-01194a000200010001-3: CA PROPAGAN
+2026-06-07 18:21:13,969 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88g01332r000801000011-1: LETTER TO W
+2026-06-07 18:21:13,969 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp97g00008r000100150001-5: TASK FORCE 
+2026-06-07 18:21:13,969 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00063r000200140011-9: REPORT OF S
+2026-06-07 18:21:15,970 INFO [SEARCH] final year project mobile app proposal (page 2)
+2026-06-07 18:21:17,188 INFO         Found 0 results
+2026-06-07 18:21:17,190 INFO [SEARCH] semester project software engineering students (page 1)
+2026-06-07 18:21:18,843 INFO         Found 10 results
+2026-06-07 18:21:18,845 WARNING         Irrelevant skipped: Materials for Intelligent Multimodal Interfaces
+2026-06-07 18:21:18,845 WARNING         Irrelevant skipped: ERIC ED562107: Proceedings of the International Association 
+2026-06-07 18:21:18,845 WARNING         Irrelevant skipped: DTIC ADA282365: Real World Software Engineering
+2026-06-07 18:21:20,859 INFO         Downloading: ERIC_ED454076.pdf
+2026-06-07 18:21:25,634 INFO         Done: 173 KB
+2026-06-07 18:21:25,638 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:21:26,913 INFO         SEO title : Semester Project in Software Engineering
+2026-06-07 18:21:26,913 INFO         SEO slug  : semester-project-in-software-engineering-pakistan
+2026-06-07 18:21:26,916 INFO         Uploading project: Semester Project in Software Engineering
+2026-06-07 18:21:29,077 INFO         UPLOADED! slug=semester-project-in-software-engineering-pakistan
+2026-06-07 18:21:29,083 INFO         Tracked in uploaded_projects.txt: ERIC_ED454076
+2026-06-07 18:21:29,083 INFO --- Progress: 11/50 ---
+2026-06-07 18:21:38,811 INFO         Downloading: ERIC_EJ1164609.pdf
+2026-06-07 18:21:42,831 INFO         Done: 689 KB
+2026-06-07 18:21:42,836 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:21:44,377 INFO         SEO title : Semester Project: Automated Punch Machine Using PBL
+2026-06-07 18:21:44,378 INFO         SEO slug  : semester-project-automated-punch-machine-pakistan
+2026-06-07 18:21:44,380 INFO         Uploading project: Semester Project: Automated Punch Machine Using PBL
+2026-06-07 18:21:48,169 INFO         UPLOADED! slug=semester-project-automated-punch-machine-pakistan
+2026-06-07 18:21:48,175 INFO         Tracked in uploaded_projects.txt: ERIC_EJ1164609
+2026-06-07 18:21:48,175 INFO --- Progress: 12/50 ---
+2026-06-07 18:21:56,176 WARNING         Irrelevant skipped: DTIC ADA270583: A Comprehensive Software Engineering Educati
+2026-06-07 18:21:57,966 INFO         Downloading: ERIC_EJ1064608.pdf
+2026-06-07 18:22:02,490 INFO         Done: 1134 KB
+2026-06-07 18:22:02,494 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:22:03,620 INFO         SEO title : Semester Project IC Fabrication Course
+2026-06-07 18:22:03,621 INFO         SEO slug  : semester-project-ic-fabrication-course-pakistan
+2026-06-07 18:22:03,623 INFO         Uploading project: Semester Project IC Fabrication Course
+2026-06-07 18:22:08,301 INFO         UPLOADED! slug=semester-project-ic-fabrication-course-pakistan
+2026-06-07 18:22:08,308 INFO         Tracked in uploaded_projects.txt: ERIC_EJ1064608
+2026-06-07 18:22:08,308 INFO --- Progress: 13/50 ---
+2026-06-07 18:22:16,310 WARNING         Irrelevant skipped: DTIC ADA528884: Information Assurance Applications in Softwa
+2026-06-07 18:22:16,310 WARNING         Irrelevant skipped: DTIC ADA562015: Teaching Undergraduate Software Engineering 
+2026-06-07 18:22:17,719 WARNING         Pre-skip (too large 34025KB): fundamentals_of_control_r1_6.pdf
+2026-06-07 18:22:17,719 WARNING         Pre-skip (too large 59454KB): fundamentals_of_control_r1_6_jp2.zip
+2026-06-07 18:22:17,722 WARNING         No suitable file: fundamentals_of_control_r1_6
+2026-06-07 18:22:19,723 INFO [SEARCH] semester project software engineering students (page 2)
+2026-06-07 18:22:22,238 INFO         Found 5 results
+2026-06-07 18:22:25,195 INFO         Downloading: ERIC_EJ1108373.pdf
+2026-06-07 18:22:29,003 INFO         Done: 544 KB
+2026-06-07 18:22:29,007 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:22:30,335 INFO         SEO title : Group-Based Project Exam Semester Project Proposal
+2026-06-07 18:22:30,336 INFO         SEO slug  : group-based-project-exam-semester-project-pakistan
+2026-06-07 18:22:30,338 INFO         Uploading project: Group-Based Project Exam Semester Project Proposal
+2026-06-07 18:22:33,552 INFO         UPLOADED! slug=group-based-project-exam-semester-project-pakistan
+2026-06-07 18:22:33,557 INFO         Tracked in uploaded_projects.txt: ERIC_EJ1108373
+2026-06-07 18:22:33,557 INFO --- Progress: 14/50 ---
+2026-06-07 18:22:43,006 INFO         Downloading: Onlinecourseregistersystemprojectreport.pdf
+2026-06-07 18:22:47,209 INFO         Done: 423 KB
+2026-06-07 18:22:47,213 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:22:48,438 INFO         SEO title : Semester Web Project Proposal
+2026-06-07 18:22:48,438 INFO         SEO slug  : semester-web-project-pakistan
+2026-06-07 18:22:48,441 INFO         Uploading project: Semester Web Project Proposal
+2026-06-07 18:22:51,524 INFO         UPLOADED! slug=semester-web-project-pakistan
+2026-06-07 18:22:51,530 INFO         Tracked in uploaded_projects.txt: Onlinecourseregistersystemprojectreport
+2026-06-07 18:22:51,530 INFO --- Progress: 15/50 ---
+2026-06-07 18:22:59,532 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00955r000200260001-7: REQUEST FOR
+2026-06-07 18:22:59,532 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88g01332r000300300021-3: NATIONAL TE
+2026-06-07 18:22:59,533 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301310023-6: MACARTHUR A
+2026-06-07 18:23:01,534 INFO [SEARCH] semester project software engineering students (page 3)
+2026-06-07 18:23:02,921 INFO         Found 0 results
+2026-06-07 18:23:02,923 INFO [SEARCH] research proposal data mining (page 1)
+2026-06-07 18:23:06,439 INFO         Found 10 results
+2026-06-07 18:23:06,442 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:23:06,442 WARNING         Irrelevant skipped: Referencje(michalskigrzegorz)v 20140820
+2026-06-07 18:23:06,443 WARNING         Irrelevant skipped: Risk Management (Medical)
+2026-06-07 18:23:08,195 INFO         Downloading: 275-280CRP0206P37.pdf
+2026-06-07 18:23:11,793 INFO         Done: 354 KB
+2026-06-07 18:23:11,796 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:23:13,173 INFO         SEO title : Data Science Research Proposal
+2026-06-07 18:23:13,174 INFO         SEO slug  : data-science-research-proposal-pakistan
+2026-06-07 18:23:13,176 INFO         Uploading project: Data Science Research Proposal
+2026-06-07 18:23:15,578 INFO         UPLOADED! slug=data-science-research-proposal-pakistan
+2026-06-07 18:23:15,583 INFO         Tracked in uploaded_projects.txt: Httpijtel.orgv2n6275-280CRP0206P37.pdf
+2026-06-07 18:23:15,583 INFO --- Progress: 16/50 ---
+2026-06-07 18:23:23,584 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp79-01194a000200010001-3: CA PROPAGAN
+2026-06-07 18:23:23,585 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp62-00328a000200200002-1: PERIODIC RE
+2026-06-07 18:23:25,327 INFO         Downloading: ERIC_ED454828.pdf
+2026-06-07 18:23:29,400 INFO         Done: 2433 KB
+2026-06-07 18:23:29,404 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:23:30,580 INFO         SEO title : Data Science Research Proposal
+2026-06-07 18:23:30,581 INFO         SEO slug  : data-science-research-proposal-pakistan
+2026-06-07 18:23:30,582 INFO         Duplicate title: Data Science Research Proposal
+2026-06-07 18:23:32,597 WARNING         Pre-skip (too large 37313KB): healthinformatic0000unse_b5r0.pdf
+2026-06-07 18:23:32,598 WARNING         Pre-skip (too large 37218KB): healthinformatic0000unse_b5r0_encrypted.pdf
+2026-06-07 18:23:32,598 WARNING         Pre-skip (too large 308484KB): healthinformatic0000unse_b5r0_jp2.zip
+2026-06-07 18:23:32,600 WARNING         No suitable file: healthinformatic0000unse_b5r0
+2026-06-07 18:23:32,601 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp79t01018a000100060001-4: MANGANESE I
+2026-06-07 18:23:32,601 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000700100001-5: PERCEPTUAL 
+2026-06-07 18:23:34,602 INFO [SEARCH] research proposal data mining (page 2)
+2026-06-07 18:23:37,261 INFO         Found 10 results
+2026-06-07 18:23:37,264 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00791r000100420002-0: PERCEPTUAL 
+2026-06-07 18:23:37,264 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000200050002-5: PROPOSAL FO
+2026-06-07 18:23:37,264 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000200210001-8: PERCEPTUAL 
+2026-06-07 18:23:41,492 INFO         Downloading: 1501.02134.pdf
+2026-06-07 18:23:45,530 INFO         Done: 403 KB
+2026-06-07 18:23:45,534 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:23:46,742 INFO         SEO title : Human Computation Research Proposal Data Science
+2026-06-07 18:23:46,742 INFO         SEO slug  : human-computation-research-proposal-data-science-pakistan
+2026-06-07 18:23:46,744 INFO         Uploading project: Human Computation Research Proposal Data Science
+2026-06-07 18:23:50,070 INFO         UPLOADED! slug=human-computation-research-proposal-data-science-pakistan
+2026-06-07 18:23:50,074 INFO         Tracked in uploaded_projects.txt: arxiv-1501.02134
+2026-06-07 18:23:50,074 INFO --- Progress: 17/50 ---
+2026-06-07 18:23:58,076 WARNING         Irrelevant skipped: DTIC ADA555235: Genome-Wide Association Mapping for Intellig
+2026-06-07 18:23:58,076 WARNING         Irrelevant skipped: Human-computer interaction : applications and services : 16t
+2026-06-07 18:23:59,759 INFO         Downloading: 443 Analysis of Trust Based Recommendation for Recommendation Model in Data Mining.pdf
+2026-06-07 18:24:07,567 INFO         Done: 1722 KB
+2026-06-07 18:24:07,571 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:24:08,722 INFO         SEO title : Trust-Based Recommendation Research Proposal Data Science
+2026-06-07 18:24:08,722 INFO         SEO slug  : trust-based-recommendation-research-proposal-data-science-pakistan
+2026-06-07 18:24:08,724 INFO         Uploading project: Trust-Based Recommendation Research Proposal Data Science
+2026-06-07 18:24:12,493 INFO         UPLOADED! slug=trust-based-recommendation-research-proposal-data-science-pakistan
+2026-06-07 18:24:12,498 INFO         Tracked in uploaded_projects.txt: 443AnalysisOfTrustBasedRecommendationForRecommendationModelInDataMining
+2026-06-07 18:24:12,498 INFO --- Progress: 18/50 ---
+2026-06-07 18:24:20,500 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp79-01041a000100050001-9: LOG OF SUMM
+2026-06-07 18:24:22,347 WARNING         Pre-skip (too large 60492KB): ED593090.pdf
+2026-06-07 18:24:22,347 WARNING         Pre-skip (too large 521745KB): ED593090_jp2.zip
+2026-06-07 18:24:22,351 WARNING         No suitable file: ERIC_ED593090
+2026-06-07 18:24:22,351 WARNING         Irrelevant skipped: Snap : seizing your aha! moments
+2026-06-07 18:24:24,352 INFO [SEARCH] research proposal data mining (page 3)
+2026-06-07 18:24:26,159 INFO         Found 10 results
+2026-06-07 18:24:26,161 WARNING         Irrelevant skipped: DTIC ADA624258: Sparse Representation of Multimodality Sensi
+2026-06-07 18:24:26,162 WARNING         Irrelevant skipped: DTIC ADA625561: An Integrated Framework to Access and Mine D
+2026-06-07 18:24:26,162 WARNING         Irrelevant skipped: DTIC ADA567932: Modeling Group Interactions via Open Data So
+2026-06-07 18:24:26,162 WARNING         Irrelevant skipped: DTIC ADA483964: Classification, Clustering and Dimensionalit
+2026-06-07 18:24:26,162 WARNING         Irrelevant skipped: DTIC AD1004658: A Proposal for Kelly CriterionBased Lossy Ne
+2026-06-07 18:24:26,163 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp79t00935a000300200001-9: INDICATIONS
+2026-06-07 18:24:28,785 INFO         Downloading: NASA_NTRS_Archive_19990089300.pdf
+2026-06-07 18:24:31,740 INFO         Done: 130 KB
+2026-06-07 18:24:31,743 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:24:32,891 INFO         SEO title : Data Science Research Proposal
+2026-06-07 18:24:32,891 INFO         SEO slug  : data-science-research-proposal-pakistan
+2026-06-07 18:24:32,893 INFO         Duplicate title: Data Science Research Proposal
+2026-06-07 18:24:32,894 WARNING         Irrelevant skipped: DTIC ADA564144: Mining the Immune Cell Proteome to Identify 
+2026-06-07 18:24:32,894 WARNING         Irrelevant skipped: DTIC ADA395566: The Application of Information Mining Techno
+2026-06-07 18:24:34,789 INFO         Downloading: NASA_NTRS_Archive_20140013113.pdf
+2026-06-07 18:24:38,345 INFO         Done: 49 KB
+2026-06-07 18:24:38,349 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:24:39,436 INFO         SEO title : Spaceflight Research Proposal Data Science
+2026-06-07 18:24:39,437 INFO         SEO slug  : spaceflight-research-proposal-data-science-pakistan
+2026-06-07 18:24:39,439 INFO         Uploading project: Spaceflight Research Proposal Data Science
+2026-06-07 18:24:41,493 INFO         UPLOADED! slug=spaceflight-research-proposal-data-science-pakistan
+2026-06-07 18:24:41,497 INFO         Tracked in uploaded_projects.txt: NASA_NTRS_Archive_20140013113
+2026-06-07 18:24:41,498 INFO --- Progress: 19/50 ---
+2026-06-07 18:24:51,500 INFO [SEARCH] thesis proposal electrical engineering (page 1)
+2026-06-07 18:24:53,958 INFO         Found 10 results
+2026-06-07 18:24:53,960 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:24:53,961 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp79-01194a000200010001-3: CA PROPAGAN
+2026-06-07 18:24:53,961 WARNING         Irrelevant skipped: Peak shaving and alternative power : a question of economy, 
+2026-06-07 18:24:53,961 WARNING         Irrelevant skipped: Matlab GUI for a Fluid Mixer
+2026-06-07 18:24:55,740 INFO         Downloading: proposalforrealt00grab.pdf
+2026-06-07 18:25:01,035 INFO         Done: 4045 KB
+2026-06-07 18:25:01,039 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:25:02,090 INFO         SEO title : IoT-Based Navigation Research Proposal
+2026-06-07 18:25:02,090 INFO         SEO slug  : iot-based-navigation-research-proposal-pakistan
+2026-06-07 18:25:02,092 INFO         Uploading project: IoT-Based Navigation Research Proposal
+2026-06-07 18:25:09,164 INFO         UPLOADED! slug=iot-based-navigation-research-proposal-pakistan
+2026-06-07 18:25:09,170 INFO         Tracked in uploaded_projects.txt: proposalforrealt00grab
+2026-06-07 18:25:09,170 INFO --- Progress: 20/50 ---
+2026-06-07 18:25:17,173 WARNING         Irrelevant skipped: Design and simulation of a three-axis stabilized satellite a
+2026-06-07 18:25:17,173 WARNING         Irrelevant skipped: Electrically propelled hang glider for small unit battlefiel
+2026-06-07 18:25:17,173 WARNING         Irrelevant skipped: Harvesting Renewable Energy by Using Human Foot Step
+2026-06-07 18:25:17,174 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000100140050-7: PROPOSAL FO
+2026-06-07 18:25:18,277 INFO         Downloading: NASA_NTRS_Archive_20050159699.pdf
+2026-06-07 18:25:22,339 INFO         Done: 229 KB
+2026-06-07 18:25:22,343 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:25:23,547 INFO         SEO title : IoT-Based Fluid Mixer Research Proposal
+2026-06-07 18:25:23,547 INFO         SEO slug  : iot-based-fluid-mixer-research-proposal-pakistan
+2026-06-07 18:25:23,550 INFO         Duplicate identifier: NASA_NTRS_Archive_20050159699
+2026-06-07 18:25:25,552 INFO [SEARCH] thesis proposal electrical engineering (page 2)
+2026-06-07 18:25:29,431 INFO         Found 10 results
+2026-06-07 18:25:32,028 INFO         Downloading: ERIC_EJ1058152.pdf
+2026-06-07 18:25:35,898 INFO         Done: 444 KB
+2026-06-07 18:25:35,902 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:25:37,289 INFO         SEO title : IoT-Based Technical Thesis Research Proposal
+2026-06-07 18:25:37,289 INFO         SEO slug  : iot-based-technical-thesis-research-proposal-pakistan
+2026-06-07 18:25:37,291 INFO         Uploading project: IoT-Based Technical Thesis Research Proposal
+2026-06-07 18:25:40,090 INFO         UPLOADED! slug=iot-based-technical-thesis-research-proposal-pakistan
+2026-06-07 18:25:40,094 INFO         Tracked in uploaded_projects.txt: ERIC_EJ1058152
+2026-06-07 18:25:40,094 INFO --- Progress: 21/50 ---
+2026-06-07 18:25:48,096 WARNING         Irrelevant skipped: DTIC ADA297593: X-Ray Standing Wave Studies of Adsorption Ge
+2026-06-07 18:25:49,821 INFO         Downloading: proposalforrealt1094518249.pdf
+2026-06-07 18:25:54,355 INFO         Done: 4144 KB
+2026-06-07 18:25:54,358 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:25:55,591 INFO         SEO title : IoT-Based Navigation Research Proposal
+2026-06-07 18:25:55,592 INFO         SEO slug  : iot-based-navigation-research-proposal-pakistan
+2026-06-07 18:25:55,593 INFO         Duplicate title: IoT-Based Navigation Research Proposal
+2026-06-07 18:25:55,761 WARNING         Irrelevant skipped: DTIC ADA221794: Development and Analysis of ARMA Parameter E
+2026-06-07 18:25:55,761 WARNING         Irrelevant skipped: Peak shaving and alternative power : a question of economy, 
+2026-06-07 18:25:55,761 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301210005-7: OVERSIGHT A
+2026-06-07 18:25:55,762 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp81-01043r002700120002-3: THE LITERAT
+2026-06-07 18:25:55,762 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90t00100r000500760001-5: SYRIA: FACI
+2026-06-07 18:25:55,762 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp78-03424a001100010043-3: PROPOSAL FO
+2026-06-07 18:25:55,762 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp05t00280r000300230001-0: SCIENCE AND
+2026-06-07 18:25:57,763 INFO [SEARCH] thesis proposal electrical engineering (page 3)
+2026-06-07 18:25:59,443 INFO         Found 1 results
+2026-06-07 18:25:59,446 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00965r000100260007-9: THE DIVIDED
+2026-06-07 18:26:01,447 INFO [SEARCH] thesis proposal computer science university (page 1)
+2026-06-07 18:26:04,427 INFO         Found 10 results
+2026-06-07 18:26:04,430 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:26:05,849 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:26:07,097 INFO         SEO title : AI Research Proposal Project
+2026-06-07 18:26:07,097 INFO         SEO slug  : ai-research-proposal-project-pakistan
+2026-06-07 18:26:07,101 INFO         Uploading project: AI Research Proposal Project
+2026-06-07 18:26:08,589 INFO         UPLOADED! slug=ai-research-proposal-project-pakistan
+2026-06-07 18:26:08,593 INFO         Tracked in uploaded_projects.txt: monroe-institute-research-files-toc
+2026-06-07 18:26:08,593 INFO --- Progress: 22/50 ---
+2026-06-07 18:26:16,595 WARNING         Irrelevant skipped: Matlab GUI for a Fluid Mixer
+2026-06-07 18:26:18,569 WARNING         Pre-skip (too large 8435KB): cleopatraproposa654schr.pdf
+2026-06-07 18:26:18,569 WARNING         Pre-skip (too large 57336KB): cleopatraproposa654schr_jp2.zip
+2026-06-07 18:26:18,571 WARNING         No suitable file: cleopatraproposa654schr
+2026-06-07 18:26:18,572 WARNING         Irrelevant skipped: ERIC ED022908: Educational Implications of Technological Cha
+2026-06-07 18:26:18,572 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000100140050-7: PROPOSAL FO
+2026-06-07 18:26:21,067 INFO         Downloading: prop-doc-joao-ufrn.pdf
+2026-06-07 18:26:26,932 INFO         Done: 4508 KB
+2026-06-07 18:26:26,935 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:26:28,221 INFO         SEO title : Big Data Mutation Testing Research Proposal
+2026-06-07 18:26:28,221 INFO         SEO slug  : big-data-mutation-testing-research-proposal-pakistan
+2026-06-07 18:26:28,223 INFO         Uploading project: Big Data Mutation Testing Research Proposal
+2026-06-07 18:26:38,832 INFO         UPLOADED! slug=big-data-mutation-testing-research-proposal-pakistan
+2026-06-07 18:26:38,839 INFO         Tracked in uploaded_projects.txt: prop-doc-joao-ufrn
+2026-06-07 18:26:38,839 INFO --- Progress: 23/50 ---
+2026-06-07 18:26:48,040 INFO         Downloading: NASA_NTRS_Archive_20050159699.pdf
+2026-06-07 18:26:51,692 INFO         Done: 229 KB
+2026-06-07 18:26:51,695 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:26:53,049 INFO         SEO title : AI Fluid Mixer Research Proposal
+2026-06-07 18:26:53,050 INFO         SEO slug  : ai-fluid-mixer-research-proposal-pakistan
+2026-06-07 18:26:53,052 INFO         Duplicate identifier: NASA_NTRS_Archive_20050159699
+2026-06-07 18:26:55,145 INFO         Downloading: Proposta-Doutorado-Joao-Batista-Final-Version.pdf
+2026-06-07 18:27:01,817 INFO         Done: 4508 KB
+2026-06-07 18:27:01,821 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:27:03,323 INFO         SEO title : AI Research Proposal Project Proposal
+2026-06-07 18:27:03,324 INFO         SEO slug  : ai-research-proposal-project-pakistan
+2026-06-07 18:27:03,326 INFO         Duplicate slug: ai-research-proposal-project-pakistan
+2026-06-07 18:27:04,704 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301210005-7: OVERSIGHT A
+2026-06-07 18:27:06,705 INFO [SEARCH] thesis proposal computer science university (page 2)
+2026-06-07 18:27:12,042 INFO         Found 10 results
+2026-06-07 18:27:12,044 WARNING         Irrelevant skipped: CIA Reading Room 00363815: CONGRESSIONAL RECORD-HOUSE.
+2026-06-07 18:27:12,044 WARNING         Irrelevant skipped: CIA Reading Room 06547185: ASSISTANCE AGREEMENT 2011-1107140
+2026-06-07 18:27:12,045 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00530r001002330008-0: LETTER TO (
+2026-06-07 18:27:12,045 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp86b00885r001001040127-1: (SANITIZED)
+2026-06-07 18:27:12,045 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88g00186r001301640010-0: WEEKLY REPO
+2026-06-07 18:27:12,045 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00955r000200260001-7: REQUEST FOR
+2026-06-07 18:27:12,045 WARNING         Irrelevant skipped: CIA Reading Room 06547186: AWARD NO. 2014-140603000007
+2026-06-07 18:27:12,045 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp78-03424a001100010043-3: PROPOSAL FO
+2026-06-07 18:27:12,045 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp08c01297r000500010009-9: TERRITORIAL
+2026-06-07 18:27:12,046 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90g01359r000200030029-4: OVERSIGHT A
+2026-06-07 18:27:14,047 INFO [SEARCH] thesis proposal computer science university (page 3)
+2026-06-07 18:27:17,114 INFO         Found 4 results
+2026-06-07 18:27:17,117 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp71b00364r000200190005-1: JOURNAL - O
+2026-06-07 18:27:17,117 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp05t00280r000300230001-0: SCIENCE AND
+2026-06-07 18:27:17,117 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89g00720r000600850013-8: WOODROW WIL
+2026-06-07 18:27:17,117 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00965r000100260007-9: THE DIVIDED
+2026-06-07 18:27:19,118 INFO [SEARCH] research proposal computer science students (page 1)
+2026-06-07 18:27:22,496 INFO         Found 10 results
+2026-06-07 18:27:22,498 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:27:22,498 WARNING         Irrelevant skipped: ERIC ED562048: Annual Proceedings of Selected Papers on The 
+2026-06-07 18:27:22,498 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001800130001-9: FREE WORLD 
+2026-06-07 18:27:22,498 WARNING         Irrelevant skipped: ERIC ED562095: Proceedings of the International Association 
+2026-06-07 18:27:22,498 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp62-00328a000200200006-7: PERIODIC RE
+2026-06-07 18:27:23,943 INFO         Downloading: Monroe Institute Research - Title Page.pdf
+2026-06-07 18:27:27,658 INFO         Done: 26 KB
+2026-06-07 18:27:27,661 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:27:28,988 INFO         SEO title : AI ML Research Proposal Project
+2026-06-07 18:27:28,988 INFO         SEO slug  : ai-ml-research-proposal-project-pakistan
+2026-06-07 18:27:28,991 INFO         Duplicate identifier: monroe-institute-research-files-toc
+2026-06-07 18:27:34,548 INFO         Downloading: ERIC_ED538916.pdf
+2026-06-07 18:27:39,140 INFO         Done: 3121 KB
+2026-06-07 18:27:39,143 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:27:40,261 INFO         SEO title : AI Research Proposal Project
+2026-06-07 18:27:40,261 INFO         SEO slug  : ai-research-proposal-project-pakistan
+2026-06-07 18:27:40,263 INFO         Duplicate title: AI Research Proposal Project
+2026-06-07 18:27:41,541 INFO         Downloading: ERIC_ED454828.pdf
+2026-06-07 18:27:46,975 INFO         Done: 2433 KB
+2026-06-07 18:27:46,978 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:27:48,098 INFO         SEO title : AI Knowledge Navigation Research Proposal
+2026-06-07 18:27:48,098 INFO         SEO slug  : ai-knowledge-navigation-research-proposal-pakistan
+2026-06-07 18:27:48,100 INFO         Uploading project: AI Knowledge Navigation Research Proposal
+2026-06-07 18:27:57,030 INFO         UPLOADED! slug=ai-knowledge-navigation-research-proposal-pakistan
+2026-06-07 18:27:57,034 INFO         Tracked in uploaded_projects.txt: ERIC_ED454828
+2026-06-07 18:27:57,034 INFO --- Progress: 24/50 ---
+2026-06-07 18:28:05,035 WARNING         Irrelevant skipped: Real world research : a resource for users of social researc
+2026-06-07 18:28:06,435 WARNING         Pre-skip (too large 15164KB): marketresearchin0000hagu_f3d1.pdf
+2026-06-07 18:28:06,436 WARNING         Pre-skip (too large 15095KB): marketresearchin0000hagu_f3d1_encrypted.pdf
+2026-06-07 18:28:06,436 WARNING         Pre-skip (too large 141321KB): marketresearchin0000hagu_f3d1_jp2.zip
+2026-06-07 18:28:06,437 WARNING         No suitable file: marketresearchin0000hagu_f3d1
+2026-06-07 18:28:08,438 INFO [SEARCH] research proposal computer science students (page 2)
+2026-06-07 18:28:11,629 INFO         Found 10 results
+2026-06-07 18:28:13,503 INFO         Downloading: ERIC_ED455213.pdf
+2026-06-07 18:28:18,763 INFO         Done: 2454 KB
+2026-06-07 18:28:18,766 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:28:20,104 INFO         SEO title : AI Education Research Proposal
+2026-06-07 18:28:20,105 INFO         SEO slug  : ai-education-research-proposal-pakistan
+2026-06-07 18:28:20,106 INFO         Uploading project: AI Education Research Proposal
+2026-06-07 18:28:22,649 INFO         UPLOADED! slug=ai-education-research-proposal-pakistan
+2026-06-07 18:28:22,655 INFO         Tracked in uploaded_projects.txt: ERIC_ED455213
+2026-06-07 18:28:22,655 INFO --- Progress: 25/50 ---
+2026-06-07 18:28:30,657 WARNING         Irrelevant skipped: CIA Reading Room 03258180: CIA HENCHMEN CARRY OUT MURDER POL
+2026-06-07 18:28:30,657 WARNING         Irrelevant skipped: ERIC ED230939: Suggested Subjects of Composition for Lower-D
+2026-06-07 18:28:30,657 WARNING         Irrelevant skipped: ERIC ED410942: Using Internet To Integrate Curriculum.
+2026-06-07 18:28:30,657 WARNING         Irrelevant skipped: CIA Reading Room 02944291: HUMAN PARANORMAL CAPABILITIES
+2026-06-07 18:28:31,759 WARNING         Pre-skip (too large 60492KB): ED593090.pdf
+2026-06-07 18:28:31,760 WARNING         Pre-skip (too large 521745KB): ED593090_jp2.zip
+2026-06-07 18:28:31,762 WARNING         No suitable file: ERIC_ED593090
+2026-06-07 18:28:31,762 WARNING         Irrelevant skipped: DTIC ADA390203: Interactive Computer Classroom Proposal to t
+2026-06-07 18:28:31,762 WARNING         Irrelevant skipped: DTIC ADA389367: Interactive Computer Classroom Proposal to t
+2026-06-07 18:28:31,762 WARNING         Irrelevant skipped: ERIC ED393497: Virtual Space Learning MariMUSE: Connecting L
+2026-06-07 18:28:31,763 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp85-00988r000600060055-1: (UNTITLED)
+2026-06-07 18:28:33,763 INFO [SEARCH] research proposal computer science students (page 3)
+2026-06-07 18:28:35,356 INFO         Found 10 results
+2026-06-07 18:28:37,034 INFO         Downloading: lavisky1973.pdf
+2026-06-07 18:28:41,667 INFO         Done: 139 KB
+2026-06-07 18:28:41,671 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:28:42,872 INFO         SEO title : AI Research Proposal Project
+2026-06-07 18:28:42,872 INFO         SEO slug  : ai-research-proposal-project-pakistan
+2026-06-07 18:28:42,874 INFO         Duplicate title: AI Research Proposal Project
+2026-06-07 18:28:45,290 WARNING         Pre-skip (too large 33860KB): innovationsinele0000unse.pdf
+2026-06-07 18:28:45,290 WARNING         Pre-skip (too large 33357KB): innovationsinele0000unse_encrypted.pdf
+2026-06-07 18:28:45,291 WARNING         Pre-skip (too large 323691KB): innovationsinele0000unse_jp2.zip
+2026-06-07 18:28:45,293 WARNING         No suitable file: innovationsinele0000unse
+2026-06-07 18:28:47,008 INFO         Downloading: ERIC_EJ1105303.pdf
+2026-06-07 18:28:50,395 INFO         Done: 179 KB
+2026-06-07 18:28:50,399 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:28:51,661 INFO         SEO title : AI-Enriched Physics Curriculum Research Proposal
+2026-06-07 18:28:51,662 INFO         SEO slug  : ai-enriched-physics-curriculum-research-proposal-pakistan
+2026-06-07 18:28:51,664 INFO         Uploading project: AI-Enriched Physics Curriculum Research Proposal
+2026-06-07 18:28:54,650 INFO         UPLOADED! slug=ai-enriched-physics-curriculum-research-proposal-pakistan
+2026-06-07 18:28:54,656 INFO         Tracked in uploaded_projects.txt: ERIC_EJ1105303
+2026-06-07 18:28:54,656 INFO --- Progress: 26/50 ---
+2026-06-07 18:29:02,657 WARNING         Irrelevant skipped: ERIC EJ969852: Exporting English Pronunciation from China: T
+2026-06-07 18:29:06,910 WARNING         Pre-skip (too large 33849KB): innovationsinele0000unse_t0q5.pdf
+2026-06-07 18:29:06,910 WARNING         Pre-skip (too large 33379KB): innovationsinele0000unse_t0q5_encrypted.pdf
+2026-06-07 18:29:06,910 WARNING         Pre-skip (too large 304245KB): innovationsinele0000unse_t0q5_jp2.zip
+2026-06-07 18:29:06,912 WARNING         No suitable file: innovationsinele0000unse_t0q5
+2026-06-07 18:29:06,913 WARNING         Irrelevant skipped: ERIC ED579296: Tested Strategies for Recruiting and Retentio
+2026-06-07 18:29:06,913 WARNING         Irrelevant skipped: DTIC ADA112936: The Development of Representation Methods to
+2026-06-07 18:29:06,913 WARNING         Irrelevant skipped: DTIC ADA530114: CSSG: Interactive Realism in Graphics with C
+2026-06-07 18:29:08,907 INFO         Downloading: ERIC_EJ1158775.pdf
+2026-06-07 18:29:12,348 INFO         Done: 124 KB
+2026-06-07 18:29:12,352 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:29:13,719 INFO         SEO title : AI Research Proposal on Zhai Lifestyle Effects
+2026-06-07 18:29:13,720 INFO         SEO slug  : ai-research-proposal-on-zhai-lifestyle-effects
+2026-06-07 18:29:13,723 INFO         Uploading project: AI Research Proposal on Zhai Lifestyle Effects
+2026-06-07 18:29:15,702 INFO         UPLOADED! slug=ai-research-proposal-on-zhai-lifestyle-effects
+2026-06-07 18:29:15,706 INFO         Tracked in uploaded_projects.txt: ERIC_EJ1158775
+2026-06-07 18:29:15,706 INFO --- Progress: 27/50 ---
+2026-06-07 18:29:25,727 INFO         Downloading: ERIC_EJ989298.pdf
+2026-06-07 18:29:29,096 INFO         Done: 154 KB
+2026-06-07 18:29:29,101 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:29:30,312 INFO         SEO title : Blended Learning Research Proposal AI ML
+2026-06-07 18:29:30,312 INFO         SEO slug  : blended-learning-research-proposal-ai-ml-pakistan
+2026-06-07 18:29:30,314 INFO         Uploading project: Blended Learning Research Proposal AI ML
+2026-06-07 18:29:32,959 INFO         UPLOADED! slug=blended-learning-research-proposal-ai-ml-pakistan
+2026-06-07 18:29:32,962 INFO         Tracked in uploaded_projects.txt: ERIC_EJ989298
+2026-06-07 18:29:32,962 INFO --- Progress: 28/50 ---
+2026-06-07 18:29:42,963 INFO [SEARCH] final year project blockchain proposal (page 1)
+2026-06-07 18:29:45,391 INFO         Found 4 results
+2026-06-07 18:29:45,393 WARNING         Irrelevant skipped: dmca-1
+2026-06-07 18:29:45,393 WARNING         Irrelevant skipped: Program International Congress On Desert Economy – ENCG Dakh
+2026-06-07 18:29:45,395 WARNING         Irrelevant skipped: Dakhla. The Third International Congress On Desert Economy. 
+2026-06-07 18:29:45,395 WARNING         Irrelevant skipped: Dakhla. The Third International Congress On Desert Economy. 
+2026-06-07 18:29:47,396 INFO [SEARCH] final year project blockchain proposal (page 2)
+2026-06-07 18:29:48,627 INFO         Found 0 results
+2026-06-07 18:29:48,629 INFO [SEARCH] mini project android app students (page 1)
+2026-06-07 18:29:50,035 INFO         Found 0 results
+2026-06-07 18:29:50,038 INFO [SEARCH] mini project python beginners (page 1)
+2026-06-07 18:29:51,515 INFO         Found 2 results
+2026-06-07 18:29:51,518 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001700210026-4: THE OUT-OF-
+2026-06-07 18:29:51,518 WARNING         Irrelevant skipped: Make Magazine, Issue 63
+2026-06-07 18:29:53,518 INFO [SEARCH] mini project python beginners (page 2)
+2026-06-07 18:29:54,872 INFO         Found 0 results
+2026-06-07 18:29:54,874 INFO [SEARCH] mini project database management system (page 1)
+2026-06-07 18:29:59,521 INFO         Found 10 results
+2026-06-07 18:29:59,523 WARNING         Irrelevant skipped: CHIP CD-ROM Romania November 2005
+2026-06-07 18:29:59,523 WARNING         Irrelevant skipped: The Taxpayer Magazine 063 CTF
+2026-06-07 18:29:59,523 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r002900090001-1: ADP SYSTEM 
+2026-06-07 18:29:59,523 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00077r000100060005-9: ATTACHMENTS
+2026-06-07 18:29:59,523 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90m01364r000800380003-6: OFFICE OF P
+2026-06-07 18:29:59,523 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-01078r000100080001-1: REPORT FROM
+2026-06-07 18:29:59,524 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00087r000300280002-7: EXCELLENCE
+2026-06-07 18:30:00,923 WARNING         Pre-skip (too large 6467KB): GlowGuide_Report_AABEL.pdf
+2026-06-07 18:30:00,924 WARNING         Pre-skip (too large 21738KB): GlowGuide_Report_AABEL_jp2.zip
+2026-06-07 18:30:00,926 WARNING         No suitable file: glow-guide-report-aabel
+2026-06-07 18:30:00,926 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00063r000300270003-3: WEEKLY REPO
+2026-06-07 18:30:00,926 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00379r000100280002-3: FY-87 OL OB
+2026-06-07 18:30:02,927 INFO [SEARCH] mini project database management system (page 2)
+2026-06-07 18:30:07,191 INFO         Found 10 results
+2026-06-07 18:30:07,194 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90m01364r000800340009-4: INTERIM REP
+2026-06-07 18:30:07,194 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00379r000100150001-8: QUESTIONNAI
+2026-06-07 18:30:07,194 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp12-00036r000100100001-9: A STUDY OF 
+2026-06-07 18:30:07,194 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00379r000100280003-2: UPDATES ON 
+2026-06-07 18:30:07,194 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp12-00036r000100230001-5: OFFICE OF L
+2026-06-07 18:30:07,194 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp91-00981r000200270002-3: UPDATES TO 
+2026-06-07 18:30:07,194 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp12-00036r000100110008-1: P&PD STRATE
+2026-06-07 18:30:07,194 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp91b00060r000100180008-8: TRANSACTION
+2026-06-07 18:30:07,195 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp91-00058r000100150002-2: REQUEST FOR
+2026-06-07 18:30:07,195 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp91-00981r000100130002-9: REVIEW OF P
+2026-06-07 18:30:09,196 INFO [SEARCH] mini project database management system (page 3)
+2026-06-07 18:30:13,135 INFO         Found 8 results
+2026-06-07 18:30:13,137 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp91-00280r000200160002-3: STATUS REPO
+2026-06-07 18:30:13,137 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00379r000100290017-6: UPDATES ON 
+2026-06-07 18:30:13,137 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00063r000300360004-2: BREAKFAST B
+2026-06-07 18:30:13,137 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp94-00896r000200020011-2: (SANITIZED)
+2026-06-07 18:30:13,137 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88-00218r000300010001-2: DESIGN REVI
+2026-06-07 18:30:13,137 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00078r000100010045-9: INFOMATION 
+2026-06-07 18:30:13,137 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88g00186r000100070047-7: EXCELLENCE 
+2026-06-07 18:30:13,138 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301310023-6: MACARTHUR A
+2026-06-07 18:30:15,138 INFO [SEARCH] research proposal cybersecurity network (page 1)
+2026-06-07 18:30:17,059 INFO         Found 2 results
+2026-06-07 18:30:17,062 WARNING         Irrelevant skipped: dmca-1
+2026-06-07 18:30:17,062 WARNING         Irrelevant skipped: DTIC ADA626370: Heterogeneous VM Replication: A New Approach
+2026-06-07 18:30:19,062 INFO [SEARCH] research proposal cybersecurity network (page 2)
+2026-06-07 18:30:20,371 INFO         Found 0 results
+2026-06-07 18:30:20,373 INFO [SEARCH] research proposal natural language processing (page 1)
+2026-06-07 18:30:27,630 INFO         Found 10 results
+2026-06-07 18:30:27,633 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000200080040-0: RIGHT BRAIN
+2026-06-07 18:30:27,633 WARNING         Irrelevant skipped: இராசேந்திரன்
+2026-06-07 18:30:27,634 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000600310001-7: DOD PSYCHOE
+2026-06-07 18:30:27,634 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000500020001-6: A PERCEPTUA
+2026-06-07 18:30:29,159 INFO         Downloading: Monroe Institute Research - Title Page.pdf
+2026-06-07 18:30:32,278 INFO         Done: 26 KB
+2026-06-07 18:30:32,281 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:30:33,774 INFO         SEO title : AI Research Proposal Project
+2026-06-07 18:30:33,775 INFO         SEO slug  : ai-research-proposal-project-pakistan
+2026-06-07 18:30:33,776 INFO         Duplicate identifier: monroe-institute-research-files-toc
+2026-06-07 18:30:35,130 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003800420001-4: ENHANCED HU
+2026-06-07 18:30:35,130 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001300070001-1: PROPOSED GR
+2026-06-07 18:30:35,130 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r002200390001-5: ENHANCED HU
+2026-06-07 18:30:35,131 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003800410001-5: ENHANCED HU
+2026-06-07 18:30:35,131 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000700070001-9: A PERCEPTUA
+2026-06-07 18:30:37,131 INFO [SEARCH] research proposal natural language processing (page 2)
+2026-06-07 18:30:42,996 INFO         Found 10 results
+2026-06-07 18:30:42,999 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r002200400001-3: ENHANCED HU
+2026-06-07 18:30:42,999 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp62-00328a000200200002-1: PERIODIC RE
+2026-06-07 18:30:42,999 WARNING         Irrelevant skipped: The Taxpayer Magazine 067 CTF
+2026-06-07 18:30:42,999 WARNING         Irrelevant skipped: Codex Alimentarius
+2026-06-07 18:30:43,000 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp81b00401r002600010013-2: (Sanitized)
+2026-06-07 18:30:43,000 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000200080007-7: A PERCEPTUA
+2026-06-07 18:30:43,000 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp84-00951r000300020003-6: CIA LIBRARY
+2026-06-07 18:30:43,000 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp84-00951r000200020001-9: COMBINED PR
+2026-06-07 18:30:43,000 WARNING         Irrelevant skipped: DTIC ADA071445: Retrieving Information from an Episodic Memo
+2026-06-07 18:30:44,083 WARNING         Pre-skip (too large 60492KB): ED593090.pdf
+2026-06-07 18:30:44,083 WARNING         Pre-skip (too large 521745KB): ED593090_jp2.zip
+2026-06-07 18:30:44,085 WARNING         No suitable file: ERIC_ED593090
+2026-06-07 18:30:46,086 INFO [SEARCH] research proposal natural language processing (page 3)
+2026-06-07 18:30:47,995 INFO         Found 10 results
+2026-06-07 18:30:47,998 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp63-00314r000100430007-9: DRAFT PROPO
+2026-06-07 18:30:49,679 INFO         Downloading: 1508.00945.pdf
+2026-06-07 18:30:53,411 INFO         Done: 320 KB
+2026-06-07 18:30:53,415 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:30:54,889 INFO         SEO title : AI Structured Prediction Research Proposal
+2026-06-07 18:30:54,889 INFO         SEO slug  : ai-structured-prediction-research-proposal-pakistan
+2026-06-07 18:30:54,891 INFO         Uploading project: AI Structured Prediction Research Proposal
+2026-06-07 18:30:58,086 INFO         UPLOADED! slug=ai-structured-prediction-research-proposal-pakistan
+2026-06-07 18:30:58,089 INFO         Tracked in uploaded_projects.txt: arxiv-1508.00945
+2026-06-07 18:30:58,090 INFO --- Progress: 29/50 ---
+2026-06-07 18:31:07,864 INFO         Downloading: 1508.04570.pdf
+2026-06-07 18:31:12,043 INFO         Done: 832 KB
+2026-06-07 18:31:12,047 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:31:13,107 INFO         SEO title : AI Research Proposal for SP Machine Development
+2026-06-07 18:31:13,107 INFO         SEO slug  : ai-research-proposal-sp-machine-development
+2026-06-07 18:31:13,109 INFO         Uploading project: AI Research Proposal for SP Machine Development
+2026-06-07 18:31:16,718 INFO         UPLOADED! slug=ai-research-proposal-sp-machine-development
+2026-06-07 18:31:16,724 INFO         Tracked in uploaded_projects.txt: arxiv-1508.04570
+2026-06-07 18:31:16,726 INFO --- Progress: 30/50 ---
+2026-06-07 18:31:24,727 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp68-00069a000100130010-3: COMMITTEE O
+2026-06-07 18:31:24,728 WARNING         Irrelevant skipped: Extracting Bilingual Persian Italian Lexicon from Comparable
+2026-06-07 18:31:24,728 WARNING         Irrelevant skipped: Better Summarization Evaluation with Word Embeddings for ROU
+2026-06-07 18:31:28,990 WARNING         Pre-skip (too large 28251KB): informationsyste0000unit.pdf
+2026-06-07 18:31:28,991 WARNING         Pre-skip (too large 27910KB): informationsyste0000unit_encrypted.pdf
+2026-06-07 18:31:28,991 WARNING         Pre-skip (too large 298852KB): informationsyste0000unit_jp2.zip
+2026-06-07 18:31:28,993 WARNING         No suitable file: informationsyste0000unit
+2026-06-07 18:31:31,474 INFO         Downloading: 4-sentiment-analysis-on-article-blog-post-as-an-application-of-nlp-chatbot.pdf
+2026-06-07 18:31:35,048 INFO         Done: 392 KB
+2026-06-07 18:31:35,052 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:31:37,290 INFO         SEO title : NLP Sentiment Analysis Research Proposal
+2026-06-07 18:31:37,290 INFO         SEO slug  : nlp-sentiment-analysis-research-proposal-pakistan
+2026-06-07 18:31:37,292 INFO         Uploading project: NLP Sentiment Analysis Research Proposal
+2026-06-07 18:31:40,542 INFO         UPLOADED! slug=nlp-sentiment-analysis-research-proposal-pakistan
+2026-06-07 18:31:40,546 INFO         Tracked in uploaded_projects.txt: 4-sentiment-analysis-on-article-blog-post-as-an-application-of-nlp-chatbot
+2026-06-07 18:31:40,546 INFO --- Progress: 31/50 ---
+2026-06-07 18:31:48,547 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp85s00362r000600080012-4: INTELLIGENC
+2026-06-07 18:31:48,547 WARNING         Irrelevant skipped: From narrative descriptions to MedDRA: automagically encodin
+2026-06-07 18:31:50,548 INFO [SEARCH] semester project data structures algorithms (page 1)
+2026-06-07 18:31:52,070 INFO         Found 1 results
+2026-06-07 18:31:52,072 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00955r000200260001-7: REQUEST FOR
+2026-06-07 18:31:54,073 INFO [SEARCH] semester project data structures algorithms (page 2)
+2026-06-07 18:31:55,445 INFO         Found 0 results
+2026-06-07 18:31:55,447 INFO [SEARCH] mini project web development students (page 1)
+2026-06-07 18:31:57,506 INFO         Found 3 results
+2026-06-07 18:31:59,582 WARNING         Pre-skip (too large 5377KB): ERIC_ED457834.pdf
+2026-06-07 18:31:59,583 WARNING         Pre-skip (too large 404571KB): ERIC_ED457834_jp2.zip
+2026-06-07 18:31:59,584 WARNING         No suitable file: ERIC_ED457834
+2026-06-07 18:31:59,585 WARNING         Irrelevant skipped: CIA Reading Room 06741356: CY 2006 CASE LOG
+2026-06-07 18:32:01,307 INFO         Downloading: ED614271.pdf
+2026-06-07 18:32:05,051 INFO         Done: 764 KB
+2026-06-07 18:32:05,055 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:32:06,086 INFO         SEO title : Virtual Reality Mini Project Web Development
+2026-06-07 18:32:06,086 INFO         SEO slug  : virtual-reality-mini-project-web-development-pakistan
+2026-06-07 18:32:06,088 INFO         Uploading project: Virtual Reality Mini Project Web Development
+2026-06-07 18:32:10,161 INFO         UPLOADED! slug=virtual-reality-mini-project-web-development-pakistan
+2026-06-07 18:32:10,167 INFO         Tracked in uploaded_projects.txt: ERIC_ED614271
+2026-06-07 18:32:10,167 INFO --- Progress: 32/50 ---
+2026-06-07 18:32:20,168 INFO [SEARCH] mini project web development students (page 2)
+2026-06-07 18:32:21,508 INFO         Found 0 results
+2026-06-07 18:32:21,509 INFO [SEARCH] research proposal IoT smart systems (page 1)
+2026-06-07 18:32:22,810 INFO         Found 3 results
+2026-06-07 18:32:23,934 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:32:24,948 INFO         SEO title : IoT-Based Smart Manufacturing Research Proposal
+2026-06-07 18:32:24,948 INFO         SEO slug  : iot-based-smart-manufacturing-research-proposal-pakistan
+2026-06-07 18:32:24,950 INFO         Uploading project: IoT-Based Smart Manufacturing Research Proposal
+2026-06-07 18:32:28,047 INFO         UPLOADED! slug=iot-based-smart-manufacturing-research-proposal-pakistan
+2026-06-07 18:32:28,050 INFO         Tracked in uploaded_projects.txt: examining-a-generic-streaming-architecture-for-smart-manufacturing-s-big-data-processing
+2026-06-07 18:32:28,051 INFO --- Progress: 33/50 ---
+2026-06-07 18:32:36,052 WARNING         Irrelevant skipped: The Building Blocks of IoT Analytics : Internet-Of-Things An
+2026-06-07 18:32:38,219 INFO         Downloading: 1404.1621.pdf
+2026-06-07 18:32:41,725 INFO         Done: 103 KB
+2026-06-07 18:32:41,730 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:32:43,033 INFO         SEO title : IoT Research Proposal Project
+2026-06-07 18:32:43,033 INFO         SEO slug  : iot-research-proposal-project-pakistan
+2026-06-07 18:32:43,035 INFO         Uploading project: IoT Research Proposal Project
+2026-06-07 18:32:45,147 INFO         UPLOADED! slug=iot-research-proposal-project-pakistan
+2026-06-07 18:32:45,153 INFO         Tracked in uploaded_projects.txt: arxiv-1404.1621
+2026-06-07 18:32:45,153 INFO --- Progress: 34/50 ---
+2026-06-07 18:32:55,154 INFO [SEARCH] research proposal IoT smart systems (page 2)
+2026-06-07 18:32:56,415 INFO         Found 0 results
+2026-06-07 18:32:56,417 INFO [SEARCH] final year project computer science proposal (page 1)
+2026-06-07 18:33:01,083 INFO         Found 10 results
+2026-06-07 18:33:01,085 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:33:01,086 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00787r000500020001-6: A PERCEPTUA
+2026-06-07 18:33:01,086 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003800420001-4: ENHANCED HU
+2026-06-07 18:33:01,086 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001300070001-1: PROPOSED GR
+2026-06-07 18:33:01,086 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r002200390001-5: ENHANCED HU
+2026-06-07 18:33:01,086 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003800410001-5: ENHANCED HU
+2026-06-07 18:33:02,837 WARNING         Pre-skip (too large 10653KB): ERIC_ED316442.pdf
+2026-06-07 18:33:02,837 WARNING         Pre-skip (too large 330350KB): ERIC_ED316442_jp2.zip
+2026-06-07 18:33:02,839 WARNING         No suitable file: ERIC_ED316442
+2026-06-07 18:33:04,789 INFO         Downloading: ERIC_ED362746.pdf
+2026-06-07 18:33:09,333 INFO         Done: 739 KB
+2026-06-07 18:33:09,337 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:33:10,622 INFO         SEO title : Industrial Tech Prep FYP Project Proposal
+2026-06-07 18:33:10,622 INFO         SEO slug  : industrial-tech-prep-fyp-project-pakistan
+2026-06-07 18:33:10,624 INFO         Uploading project: Industrial Tech Prep FYP Project Proposal
+2026-06-07 18:33:13,651 INFO         UPLOADED! slug=industrial-tech-prep-fyp-project-pakistan
+2026-06-07 18:33:13,655 INFO         Tracked in uploaded_projects.txt: ERIC_ED362746
+2026-06-07 18:33:13,655 INFO --- Progress: 35/50 ---
+2026-06-07 18:33:21,657 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp84-00951r000300020003-6: CIA LIBRARY
+2026-06-07 18:33:23,763 INFO         Downloading: ERIC_ED230125.pdf
+2026-06-07 18:33:28,295 INFO         Done: 2299 KB
+2026-06-07 18:33:28,300 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:33:29,551 INFO         SEO title : Faculty Research FYP Project Proposal
+2026-06-07 18:33:29,551 INFO         SEO slug  : faculty-research-fyp-project-pakistan
+2026-06-07 18:33:29,554 INFO         Uploading project: Faculty Research FYP Project Proposal
+2026-06-07 18:33:33,538 INFO         UPLOADED! slug=faculty-research-fyp-project-pakistan
+2026-06-07 18:33:33,542 INFO         Tracked in uploaded_projects.txt: ERIC_ED230125
+2026-06-07 18:33:33,542 INFO --- Progress: 36/50 ---
+2026-06-07 18:33:43,543 INFO [SEARCH] final year project computer science proposal (page 2)
+2026-06-07 18:33:48,100 INFO         Found 10 results
+2026-06-07 18:33:48,103 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003000460007-2: SECTION B -
+2026-06-07 18:33:48,103 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp84-00951r000200020001-9: COMBINED PR
+2026-06-07 18:33:48,103 WARNING         Irrelevant skipped: CIA Reading Room 03258180: CIA HENCHMEN CARRY OUT MURDER POL
+2026-06-07 18:33:48,103 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000100140050-7: PROPOSAL FO
+2026-06-07 18:33:48,103 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001800220001-9: QRT TASKING
+2026-06-07 18:33:48,104 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000100120003-1: PROPOSAL FO
+2026-06-07 18:33:48,104 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003000450008-2: UNIFORM CON
+2026-06-07 18:33:48,104 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00792r000100120004-0: PROPOSAL FO
+2026-06-07 18:33:48,104 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp85-00988r000600060055-1: (UNTITLED)
+2026-06-07 18:33:48,104 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301210005-7: OVERSIGHT A
+2026-06-07 18:33:50,104 INFO [SEARCH] final year project computer science proposal (page 3)
+2026-06-07 18:33:55,268 INFO         Found 10 results
+2026-06-07 18:33:55,271 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88t01235r000200260001-6: BRAZIL AND 
+2026-06-07 18:33:55,271 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90g01353r000200180023-0: ISB FIELD T
+2026-06-07 18:33:55,271 WARNING         Irrelevant skipped: CIA Reading Room 00806939: (EST PUB DATE) ABOUT AN AIRPLANE
+2026-06-07 18:33:55,271 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp92-00420r000100030001-9: CLASSIFICAT
+2026-06-07 18:33:55,271 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89g00720r000800160006-0: CONVENTION 
+2026-06-07 18:33:55,272 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90t00155r000500030026-8: ATTACKING T
+2026-06-07 18:33:55,272 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp92m00732r000700070037-4: TESTIMONY O
+2026-06-07 18:33:55,272 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90t00155r000500010005-3: ATTACKING T
+2026-06-07 18:33:55,272 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00530r000701680019-5: FACT BOOK O
+2026-06-07 18:33:55,272 WARNING         Irrelevant skipped: CIA Reading Room 05875316: CARTOGRAPHIC SUPPORT TO CURRENT I
+2026-06-07 18:33:57,273 INFO [SEARCH] research proposal deep learning (page 1)
+2026-06-07 18:34:00,694 INFO         Found 10 results
+2026-06-07 18:34:00,697 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:34:01,826 WARNING         Pre-skip (too large 12806KB): ERIC_ED539248.pdf
+2026-06-07 18:34:01,827 WARNING         Pre-skip (too large 96856KB): ERIC_ED539248_jp2.zip
+2026-06-07 18:34:01,828 WARNING         No suitable file: ERIC_ED539248
+2026-06-07 18:34:03,210 INFO         Downloading: Monroe Institute Research - Title Page.pdf
+2026-06-07 18:34:06,579 INFO         Done: 26 KB
+2026-06-07 18:34:06,583 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:34:07,939 INFO         SEO title : AI Research Proposal Project
+2026-06-07 18:34:07,939 INFO         SEO slug  : ai-research-proposal-project-pakistan
+2026-06-07 18:34:07,942 INFO         Duplicate identifier: monroe-institute-research-files-toc
+2026-06-07 18:34:07,943 WARNING         Irrelevant skipped: Dorian codex protocol for AI - - Hamiltonian Theoretical Fun
+2026-06-07 18:34:09,872 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:34:10,951 INFO         SEO title : AI-Based Microscopy Images Segmentation Research Proposal
+2026-06-07 18:34:10,951 INFO         SEO slug  : ai-based-microscopy-images-segmentation-research-proposal
+2026-06-07 18:34:10,953 INFO         Uploading project: AI-Based Microscopy Images Segmentation Research Proposal
+2026-06-07 18:34:15,053 INFO         UPLOADED! slug=ai-based-microscopy-images-segmentation-research-proposal
+2026-06-07 18:34:15,057 INFO         Tracked in uploaded_projects.txt: microscopy-images-segmentation-algorithm-based-on-shearlet-neural-network
+2026-06-07 18:34:15,057 INFO --- Progress: 37/50 ---
+2026-06-07 18:34:24,196 INFO         Downloading: 19-Examining a generic streaming architecture for smart manufacturing_s big data processing.pdf
+2026-06-07 18:34:28,763 INFO         Done: 468 KB
+2026-06-07 18:34:28,768 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:34:29,990 INFO         SEO title : AI-Based Streaming Architecture Research Proposal
+2026-06-07 18:34:29,990 INFO         SEO slug  : ai-based-streaming-architecture-research-proposal-pakistan
+2026-06-07 18:34:29,992 INFO         Duplicate identifier: examining-a-generic-streaming-architecture-for-smart-manufacturing-s-big-data-processing
+2026-06-07 18:34:29,994 WARNING         Irrelevant skipped: Application and Methods of Deep Learning in IoT
+2026-06-07 18:34:29,994 WARNING         Irrelevant skipped: Hitler`s Backers
+2026-06-07 18:34:29,994 WARNING         Irrelevant skipped: DTIC AD1024592: Natural Language Video Description using Dee
+2026-06-07 18:34:31,129 WARNING         Pre-skip (too large 5402KB): 1507.06332.pdf
+2026-06-07 18:34:31,129 WARNING         Pre-skip (too large 15459KB): 1507.06332_jp2.zip
+2026-06-07 18:34:31,131 WARNING         No suitable file: arxiv-1507.06332
+2026-06-07 18:34:33,132 INFO [SEARCH] research proposal deep learning (page 2)
+2026-06-07 18:34:36,076 INFO         Found 10 results
+2026-06-07 18:34:36,078 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp63t00245r000300380001-9: LETTER TO J
+2026-06-07 18:34:36,078 WARNING         Irrelevant skipped: AttentionNet: Aggregating Weak Directions for Accurate Objec
+2026-06-07 18:34:36,078 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301210005-7: OVERSIGHT A
+2026-06-07 18:34:37,761 WARNING         Pre-skip (too large 5202KB): 1505.04366.pdf
+2026-06-07 18:34:37,761 WARNING         Pre-skip (too large 15648KB): 1505.04366_jp2.zip
+2026-06-07 18:34:37,763 WARNING         No suitable file: arxiv-1505.04366
+2026-06-07 18:34:37,763 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001700030007-5: INFORMATION
+2026-06-07 18:34:37,763 WARNING         Irrelevant skipped: Learning Complexity-Aware Cascades for Deep Pedestrian Detec
+2026-06-07 18:34:37,763 WARNING         Irrelevant skipped: Object detection via a multi-region & semantic segmentation-
+2026-06-07 18:34:37,763 WARNING         Irrelevant skipped: Convolutional Channel Features
+2026-06-07 18:34:40,881 INFO         Downloading: 1503.06350.pdf
+2026-06-07 18:34:47,713 INFO         Done: 1077 KB
+2026-06-07 18:34:47,717 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:34:48,824 INFO         SEO title : AI-Based Object Detection Research Proposal
+2026-06-07 18:34:48,824 INFO         SEO slug  : ai-based-object-detection-research-proposal-pakistan
+2026-06-07 18:34:48,826 INFO         Uploading project: AI-Based Object Detection Research Proposal
+2026-06-07 18:34:52,981 INFO         UPLOADED! slug=ai-based-object-detection-research-proposal-pakistan
+2026-06-07 18:34:52,985 INFO         Tracked in uploaded_projects.txt: arxiv-1503.06350
+2026-06-07 18:34:52,985 INFO --- Progress: 38/50 ---
+2026-06-07 18:35:00,987 WARNING         Irrelevant skipped: 基于人工智能的地球物理参数反演范式理论及判定条件
+2026-06-07 18:35:02,988 INFO [SEARCH] research proposal deep learning (page 3)
+2026-06-07 18:35:04,522 INFO         Found 10 results
+2026-06-07 18:35:05,776 WARNING         Pre-skip (too large 5948KB): 1610.01238.pdf
+2026-06-07 18:35:05,778 WARNING         No suitable file: arxiv-1610.01238
+2026-06-07 18:35:05,778 WARNING         Irrelevant skipped: R-CNN minus R
+2026-06-07 18:35:05,779 WARNING         Irrelevant skipped: 基于人工智能的地球物理参数反演范式理论及判定条件
+2026-06-07 18:35:05,779 WARNING         Irrelevant skipped: An End-to-End Approach to Natural Language Object Retrieval 
+2026-06-07 18:35:05,779 WARNING         Irrelevant skipped: Fine-grained pose prediction, normalization, and recognition
+2026-06-07 18:35:05,779 WARNING         Irrelevant skipped: Deep Image Retrieval: Learning global representations for im
+2026-06-07 18:35:05,779 WARNING         Irrelevant skipped: POSEidon: Face-from-Depth for Driver Pose Estimation
+2026-06-07 18:35:05,779 WARNING         Irrelevant skipped: Hierarchical Object Detection with Deep Reinforcement Learni
+2026-06-07 18:35:05,779 WARNING         Irrelevant skipped: Learning Deep Generative Models with Doubly Stochastic MCMC
+2026-06-07 18:35:07,708 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:35:08,798 INFO         SEO title : AI-Based Object Segmentation Research Proposal
+2026-06-07 18:35:08,799 INFO         SEO slug  : ai-based-object-segmentation-research-proposal
+2026-06-07 18:35:08,800 INFO         Uploading project: AI-Based Object Segmentation Research Proposal
+2026-06-07 18:35:16,467 INFO         UPLOADED! slug=ai-based-object-segmentation-research-proposal
+2026-06-07 18:35:16,471 INFO         Tracked in uploaded_projects.txt: arxiv-1612.01057
+2026-06-07 18:35:16,472 INFO --- Progress: 39/50 ---
+2026-06-07 18:35:26,474 INFO [SEARCH] final year project cybersecurity proposal (page 1)
+2026-06-07 18:35:28,350 INFO         Found 1 results
+2026-06-07 18:35:28,353 WARNING         Irrelevant skipped: dmca-1
+2026-06-07 18:35:30,354 INFO [SEARCH] final year project cybersecurity proposal (page 2)
+2026-06-07 18:35:31,933 INFO         Found 0 results
+2026-06-07 18:35:31,936 INFO [SEARCH] final year project IoT smart home proposal (page 1)
+2026-06-07 18:35:33,651 INFO         Found 0 results
+2026-06-07 18:35:33,654 INFO [SEARCH] mini project machine learning classification (page 1)
+2026-06-07 18:35:35,490 INFO         Found 1 results
+2026-06-07 18:35:35,494 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp80-00809a000700190231-3: DEVELOPMENT
+2026-06-07 18:35:37,495 INFO [SEARCH] mini project machine learning classification (page 2)
+2026-06-07 18:35:39,106 INFO         Found 0 results
+2026-06-07 18:35:39,109 INFO [SEARCH] semester project operating systems (page 1)
+2026-06-07 18:35:41,708 INFO         Found 10 results
+2026-06-07 18:35:44,008 INFO         Downloading: Environmental Scan to Determine the Prevalence of Unaccredited Engineering Programmes.pdf
+2026-06-07 18:35:54,423 INFO         Done: 1512 KB
+2026-06-07 18:35:54,427 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:35:55,826 INFO         SEO title : Environmental Scan Semester Project Proposal
+2026-06-07 18:35:55,826 INFO         SEO slug  : environmental-scan-semester-project-pakistan
+2026-06-07 18:35:55,828 INFO         Uploading project: Environmental Scan Semester Project Proposal
+2026-06-07 18:35:58,695 INFO         UPLOADED! slug=environmental-scan-semester-project-pakistan
+2026-06-07 18:35:58,701 INFO         Tracked in uploaded_projects.txt: environmental-scan-to-determine-the-prevalence-of-unaccredited-engineering-programmes
+2026-06-07 18:35:58,702 INFO --- Progress: 40/50 ---
+2026-06-07 18:36:12,287 INFO         Downloading: NASA_NTRS_Archive_19900017017.pdf
+2026-06-07 18:36:22,081 INFO         Done: 4924 KB
+2026-06-07 18:36:22,086 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:36:23,542 INFO         SEO title : Lunar Transportation Semester Project Proposal
+2026-06-07 18:36:23,543 INFO         SEO slug  : lunar-transportation-semester-project-pakistan
+2026-06-07 18:36:23,546 INFO         Uploading project: Lunar Transportation Semester Project Proposal
+2026-06-07 18:36:36,992 INFO         UPLOADED! slug=lunar-transportation-semester-project-pakistan
+2026-06-07 18:36:36,996 INFO         Tracked in uploaded_projects.txt: NASA_NTRS_Archive_19900017017
+2026-06-07 18:36:36,997 INFO --- Progress: 41/50 ---
+2026-06-07 18:36:47,060 WARNING         Pre-skip (too large 12707KB): NASA_NTRS_Archive_19930074529.pdf
+2026-06-07 18:36:47,060 WARNING         Pre-skip (too large 242865KB): NASA_NTRS_Archive_19930074529_jp2.zip
+2026-06-07 18:36:47,063 WARNING         No suitable file: NASA_NTRS_Archive_19930074529
+2026-06-07 18:36:47,063 WARNING         Irrelevant skipped: DTIC ADA385438: Control/Learning Architectures for Use in Ro
+2026-06-07 18:36:49,075 INFO         Downloading: ERIC_EJ1151895.pdf
+2026-06-07 18:36:53,473 INFO         Done: 624 KB
+2026-06-07 18:36:53,478 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:36:54,925 INFO         SEO title : Mobile Web Semester Project Proposal
+2026-06-07 18:36:54,926 INFO         SEO slug  : mobile-web-semester-project-pakistan
+2026-06-07 18:36:54,928 INFO         Uploading project: Mobile Web Semester Project Proposal
+2026-06-07 18:36:58,055 INFO         UPLOADED! slug=mobile-web-semester-project-pakistan
+2026-06-07 18:36:58,066 INFO         Tracked in uploaded_projects.txt: ERIC_EJ1151895
+2026-06-07 18:36:58,067 INFO --- Progress: 42/50 ---
+2026-06-07 18:37:08,089 INFO         Downloading: NASA_NTRS_Archive_20150000389.pdf
+2026-06-07 18:37:12,341 INFO         Done: 530 KB
+2026-06-07 18:37:12,346 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:37:13,936 INFO         SEO title : Semester Project NASA Command Control System
+2026-06-07 18:37:13,936 INFO         SEO slug  : semester-project-nasa-command-control-system
+2026-06-07 18:37:13,940 INFO         Uploading project: Semester Project NASA Command Control System
+2026-06-07 18:37:16,769 INFO         UPLOADED! slug=semester-project-nasa-command-control-system
+2026-06-07 18:37:16,775 INFO         Tracked in uploaded_projects.txt: NASA_NTRS_Archive_20150000389
+2026-06-07 18:37:16,775 INFO --- Progress: 43/50 ---
+2026-06-07 18:37:24,776 WARNING         Irrelevant skipped: Financial and cost analysis for engineering and technology m
+2026-06-07 18:37:26,491 INFO         Downloading: NASA_NTRS_Archive_20150011116.pdf
+2026-06-07 18:37:30,354 INFO         Done: 74 KB
+2026-06-07 18:37:30,359 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:37:31,670 INFO         SEO title : IT Security Semester Project Proposal
+2026-06-07 18:37:31,670 INFO         SEO slug  : it-security-semester-project-pakistan
+2026-06-07 18:37:31,672 INFO         Uploading project: IT Security Semester Project Proposal
+2026-06-07 18:37:33,309 INFO         UPLOADED! slug=it-security-semester-project-pakistan
+2026-06-07 18:37:33,323 INFO         Tracked in uploaded_projects.txt: NASA_NTRS_Archive_20150011116
+2026-06-07 18:37:33,323 INFO --- Progress: 44/50 ---
+2026-06-07 18:37:41,324 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90g01353r002000030037-1: RAYMOND L. 
+2026-06-07 18:37:41,325 WARNING         Irrelevant skipped: CIA Reading Room 06711368: CLOAKS, DAGGERS, AND DICE: HOW TH
+2026-06-07 18:37:43,325 INFO [SEARCH] semester project operating systems (page 2)
+2026-06-07 18:37:47,918 INFO         Found 10 results
+2026-06-07 18:37:47,922 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90g01353r000500570005-4: NMITC - TRA
+2026-06-07 18:37:47,922 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00998r000100200004-2: WEEKLY REPO
+2026-06-07 18:37:47,923 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89g00720r000700990006-0: TRIP TO IND
+2026-06-07 18:37:47,923 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88g01332r000800990022-2: LETTER TO W
+2026-06-07 18:37:47,923 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90b01390r000801020006-3: MICA/FASCEL
+2026-06-07 18:37:47,923 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00955r000200260001-7: REQUEST FOR
+2026-06-07 18:37:47,923 WARNING         Irrelevant skipped: BCA Coaching In South Delhi
+2026-06-07 18:37:47,923 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp82-00039r000200090022-7: BUDGET FOR 
+2026-06-07 18:37:47,923 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp64b00346r000200050023-4: COMMUNIST E
+2026-06-07 18:37:47,924 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp97m00518r000600690001-9: ADDRESS BY 
+2026-06-07 18:37:49,924 INFO [SEARCH] semester project operating systems (page 3)
+2026-06-07 18:37:52,231 INFO         Found 2 results
+2026-06-07 18:37:52,234 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp80-00809a000700190300-6: DEVELOPMENT
+2026-06-07 18:37:52,235 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301310023-6: MACARTHUR A
+2026-06-07 18:37:54,236 INFO ==================================================
+2026-06-07 18:37:54,236 INFO DONE -- 44 projects uploaded!
+2026-06-07 18:37:54,236 INFO ==================================================

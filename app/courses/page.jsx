@@ -12,15 +12,14 @@ function toSlug(title = "") {
 }
 
 /* ---------------------------------------------
-   Static metadata (crawled by every bot)
+   Metadata (noindex for search/filter params)
 --------------------------------------------- */
-export const metadata = {
+const BASE_COURSES_METADATA = {
   title: "Online Courses for AI, Data, Career & Startup Skills | AIDLA",
   description:
     "Explore AI, data analytics, engineering, medical, career switching and mentoring courses on AIDLA. Learn from school to master level, all free.",
   keywords:
     "AIDLA courses, online courses, AI for beginners, AI engineer course, data analytics, medical courses, power electronics, career switching, startup advice, career mentoring, certificates",
-  robots: { index: true, follow: true },
   alternates: { canonical: `${SITE_URL}/courses` },
   openGraph: {
     title: "Online Courses for AI, Data, Career & Startup Skills – AIDLA",
@@ -39,6 +38,15 @@ export const metadata = {
     images:[`${SITE_URL}/og-home.jpg`],
   },
 };
+
+export async function generateMetadata({ searchParams }) {
+  const sp = await searchParams;
+  const hasFilters = Object.values(sp || {}).some(v => v && v !== "");
+  return {
+    ...BASE_COURSES_METADATA,
+    robots: hasFilters ? { index: false, follow: false } : { index: true, follow: true },
+  };
+}
 
 /* ---------------------------------------------
    Page

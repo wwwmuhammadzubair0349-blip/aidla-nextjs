@@ -1,0 +1,322 @@
+2026-06-07 18:14:54,568 INFO ==================================================
+2026-06-07 18:14:54,568 INFO AIDLA AUTOPILOT STARTED
+2026-06-07 18:14:54,569 INFO Target: 50 uploads | Delay: 8s
+2026-06-07 18:14:54,569 INFO ==================================================
+2026-06-07 18:14:54,590 INFO [SEARCH] university physics serway jewett textbook pdf (page 1)
+2026-06-07 18:14:55,785 INFO         Found 2 results
+2026-06-07 18:14:57,031 WARNING         Pre-skip (too large 124706KB): physicsforscient0000serw_g9o0.pdf
+2026-06-07 18:14:57,031 WARNING         Pre-skip (too large 124301KB): physicsforscient0000serw_g9o0_encrypted.pdf
+2026-06-07 18:14:57,033 WARNING         No suitable file: physicsforscient0000serw_g9o0
+2026-06-07 18:14:58,302 WARNING         Pre-skip (too large 458007KB): Physics for Scientists and Engineers Tenth Edition.pdf
+2026-06-07 18:14:58,302 WARNING         Pre-skip (too large 58224KB): Physics for Scientists and Engineers Tenth Edition_text.pdf
+2026-06-07 18:14:58,305 WARNING         No suitable file: physics-for-scientists-and-engineers-tenth-edition
+2026-06-07 18:15:00,305 INFO [SEARCH] university physics serway jewett textbook pdf (page 2)
+2026-06-07 18:15:01,451 INFO         Found 0 results
+2026-06-07 18:15:01,453 INFO [SEARCH] computer networks forouzan textbook pdf (page 1)
+2026-06-07 18:15:02,888 INFO         Found 0 results
+2026-06-07 18:15:02,891 INFO [SEARCH] circuit theory kirchhoff mesh nodal lecture notes pdf (page 1)
+2026-06-07 18:15:04,466 INFO         Found 0 results
+2026-06-07 18:15:04,468 INFO [SEARCH] python programming functions OOP lecture notes pdf (page 1)
+2026-06-07 18:15:06,210 INFO         Found 0 results
+2026-06-07 18:15:06,212 INFO [SEARCH] database systems elmasri navathe textbook pdf (page 1)
+2026-06-07 18:15:07,552 INFO         Found 0 results
+2026-06-07 18:15:07,555 INFO [SEARCH] probability distributions statistics lecture notes pdf (page 1)
+2026-06-07 18:15:09,505 INFO         Found 6 results
+2026-06-07 18:15:10,633 WARNING         Pre-skip (too large 12288KB): arovas_Lecture Notes on Thermodynamics and Statistical Mechanics.pdf
+2026-06-07 18:15:10,635 WARNING         No suitable file: ArovasLectureNotesOnThermodynamicsAndStatisticalMechanics
+2026-06-07 18:15:11,704 WARNING         Pre-skip (too large 30727KB): measurementdataa0000dunn_i5r7.pdf
+2026-06-07 18:15:11,705 WARNING         Pre-skip (too large 30564KB): measurementdataa0000dunn_i5r7_encrypted.pdf
+2026-06-07 18:15:11,706 WARNING         No suitable file: measurementdataa0000dunn_i5r7
+2026-06-07 18:15:11,707 WARNING         Irrelevant skipped: Statistics and data analysis for financial engineering : wit
+2026-06-07 18:15:11,707 WARNING         Irrelevant skipped: Bayesian Methods in Cosmology
+2026-06-07 18:15:11,707 WARNING         Irrelevant skipped: Further results on controlling the false discovery proportio
+2026-06-07 18:15:11,707 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp10-02196r000700020003-3: SOVIET ATOM
+2026-06-07 18:15:13,708 INFO [SEARCH] probability distributions statistics lecture notes pdf (page 2)
+2026-06-07 18:15:14,875 INFO         Found 0 results
+2026-06-07 18:15:14,877 INFO [SEARCH] operating systems process scheduling lecture notes pdf (page 1)
+2026-06-07 18:15:17,159 INFO         Found 2 results
+2026-06-07 18:15:17,162 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp97-00418r000200160005-1: FY 1984 DIR
+2026-06-07 18:15:17,162 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90b00017r000500150002-2: NOMINATION 
+2026-06-07 18:15:19,162 INFO [SEARCH] operating systems process scheduling lecture notes pdf (page 2)
+2026-06-07 18:15:20,456 INFO         Found 0 results
+2026-06-07 18:15:20,459 INFO [SEARCH] digital communications proakis textbook pdf (page 1)
+2026-06-07 18:15:21,758 INFO         Found 0 results
+2026-06-07 18:15:21,760 INFO [SEARCH] compiler design aho ullman dragon book pdf (page 1)
+2026-06-07 18:15:23,027 INFO         Found 1 results
+2026-06-07 18:15:24,130 WARNING         Pre-skip (too large 48895KB): compilersprincip0002ahoa.pdf
+2026-06-07 18:15:24,131 WARNING         Pre-skip (too large 48662KB): compilersprincip0002ahoa_encrypted.pdf
+2026-06-07 18:15:24,133 WARNING         No suitable file: compilersprincip0002ahoa
+2026-06-07 18:15:26,134 INFO [SEARCH] compiler design aho ullman dragon book pdf (page 2)
+2026-06-07 18:15:27,479 INFO         Found 0 results
+2026-06-07 18:15:27,481 INFO [SEARCH] thesis NLP text classification sentiment analysis (page 1)
+2026-06-07 18:15:28,816 INFO         Found 1 results
+2026-06-07 18:15:31,318 WARNING         Pre-skip (too large 17318KB): 978-3-031-17693-7.pdf
+2026-06-07 18:15:31,320 WARNING         No suitable file: oapen-20.500.12657-61876
+2026-06-07 18:15:33,322 INFO [SEARCH] thesis NLP text classification sentiment analysis (page 2)
+2026-06-07 18:15:34,594 INFO         Found 0 results
+2026-06-07 18:15:34,597 INFO [SEARCH] digital logic design gates flip-flops lecture notes pdf (page 1)
+2026-06-07 18:15:35,816 INFO         Found 0 results
+2026-06-07 18:15:35,818 INFO [SEARCH] project documentation template software engineering (page 1)
+2026-06-07 18:15:38,381 INFO         Found 9 results
+2026-06-07 18:15:39,494 WARNING         Pre-skip (too large 17825KB): practicalguideto0000hart_h3x8.pdf
+2026-06-07 18:15:39,494 WARNING         Pre-skip (too large 17729KB): practicalguideto0000hart_h3x8_encrypted.pdf
+2026-06-07 18:15:39,496 WARNING         No suitable file: practicalguideto0000hart_h3x8
+2026-06-07 18:15:39,496 WARNING         Irrelevant skipped: DTIC ADA387379: Energy Manager Project Assistant: User Manua
+2026-06-07 18:15:39,497 WARNING         Irrelevant skipped: Practical JIRA Plugins
+2026-06-07 18:15:41,370 WARNING         Pre-skip (too large 8632KB): aprototypendfeas1094522441.pdf
+2026-06-07 18:15:41,372 WARNING         No suitable file: aprototypendfeas1094522441
+2026-06-07 18:15:41,372 WARNING         Irrelevant skipped: DTIC ADA267901: Teaching a Computer Simulation Course with A
+2026-06-07 18:15:41,372 WARNING         Irrelevant skipped: DTIC ADA619849: Resilient Software Systems
+2026-06-07 18:15:41,373 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90g01353r000200180001-4: PHYSICAL AN
+2026-06-07 18:15:41,373 WARNING         Irrelevant skipped: CIA Reading Room 06215989: MODIFICATION FORTY DATED 26 JULY 
+2026-06-07 18:15:41,373 WARNING         Irrelevant skipped: CIA Reading Room 06208008: STATEMENT OF WORK FOR SUPPORT TO 
+2026-06-07 18:15:43,373 INFO [SEARCH] project documentation template software engineering (page 2)
+2026-06-07 18:15:44,724 INFO         Found 0 results
+2026-06-07 18:15:44,727 INFO [SEARCH] thesis network intrusion detection cybersecurity (page 1)
+2026-06-07 18:15:46,028 INFO         Found 3 results
+2026-06-07 18:15:46,031 WARNING         Irrelevant skipped: New Technologies for Security and Privacy Issues in the Era 
+2026-06-07 18:15:47,133 WARNING         No suitable file: analysisofunited1094532877
+2026-06-07 18:15:48,245 WARNING         Pre-skip (too large 8904KB): sgng.19247-study-and-development-of-network-based-intrusion-detection-system.pdf
+2026-06-07 18:15:48,248 INFO         Downloading: sgng.19247-study-and-development-of-network-based-intrusion-detection-system_text.pdf
+2026-06-07 18:15:56,410 INFO         Done: 1480 KB
+2026-06-07 18:15:56,416 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:15:57,441 INFO         SEO title : Network Intrusion Detection System Thesis PDF
+2026-06-07 18:15:57,441 INFO         SEO slug  : network-intrusion-detection-system-thesis-pakistan
+2026-06-07 18:15:57,443 INFO         Duplicate identifier: sgng.19247-study-and-development-of-network-based-intrusion-detection-system
+2026-06-07 18:15:59,445 INFO [SEARCH] thesis network intrusion detection cybersecurity (page 2)
+2026-06-07 18:16:00,811 INFO         Found 0 results
+2026-06-07 18:16:00,814 INFO [SEARCH] GRE past papers solved mathematics verbal (page 1)
+2026-06-07 18:16:02,346 INFO         Found 0 results
+2026-06-07 18:16:02,348 INFO [SEARCH] organic chemistry reactions mechanism lecture notes pdf (page 1)
+2026-06-07 18:16:05,378 INFO         Found 4 results
+2026-06-07 18:16:05,381 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:16:05,381 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp10-02196r000700020003-3: SOVIET ATOM
+2026-06-07 18:16:05,381 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp91-00403r000100960017-3: FR:SHORSHOR
+2026-06-07 18:16:05,381 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp80t00246a068400030001-9: ENGLISH TRA
+2026-06-07 18:16:07,382 INFO [SEARCH] organic chemistry reactions mechanism lecture notes pdf (page 2)
+2026-06-07 18:16:08,685 INFO         Found 0 results
+2026-06-07 18:16:08,688 INFO [SEARCH] deep learning backpropagation CNN lecture notes pdf (page 1)
+2026-06-07 18:16:11,697 INFO         Found 0 results
+2026-06-07 18:16:11,699 INFO [SEARCH] introduction algorithms cormen CLRS textbook pdf (page 1)
+2026-06-07 18:16:12,955 INFO         Found 0 results
+2026-06-07 18:16:12,957 INFO [SEARCH] thermodynamics entropy heat transfer lecture notes pdf (page 1)
+2026-06-07 18:16:14,624 INFO         Found 1 results
+2026-06-07 18:16:15,820 WARNING         Pre-skip (too large 12288KB): arovas_Lecture Notes on Thermodynamics and Statistical Mechanics.pdf
+2026-06-07 18:16:15,822 WARNING         No suitable file: ArovasLectureNotesOnThermodynamicsAndStatisticalMechanics
+2026-06-07 18:16:17,823 INFO [SEARCH] thermodynamics entropy heat transfer lecture notes pdf (page 2)
+2026-06-07 18:16:19,093 INFO         Found 0 results
+2026-06-07 18:16:19,094 INFO [SEARCH] research proposal template computer science students (page 1)
+2026-06-07 18:16:20,236 INFO         Found 0 results
+2026-06-07 18:16:20,238 INFO [SEARCH] differential equations solution lecture notes pdf (page 1)
+2026-06-07 18:16:21,843 INFO         Found 10 results
+2026-06-07 18:16:22,945 WARNING         Pre-skip (too large 28693KB): G.N. Polozhiy - Equations of Mathematical Physics - 1967.pdf
+2026-06-07 18:16:22,947 WARNING         No suitable file: g.-n.-polozhiy-equations-of-mathematical-physics-1967
+2026-06-07 18:16:22,948 WARNING         Irrelevant skipped: Quaternions, Interpolation and Animation
+2026-06-07 18:16:24,027 INFO         Downloading: tifr64.pdf
+2026-06-07 18:16:28,749 INFO         Done: 1226 KB
+2026-06-07 18:16:28,752 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:16:29,682 INFO         SEO title : Diffusion Problems Mathematics Lecture Notes PDF
+2026-06-07 18:16:29,682 INFO         SEO slug  : diffusion-problems-mathematics-lecture-notes-pakistan
+2026-06-07 18:16:29,684 INFO         Duplicate identifier: S_R_S_Varadhan___Lectures_on_Diffusion_Problems_and_Partial_Differential_Equations
+2026-06-07 18:16:30,739 WARNING         Irrelevant skipped: Numerical Solution of Ordinary Differential Equations
+2026-06-07 18:16:30,739 WARNING         Irrelevant skipped: DTIC AD0718963: Modern Techniques in Astrodynamics-An Introd
+2026-06-07 18:16:32,049 WARNING         Pre-skip (too large 8439KB): mihir sen. lecture notes on mathematical methods.pdf
+2026-06-07 18:16:32,052 WARNING         No suitable file: mihir-sen.-lecture-notes-on-mathematical-methods
+2026-06-07 18:16:32,052 WARNING         Irrelevant skipped: Renormalization Hopf algebras and combinatorial groups
+2026-06-07 18:16:33,431 WARNING         Pre-skip (too large 65500KB): Equations de la Physique Mathematique Par S. Godounov.pdf
+2026-06-07 18:16:33,431 WARNING         Pre-skip (too large 8190KB): Equations de la Physique Mathematique Par S. Godounov_text.pdf
+2026-06-07 18:16:33,433 WARNING         No suitable file: equations-de-la-physique-mathematique-par-s.-godounov
+2026-06-07 18:16:33,433 WARNING         Irrelevant skipped: DTIC ADA275383: Stability of Dynamical Systems in the Presen
+2026-06-07 18:16:33,434 WARNING         Irrelevant skipped: The second boundary value problem of the prescribed affine m
+2026-06-07 18:16:35,435 INFO [SEARCH] differential equations solution lecture notes pdf (page 2)
+2026-06-07 18:16:37,334 INFO         Found 1 results
+2026-06-07 18:16:37,337 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp10-02196r000700020003-3: SOVIET ATOM
+2026-06-07 18:16:39,339 INFO [SEARCH] differential equations solution lecture notes pdf (page 3)
+2026-06-07 18:16:40,541 INFO         Found 0 results
+2026-06-07 18:16:40,543 INFO [SEARCH] thesis image recognition convolutional neural network (page 1)
+2026-06-07 18:16:41,887 INFO         Found 3 results
+2026-06-07 18:16:41,889 WARNING         Irrelevant skipped: Understanding Human-Centric Images: From Geometry to Fashion
+2026-06-07 18:16:42,948 INFO         Downloading: 1602.09046.pdf
+2026-06-07 18:16:46,624 INFO         Done: 789 KB
+2026-06-07 18:16:46,628 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:16:47,606 INFO         SEO title : Convolutional Neural Networks Thesis PDF
+2026-06-07 18:16:47,606 INFO         SEO slug  : complex-valued-convolutional-neural-networks-thesis
+2026-06-07 18:16:47,608 INFO         Duplicate identifier: arxiv-1602.09046
+2026-06-07 18:16:49,687 WARNING         No suitable file: automatingvessel1094566091
+2026-06-07 18:16:51,688 INFO [SEARCH] thesis image recognition convolutional neural network (page 2)
+2026-06-07 18:16:53,087 INFO         Found 0 results
+2026-06-07 18:16:53,089 INFO [SEARCH] signals systems oppenheim textbook pdf (page 1)
+2026-06-07 18:16:54,302 INFO         Found 0 results
+2026-06-07 18:16:54,303 INFO [SEARCH] organic chemistry wade textbook university pdf (page 1)
+2026-06-07 18:16:55,673 INFO         Found 0 results
+2026-06-07 18:16:55,675 INFO [SEARCH] computer architecture cache pipeline lecture notes pdf (page 1)
+2026-06-07 18:16:57,091 INFO         Found 0 results
+2026-06-07 18:16:57,093 INFO [SEARCH] artificial intelligence russell norvig textbook pdf (page 1)
+2026-06-07 18:16:58,377 INFO         Found 0 results
+2026-06-07 18:16:58,379 INFO [SEARCH] thesis solar energy photovoltaic renewable (page 1)
+2026-06-07 18:17:00,233 INFO         Found 10 results
+2026-06-07 18:17:00,235 WARNING         Irrelevant skipped: DTIC AD1009328: Maximum Power Point Tracking Of A Photovolta
+2026-06-07 18:17:00,236 WARNING         Irrelevant skipped: DTIC ADA621150: Solar Photovoltaic and Liquid Natural Gas Op
+2026-06-07 18:17:03,087 INFO         Downloading: 6. format. app - Comparative Study of the Efficiency of Storage Batteries [Indian and Chinese Technology] used for Solar Security Lighting Application in Anambra State, Nigeria.pdf
+2026-06-07 18:17:07,700 INFO         Done: 118 KB
+2026-06-07 18:17:07,705 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:17:08,739 INFO         SEO title : Solar Security Lighting Storage Batteries Thesis PDF
+2026-06-07 18:17:08,739 INFO         SEO slug  : solar-security-lighting-storage-batteries-thesis-pakistan
+2026-06-07 18:17:08,742 INFO         Uploading: Solar Security Lighting Storage Batteries Thesis PDF
+2026-06-07 18:17:11,563 INFO         UPLOADED! slug=solar-security-lighting-storage-batteries-thesis-pdf
+2026-06-07 18:17:11,568 INFO         Tracked in uploaded.txt: 6.Format.AppComparativeStudyOfTheEfficiencyOfStorageBatteriesIndianAndChineseTec
+2026-06-07 18:17:11,568 INFO --- Progress: 1/50 ---
+2026-06-07 18:17:19,570 WARNING         Irrelevant skipped: DTIC AD1026084: Cost Estimates Of Concentrated Photovoltaic 
+2026-06-07 18:17:25,716 WARNING         No suitable file: designndnalysiso1094556919
+2026-06-07 18:17:25,716 WARNING         Irrelevant skipped: DTIC AD1026137: Radiation Effects in Dual Heat Sinks for Coo
+2026-06-07 18:17:41,418 WARNING         No suitable file: maximumpowerpoin1094547339
+2026-06-07 18:17:41,418 WARNING         Irrelevant skipped: DTIC ADA571444: Managing a Solar Sensor Array Project: Analy
+2026-06-07 18:17:41,418 WARNING         Irrelevant skipped: Solar photovoltaic and liquid natural gas opportunities for 
+2026-06-07 18:17:41,418 WARNING         Irrelevant skipped: Energy resiliency for Marine Corps Logistics Base Production
+2026-06-07 18:17:43,420 INFO [SEARCH] thesis solar energy photovoltaic renewable (page 2)
+2026-06-07 18:17:53,635 INFO         Found 6 results
+2026-06-07 18:17:53,638 WARNING         Irrelevant skipped: Renewable energy and storage implementation in Naval Station
+2026-06-07 18:17:57,647 WARNING         No suitable file: realizingenergys1094558321
+2026-06-07 18:17:57,647 WARNING         Irrelevant skipped: Interdigitated back-surface-contact solar cell modeling usin
+2026-06-07 18:18:00,621 WARNING         No suitable file: photovoltaicarra1094566099
+2026-06-07 18:18:03,950 INFO         Downloading: sgng.-photovoltaic-performance-analysis-of-dye-sensitized-solar-cell-based-o.pdf
+2026-06-07 18:18:20,989 INFO         Done: 265 KB
+2026-06-07 18:18:20,994 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:18:21,869 INFO         SEO title : Dye Sensitized Solar Cell Analysis for Electrical Engineering Students
+2026-06-07 18:18:21,869 INFO         SEO slug  : dye-sensitized-solar-cell-analysis-electrical-engineering-pakistan
+2026-06-07 18:18:21,871 INFO         Uploading: Dye Sensitized Solar Cell Analysis for Electrical Engineering Students
+2026-06-07 18:18:38,007 INFO         UPLOADED! slug=dye-sensitized-solar-cell-analysis-for-electrical-engineering-students
+2026-06-07 18:18:38,011 INFO         Tracked in uploaded.txt: sgng.-photovoltaic-performance-analysis-of-dye-sensitized-solar-cell-based-o
+2026-06-07 18:18:38,012 INFO --- Progress: 2/50 ---
+2026-06-07 18:18:47,444 INFO         Downloading: sgng.14306-photovoltaic-performance-analysis-of-dye-sensitized-solar-cell-ba.pdf
+2026-06-07 18:18:54,485 INFO         Done: 265 KB
+2026-06-07 18:18:54,489 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:18:55,472 INFO         SEO title : Dye Sensitized Solar Cell Thesis Electrical Engineering PDF
+2026-06-07 18:18:55,472 INFO         SEO slug  : dye-sensitized-solar-cell-thesis-electrical-engineering-pakistan
+2026-06-07 18:18:55,474 INFO         Uploading: Dye Sensitized Solar Cell Thesis Electrical Engineering PDF
+2026-06-07 18:18:58,798 INFO         UPLOADED! slug=dye-sensitized-solar-cell-thesis-electrical-engineering-pdf
+2026-06-07 18:18:58,803 INFO         Tracked in uploaded.txt: sgng.14306-photovoltaic-performance-analysis-of-dye-sensitized-solar-cell-ba
+2026-06-07 18:18:58,803 INFO --- Progress: 3/50 ---
+2026-06-07 18:19:08,804 INFO [SEARCH] thesis solar energy photovoltaic renewable (page 3)
+2026-06-07 18:19:10,242 INFO         Found 0 results
+2026-06-07 18:19:10,244 INFO [SEARCH] thesis machine learning classification deep learning (page 1)
+2026-06-07 18:19:11,976 INFO         Found 10 results
+2026-06-07 18:19:11,978 WARNING         Irrelevant skipped: The Races Of Europe
+2026-06-07 18:19:11,979 WARNING         Irrelevant skipped: Deep learning for media analysis in defense scenarios--an ev
+2026-06-07 18:19:15,761 INFO         Downloading: smallsatellitese1094559719.pdf
+2026-06-07 18:19:20,130 INFO         Done: 2355 KB
+2026-06-07 18:19:20,134 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:19:21,087 INFO         SEO title : Maritime Domain Awareness Small Satellite Analysis PDF
+2026-06-07 18:19:21,087 INFO         SEO slug  : maritime-domain-awareness-small-satellite-analysis
+2026-06-07 18:19:21,089 INFO         Uploading: Maritime Domain Awareness Small Satellite Analysis PDF
+2026-06-07 18:19:26,591 INFO         UPLOADED! slug=maritime-domain-awareness-small-satellite-analysis-pdf
+2026-06-07 18:19:26,595 INFO         Tracked in uploaded.txt: smallsatellitese1094559719
+2026-06-07 18:19:26,595 INFO --- Progress: 4/50 ---
+2026-06-07 18:19:36,521 INFO         Downloading: identificationan1094567127.pdf
+2026-06-07 18:19:41,079 INFO         Done: 1076 KB
+2026-06-07 18:19:41,084 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:19:42,111 INFO         SEO title : Signal Classification Thesis Using Generative Networks
+2026-06-07 18:19:42,111 INFO         SEO slug  : signal-classification-thesis-using-generative-networks
+2026-06-07 18:19:42,113 INFO         Uploading: Signal Classification Thesis Using Generative Networks
+2026-06-07 18:19:45,312 INFO         UPLOADED! slug=signal-classification-thesis-using-generative-networks
+2026-06-07 18:19:45,315 INFO         Tracked in uploaded.txt: identificationan1094567127
+2026-06-07 18:19:45,316 INFO --- Progress: 5/50 ---
+2026-06-07 18:19:55,570 WARNING         Pre-skip (too large 15964KB): usingdeepconvolu1094564930.pdf
+2026-06-07 18:19:55,574 WARNING         No suitable file: usingdeepconvolu1094564930
+2026-06-07 18:19:57,443 WARNING         Pre-skip (too large 10274KB): crossdomainident1094564901.pdf
+2026-06-07 18:19:57,446 WARNING         No suitable file: crossdomainident1094564901
+2026-06-07 18:19:59,618 INFO         Downloading: multilabelclassi1094566705.pdf
+2026-06-07 18:20:03,545 INFO         Done: 844 KB
+2026-06-07 18:20:03,548 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:20:04,503 INFO         SEO title : Multilabel Classification Thesis Artificial Intelligence PDF
+2026-06-07 18:20:04,504 INFO         SEO slug  : multilabel-classification-thesis-artificial-intelligence-pakistan
+2026-06-07 18:20:04,505 INFO         Uploading: Multilabel Classification Thesis Artificial Intelligence PDF
+2026-06-07 18:20:07,744 INFO         UPLOADED! slug=multilabel-classification-thesis-artificial-intelligence-pdf
+2026-06-07 18:20:07,750 INFO         Tracked in uploaded.txt: multilabelclassi1094566705
+2026-06-07 18:20:07,750 INFO --- Progress: 6/50 ---
+2026-06-07 18:20:15,751 WARNING         Irrelevant skipped: DTIC AD1025786: Scalable, Flexible and Active Learning on Di
+2026-06-07 18:20:17,732 INFO         Downloading: Shruti Sarika Chakraborty_Identification of Musical Instrument and Human Speakers based.pdf
+2026-06-07 18:20:26,795 INFO         Done: 3012 KB
+2026-06-07 18:20:26,801 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:20:27,785 INFO         SEO title : AI Thesis Musical Instrument Identification PDF
+2026-06-07 18:20:27,786 INFO         SEO slug  : musical-instrument-identification-ai-thesis-pakistan
+2026-06-07 18:20:27,787 INFO         Uploading: AI Thesis Musical Instrument Identification PDF
+2026-06-07 18:20:36,849 INFO         UPLOADED! slug=ai-thesis-musical-instrument-identification-pdf
+2026-06-07 18:20:36,856 INFO         Tracked in uploaded.txt: shruti-sarika-chakraborty-identification-of-musical-instrument-and-human-speakers-based
+2026-06-07 18:20:36,856 INFO --- Progress: 7/50 ---
+2026-06-07 18:20:46,805 WARNING         Pre-skip (too large 5638KB): 1511.09067.pdf
+2026-06-07 18:20:46,807 WARNING         No suitable file: arxiv-1511.09067
+2026-06-07 18:20:48,808 INFO [SEARCH] thesis machine learning classification deep learning (page 2)
+2026-06-07 18:20:50,642 INFO         Found 8 results
+2026-06-07 18:20:50,644 WARNING         Irrelevant skipped: DTIC ADA573616: Learning for Semantic Parsing with Kernels u
+2026-06-07 18:20:50,644 WARNING         Irrelevant skipped: MORPHODYNAMIC CLASSIFICATION OF COASTAL REGIONS USING DEEP L
+2026-06-07 18:20:52,453 WARNING         No suitable file: convolutionalneu1094561255
+2026-06-07 18:20:54,451 WARNING         No suitable file: automatedcreatio1094556835
+2026-06-07 18:20:55,566 WARNING         No suitable file: automatingvessel1094566091
+2026-06-07 18:20:57,728 WARNING         No suitable file: refiningdeeplear1094567097
+2026-06-07 18:20:57,728 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp80-00809a000600120021-5: SOCIOLOGICA
+2026-06-07 18:20:58,880 INFO         Downloading: sgng.19380-a-comparative-study-of-deep-learning-models-for-hepatic-steatosis.pdf
+2026-06-07 18:21:03,172 INFO         Done: 1405 KB
+2026-06-07 18:21:03,177 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:21:04,272 INFO         SEO title : Hepatic Steatosis Detection AI Thesis PDF
+2026-06-07 18:21:04,272 INFO         SEO slug  : hepatic-steatosis-detection-ai-thesis-pakistan
+2026-06-07 18:21:04,274 INFO         Uploading: Hepatic Steatosis Detection AI Thesis PDF
+2026-06-07 18:21:09,081 INFO         UPLOADED! slug=hepatic-steatosis-detection-ai-thesis-pdf
+2026-06-07 18:21:09,086 INFO         Tracked in uploaded.txt: sgng.19380-a-comparative-study-of-deep-learning-models-for-hepatic-steatosis
+2026-06-07 18:21:09,086 INFO --- Progress: 8/50 ---
+2026-06-07 18:21:19,088 INFO [SEARCH] thesis machine learning classification deep learning (page 3)
+2026-06-07 18:21:20,450 INFO         Found 0 results
+2026-06-07 18:21:20,452 INFO [SEARCH] human anatomy physiology cells lecture notes pdf (page 1)
+2026-06-07 18:21:23,191 INFO         Found 2 results
+2026-06-07 18:21:23,193 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:21:23,193 WARNING         Irrelevant skipped: (книги по медицине) (на англ. яз.) (NLA)
+2026-06-07 18:21:25,196 INFO [SEARCH] human anatomy physiology cells lecture notes pdf (page 2)
+2026-06-07 18:21:26,528 INFO         Found 0 results
+2026-06-07 18:21:26,531 INFO [SEARCH] NTS past papers solved Pakistan test preparation (page 1)
+2026-06-07 18:21:28,111 INFO         Found 0 results
+2026-06-07 18:21:28,114 INFO [SEARCH] financial accounting balance sheet lecture notes pdf (page 1)
+2026-06-07 18:21:31,436 INFO         Found 5 results
+2026-06-07 18:21:31,438 WARNING         Irrelevant skipped: The Oxford guide to financial modeling : applications for ca
+2026-06-07 18:21:31,438 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00530r001002330016-1: 1986 NAPA A
+2026-06-07 18:21:31,438 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp90-00530r001002330011-6: NAPA ANNUAL
+2026-06-07 18:21:31,439 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00087r000300280002-7: EXCELLENCE
+2026-06-07 18:21:31,439 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89g00720r000500050002-9: DDCI CHRONO
+2026-06-07 18:21:33,439 INFO [SEARCH] financial accounting balance sheet lecture notes pdf (page 2)
+2026-06-07 18:21:34,824 INFO         Found 0 results
+2026-06-07 18:21:34,827 INFO [SEARCH] power electronics inverter converter lecture notes pdf (page 1)
+2026-06-07 18:21:36,142 INFO         Found 0 results
+2026-06-07 18:21:36,145 INFO [SEARCH] thesis IoT smart home automation system (page 1)
+2026-06-07 18:21:37,323 INFO         Found 0 results
+2026-06-07 18:21:37,327 INFO [SEARCH] data structures algorithms Goodrich textbook pdf (page 1)
+2026-06-07 18:21:38,505 INFO         Found 0 results
+2026-06-07 18:21:38,507 INFO [SEARCH] software engineering sommerville textbook pdf (page 1)
+2026-06-07 18:21:40,010 INFO         Found 0 results
+2026-06-07 18:21:40,012 INFO [SEARCH] CSS past papers solved Pakistan competitive exam (page 1)
+2026-06-07 18:21:41,421 INFO         Found 0 results
+2026-06-07 18:21:41,423 INFO [SEARCH] technical report template engineering university (page 1)
+2026-06-07 18:21:46,383 INFO         Found 9 results
+2026-06-07 18:21:46,386 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003100140001-2: ANOMALOUS C
+2026-06-07 18:21:46,386 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00789r003200240001-0: PHENOMENOLO
+2026-06-07 18:21:46,386 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp83-00423r001200070002-9: THE MECHANI
+2026-06-07 18:21:46,386 WARNING         Irrelevant skipped: CIA Reading Room 06547180: AWARD/CONTRACT 2013-13040800007
+2026-06-07 18:21:46,387 WARNING         Irrelevant skipped: CIA Reading Room 06547177: RE: GRANT 2014-14082200003
+2026-06-07 18:21:46,387 WARNING         Irrelevant skipped: CIA Reading Room 06052388: AMENDMENT OF SOLICITATION/MODIFIC
+2026-06-07 18:21:46,387 WARNING         Irrelevant skipped: CIA Reading Room 06052389: AMENDMENT OF SOLICITATION/MODIFIC
+2026-06-07 18:21:46,387 WARNING         Irrelevant skipped: CIA Reading Room 06547186: AWARD NO. 2014-140603000007
+2026-06-07 18:21:46,387 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp84s00928r000100050003-5: CHINA: DEFE
+2026-06-07 18:21:48,388 INFO [SEARCH] technical report template engineering university (page 2)
+2026-06-07 18:21:49,710 INFO         Found 0 results
+2026-06-07 18:21:49,712 INFO [SEARCH] macroeconomics fiscal monetary policy lecture notes pdf (page 1)
+2026-06-07 18:21:51,022 INFO         Found 0 results
+2026-06-07 18:21:51,025 INFO [SEARCH] principles economics mankiw textbook pdf (page 1)
+2026-06-07 18:21:52,336 INFO         Found 2 results
+2026-06-07 18:21:54,201 WARNING         Pre-skip (too large 46868KB): principlesofmicr0005mank.pdf
+2026-06-07 18:21:54,201 WARNING         Pre-skip (too large 46734KB): principlesofmicr0005mank_encrypted.pdf
+2026-06-07 18:21:54,204 WARNING         No suitable file: principlesofmicr0005mank
+2026-06-07 18:21:55,320 WARNING         Pre-skip (too large 28848KB): Mankiw - Principles of Economics (2017, South-Western College Pub).pdf
+2026-06-07 18:21:55,322 WARNING         No suitable file: mankiw-principles-of-economics-2017-south-western-college-pub
+2026-06-07 18:21:57,323 INFO [SEARCH] principles economics mankiw textbook pdf (page 2)
+2026-06-07 18:21:58,696 INFO         Found 0 results
+2026-06-07 18:21:58,698 INFO ==================================================
+2026-06-07 18:21:58,698 INFO DONE -- 8 files uploaded!
+2026-06-07 18:21:58,699 INFO ==================================================

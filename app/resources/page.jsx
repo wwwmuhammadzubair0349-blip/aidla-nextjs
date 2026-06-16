@@ -7,7 +7,7 @@ export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
 
-export const metadata = {
+const BASE_METADATA = {
   title: "Free Study & Career Resources, Notes, PDFs, Books | AIDLA",
   description:
     "Access free study materials, career resources, notes, PDFs, books, thesis, templates and professional learning resources organized by subject and level.",
@@ -15,8 +15,6 @@ export const metadata = {
     "free study materials", "career resources", "free notes", "PDF resources", "thesis", "templates",
     "free books", "AIDLA resources", "professional learning resources", "global education resources",
   ],
-  robots: { index: true, follow: true, "max-image-preview": "large" },
-  alternates: { canonical: `${SITE_URL}/resources` },
   openGraph: {
     title: "Free Study & Career Resources – AIDLA",
     description: "Download free notes, PDFs, thesis, books, templates and career resources organized by subject and level.",
@@ -33,6 +31,23 @@ export const metadata = {
     images:[`${SITE_URL}/og-home.jpg`],
   },
 };
+
+export async function generateMetadata({ searchParams }) {
+  const sp = await searchParams;
+  const hasFilters = Object.values(sp || {}).some(v => v && v !== "");
+  if (hasFilters) {
+    return {
+      ...BASE_METADATA,
+      robots: { index: false, follow: false },
+      alternates: { canonical: `${SITE_URL}/resources` },
+    };
+  }
+  return {
+    ...BASE_METADATA,
+    robots: { index: true, follow: true, "max-image-preview": "large" },
+    alternates: { canonical: `${SITE_URL}/resources` },
+  };
+}
 
 export default async function ResourcesPage() {
   const [{ data: materialsData }, { data: optionsData }] = await Promise.all([

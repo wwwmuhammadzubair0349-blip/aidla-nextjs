@@ -1,0 +1,104 @@
+2026-06-07 18:11:58,824 INFO ==================================================
+2026-06-07 18:11:58,824 INFO AIDLA AUTOPILOT STARTED
+2026-06-07 18:11:58,825 INFO Target: 50 uploads | Delay: 8s
+2026-06-07 18:11:58,825 INFO ==================================================
+2026-06-07 18:11:58,826 INFO [SEARCH] organic chemistry reactions mechanism lecture notes pdf (page 1)
+2026-06-07 18:12:01,645 INFO         Found 4 results
+2026-06-07 18:12:01,647 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:12:01,647 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp10-02196r000700020003-3: SOVIET ATOM
+2026-06-07 18:12:01,648 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp91-00403r000100960017-3: FR:SHORSHOR
+2026-06-07 18:12:01,649 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp80t00246a068400030001-9: ENGLISH TRA
+2026-06-07 18:12:03,649 INFO [SEARCH] organic chemistry reactions mechanism lecture notes pdf (page 2)
+2026-06-07 18:12:04,977 INFO         Found 0 results
+2026-06-07 18:12:04,980 INFO [SEARCH] research proposal template computer science students (page 1)
+2026-06-07 18:12:06,310 INFO         Found 0 results
+2026-06-07 18:12:06,312 INFO [SEARCH] artificial intelligence russell norvig textbook pdf (page 1)
+2026-06-07 18:12:07,694 INFO         Found 0 results
+2026-06-07 18:12:07,696 INFO [SEARCH] signals systems oppenheim textbook pdf (page 1)
+2026-06-07 18:12:08,998 INFO         Found 0 results
+2026-06-07 18:12:09,001 INFO [SEARCH] probability distributions statistics lecture notes pdf (page 1)
+2026-06-07 18:12:11,098 INFO         Found 6 results
+2026-06-07 18:12:12,176 WARNING         Pre-skip (too large 12288KB): arovas_Lecture Notes on Thermodynamics and Statistical Mechanics.pdf
+2026-06-07 18:12:12,178 WARNING         No suitable file: ArovasLectureNotesOnThermodynamicsAndStatisticalMechanics
+2026-06-07 18:12:13,761 WARNING         Pre-skip (too large 30727KB): measurementdataa0000dunn_i5r7.pdf
+2026-06-07 18:12:13,761 WARNING         Pre-skip (too large 30564KB): measurementdataa0000dunn_i5r7_encrypted.pdf
+2026-06-07 18:12:13,763 WARNING         No suitable file: measurementdataa0000dunn_i5r7
+2026-06-07 18:12:13,763 WARNING         Irrelevant skipped: Statistics and data analysis for financial engineering : wit
+2026-06-07 18:12:13,764 WARNING         Irrelevant skipped: Bayesian Methods in Cosmology
+2026-06-07 18:12:13,764 WARNING         Irrelevant skipped: Further results on controlling the false discovery proportio
+2026-06-07 18:12:13,764 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp10-02196r000700020003-3: SOVIET ATOM
+2026-06-07 18:12:15,765 INFO [SEARCH] probability distributions statistics lecture notes pdf (page 2)
+2026-06-07 18:12:17,108 INFO         Found 0 results
+2026-06-07 18:12:17,110 INFO [SEARCH] university physics serway jewett textbook pdf (page 1)
+2026-06-07 18:12:18,404 INFO         Found 2 results
+2026-06-07 18:12:20,330 WARNING         Pre-skip (too large 124706KB): physicsforscient0000serw_g9o0.pdf
+2026-06-07 18:12:20,330 WARNING         Pre-skip (too large 124301KB): physicsforscient0000serw_g9o0_encrypted.pdf
+2026-06-07 18:12:20,332 WARNING         No suitable file: physicsforscient0000serw_g9o0
+2026-06-07 18:12:21,944 WARNING         Pre-skip (too large 458007KB): Physics for Scientists and Engineers Tenth Edition.pdf
+2026-06-07 18:12:21,944 WARNING         Pre-skip (too large 58224KB): Physics for Scientists and Engineers Tenth Edition_text.pdf
+2026-06-07 18:12:21,946 WARNING         No suitable file: physics-for-scientists-and-engineers-tenth-edition
+2026-06-07 18:12:23,947 INFO [SEARCH] university physics serway jewett textbook pdf (page 2)
+2026-06-07 18:12:25,206 INFO         Found 0 results
+2026-06-07 18:12:25,209 INFO [SEARCH] thesis network intrusion detection cybersecurity (page 1)
+2026-06-07 18:12:26,701 INFO         Found 3 results
+2026-06-07 18:12:26,702 WARNING         Irrelevant skipped: New Technologies for Security and Privacy Issues in the Era 
+2026-06-07 18:12:30,993 WARNING         No suitable file: analysisofunited1094532877
+2026-06-07 18:12:32,324 WARNING         Pre-skip (too large 8904KB): sgng.19247-study-and-development-of-network-based-intrusion-detection-system.pdf
+2026-06-07 18:12:32,326 INFO         Downloading: sgng.19247-study-and-development-of-network-based-intrusion-detection-system_text.pdf
+2026-06-07 18:12:36,568 INFO         Done: 1480 KB
+2026-06-07 18:12:36,572 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:12:37,753 INFO         SEO title : Network Intrusion Detection System Thesis PDF
+2026-06-07 18:12:37,753 INFO         SEO slug  : network-intrusion-detection-system-thesis-pakistan
+2026-06-07 18:12:37,755 INFO         Uploading: Network Intrusion Detection System Thesis PDF
+2026-06-07 18:12:43,803 INFO         UPLOADED! slug=network-intrusion-detection-system-thesis-pdf
+2026-06-07 18:12:43,807 INFO         Tracked in uploaded.txt: sgng.19247-study-and-development-of-network-based-intrusion-detection-system
+2026-06-07 18:12:43,807 INFO --- Progress: 1/50 ---
+2026-06-07 18:12:53,809 INFO [SEARCH] thesis network intrusion detection cybersecurity (page 2)
+2026-06-07 18:12:55,096 INFO         Found 0 results
+2026-06-07 18:12:55,098 INFO [SEARCH] differential equations solution lecture notes pdf (page 1)
+2026-06-07 18:12:57,022 INFO         Found 10 results
+2026-06-07 18:12:58,333 WARNING         Pre-skip (too large 28693KB): G.N. Polozhiy - Equations of Mathematical Physics - 1967.pdf
+2026-06-07 18:12:58,336 WARNING         No suitable file: g.-n.-polozhiy-equations-of-mathematical-physics-1967
+2026-06-07 18:12:58,336 WARNING         Irrelevant skipped: Quaternions, Interpolation and Animation
+2026-06-07 18:13:00,089 INFO         Downloading: tifr64.pdf
+2026-06-07 18:13:05,942 INFO         Done: 1226 KB
+2026-06-07 18:13:05,946 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:13:06,889 INFO         SEO title : Mathematics Diffusion Problems Lecture Notes PDF
+2026-06-07 18:13:06,890 INFO         SEO slug  : mathematics-diffusion-problems-lecture-notes-pakistan
+2026-06-07 18:13:06,892 INFO         Uploading: Mathematics Diffusion Problems Lecture Notes PDF
+2026-06-07 18:13:10,086 INFO         UPLOADED! slug=mathematics-diffusion-problems-lecture-notes-pdf
+2026-06-07 18:13:10,091 INFO         Tracked in uploaded.txt: S_R_S_Varadhan___Lectures_on_Diffusion_Problems_and_Partial_Differential_Equations
+2026-06-07 18:13:10,091 INFO --- Progress: 2/50 ---
+2026-06-07 18:13:18,357 WARNING         Irrelevant skipped: Numerical Solution of Ordinary Differential Equations
+2026-06-07 18:13:18,357 WARNING         Irrelevant skipped: DTIC AD0718963: Modern Techniques in Astrodynamics-An Introd
+2026-06-07 18:13:20,704 WARNING         Pre-skip (too large 8439KB): mihir sen. lecture notes on mathematical methods.pdf
+2026-06-07 18:13:20,706 WARNING         No suitable file: mihir-sen.-lecture-notes-on-mathematical-methods
+2026-06-07 18:13:20,707 WARNING         Irrelevant skipped: Renormalization Hopf algebras and combinatorial groups
+2026-06-07 18:13:22,032 WARNING         Pre-skip (too large 65500KB): Equations de la Physique Mathematique Par S. Godounov.pdf
+2026-06-07 18:13:22,033 WARNING         Pre-skip (too large 8190KB): Equations de la Physique Mathematique Par S. Godounov_text.pdf
+2026-06-07 18:13:22,035 WARNING         No suitable file: equations-de-la-physique-mathematique-par-s.-godounov
+2026-06-07 18:13:22,035 WARNING         Irrelevant skipped: DTIC ADA275383: Stability of Dynamical Systems in the Presen
+2026-06-07 18:13:22,036 WARNING         Irrelevant skipped: The second boundary value problem of the prescribed affine m
+2026-06-07 18:13:24,036 INFO [SEARCH] differential equations solution lecture notes pdf (page 2)
+2026-06-07 18:13:26,170 INFO         Found 1 results
+2026-06-07 18:13:26,174 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp10-02196r000700020003-3: SOVIET ATOM
+2026-06-07 18:13:28,175 INFO [SEARCH] differential equations solution lecture notes pdf (page 3)
+2026-06-07 18:13:29,435 INFO         Found 0 results
+2026-06-07 18:13:29,438 INFO [SEARCH] data structures algorithms Goodrich textbook pdf (page 1)
+2026-06-07 18:13:30,706 INFO         Found 0 results
+2026-06-07 18:13:30,708 INFO [SEARCH] thesis IoT smart home automation system (page 1)
+2026-06-07 18:13:32,182 INFO         Found 0 results
+2026-06-07 18:13:32,184 INFO [SEARCH] digital logic design gates flip-flops lecture notes pdf (page 1)
+2026-06-07 18:13:33,554 INFO         Found 0 results
+2026-06-07 18:13:33,556 INFO [SEARCH] thesis image recognition convolutional neural network (page 1)
+2026-06-07 18:13:35,006 INFO         Found 3 results
+2026-06-07 18:13:35,009 WARNING         Irrelevant skipped: Understanding Human-Centric Images: From Geometry to Fashion
+2026-06-07 18:13:36,766 INFO         Downloading: 1602.09046.pdf
+2026-06-07 18:13:41,980 INFO         Done: 789 KB
+2026-06-07 18:13:41,986 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:13:43,258 INFO         SEO title : Convolutional Neural Networks Thesis PDF
+2026-06-07 18:13:43,258 INFO         SEO slug  : convolutional-neural-networks-thesis-pakistan
+2026-06-07 18:13:43,260 INFO         Uploading: Convolutional Neural Networks Thesis PDF
+2026-06-07 18:13:47,303 INFO         UPLOADED! slug=convolutional-neural-networks-thesis-pdf
+2026-06-07 18:13:47,319 INFO         Tracked in uploaded.txt: arxiv-1602.09046
+2026-06-07 18:13:47,320 INFO --- Progress: 3/50 ---

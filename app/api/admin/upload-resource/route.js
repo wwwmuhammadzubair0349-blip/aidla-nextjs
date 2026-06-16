@@ -171,6 +171,8 @@ export async function POST(request) {
   const tags        = tagsRaw ? tagsRaw.split(",").map(t => t.trim().toLowerCase()).filter(Boolean) : [];
   const access      = get("access")  || "free";
   const status      = get("status")  || "published";
+  const meta_title       = get("meta_title")       || null;
+  const meta_description = get("meta_description") || null;
 
   console.log("[upload-resource] title:", title, "| category:", category, "| file:", fileField?.filename);
 
@@ -216,7 +218,7 @@ export async function POST(request) {
   console.log("[upload-resource] File URL:", fileUrl);
 
   // ── Slug + RPC ──────────────────────────────────────────
-  const slug = slugify(title);
+  const slug = slugify(get("slug") || title);
 
   const { data: rpcData, error: rpcError } = await supabase.rpc("study_materials_admin_upsert", {
     p_id:               null,
@@ -236,8 +238,8 @@ export async function POST(request) {
     p_file_size_bytes:  fileField.size || null,
     p_external_url:     null,
     p_access:           access,
-    p_meta_title:       null,
-    p_meta_description: null,
+    p_meta_title:       meta_title,
+    p_meta_description: meta_description,
     p_status:           status,
   });
 

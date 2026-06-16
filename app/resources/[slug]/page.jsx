@@ -20,7 +20,7 @@ export async function generateStaticParams() {
 
 async function getMaterial(slug) {
   const { data } = await serverFetch("study_materials", {
-    select: "id,title,slug,description,file_type,subject,class_level,university,created_at",
+    select: "id,title,slug,description,meta_title,meta_description,file_type,subject,class_level,university,created_at",
     "slug": `eq.${slug}`,
     "status": "eq.published",
   });
@@ -30,11 +30,14 @@ async function getMaterial(slug) {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const m    = await getMaterial(slug);
-  const title = m ? `${m.title} � Free Download | AIDLA` : "Study Material | AIDLA";
-  const desc  = m?.description
-    || (m ? `Download ${m.title} free on AIDLA � study materials for learners worldwide.` : "Free study material on AIDLA.");
-  const url   = `${SITE_URL}/resources/${slug}`;
-  const img   = { url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: title };
+  const url  = `${SITE_URL}/resources/${slug}`;
+  const img  = { url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: m?.title || "AIDLA" };
+
+  const title = m?.meta_title
+    || (m ? `${m.title} – Free Download | AIDLA` : "Study Material | AIDLA");
+  const desc  = m?.meta_description
+    || m?.description
+    || (m ? `Download ${m.title} free on AIDLA – study materials for learners worldwide.` : "Free study material on AIDLA.");
 
   return {
     title,

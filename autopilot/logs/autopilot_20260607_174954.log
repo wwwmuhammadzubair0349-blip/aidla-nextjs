@@ -1,0 +1,376 @@
+2026-06-07 17:49:54,953 INFO ==================================================
+2026-06-07 17:49:54,953 INFO AIDLA AUTOPILOT STARTED
+2026-06-07 17:49:54,953 INFO Target: 50 uploads | Delay: 8s
+2026-06-07 17:49:54,954 INFO ==================================================
+2026-06-07 17:49:54,969 INFO [SEARCH] linear algebra lecture notes eigenvalues (page 1)
+2026-06-07 17:49:56,364 INFO         Found 2 results
+2026-06-07 17:49:58,415 INFO         Downloading: ERIC_ED214767.pdf
+2026-06-07 17:50:03,336 INFO         Done: 1430 KB
+2026-06-07 17:50:03,341 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:50:04,603 INFO         SEO title : Mathematics Notes on Generalized Inverses for Matrices PDF
+2026-06-07 17:50:04,603 INFO         SEO slug  : mathematics-notes-on-generalized-inverses-for-matrices-pakistan
+2026-06-07 17:50:04,606 INFO         Uploading: Mathematics Notes on Generalized Inverses for Matrices PDF
+2026-06-07 17:50:09,942 INFO         UPLOADED! slug=mathematics-notes-on-generalized-inverses-for-matrices-pdf
+2026-06-07 17:50:09,945 INFO --- Progress: 1/50 ---
+2026-06-07 17:50:20,082 INFO         Downloading: david lerner. linear algebra lecture notes.pdf
+2026-06-07 17:50:25,318 INFO         Done: 657 KB
+2026-06-07 17:50:25,327 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:50:26,350 INFO         SEO title : Linear Algebra Lecture Notes for Mathematics Students
+2026-06-07 17:50:26,351 INFO         SEO slug  : linear-algebra-lecture-notes-mathematics-pakistan
+2026-06-07 17:50:26,353 INFO         Uploading: Linear Algebra Lecture Notes for Mathematics Students
+2026-06-07 17:50:32,828 INFO         UPLOADED! slug=linear-algebra-lecture-notes-for-mathematics-students
+2026-06-07 17:50:32,831 INFO --- Progress: 2/50 ---
+2026-06-07 17:50:42,834 INFO [SEARCH] linear algebra lecture notes eigenvalues (page 2)
+2026-06-07 17:50:44,113 INFO         Found 0 results
+2026-06-07 17:50:44,115 INFO [SEARCH] power systems protection relay lecture notes (page 1)
+2026-06-07 17:50:45,434 INFO         Found 1 results
+2026-06-07 17:50:50,725 WARNING         Pre-skip (too large 20370KB): Extrasensory_Perception_Research_Finding.pdf
+2026-06-07 17:50:50,728 INFO         Downloading: Temp1.pdf
+2026-06-07 17:50:55,031 INFO         Done: 136 KB
+2026-06-07 17:50:55,036 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:50:56,117 INFO         SEO title : Paranormal Notes for Electrical Engineering Students PDF
+2026-06-07 17:50:56,117 INFO         SEO slug  : paranormal-notes-electrical-engineering-pakistan
+2026-06-07 17:50:56,120 INFO         Uploading: Paranormal Notes for Electrical Engineering Students PDF
+2026-06-07 17:50:59,239 INFO         UPLOADED! slug=paranormal-notes-for-electrical-engineering-students-pdf
+2026-06-07 17:50:59,244 INFO --- Progress: 3/50 ---
+2026-06-07 17:51:09,245 INFO [SEARCH] power systems protection relay lecture notes (page 2)
+2026-06-07 17:51:10,857 INFO         Found 0 results
+2026-06-07 17:51:10,860 INFO [SEARCH] research proposal template university students (page 1)
+2026-06-07 17:51:16,251 INFO         Found 5 results
+2026-06-07 17:51:20,553 INFO         Downloading: Program International Congress on Desert Economy – ENCG Dakhla, Sahara. Morocco Conference.pdf
+2026-06-07 17:51:25,845 INFO         Done: 3816 KB
+2026-06-07 17:51:25,851 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:51:27,157 INFO         SEO title : Desert Economy Congress Program PDF Morocco
+2026-06-07 17:51:27,158 INFO         SEO slug  : desert-economy-congress-program-morocco
+2026-06-07 17:51:27,161 INFO         Uploading: Desert Economy Congress Program PDF Morocco
+2026-06-07 17:51:37,893 INFO         UPLOADED! slug=desert-economy-congress-program-pdf-morocco
+2026-06-07 17:51:37,897 INFO --- Progress: 4/50 ---
+2026-06-07 17:51:48,352 INFO         Downloading: cia-rdp79-01194a000100600001-9.pdf
+2026-06-07 17:51:53,601 INFO         Done: 2356 KB
+2026-06-07 17:51:53,606 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:51:54,637 INFO         SEO title : Soviet Russia Family Life Article PDF
+2026-06-07 17:51:54,637 INFO         SEO slug  : soviet-russia-family-life-article-pakistan
+2026-06-07 17:51:54,639 INFO         Uploading: Soviet Russia Family Life Article PDF
+2026-06-07 17:52:04,678 INFO         UPLOADED! slug=soviet-russia-family-life-article-pdf
+2026-06-07 17:52:04,681 INFO --- Progress: 5/50 ---
+2026-06-07 17:52:14,646 INFO         Downloading: Program. Third International Congress on Desert Economy. Dakhla, Sahara. Morocco Conference, ENCG Dakhla.pdf
+2026-06-07 17:52:19,466 INFO         Done: 3807 KB
+2026-06-07 17:52:19,471 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:52:20,375 INFO         SEO title : Desert Economy Congress Program PDF Morocco
+2026-06-07 17:52:20,375 INFO         SEO slug  : desert-economy-congress-program-morocco
+2026-06-07 17:52:20,378 INFO         Duplicate title: Desert Economy Congress Program PDF Morocco
+2026-06-07 17:52:27,354 INFO         Downloading: Dakhla. The Third International Congress on Desert Economy. Energy Economics between Deserts and Oceans. ENCG Dakhla, Sahara, Morocco.pdf
+2026-06-07 17:52:31,358 INFO         Done: 875 KB
+2026-06-07 17:52:31,363 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:52:32,358 INFO         SEO title : Desert Economy Congress Energy Economics PDF
+2026-06-07 17:52:32,358 INFO         SEO slug  : desert-economy-congress-energy-economics-pakistan
+2026-06-07 17:52:32,360 INFO         Uploading: Desert Economy Congress Energy Economics PDF
+2026-06-07 17:52:36,814 INFO         UPLOADED! slug=desert-economy-congress-energy-economics-pdf
+2026-06-07 17:52:36,817 INFO --- Progress: 6/50 ---
+2026-06-07 17:52:49,328 INFO         Downloading: Dakhla. The Third International Congress on Desert Economy. Energy Economics between Deserts and Oceans. ENCG Dakhla, Sahara Morocco.pdf
+2026-06-07 17:52:53,571 INFO         Done: 875 KB
+2026-06-07 17:52:53,576 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:52:54,800 INFO         SEO title : Desert Economy Congress Energy Economics PDF
+2026-06-07 17:52:54,800 INFO         SEO slug  : desert-economy-congress-energy-economics-pakistan
+2026-06-07 17:52:54,803 INFO         Duplicate title: Desert Economy Congress Energy Economics PDF
+2026-06-07 17:52:56,805 INFO [SEARCH] research proposal template university students (page 2)
+2026-06-07 17:52:58,184 INFO         Found 0 results
+2026-06-07 17:52:58,187 INFO [SEARCH] deep learning neural network lecture notes (page 1)
+2026-06-07 17:52:59,794 INFO         Found 2 results
+2026-06-07 17:53:04,493 WARNING         Pre-skip (too large 20370KB): Extrasensory_Perception_Research_Finding.pdf
+2026-06-07 17:53:04,497 INFO         Downloading: Temp1.pdf
+2026-06-07 17:53:13,265 INFO         Done: 136 KB
+2026-06-07 17:53:13,269 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:53:14,616 INFO         SEO title : Paranormal Notes for AI Students PDF
+2026-06-07 17:53:14,616 INFO         SEO slug  : paranormal-notes-ai-students-pakistan
+2026-06-07 17:53:14,618 INFO         Duplicate identifier: ExtrasensoryPerceptionResearchFinding
+2026-06-07 17:53:16,308 WARNING         Pre-skip (too large 10828KB): The+Shallow+and+the+Deep.pdf
+2026-06-07 17:53:16,311 WARNING         No suitable file: the-shallowandthe-deep
+2026-06-07 17:53:18,312 INFO [SEARCH] deep learning neural network lecture notes (page 2)
+2026-06-07 17:53:20,033 INFO         Found 0 results
+2026-06-07 17:53:20,035 INFO [SEARCH] calculus early transcendentals textbook stewart (page 1)
+2026-06-07 17:53:21,757 INFO         Found 7 results
+2026-06-07 17:53:23,297 WARNING         Pre-skip (too large 33255KB): James Stewart - Calculus - Early transcendentals (8th Edition).pdf
+2026-06-07 17:53:23,300 WARNING         No suitable file: calculus-early-transcendentals-8th-edition-james-stewart
+2026-06-07 17:53:25,568 WARNING         No suitable file: calculus_202509
+2026-06-07 17:53:27,113 WARNING         Pre-skip (too large 43146KB): Early Transcendentals 9th Edition.pdf
+2026-06-07 17:53:27,120 WARNING         No suitable file: early-transcendentals-9th-edition
+2026-06-07 17:53:28,775 WARNING         Pre-skip (too large 81071KB): Stewart J., Clegg D., Watson S. Calculus. Early Transcendentals 9ed 2020.pdf
+2026-06-07 17:53:28,778 WARNING         No suitable file: stewart-j.-clegg-d.-watson-s.-calculus.-early-transcendentals-9ed-2020-jp-2
+2026-06-07 17:53:30,507 WARNING         Pre-skip (too large 43146KB): Stewart J., Clegg D., Watson S. Calculus. Early Transcendentals 9ed 2020.pdf
+2026-06-07 17:53:30,510 WARNING         No suitable file: stewart-j.-clegg-d.-watson-s.-calculus.-early-transcendentals-9ed-2020_202508
+2026-06-07 17:53:32,423 WARNING         Pre-skip (too large 33255KB): James Stewart - Calculus - Early transcendentals (8th Edition).pdf
+2026-06-07 17:53:32,425 WARNING         No suitable file: james-stewart-calculus-early-transcendentals-8th-edition
+2026-06-07 17:53:33,987 WARNING         Pre-skip (too large 30487KB): Calculus I textbook.pdf
+2026-06-07 17:53:33,990 WARNING         No suitable file: calculus-i-textbook
+2026-06-07 17:53:35,990 INFO [SEARCH] calculus early transcendentals textbook stewart (page 2)
+2026-06-07 17:53:39,107 INFO         Found 0 results
+2026-06-07 17:53:39,113 INFO [SEARCH] thesis natural language processing NLP (page 1)
+2026-06-07 17:53:41,017 INFO         Found 10 results
+2026-06-07 17:53:43,529 INFO         Downloading: BNA-DIG-TESIS-CROES-KRIS-2021.pdf
+2026-06-07 17:53:48,395 INFO         Done: 2308 KB
+2026-06-07 17:53:48,401 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:53:49,667 INFO         SEO title : Neural Machine Translation Thesis Computer Science PDF
+2026-06-07 17:53:49,668 INFO         SEO slug  : neural-machine-translation-thesis-computer-science-pakistan
+2026-06-07 17:53:49,670 INFO         Uploading: Neural Machine Translation Thesis Computer Science PDF
+2026-06-07 17:53:56,570 INFO         UPLOADED! slug=neural-machine-translation-thesis-computer-science-pdf
+2026-06-07 17:53:56,575 INFO --- Progress: 7/50 ---
+2026-06-07 17:54:07,324 INFO         Downloading: improvingutomate109453281.pdf
+2026-06-07 17:54:12,633 INFO         Done: 602 KB
+2026-06-07 17:54:12,637 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:54:13,938 INFO         SEO title : Automated Lexical Analysis Thesis PDF Computer Science
+2026-06-07 17:54:13,939 INFO         SEO slug  : automated-lexical-analysis-thesis-pakistan
+2026-06-07 17:54:13,941 INFO         Uploading: Automated Lexical Analysis Thesis PDF Computer Science
+2026-06-07 17:54:17,400 INFO         UPLOADED! slug=automated-lexical-analysis-thesis-pdf-computer-science
+2026-06-07 17:54:17,403 INFO --- Progress: 8/50 ---
+2026-06-07 17:54:28,026 INFO         Downloading: topicdetectionin109454513.pdf
+2026-06-07 17:54:32,500 INFO         Done: 625 KB
+2026-06-07 17:54:32,506 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:54:33,967 INFO         SEO title : Topic Detection Thesis in Computer Science PDF
+2026-06-07 17:54:33,968 INFO         SEO slug  : topic-detection-thesis-computer-science-pakistan
+2026-06-07 17:54:33,970 INFO         Uploading: Topic Detection Thesis in Computer Science PDF
+2026-06-07 17:54:37,265 INFO         UPLOADED! slug=topic-detection-thesis-in-computer-science-pdf
+2026-06-07 17:54:37,269 INFO --- Progress: 9/50 ---
+2026-06-07 17:54:47,684 INFO         Downloading: DTIC_ADA477326.pdf
+2026-06-07 17:54:52,354 INFO         Done: 782 KB
+2026-06-07 17:54:52,359 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:54:53,470 INFO         SEO title : Computer Science Thesis Information Extraction Translation
+2026-06-07 17:54:53,471 INFO         SEO slug  : computer-science-thesis-information-extraction-translation
+2026-06-07 17:54:53,474 INFO         Uploading: Computer Science Thesis Information Extraction Translation
+2026-06-07 17:54:56,895 INFO         UPLOADED! slug=computer-science-thesis-information-extraction-translation
+2026-06-07 17:54:56,899 INFO --- Progress: 10/50 ---
+2026-06-07 17:55:07,147 INFO         Downloading: improvingoperati1094566578.pdf
+2026-06-07 17:55:12,547 INFO         Done: 1046 KB
+2026-06-07 17:55:12,552 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:55:13,776 INFO         SEO title : Operational Reporting AI Thesis Computer Science PDF
+2026-06-07 17:55:13,776 INFO         SEO slug  : improving-operational-reporting-ai-thesis
+2026-06-07 17:55:13,779 INFO         Uploading: Operational Reporting AI Thesis Computer Science PDF
+2026-06-07 17:55:18,361 INFO         UPLOADED! slug=operational-reporting-ai-thesis-computer-science-pdf
+2026-06-07 17:55:18,365 INFO --- Progress: 11/50 ---
+2026-06-07 17:55:28,195 WARNING         Pre-skip (too large 7347KB): implementingvoic1094532233.pdf
+2026-06-07 17:55:28,197 WARNING         No suitable file: implementingvoic1094532233
+2026-06-07 17:55:30,133 INFO         Downloading: DTIC_ADA138455.pdf
+2026-06-07 17:55:37,020 INFO         Done: 4994 KB
+2026-06-07 17:55:37,024 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:55:38,079 INFO         SEO title : Natural Language Processor Thesis for Computer Science
+2026-06-07 17:55:38,079 INFO         SEO slug  : natural-language-processor-thesis-computer-science
+2026-06-07 17:55:38,081 INFO         Uploading: Natural Language Processor Thesis for Computer Science
+2026-06-07 17:55:51,324 INFO         UPLOADED! slug=natural-language-processor-thesis-for-computer-science
+2026-06-07 17:55:51,328 INFO --- Progress: 12/50 ---
+2026-06-07 17:56:01,196 INFO         Downloading: conceptualdepend1094516046.pdf
+2026-06-07 17:56:06,800 INFO         Done: 3579 KB
+2026-06-07 17:56:06,807 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:56:07,965 INFO         SEO title : Conceptual Dependency NLP Thesis PDF Computer Science
+2026-06-07 17:56:07,965 INFO         SEO slug  : conceptual-dependency-nlp-thesis-pakistan
+2026-06-07 17:56:07,968 INFO         Uploading: Conceptual Dependency NLP Thesis PDF Computer Science
+2026-06-07 17:56:17,504 INFO         UPLOADED! slug=conceptual-dependency-nlp-thesis-pdf-computer-science
+2026-06-07 17:56:17,506 INFO --- Progress: 13/50 ---
+2026-06-07 17:56:27,569 WARNING         Pre-skip (too large 6581KB): anintroductionto1094521930.pdf
+2026-06-07 17:56:27,571 WARNING         No suitable file: anintroductionto1094521930
+2026-06-07 17:56:30,209 INFO         Downloading: DTIC_ADA573612.pdf
+2026-06-07 17:56:34,508 INFO         Done: 556 KB
+2026-06-07 17:56:34,511 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:56:35,444 INFO         SEO title : Semantic Parsing Thesis for Computer Science Students
+2026-06-07 17:56:35,444 INFO         SEO slug  : semantic-parsing-thesis-computer-science-pakistan
+2026-06-07 17:56:35,446 INFO         Uploading: Semantic Parsing Thesis for Computer Science Students
+2026-06-07 17:56:39,276 INFO         UPLOADED! slug=semantic-parsing-thesis-for-computer-science-students
+2026-06-07 17:56:39,279 INFO --- Progress: 14/50 ---
+2026-06-07 17:56:49,281 INFO [SEARCH] thesis natural language processing NLP (page 2)
+2026-06-07 17:56:51,173 INFO         Found 9 results
+2026-06-07 17:56:52,694 WARNING         Pre-skip (too large 17318KB): 978-3-031-17693-7.pdf
+2026-06-07 17:56:52,697 WARNING         No suitable file: oapen-20.500.12657-61876
+2026-06-07 17:56:54,386 INFO         Downloading: DTIC_ADA509105.pdf
+2026-06-07 17:56:58,526 INFO         Done: 561 KB
+2026-06-07 17:56:58,530 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:56:59,607 INFO         SEO title : Topic Detection Thesis Computer Science PDF
+2026-06-07 17:56:59,607 INFO         SEO slug  : topic-detection-thesis-computer-science-pakistan
+2026-06-07 17:56:59,609 INFO         Duplicate slug: topic-detection-thesis-computer-science-pakistan
+2026-06-07 17:57:03,298 INFO         Downloading: 87365.pdf
+2026-06-07 17:57:07,334 INFO         Done: 490 KB
+2026-06-07 17:57:07,338 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:57:08,478 INFO         SEO title : Sentiment Analysis Thesis for Computer Science Students
+2026-06-07 17:57:08,479 INFO         SEO slug  : sentiment-analysis-thesis-computer-science-pakistan
+2026-06-07 17:57:08,481 INFO         Uploading: Sentiment Analysis Thesis for Computer Science Students
+2026-06-07 17:57:11,848 INFO         UPLOADED! slug=sentiment-analysis-thesis-for-computer-science-students
+2026-06-07 17:57:11,851 INFO --- Progress: 15/50 ---
+2026-06-07 17:57:21,520 INFO         Downloading: 1411.3146.pdf
+2026-06-07 17:57:26,091 INFO         Done: 1352 KB
+2026-06-07 17:57:26,095 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:57:27,081 INFO         SEO title : Compositional Semantics Thesis Computer Science PDF
+2026-06-07 17:57:27,082 INFO         SEO slug  : compositional-semantics-thesis-computer-science-pakistan
+2026-06-07 17:57:27,084 INFO         Uploading: Compositional Semantics Thesis Computer Science PDF
+2026-06-07 17:57:30,139 INFO         UPLOADED! slug=compositional-semantics-thesis-computer-science-pdf
+2026-06-07 17:57:30,142 INFO --- Progress: 16/50 ---
+2026-06-07 17:57:40,279 WARNING         Pre-skip (too large 7214KB): 1610.02692.pdf
+2026-06-07 17:57:40,281 WARNING         No suitable file: arxiv-1610.02692
+2026-06-07 17:57:41,708 INFO         Downloading: Pani_grad.msu_0128N_18326.pdf
+2026-06-07 17:57:47,892 INFO         Done: 446 KB
+2026-06-07 17:57:47,895 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:57:49,040 INFO         SEO title : Coreference Resolution Thesis for NLP Tasks Computer Science
+2026-06-07 17:57:49,041 INFO         SEO slug  : coreference-resolution-thesis-nlp-tasks
+2026-06-07 17:57:49,043 INFO         Uploading: Coreference Resolution Thesis for NLP Tasks Computer Science
+2026-06-07 17:57:53,040 INFO         UPLOADED! slug=coreference-resolution-thesis-for-nlp-tasks-computer-science
+2026-06-07 17:57:53,043 INFO --- Progress: 17/50 ---
+2026-06-07 17:58:02,953 INFO         Downloading: 1602.02047.pdf
+2026-06-07 17:58:08,152 INFO         Done: 2425 KB
+2026-06-07 17:58:08,155 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:58:09,059 INFO         SEO title : Automatic Text Summarization Thesis Computer Science PDF
+2026-06-07 17:58:09,060 INFO         SEO slug  : automatic-text-summarization-thesis-computer-science-pakistan
+2026-06-07 17:58:09,061 INFO         Uploading: Automatic Text Summarization Thesis Computer Science PDF
+2026-06-07 17:58:18,335 INFO         UPLOADED! slug=automatic-text-summarization-thesis-computer-science-pdf
+2026-06-07 17:58:18,338 INFO --- Progress: 18/50 ---
+2026-06-07 17:58:28,060 INFO         Downloading: sgng.18897-streamlining-parameter-complexity-of-transformer-architecture.pdf
+2026-06-07 17:58:32,511 INFO         Done: 738 KB
+2026-06-07 17:58:32,515 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:58:33,715 INFO         SEO title : Transformer Architecture Parameter Complexity Thesis Computer Science
+2026-06-07 17:58:33,716 INFO         SEO slug  : transformer-architecture-parameter-complexity-thesis
+2026-06-07 17:58:33,718 INFO         Uploading: Transformer Architecture Parameter Complexity Thesis Computer Science
+2026-06-07 17:58:38,048 INFO         UPLOADED! slug=transformer-architecture-parameter-complexity-thesis-computer-science
+2026-06-07 17:58:38,053 INFO --- Progress: 19/50 ---
+2026-06-07 17:58:47,148 INFO         Downloading: sgng.8006-holistic-multilingual-sentiment-analysis-on-reviews-in-social-medi.pdf
+2026-06-07 17:58:51,504 INFO         Done: 1431 KB
+2026-06-07 17:58:51,509 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:58:52,493 INFO         SEO title : Multilingual Sentiment Analysis Thesis Computer Science PDF
+2026-06-07 17:58:52,493 INFO         SEO slug  : multilingual-sentiment-analysis-thesis-computer-science
+2026-06-07 17:58:52,495 INFO         Uploading: Multilingual Sentiment Analysis Thesis Computer Science PDF
+2026-06-07 17:58:58,004 INFO         UPLOADED! slug=multilingual-sentiment-analysis-thesis-computer-science-pdf
+2026-06-07 17:58:58,007 INFO --- Progress: 20/50 ---
+2026-06-07 17:59:08,009 INFO [SEARCH] thesis natural language processing NLP (page 3)
+2026-06-07 17:59:09,367 INFO         Found 0 results
+2026-06-07 17:59:09,369 INFO [SEARCH] internship report template engineering students (page 1)
+2026-06-07 17:59:10,699 INFO         Found 0 results
+2026-06-07 17:59:10,701 INFO [SEARCH] english academic writing lecture notes (page 1)
+2026-06-07 17:59:14,411 INFO         Found 10 results
+2026-06-07 17:59:18,862 WARNING         Pre-skip (too large 20370KB): Extrasensory_Perception_Research_Finding.pdf
+2026-06-07 17:59:18,865 INFO         Downloading: Temp1.pdf
+2026-06-07 17:59:23,271 INFO         Done: 136 KB
+2026-06-07 17:59:23,277 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:59:24,465 INFO         SEO title : Paranormal Notes for English Students PDF
+2026-06-07 17:59:24,465 INFO         SEO slug  : paranormal-notes-english-pakistan
+2026-06-07 17:59:24,467 INFO         Duplicate identifier: ExtrasensoryPerceptionResearchFinding
+2026-06-07 17:59:27,704 INFO         Downloading: 1998_Gentner-CognitiveDeterminism.pdf
+2026-06-07 17:59:32,891 INFO         Done: 270 KB
+2026-06-07 17:59:32,895 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:59:33,971 INFO         SEO title : Cognitive Determinism English Notes PDF
+2026-06-07 17:59:33,972 INFO         SEO slug  : cognitive-determinism-english-notes-pakistan
+2026-06-07 17:59:33,974 INFO         Uploading: Cognitive Determinism English Notes PDF
+2026-06-07 17:59:37,330 INFO         UPLOADED! slug=cognitive-determinism-english-notes-pdf
+2026-06-07 17:59:37,333 INFO --- Progress: 21/50 ---
+2026-06-07 17:59:46,884 INFO         Downloading: cia-rdp96-00787r000700030001-3.pdf
+2026-06-07 17:59:53,554 INFO         Done: 2887 KB
+2026-06-07 17:59:53,559 INFO         Asking Grok (SEO mode)...
+2026-06-07 17:59:54,729 INFO         SEO title : Psychic Phenomena Notes for English Students PDF
+2026-06-07 17:59:54,729 INFO         SEO slug  : psychic-phenomena-notes-english-pakistan
+2026-06-07 17:59:54,732 INFO         Uploading: Psychic Phenomena Notes for English Students PDF
+2026-06-07 17:59:58,293 INFO         UPLOADED! slug=psychic-phenomena-notes-for-english-students-pdf
+2026-06-07 17:59:58,296 INFO --- Progress: 22/50 ---
+2026-06-07 18:00:08,056 WARNING         Pre-skip (too large 45577KB): ERIC_ED558339.pdf
+2026-06-07 18:00:08,057 WARNING         No suitable file: ERIC_ED558339
+2026-06-07 18:00:10,162 INFO         Downloading: cia-rdp96-00787r000100030002-8.pdf
+2026-06-07 18:00:17,564 INFO         Done: 4717 KB
+2026-06-07 18:00:17,568 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:00:18,527 INFO         SEO title : Psychic Frontier Notes for English Students PDF
+2026-06-07 18:00:18,527 INFO         SEO slug  : psychic-frontier-notes-english-pakistan
+2026-06-07 18:00:18,530 INFO         Uploading: Psychic Frontier Notes for English Students PDF
+2026-06-07 18:00:36,310 INFO         UPLOADED! slug=psychic-frontier-notes-for-english-students-pdf
+2026-06-07 18:00:36,313 INFO --- Progress: 23/50 ---
+2026-06-07 18:00:46,293 INFO         Downloading: ERIC_ED390307.pdf
+2026-06-07 18:00:50,957 INFO         Done: 1754 KB
+2026-06-07 18:00:50,962 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:00:51,933 INFO         SEO title : College Learning Motivation Guide for English Students PDF
+2026-06-07 18:00:51,933 INFO         SEO slug  : college-learning-motivation-guide-english-students-pakistan
+2026-06-07 18:00:51,935 INFO         Uploading: College Learning Motivation Guide for English Students PDF
+2026-06-07 18:00:59,327 INFO         UPLOADED! slug=college-learning-motivation-guide-for-english-students-pdf
+2026-06-07 18:00:59,330 INFO --- Progress: 24/50 ---
+2026-06-07 18:01:09,215 WARNING         Pre-skip (too large 17413KB): mlastylemanualgu0000unse.pdf
+2026-06-07 18:01:09,215 WARNING         Pre-skip (too large 17323KB): mlastylemanualgu0000unse_encrypted.pdf
+2026-06-07 18:01:09,220 WARNING         No suitable file: mlastylemanualgu0000unse
+2026-06-07 18:01:10,594 INFO         Downloading: cia-rdp96-00792r000400140001-8.pdf
+2026-06-07 18:01:15,315 INFO         Done: 479 KB
+2026-06-07 18:01:15,320 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:01:16,515 INFO         SEO title : Parapsychology Abstracts International Notes PDF
+2026-06-07 18:01:16,515 INFO         SEO slug  : parapsychology-abstracts-international-notes-pakistan
+2026-06-07 18:01:16,517 INFO         Uploading: Parapsychology Abstracts International Notes PDF
+2026-06-07 18:01:19,258 INFO         UPLOADED! slug=parapsychology-abstracts-international-notes-pdf
+2026-06-07 18:01:19,261 INFO --- Progress: 25/50 ---
+2026-06-07 18:01:28,941 WARNING         Pre-skip (too large 6653KB): ERIC_ED250964.pdf
+2026-06-07 18:01:28,944 WARNING         No suitable file: ERIC_ED250964
+2026-06-07 18:01:30,790 WARNING         Pre-skip (too large 29553KB): cornerstoneyourf00sher.pdf
+2026-06-07 18:01:30,790 WARNING         Pre-skip (too large 29455KB): cornerstoneyourf00sher_encrypted.pdf
+2026-06-07 18:01:30,794 WARNING         No suitable file: cornerstoneyourf00sher
+2026-06-07 18:01:32,795 INFO [SEARCH] english academic writing lecture notes (page 2)
+2026-06-07 18:01:34,490 INFO         Found 10 results
+2026-06-07 18:01:36,196 INFO         Downloading: Screenshot_20240724_100717 (2).pdf
+2026-06-07 18:01:41,189 INFO         Done: 2142 KB
+2026-06-07 18:01:41,197 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:01:42,303 INFO         SEO title : Terrance Lindall Biography English Notes PDF
+2026-06-07 18:01:42,303 INFO         SEO slug  : terrance-lindall-biography-english-notes-pakistan
+2026-06-07 18:01:42,307 INFO         Uploading: Terrance Lindall Biography English Notes PDF
+2026-06-07 18:01:48,459 INFO         UPLOADED! slug=terrance-lindall-biography-english-notes-pdf
+2026-06-07 18:01:48,464 INFO --- Progress: 26/50 ---
+2026-06-07 18:02:00,682 INFO         Downloading: ERIC_ED305869.pdf
+2026-06-07 18:02:04,223 INFO         Done: 169 KB
+2026-06-07 18:02:04,228 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:02:05,131 INFO         SEO title : Learning Disabilities Notes for English Students PDF
+2026-06-07 18:02:05,131 INFO         SEO slug  : learning-disabilities-notes-english-pakistan
+2026-06-07 18:02:05,134 INFO         Uploading: Learning Disabilities Notes for English Students PDF
+2026-06-07 18:02:08,394 INFO         UPLOADED! slug=learning-disabilities-notes-for-english-students-pdf
+2026-06-07 18:02:08,398 INFO --- Progress: 27/50 ---
+2026-06-07 18:02:18,521 INFO         Downloading: ERIC_ED366645.pdf
+2026-06-07 18:02:23,800 INFO         Done: 63 KB
+2026-06-07 18:02:23,804 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:02:25,084 INFO         SEO title : Improving Student Notes English PDF Guide
+2026-06-07 18:02:25,084 INFO         SEO slug  : improving-student-notes-english-pakistan
+2026-06-07 18:02:25,087 INFO         Uploading: Improving Student Notes English PDF Guide
+2026-06-07 18:02:28,170 INFO         UPLOADED! slug=improving-student-notes-english-pdf-guide
+2026-06-07 18:02:28,174 INFO --- Progress: 28/50 ---
+2026-06-07 18:02:38,724 INFO         Downloading: ERIC_ED416739.pdf
+2026-06-07 18:02:43,186 INFO         Done: 591 KB
+2026-06-07 18:02:43,191 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:02:44,304 INFO         SEO title : Metacognitive Self-Regulation English Notes PDF
+2026-06-07 18:02:44,305 INFO         SEO slug  : metacognitive-self-regulation-english-notes-pakistan
+2026-06-07 18:02:44,307 INFO         Uploading: Metacognitive Self-Regulation English Notes PDF
+2026-06-07 18:02:48,670 INFO         UPLOADED! slug=metacognitive-self-regulation-english-notes-pdf
+2026-06-07 18:02:48,674 INFO --- Progress: 29/50 ---
+2026-06-07 18:02:58,619 INFO         Downloading: ERIC_ED568178.pdf
+2026-06-07 18:03:03,207 INFO         Done: 2323 KB
+2026-06-07 18:03:03,212 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:03:04,334 INFO         SEO title : English Active Student Response Teaching Notes PDF
+2026-06-07 18:03:04,334 INFO         SEO slug  : english-active-student-response-teaching-notes
+2026-06-07 18:03:04,337 INFO         Uploading: English Active Student Response Teaching Notes PDF
+2026-06-07 18:03:09,552 INFO         UPLOADED! slug=english-active-student-response-teaching-notes-pdf
+2026-06-07 18:03:09,555 INFO --- Progress: 30/50 ---
+2026-06-07 18:03:19,359 INFO         Downloading: ERIC_ED438668.pdf
+2026-06-07 18:03:24,584 INFO         Done: 98 KB
+2026-06-07 18:03:24,588 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:03:25,540 INFO         SEO title : Teaching Hard of Hearing Students English Notes PDF
+2026-06-07 18:03:25,541 INFO         SEO slug  : teaching-hard-of-hearing-students-english-notes
+2026-06-07 18:03:25,544 INFO         Uploading: Teaching Hard of Hearing Students English Notes PDF
+2026-06-07 18:03:29,650 INFO         UPLOADED! slug=teaching-hard-of-hearing-students-english-notes-pdf
+2026-06-07 18:03:29,654 INFO --- Progress: 31/50 ---
+2026-06-07 18:03:39,377 INFO         Downloading: ERIC_EJ804026.pdf
+2026-06-07 18:03:42,897 INFO         Done: 317 KB
+2026-06-07 18:03:42,900 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:03:43,832 INFO         SEO title : Learn Units Effect on Student Performance Notes PDF
+2026-06-07 18:03:43,832 INFO         SEO slug  : learn-units-effect-on-student-performance-notes-pakistan
+2026-06-07 18:03:43,834 INFO         Uploading: Learn Units Effect on Student Performance Notes PDF
+2026-06-07 18:03:46,823 INFO         UPLOADED! slug=learn-units-effect-on-student-performance-notes-pdf
+2026-06-07 18:03:46,826 INFO --- Progress: 32/50 ---
+2026-06-07 18:03:56,671 WARNING         Pre-skip (too large 13149KB): makingsensestude0000nort_b7z3.pdf
+2026-06-07 18:03:56,671 WARNING         Pre-skip (too large 12934KB): makingsensestude0000nort_b7z3_encrypted.pdf
+2026-06-07 18:03:56,673 WARNING         No suitable file: makingsensestude0000nort_b7z3
+2026-06-07 18:03:58,241 INFO         Downloading: 752938631-Terrance-Lindall-Biography-In-New-York-Art-World-Surrealmageddon-Visual-Poetry-But-without-a-doubt-Terrance-Lindall-is-the-foremost-illustrator-of-P.pdf
+2026-06-07 18:04:02,964 INFO         Done: 2142 KB
+2026-06-07 18:04:02,970 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:04:04,054 INFO         SEO title : Terrance Lindall Biography English Notes PDF
+2026-06-07 18:04:04,054 INFO         SEO slug  : terrance-lindall-biography-english-notes-pakistan
+2026-06-07 18:04:04,057 INFO         Duplicate title: Terrance Lindall Biography English Notes PDF
+2026-06-07 18:04:05,779 INFO         Downloading: ERIC_EJ1129709.pdf
+2026-06-07 18:04:09,742 INFO         Done: 189 KB
+2026-06-07 18:04:09,747 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:04:10,827 INFO         SEO title : Culinary Composition Vocabulary Notes for English Students
+2026-06-07 18:04:10,828 INFO         SEO slug  : culinary-composition-vocabulary-notes-english-pakistan
+2026-06-07 18:04:10,831 INFO         Uploading: Culinary Composition Vocabulary Notes for English Students
+2026-06-07 18:04:13,104 INFO         UPLOADED! slug=culinary-composition-vocabulary-notes-for-english-students
+2026-06-07 18:04:13,107 INFO --- Progress: 33/50 ---
+2026-06-07 18:04:23,109 INFO [SEARCH] english academic writing lecture notes (page 3)

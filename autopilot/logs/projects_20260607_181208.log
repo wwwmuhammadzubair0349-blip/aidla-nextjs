@@ -1,0 +1,84 @@
+2026-06-07 18:12:08,134 INFO ==================================================
+2026-06-07 18:12:08,135 INFO AIDLA PROJECTS AUTOPILOT STARTED
+2026-06-07 18:12:08,135 INFO Target: 50 uploads | Delay: 8s
+2026-06-07 18:12:08,135 INFO ==================================================
+2026-06-07 18:12:08,135 INFO [SEARCH] research proposal deep learning (page 1)
+2026-06-07 18:12:11,024 INFO         Found 10 results
+2026-06-07 18:12:11,026 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:12:12,748 WARNING         Pre-skip (too large 12806KB): ERIC_ED539248.pdf
+2026-06-07 18:12:12,781 WARNING         Pre-skip (too large 96856KB): ERIC_ED539248_jp2.zip
+2026-06-07 18:12:12,783 WARNING         No suitable file: ERIC_ED539248
+2026-06-07 18:12:14,759 INFO         Downloading: Monroe Institute Research - Title Page.pdf
+2026-06-07 18:12:17,819 INFO         Done: 26 KB
+2026-06-07 18:12:17,822 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:12:19,160 INFO         SEO title : AI Research Proposal Project
+2026-06-07 18:12:19,161 INFO         SEO slug  : ai-research-proposal-project-pakistan
+2026-06-07 18:12:19,163 INFO         Uploading project: AI Research Proposal Project
+2026-06-07 18:12:20,662 ERROR         Failed: Upload failed: mime type application/octet-stream is not supported
+2026-06-07 18:12:28,665 WARNING         Irrelevant skipped: Dorian codex protocol for AI - - Hamiltonian Theoretical Fun
+2026-06-07 18:12:30,704 INFO         Downloading: 20 2743.pdf
+2026-06-07 18:12:34,606 INFO         Done: 563 KB
+2026-06-07 18:12:34,609 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:12:35,652 INFO         SEO title : AI-Based Microscopy Images Segmentation Research Proposal
+2026-06-07 18:12:35,652 INFO         SEO slug  : ai-based-microscopy-images-segmentation-research-proposal
+2026-06-07 18:12:35,655 INFO         Uploading project: AI-Based Microscopy Images Segmentation Research Proposal
+2026-06-07 18:12:38,169 ERROR         Failed: Upload failed: mime type application/octet-stream is not supported
+2026-06-07 18:12:48,180 INFO         Downloading: 19-Examining a generic streaming architecture for smart manufacturing_s big data processing.pdf
+2026-06-07 18:12:52,502 INFO         Done: 468 KB
+2026-06-07 18:12:52,506 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:12:53,831 INFO         SEO title : AI-Based Smart Manufacturing Research Proposal
+2026-06-07 18:12:53,831 INFO         SEO slug  : ai-based-smart-manufacturing-research-proposal-pakistan
+2026-06-07 18:12:53,833 INFO         Uploading project: AI-Based Smart Manufacturing Research Proposal
+2026-06-07 18:12:56,258 ERROR         Failed: Upload failed: mime type application/octet-stream is not supported
+2026-06-07 18:13:04,261 WARNING         Irrelevant skipped: Application and Methods of Deep Learning in IoT
+2026-06-07 18:13:04,261 WARNING         Irrelevant skipped: Hitler`s Backers
+2026-06-07 18:13:04,261 WARNING         Irrelevant skipped: DTIC AD1024592: Natural Language Video Description using Dee
+2026-06-07 18:13:05,985 WARNING         Pre-skip (too large 5402KB): 1507.06332.pdf
+2026-06-07 18:13:05,985 WARNING         Pre-skip (too large 15459KB): 1507.06332_jp2.zip
+2026-06-07 18:13:05,987 WARNING         No suitable file: arxiv-1507.06332
+2026-06-07 18:13:07,988 INFO [SEARCH] research proposal deep learning (page 2)
+2026-06-07 18:13:10,445 INFO         Found 10 results
+2026-06-07 18:13:10,447 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp63t00245r000300380001-9: LETTER TO J
+2026-06-07 18:13:10,448 WARNING         Irrelevant skipped: AttentionNet: Aggregating Weak Directions for Accurate Objec
+2026-06-07 18:13:10,448 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp99-01448r000301210005-7: OVERSIGHT A
+2026-06-07 18:13:12,220 WARNING         Pre-skip (too large 5202KB): 1505.04366.pdf
+2026-06-07 18:13:12,221 WARNING         Pre-skip (too large 15648KB): 1505.04366_jp2.zip
+2026-06-07 18:13:12,223 WARNING         No suitable file: arxiv-1505.04366
+2026-06-07 18:13:12,223 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp96-00788r001700030007-5: INFORMATION
+2026-06-07 18:13:12,224 WARNING         Irrelevant skipped: Learning Complexity-Aware Cascades for Deep Pedestrian Detec
+2026-06-07 18:13:12,224 WARNING         Irrelevant skipped: Object detection via a multi-region & semantic segmentation-
+2026-06-07 18:13:12,224 WARNING         Irrelevant skipped: Convolutional Channel Features
+2026-06-07 18:13:13,906 INFO         Downloading: 1503.06350.pdf
+2026-06-07 18:13:17,130 ERROR Download failed: 500 Server Error: Internal Server Error for url: https://dn760105.eu.archive.org/0/items/arxiv-1503.06350/1503.06350.pdf
+2026-06-07 18:13:17,136 WARNING         Irrelevant skipped: 基于人工智能的地球物理参数反演范式理论及判定条件
+2026-06-07 18:13:19,138 INFO [SEARCH] research proposal deep learning (page 3)
+2026-06-07 18:13:20,991 INFO         Found 10 results
+2026-06-07 18:13:23,274 WARNING         Pre-skip (too large 5948KB): 1610.01238.pdf
+2026-06-07 18:13:23,276 WARNING         No suitable file: arxiv-1610.01238
+2026-06-07 18:13:23,276 WARNING         Irrelevant skipped: R-CNN minus R
+2026-06-07 18:13:23,277 WARNING         Irrelevant skipped: 基于人工智能的地球物理参数反演范式理论及判定条件
+2026-06-07 18:13:23,277 WARNING         Irrelevant skipped: An End-to-End Approach to Natural Language Object Retrieval 
+2026-06-07 18:13:23,277 WARNING         Irrelevant skipped: Fine-grained pose prediction, normalization, and recognition
+2026-06-07 18:13:23,277 WARNING         Irrelevant skipped: Deep Image Retrieval: Learning global representations for im
+2026-06-07 18:13:23,278 WARNING         Irrelevant skipped: POSEidon: Face-from-Depth for Driver Pose Estimation
+2026-06-07 18:13:23,278 WARNING         Irrelevant skipped: Hierarchical Object Detection with Deep Reinforcement Learni
+2026-06-07 18:13:23,278 WARNING         Irrelevant skipped: Learning Deep Generative Models with Doubly Stochastic MCMC
+2026-06-07 18:13:25,885 INFO         Downloading: 1612.01057.pdf
+2026-06-07 18:13:30,825 INFO         Done: 2472 KB
+2026-06-07 18:13:30,829 INFO         Asking Grok (SEO mode)...
+2026-06-07 18:13:32,125 INFO         SEO title : AI-Based Object Segmentation Research Proposal
+2026-06-07 18:13:32,125 INFO         SEO slug  : ai-based-object-segmentation-research-proposal-pakistan
+2026-06-07 18:13:32,127 INFO         Uploading project: AI-Based Object Segmentation Research Proposal
+2026-06-07 18:13:35,489 ERROR         Failed: Upload failed: mime type application/octet-stream is not supported
+2026-06-07 18:13:45,493 INFO [SEARCH] final year project mobile app proposal (page 1)
+2026-06-07 18:13:48,103 INFO         Found 5 results
+2026-06-07 18:13:48,105 WARNING         Irrelevant skipped: Notes on the Paranormal
+2026-06-07 18:13:48,106 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp79-01194a000200010001-3: CA PROPAGAN
+2026-06-07 18:13:48,106 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp88g01332r000801000011-1: LETTER TO W
+2026-06-07 18:13:48,106 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp97g00008r000100150001-5: TASK FORCE 
+2026-06-07 18:13:48,106 WARNING         Irrelevant skipped: CIA Reading Room cia-rdp89-00063r000200140011-9: REPORT OF S
+2026-06-07 18:13:50,106 INFO [SEARCH] final year project mobile app proposal (page 2)
+2026-06-07 18:13:51,536 INFO         Found 0 results
+2026-06-07 18:13:51,539 INFO [SEARCH] semester project database design university (page 1)
+2026-06-07 18:13:53,942 INFO         Found 5 results
+2026-06-07 18:13:56,495 INFO         Downloading: DW-IDOL-REVISED-COURSE-MAY-2018-QP.pdf

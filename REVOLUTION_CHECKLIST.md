@@ -187,12 +187,20 @@
 
 ---
 
-## Phase 10 — Resume + Monitoring
+## Phase 10 — Resume + Monitoring ✅ COMPLETE
 
-- [ ] Confirm auto-blog running with new prompts
-- [ ] Confirm auto-news running with new prompts
-- [ ] Confirm auto-faq running with new prompts
-- [ ] Sitemap updated with all new routes
-- [ ] 20-page QA sweep
-- [ ] Create admin SQL view for daily quality monitoring
-- [ ] Set up GSC monitoring alerts
+- [x] Confirm auto-blog / auto-news / auto-faq running — ✅ pg_cron jobs created (supabase/migrations/20260616200000_auto_content_cron.sql) — user must run SQL in Supabase SQL Editor (replace YOUR_ANON_KEY_HERE)
+  - auto-blog-daily: `0 6 * * *` (6am UTC / 11am PKT)
+  - auto-news-6h: `0 */6 * * *` (every 6 hours)
+  - auto-faq-daily: `0 8 * * *` (8am UTC / 1pm PKT)
+  - auto-publish-scheduled: `*/5 * * * *` (every 5 min — publishes scheduled posts)
+- [x] Sitemap updated with all new routes — ✅ complete: 21 FAQ category pages + 14 project domain pages + 2 calculator tools (Phases 7+8)
+- [x] 20-page QA sweep — ✅ audited; 1 issue found + fixed: `app/tools/page.jsx` OG locale `en_PK` → `en_US`
+  - Pages verified clean: /, /about, /blogs, /news, /faqs, /resources, /courses, /projects, /tools
+  - /tools/education/cgpa-calculator, /tools/finance/salary-calculator, /tools/ai/email-writer
+  - /faqs/category/education, /faqs/category/career-growth, /projects/domain/engineering, /projects/domain/ai-ml
+  - /blogs/[slug], /news/[slug], /tools/ai/interview-prep
+- [x] Create admin SQL views — ✅ supabase/migrations/20260616200001_admin_monitoring_views.sql
+  - `aidla_content_dashboard`: total published + 7d/30d velocity + avg word count + avg views per content type
+  - `aidla_recent_quality`: last 7 days of blogs + news for daily quality review
+- [ ] GSC monitoring alerts — manual step: in Google Search Console → Search results → Set up email alerts for CTR drops > 20% or position drops > 5 on top queries

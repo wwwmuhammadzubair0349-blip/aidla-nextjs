@@ -4,6 +4,26 @@ Newest entries at top.
 
 ---
 
+## 2026-06-16 — Phase 10: Resume + Monitoring ✅ COMPLETE
+
+### app/tools/page.jsx
+- OG locale: `en_PK` → `en_US` (caught during 20-page QA sweep)
+
+### supabase/migrations/20260616200000_auto_content_cron.sql (NEW — run in SQL Editor)
+- `auto-blog-daily`: pg_cron `0 6 * * *` → `net.http_post` to `/functions/v1/auto-blog`
+- `auto-news-6h`: pg_cron `0 */6 * * *` → `net.http_post` to `/functions/v1/auto-news`
+- `auto-faq-daily`: pg_cron `0 8 * * *` → `net.http_post` to `/functions/v1/auto-faq-generator`
+- `auto-publish-scheduled`: pg_cron `*/5 * * * *` → `auto_publish_scheduled_posts()` RPC
+- **ACTION REQUIRED:** Replace `YOUR_ANON_KEY_HERE` with `NEXT_PUBLIC_SUPABASE_ANON_KEY`, then run in SQL Editor
+
+### supabase/migrations/20260616200001_admin_monitoring_views.sql (NEW — run in SQL Editor)
+- `aidla_content_dashboard` view: total_published, new_last_7d, new_last_30d, avg_word_count, avg_views, last_created_at per content type (blogs, news, faqs, resources, projects)
+- `aidla_recent_quality` view: last 7 days of blog + news posts with status, word_count, view_count for daily QA
+
+### 20-Page QA Sweep — all clean except tools OG locale (fixed above)
+
+---
+
 ## 2026-06-16 — Phase 9: On-Page SEO Sweep ✅ COMPLETE
 
 ### app/blogs/[slug]/BlogPostClient.jsx

@@ -15,27 +15,33 @@ const SITE_URL = "https://www.aidla.online";
 const DESCRIPTION = "Browse free FYP, mini project, semester project, research, and AI-powered project recommendations on AIDLA. Filter by domain, difficulty, tech stack, subject, and university.";
 const LAST_MODIFIED = "2026-05-12";
 
-export const metadata = {
-  title: "Project Ideas, FYP Topics & AI Recommendations | AIDLA",
-  description: DESCRIPTION,
-  keywords: ["project ideas", "FYP ideas", "mini projects", "AI project generator", "semester projects", "research project ideas", "AIDLA projects"],
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
-  alternates: { canonical: `${SITE_URL}/projects` },
-  openGraph: {
+export async function generateMetadata({ searchParams }) {
+  const params = await searchParams;
+  const isFiltered = Object.keys(params || {}).length > 0;
+  const base = {
     title: "Project Ideas, FYP Topics & AI Recommendations | AIDLA",
     description: DESCRIPTION,
-    type: "website",
-    url: `${SITE_URL}/projects`,
-    siteName: "AIDLA",
-    images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA project ideas and AI recommendations" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Project Ideas, FYP Topics & AI Recommendations | AIDLA",
-    description: DESCRIPTION,
-    images: [`${SITE_URL}/og-home.jpg`],
-  },
-};
+    keywords: ["project ideas", "FYP ideas", "mini projects", "AI project generator", "semester projects", "research project ideas", "AIDLA projects"],
+    robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1, "max-image-preview": "large" } },
+    alternates: { canonical: `${SITE_URL}/projects` },
+    openGraph: {
+      title: "Project Ideas, FYP Topics & AI Recommendations | AIDLA",
+      description: DESCRIPTION,
+      type: "website",
+      url: `${SITE_URL}/projects`,
+      siteName: "AIDLA",
+      images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA project ideas and AI recommendations" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Project Ideas, FYP Topics & AI Recommendations | AIDLA",
+      description: DESCRIPTION,
+      images: [`${SITE_URL}/og-home.jpg`],
+    },
+  };
+  if (isFiltered) return { ...base, robots: { index: false, follow: true } };
+  return base;
+}
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,

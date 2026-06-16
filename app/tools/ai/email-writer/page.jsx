@@ -168,7 +168,7 @@ export async function generateMetadata({ searchParams }) {
       type: "website",
       url: "https://www.aidla.online/tools/ai/email-writer",
       images: [{
-        url: "https://www.aidla.online/og-email-writer.jpg",
+        url: "https://www.aidla.online/og-home.jpg",
         width: 1200,
         height: 630,
         alt: "AIDLA Free AI Email Writer 2026 � Better Than Grammarly for Career Emails",
@@ -183,7 +183,7 @@ export async function generateMetadata({ searchParams }) {
       creator: "@AIDLA_online",
       title: "Free AI Email Writer 2026 | Better Than Grammarly | No Sign-Up",
       description: "AI writes professional emails in seconds. 24 types, 6 tones, 11 languages. 100% free.",
-      images: ["https://www.aidla.online/og-email-writer.jpg"],
+      images: ["https://www.aidla.online/og-home.jpg"],
     },
     other: {
       "geo.region": "PK",

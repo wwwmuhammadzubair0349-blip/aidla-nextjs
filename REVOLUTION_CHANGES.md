@@ -4,6 +4,41 @@ Newest entries at top.
 
 ---
 
+## 2026-06-16 — Phase 5: Critical Technical Fixes ✅ COMPLETE
+
+### app/robots.js
+- Added `/login`, `/signup`, `/verify/`, `/auth/` to disallow list (were missing — letting bots crawl auth pages)
+
+### app/news/[slug]/page.jsx
+- `generateMetadata`: select now includes `meta_title,meta_description`
+- Title: falls back to `post.meta_title` first, then `"${title} — AIDLA News"`
+- Description: falls back to `post.meta_description` first, then excerpt slice, then generic fallback
+
+### app/blogs/page.jsx, app/news/page.jsx, app/faqs/page.jsx, app/projects/page.jsx
+- Converted `export const metadata` → `export async function generateMetadata({ searchParams })`
+- When any query param is present (filter/search/tag/page), adds `robots: { index: false, follow: true }`
+- Canonical URL unchanged — prevents filter URLs from competing with main listing page
+
+### app/courses/[slug]/page.jsx
+- `generateStaticParams`: `toSlug(c.title)` → `c.slug` (uses DB slug column directly)
+- `generateMetadata`: course lookup now `c.slug === slug` instead of `toSlug(c.title) === slug`
+- Page component: course lookup now `c.slug === slug` instead of `toSlug(c.title) === slug`
+- Removed `toSlug` utility function (no longer needed in this file)
+
+### app/courses/CoursesClient.jsx
+- Card link: `const slug = toSlug(course.title)` → `const slug = course.slug || toSlug(course.title)` (DB slug with toSlug fallback for safety)
+
+### app/tools/ai/email-writer/page.jsx
+- OG image: `og-email-writer.jpg` → `og-home.jpg` (file didn't exist in public/)
+- Twitter card image: same fix
+
+### app/blogs/[slug]/BlogPostClient.jsx
+- `processContent()` DOM block: added `.aidla-author-byline` removal after sanitiseLinks — prevents author showing twice (once in bp-author div at line 942, once injected by auto-blog into content_html)
+
+### No SQL changes required in Phase 5.
+
+---
+
 ## 2026-06-16 — Phase 1: Setup + Audit
 
 ### Pre-Phase-1 Git Checkpoint

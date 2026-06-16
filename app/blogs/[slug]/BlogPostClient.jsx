@@ -106,6 +106,8 @@ function processContent(html) {
       const tmp = document.createElement("div");
       tmp.innerHTML = withIds;
       sanitiseLinks(tmp);
+      const byline = tmp.querySelector(".aidla-author-byline");
+      if (byline) byline.remove();
       processedHtml = tmp.innerHTML;
     } catch (e) {
       console.warn("DOM processing failed, using raw HTML:", e);

@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
     const { slug } = await params;
   
   const { data: posts } = await serverFetch("news_posts", {
-    select: "title,excerpt,cover_image_url,published_at,updated_at,tags,slug",
+    select: "title,excerpt,meta_title,meta_description,cover_image_url,published_at,updated_at,tags,slug",
     slug: `eq.${slug}`,
     status: "eq.published",
     deleted_at: "is.null",
@@ -49,10 +49,9 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const title       = `${post.title} — AIDLA News`;
-  const description = post.excerpt
-    ? post.excerpt.slice(0, 155)
-    : `Read the latest news from AIDLA: ${post.title}`;
+  const title       = post.meta_title || `${post.title} — AIDLA News`;
+  const description = post.meta_description ||
+    (post.excerpt ? post.excerpt.slice(0, 155) : `Read the latest news from AIDLA: ${post.title}`);
   const canonical   = `${SITE_URL}/news/${post.slug}`;
   const image       = post.cover_image_url || OG_IMAGE;
 

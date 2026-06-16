@@ -13,26 +13,32 @@ const CANONICAL_URL = `${SITE_URL}/blogs`;
 const OG_IMAGE    = `${SITE_URL}/og-home.jpg`;
 
 /* ── SEO Metadata ── */
-export const metadata = {
-  title:       "AIDLA Blog – AI Learning, Career Tips & Platform Updates",
-  description: "Explore AIDLA's blog for learning strategies, AI tips, platform updates, and guides to earn more AIDLA Coins. Stay informed and grow your skills today.",
-  keywords:    ["AIDLA blog", "educational insights", "learning tips", "platform updates", "Pakistan edtech"],
-  alternates:  { canonical: CANONICAL_URL },
-  openGraph: {
+export async function generateMetadata({ searchParams }) {
+  const params = await searchParams;
+  const isFiltered = Object.keys(params || {}).length > 0;
+  const base = {
     title:       "AIDLA Blog – AI Learning, Career Tips & Platform Updates",
-    description: "Learn, earn, and stay updated with AIDLA's official blog.",
-    url:         CANONICAL_URL,
-    siteName:    "AIDLA",
-    images:      [{ url: OG_IMAGE, alt: "AIDLA Insights Blog" }],
-    type:        "website",
-  },
-  twitter: {
-    card:        "summary_large_image",
-    title:       "AIDLA Insights",
-    description: "Educational blog by AIDLA – tips, updates, and more.",
-    images:      [OG_IMAGE],
-  },
-};
+    description: "Explore AIDLA's blog for learning strategies, AI tips, platform updates, and guides to earn more AIDLA Coins. Stay informed and grow your skills today.",
+    keywords:    ["AIDLA blog", "educational insights", "learning tips", "platform updates", "Pakistan edtech"],
+    alternates:  { canonical: CANONICAL_URL },
+    openGraph: {
+      title:       "AIDLA Blog – AI Learning, Career Tips & Platform Updates",
+      description: "Learn, earn, and stay updated with AIDLA's official blog.",
+      url:         CANONICAL_URL,
+      siteName:    "AIDLA",
+      images:      [{ url: OG_IMAGE, alt: "AIDLA Insights Blog" }],
+      type:        "website",
+    },
+    twitter: {
+      card:        "summary_large_image",
+      title:       "AIDLA Insights",
+      description: "Educational blog by AIDLA – tips, updates, and more.",
+      images:      [OG_IMAGE],
+    },
+  };
+  if (isFiltered) return { ...base, robots: { index: false, follow: true } };
+  return base;
+}
 
 export default async function BlogsPage() {
   const { data: posts, error } = await serverFetch("blogs_posts", {

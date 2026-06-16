@@ -8,13 +8,6 @@ export const revalidate = 60;
 const SITE_URL = "https://www.aidla.online";
 
 /* ---------------------------------------------
-   Slug utility � must match CoursesClient.toSlug
---------------------------------------------- */
-function toSlug(title = "") {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-}
-
-/* ---------------------------------------------
    Server-side data helper
 --------------------------------------------- */
 async function getAllCourses() {
@@ -27,16 +20,16 @@ async function getAllCourses() {
 
 export async function generateStaticParams() {
   const courses = await getAllCourses();
-  return courses.map(c => ({ slug: toSlug(c.title) }));
+  return courses.map(c => ({ slug: c.slug }));
 }
 
 /* ---------------------------------------------
-   Dynamic metadata � unique per course
+   Dynamic metadata — unique per course
 --------------------------------------------- */
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const courses  = await getAllCourses();
-  const c        = courses.find(c => toSlug(c.title) === slug) || null;
+  const c        = courses.find(c => c.slug === slug) || null;
 
   if (!c) {
     return {
@@ -85,7 +78,7 @@ export async function generateMetadata({ params }) {
 export default async function CourseDetailPage({ params }) {
   const { slug }  = await params;
   const courses   = await getAllCourses();
-  const course    = courses.find(c => toSlug(c.title) === slug) || null;
+  const course    = courses.find(c => c.slug === slug) || null;
 
   if (!course) notFound();
 

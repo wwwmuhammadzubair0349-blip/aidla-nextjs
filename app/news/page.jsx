@@ -7,26 +7,32 @@ export const revalidate = 60;
 const CANONICAL_URL = "https://www.aidla.online/news";
 const OG_IMAGE      = "https://www.aidla.online/og-home.jpg";
 
-export const metadata = {
-  title:       "AIDLA News – Latest Updates, Announcements & Events",
-  description: "Read the latest news from AIDLA: platform updates, community events, educational tips, winner announcements, and breaking education news from Pakistan.",
-  keywords:    ["AIDLA news", "platform updates", "community events", "educational news", "Pakistan edtech", "AIDLA announcements"],
-  alternates:  { canonical: CANONICAL_URL },
-  openGraph: {
-    title:       "AIDLA News – Latest Updates & Announcements",
-    description: "Stay informed with AIDLA's latest news, events, and winner announcements.",
-    url:         CANONICAL_URL,
-    siteName:    "AIDLA",
-    images:      [{ url: OG_IMAGE, alt: "AIDLA News" }],
-    type:        "website",
-  },
-  twitter: {
-    card:        "summary_large_image",
-    title:       "AIDLA News",
-    description: "Catch up on the latest from AIDLA.",
-    images:      [OG_IMAGE],
-  },
-};
+export async function generateMetadata({ searchParams }) {
+  const params = await searchParams;
+  const isFiltered = Object.keys(params || {}).length > 0;
+  const base = {
+    title:       "AIDLA News – Latest Updates, Announcements & Events",
+    description: "Read the latest news from AIDLA: platform updates, community events, educational tips, winner announcements, and breaking education news from Pakistan.",
+    keywords:    ["AIDLA news", "platform updates", "community events", "educational news", "Pakistan edtech", "AIDLA announcements"],
+    alternates:  { canonical: CANONICAL_URL },
+    openGraph: {
+      title:       "AIDLA News – Latest Updates & Announcements",
+      description: "Stay informed with AIDLA's latest news, events, and winner announcements.",
+      url:         CANONICAL_URL,
+      siteName:    "AIDLA",
+      images:      [{ url: OG_IMAGE, alt: "AIDLA News" }],
+      type:        "website",
+    },
+    twitter: {
+      card:        "summary_large_image",
+      title:       "AIDLA News",
+      description: "Catch up on the latest from AIDLA.",
+      images:      [OG_IMAGE],
+    },
+  };
+  if (isFiltered) return { ...base, robots: { index: false, follow: true } };
+  return base;
+}
 
 export default async function NewsPage() {
   const { data: posts, error } = await serverFetch("news_posts", {

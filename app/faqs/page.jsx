@@ -7,28 +7,34 @@ export const revalidate = 60;
 
 const SITE_URL = "https://www.aidla.online";
 
-export const metadata = {
-  title:       "AIDLA FAQs – Courses, AI Tools, Rewards & Career Help",
-  description: "Find answers about AIDLA courses, AI tools, career resources, quizzes, rewards, AIDLA Coins, accounts, withdrawals, professional learning and career growth.",
-  keywords:    ["AIDLA FAQ", "AIDLA questions", "AI tools help", "online courses FAQ", "career tools FAQ", "AIDLA coins help"],
-  robots:      { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1 } },
-  alternates:  { canonical: `${SITE_URL}/faqs` },
-  openGraph: {
-    title:       "FAQs – AIDLA",
-    description: "Find answers to the most common questions about AIDLA.",
-    url:         `${SITE_URL}/faqs`,
-    siteName:    "AIDLA",
-    locale:      "en_PK",
-    images:      [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA FAQs" }],
-    type:        "website",
-  },
-  twitter: {
-    card:        "summary_large_image",
-    title:       "FAQs – AIDLA",
-    description: "Find answers to the most common questions about AIDLA.",
-    images:      [`${SITE_URL}/og-home.jpg`],
-  },
-};
+export async function generateMetadata({ searchParams }) {
+  const params = await searchParams;
+  const isFiltered = Object.keys(params || {}).length > 0;
+  const base = {
+    title:       "AIDLA FAQs – Courses, AI Tools, Rewards & Career Help",
+    description: "Find answers about AIDLA courses, AI tools, career resources, quizzes, rewards, AIDLA Coins, accounts, withdrawals, professional learning and career growth.",
+    keywords:    ["AIDLA FAQ", "AIDLA questions", "AI tools help", "online courses FAQ", "career tools FAQ", "AIDLA coins help"],
+    robots:      { index: true, follow: true, googleBot: { index: true, follow: true, "max-snippet": -1 } },
+    alternates:  { canonical: `${SITE_URL}/faqs` },
+    openGraph: {
+      title:       "FAQs – AIDLA",
+      description: "Find answers to the most common questions about AIDLA.",
+      url:         `${SITE_URL}/faqs`,
+      siteName:    "AIDLA",
+      locale:      "en_PK",
+      images:      [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA FAQs" }],
+      type:        "website",
+    },
+    twitter: {
+      card:        "summary_large_image",
+      title:       "FAQs – AIDLA",
+      description: "Find answers to the most common questions about AIDLA.",
+      images:      [`${SITE_URL}/og-home.jpg`],
+    },
+  };
+  if (isFiltered) return { ...base, robots: { index: false, follow: true } };
+  return base;
+}
 
 export default async function FAQsPage() {
   const { data: faqs, error } = await serverFetch("faqs", {

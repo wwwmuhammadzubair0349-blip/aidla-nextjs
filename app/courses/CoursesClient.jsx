@@ -303,7 +303,7 @@ function SkeletonCard() {
 function CourseCard({ course, delay = 0 }) {
   const levelValue = course.level || course.difficulty || "beginner";
   const lm = LEVELS[levelValue] || LEVELS.beginner;
-  const slug = toSlug(course.title);
+  const slug = course.slug || toSlug(course.title);
   const isFree = course.is_free === true || !course.price || course.price === 0;
 
   return (

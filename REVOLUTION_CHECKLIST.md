@@ -113,18 +113,17 @@
 
 ---
 
-## Phase 5 — Critical Technical Fixes
+## Phase 5 — Critical Technical Fixes ✅ COMPLETE
 
-- [ ] noindex on blogs/news/projects/faqs filter/search URLs (canonical + robots meta)
-- [ ] robots.txt: disallow /login, /signup, /verify/, /auth/, /user/ (private pages)
-- [ ] news/[slug] page: read + use stored meta_title/meta_description from DB
-- [ ] Course slug URL stability: use DB slug, not toSlug(title) dynamic generation
-- [ ] og-email-writer.jpg: check if missing, add or fix reference
-- [ ] Security headers in next.config.js (X-Frame-Options, X-Content-Type, etc.)
-- [ ] **Author duplication fix** (moved from Phase 1):
-  - [ ] Blog: remove bp-author div from BlogPostClient.jsx OR remove aidla-author-byline injection
-  - [ ] News: audit + fix NewsPageClient.jsx author duplication
-  - [ ] Ensure single schema.org Person entry per article
+- [x] noindex on blogs/news/projects/faqs filter/search URLs — converted static metadata → generateMetadata({ searchParams }) in blogs/page.jsx, news/page.jsx, faqs/page.jsx, projects/page.jsx
+- [x] robots.txt: added /login, /signup, /verify/, /auth/ to disallow list (app/robots.js)
+- [x] news/[slug] page: now reads + uses stored meta_title/meta_description from DB (app/news/[slug]/page.jsx)
+- [x] Course slug URL stability: use c.slug from DB in generateStaticParams, page component, CoursesClient.jsx card links (with toSlug fallback)
+- [x] og-email-writer.jpg: changed both references to /og-home.jpg (app/tools/ai/email-writer/page.jsx)
+- [x] Security headers: already present in next.config.ts (X-Frame-Options, X-Content-Type-Options, CSP, HSTS, etc.) — no changes needed
+- [x] **Author duplication fix:**
+  - [x] Blog: processContent() in BlogPostClient.jsx now strips .aidla-author-byline from injected HTML before render
+  - [x] News: no duplication — NewsPageClient.jsx uses plain text content, no HTML byline injection
 
 ---
 

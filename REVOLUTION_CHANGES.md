@@ -191,8 +191,10 @@ UPDATE project_ideas SET approval_status='rejected' WHERE slug IN ('test-fyp-pro
 ### Deployment
 - `npx supabase functions deploy auto-blog` ✅ deployed (103.1kB)
 
-### Git Commit (to be added after push)
-- TBD
+### Git Commit
+- **Commit:** c2cd067
+- **Branch:** main
+- **Pushed:** 2026-06-16
 
 ---
 

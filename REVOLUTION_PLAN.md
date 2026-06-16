@@ -11,7 +11,7 @@
 | # | Phase | What It Does | Status | Started | Completed |
 |---|-------|-------------|--------|---------|-----------|
 | 1 | Junk Cleanup + Dead-weight Audit | Archive 183+ junk pages, remove dead code/files, set up tracking | 🟢 Complete | 2026-06-16 | 2026-06-16 |
-| 2 | Fix Auto-Blog Prompts | Globalize topics, remove Pakistan hardcoding in H2s, add topic exclusion list, raise quality gate 72→80 | ⚪ Not Started | — | — |
+| 2 | Fix Auto-Blog Prompts | Globalize topics, remove Pakistan hardcoding in H2s, add topic exclusion list, raise quality gate 72→80 | 🟢 Complete | 2026-06-16 | 2026-06-16 |
 | 3 | Fix Auto-News Prompts | Remove 15-pt Pakistan geo penalty, fix truncated titles, allow global tech/edu/career news | ⚪ Not Started | — | — |
 | 4 | Fix Auto-FAQ Prompts | Remove 150-record dedup limit, add global categories, balance 40/30/30 | ⚪ Not Started | — | — |
 | 5 | Critical Technical Fixes | noindex on filter URLs, robots.txt, meta_title/desc on news/[slug], course slug stability, missing OG image, security headers, author deduplication | ⚪ Not Started | — | — |

@@ -159,6 +159,43 @@ UPDATE project_ideas SET approval_status='rejected' WHERE slug IN ('test-fyp-pro
 
 ---
 
+## 2026-06-16 — Phase 2: Auto-Blog Prompts Globalized ✅
+
+### File Changed: `supabase/functions/auto-blog/index.ts`
+
+**New function `detectQueryGeo(keyword)`** — returns "pk" for Pakistan-specific keywords, "us" for all others
+**Serper `gl` param** — was hardcoded `"pk"`, now `detectQueryGeo(keyword)` (dynamic)
+**`detectCluster()`** — expanded with global patterns: IELTS, TOEFL, GRE, GMAT, SAT, ACT, certifications, remote work, productivity, ChatGPT, automation, financial aid, bursaries
+**Groq trending topics prompt** — rewritten for global + professionals: 40% global students / 35% global professionals / 25% Pakistan students
+**"PAKISTAN EDUCATION NEWS"** → **"EDUCATION & CAREER NEWS"** (topic pool header)
+**Topic selection prompt** — added HARD-BLOCKED QUERY TYPES (result-check, admit cards, date sheets) + global audience rule
+**Retry prompt** — globalized (no Pakistan mention)
+**`sharedSystem`** — "Pakistan's #1 student platform" → "global platform for students and professionals"
+**Reader persona** — "Pakistani student" → "student or professional who has this exact problem"
+**H2 templates (Part B/C/D)** — all "Pakistani students?" / "in Pakistan?" / "How can Pakistani students solve" removed
+- Part B H2-1: "What is the core challenge with [keyword]?"
+- Part B H2-2: "What do the numbers actually say about [keyword]?"
+- Part C H2-1: "How to solve [keyword] step by step"
+- Part C H2-2: "Which approach works best for your situation?"
+- Part D H2-1: "What are the most common mistakes with [keyword]?"
+**Score gate** — `< 72` → `< 80` (quality gate raised)
+**Dedup window** — 30-day → 45-day (3 occurrences: comment + `30*24*60*60*1000` + error strings)
+**Default tags** — `["education","pakistan","students"]` → `["education","students","guide"]`
+**Fallback meta** — removed "Pakistani students" from fallback excerpt + meta_description
+**Citation sources (career/skills/edtech/lifestyle)** — replaced Pakistan-only sources with global:
+  - career: LinkedIn Talent Trends, Indeed Hiring Lab, WEF Future of Jobs
+  - skills: WEF Skills Outlook, Coursera Global Skills Report, UNESCO Education
+  - edtech: EdSurge Research, WEF Future of Jobs, OECD Education at a Glance
+  - lifestyle: WHO Mental Health, World Bank Human Capital Index, OECD Education
+
+### Deployment
+- `npx supabase functions deploy auto-blog` ✅ deployed (103.1kB)
+
+### Git Commit (to be added after push)
+- TBD
+
+---
+
 ## DB Sync Status
 - Phase 1 SQL: **LOCAL ONLY** — to be run in Supabase SQL Editor
 - No schema changes in Phase 1

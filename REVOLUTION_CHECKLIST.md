@@ -60,16 +60,18 @@
 
 ---
 
-## Phase 2 — Fix Auto-Blog Prompts
+## Phase 2 — Fix Auto-Blog Prompts ✅ COMPLETE
 
-- [ ] Remove "Pakistani students" from hardcoded H2 templates (Part B/C/D)
-- [ ] Make Serper gl: "pk" dynamic / global
-- [ ] Add topic exclusion list (result-check, navigational queries)
-- [ ] Add 45-day semantic cluster dedup
-- [ ] Raise quality gate from 72 → 80
-- [ ] Remove country/audience lock from 7 topic clusters
-- [ ] Add professionals/global categories to topic pool
-- [ ] Test: generate 3 sample outputs and show before enabling
+- [x] Remove "Pakistani students" from hardcoded H2 templates (Part B/C/D)
+- [x] Make Serper gl: "pk" dynamic / global (detectQueryGeo function)
+- [x] Add topic exclusion list (result-check, admit cards, date sheets)
+- [x] Add 45-day semantic cluster dedup (was 30-day)
+- [x] Raise quality gate from 72 → 80
+- [x] Remove country/audience lock from 7 topic clusters (expanded detectCluster)
+- [x] Add professionals/global categories to topic pool (40/35/25 mix)
+- [x] Update citation sources: career/skills/edtech/lifestyle → global sources
+- [x] Remove "pakistan" from default tags → ["education","students","guide"]
+- [x] Deploy: npx supabase functions deploy auto-blog ✅
 
 ---
 

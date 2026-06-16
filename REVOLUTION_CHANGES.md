@@ -4,6 +4,39 @@ Newest entries at top.
 
 ---
 
+## 2026-06-16 — Phase 7: Programmatic SEO Templates ✅ COMPLETE
+
+### app/faqs/category/[category]/page.jsx (NEW — 21 landing pages)
+- Route: `/faqs/category/[category]` with hyphenated slugs (pakistan_boards → pakistan-boards)
+- `generateStaticParams`: hardcoded list of all 21 known FAQ categories
+- `generateMetadata`: category-specific title, description, keywords, canonical, OG, Twitter
+- `buildGraph` with FAQPage schema (all Q&A pairs), BreadcrumbList, WebPage
+- Fetches up to 30 FAQs by category from `faqs` table, ordered by helpful_yes desc
+- `<details>/<summary>` accordion with `itemScope FAQPage` microdata
+- Sibling categories nav at bottom for internal linking
+- Inline scoped CSS (no global CSS file needed)
+
+### app/projects/domain/[domain]/page.jsx (NEW — 14 landing pages)
+- Route: `/projects/domain/[domain]` with hyphenated slugs (ai_ml → ai-ml)
+- `generateStaticParams`: hardcoded list of all 14 project domains
+- `generateMetadata`: domain-specific title, description, keywords, canonical, OG, Twitter
+- `buildGraph` with ItemList schema, BreadcrumbList, WebPage
+- Fetches up to 30 projects by domain from `project_ideas` table (approved, not deleted)
+- Project cards with type/difficulty badges, tech stack chips, view details link
+- AI Project Idea Generator CTA for empty states and at bottom
+- Sibling domains nav at bottom for internal linking
+
+### app/sitemap.js
+- Added 21 FAQ category URLs: `/faqs/category/*` (priority 0.75, weekly)
+- Added 14 project domain URLs: `/projects/domain/*` (priority 0.75, weekly)
+- Total new sitemap entries: 35
+
+### Pages NOT built yet (deferred):
+- `/universities/[slug]` — needs university data source
+- `/resources/[subject]/[level]` — needs data quality verification
+
+---
+
 ## 2026-06-16 — Phase 6: Homepage + About + llms.txt Global Pivot ✅ COMPLETE
 
 ### app/page.jsx

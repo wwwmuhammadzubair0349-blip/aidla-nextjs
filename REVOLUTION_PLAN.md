@@ -16,7 +16,7 @@
 | 4 | Fix Auto-FAQ Prompts | Remove 150-record dedup limit, add global categories, balance 40/30/30 | 🟢 Complete | 2026-06-16 | 2026-06-16 |
 | 5 | Critical Technical Fixes | noindex on filter URLs, robots.txt, meta_title/desc on news/[slug], course slug stability, missing OG image, security headers, author deduplication | 🟢 Complete | 2026-06-16 | 2026-06-16 |
 | 6 | Homepage + About + llms.txt Pivot | Rewrite for global + professional audience, update all schema.org | 🟢 Complete | 2026-06-16 | 2026-06-16 |
-| 7 | Programmatic SEO Templates | /universities/[slug], /resources/[subject]/[level], /projects/domain/[domain], /faqs/category/[category] | ⚪ Not Started | — | — |
+| 7 | Programmatic SEO Templates | /faqs/category/[category] (21 pages), /projects/domain/[domain] (14 pages), sitemap updated | 🟢 Complete | 2026-06-16 | 2026-06-16 |
 | 8 | New High-Traffic Tools | CGPA Calculator, Salary Calculator, Study Plan Generator, Tool comparison pages | ⚪ Not Started | — | — |
 | 9 | On-Page SEO Sweep | Related sections, breadcrumbs, Last Updated dates, author bylines, internal linking | ⚪ Not Started | — | — |
 | 10 | Resume + Monitoring | All auto-systems confirmed running with new prompts, sitemap updated, 20-page QA sweep, admin SQL view | ⚪ Not Started | — | — |

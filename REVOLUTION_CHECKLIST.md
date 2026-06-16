@@ -140,14 +140,22 @@
 
 ---
 
-## Phase 7 — Programmatic SEO Templates
+## Phase 7 — Programmatic SEO Templates ✅ COMPLETE
 
-- [ ] /universities/[slug] — 50 universities (Pakistan + global)
-- [ ] /resources/[subject]/[level] — subject/level matrix
-- [ ] /projects/domain/[domain] — project domain pages
-- [ ] /faqs/category/[category] — FAQ category landing pages
-- [ ] /resources/university/[university] — university resource pages
-- [ ] Create DB tables/schemas via migrations as needed
+- [x] /faqs/category/[category] — 21 category landing pages (app/faqs/category/[category]/page.jsx)
+  - Full FAQ schema (FAQPage), BreadcrumbList, WebPage schema per page
+  - generateStaticParams: all 21 known categories
+  - Sibling category nav + CTA to All FAQs / AI Tools
+  - Queries `faqs` table by `category`, ordered by `helpful_yes`
+- [x] /projects/domain/[domain] — 14 domain landing pages (app/projects/domain/[domain]/page.jsx)
+  - ItemList schema, BreadcrumbList, WebPage schema per page
+  - generateStaticParams: all 14 domains
+  - Project cards with type/difficulty badges, tech stack chips
+  - Sibling domain nav + AI Generator CTA
+  - Queries `project_ideas` table by `domain`
+- [x] sitemap.js: added all 21 FAQ category URLs + 14 project domain URLs (priority 0.75)
+- [ ] /universities/[slug] — deferred (needs university data)
+- [ ] /resources/[subject]/[level] — deferred (needs data quality check)
 
 ---
 

@@ -268,13 +268,41 @@ export default async function sitemap() {
     lastModified: toDate(p.updated_at || p.created_at),
   }));
 
+  // Programmatic SEO: FAQ category pages
+  const faqCategories = [
+    "pakistan-boards","university-admissions","css-pms","scholarships","study-abroad",
+    "technology","ai-tools","health","education","finance","job-search","freelancing",
+    "remote-work","career-growth","coins-rewards","general","tests-quizzes","lucky-draw",
+    "account-profile","withdrawals","career",
+  ];
+  const faqCategoryPages = faqCategories.map(cat => ({
+    url: `${base}/faqs/category/${cat}`,
+    priority: 0.75,
+    changefreq: "weekly",
+    lastModified: now,
+  }));
+
+  // Programmatic SEO: Project domain pages
+  const projectDomains = [
+    "engineering","medical","education","business","school","web","mobile",
+    "ai-ml","iot","blockchain","data-science","cybersecurity","ar-vr","other",
+  ];
+  const projectDomainPages = projectDomains.map(d => ({
+    url: `${base}/projects/domain/${d}`,
+    priority: 0.75,
+    changefreq: "weekly",
+    lastModified: now,
+  }));
+
   return [
     ...staticPages,
     ...blogPages,
     ...newsPages,
     ...faqPages,
+    ...faqCategoryPages,
     ...resourcePages,
     ...coursePages,
     ...projectPages,
+    ...projectDomainPages,
   ];
 }

@@ -93,12 +93,23 @@
 
 ---
 
-## Phase 4 — Fix Auto-FAQ Prompts
+## Phase 4 — Fix Auto-FAQ Prompts ✅ COMPLETE
 
-- [ ] Remove 150-record limit from getRecentFAQQuestions() — query ALL published FAQs
-- [ ] Add global categories: job search, career growth, freelancing, AI tools, remote work
-- [ ] Rebalance: 40% Pakistan, 30% global students, 30% professionals/career
-- [ ] Test: generate 3 sample outputs
+- [x] Remove 150-record limit from getRecentFAQQuestions() — now queries 600 published FAQs
+- [x] Add global categories: job_search, career_growth, freelancing, ai_tools, remote_work
+- [x] Rebalance with pickWeightedCategory() — 40% Pakistan / 30% global students / 30% professionals
+- [x] detectCategory() — expanded with 5 new global category patterns
+- [x] fetchPAAQuestionsForCategory() — added global category queries, dynamic gl param
+- [x] fetchTrendingQuestionsWithGrok() — global categoryContext + conditional Pakistan/global prompts
+- [x] pickSmartTopic() fallbacks — 12 topics: 4 Pakistan / 4 global students / 4 professionals
+- [x] analyzeCompetitorGaps() — "Pakistani students" → "students and professionals"
+- [x] FAQ systemPrompt — "Pakistan's leading student platform" → "global platform for students and professionals"
+- [x] FAQ content prompts — conditional context (Pakistan for PK topics, global for others)
+- [x] scoreFAQContent() — replaced Pakistan-only 10pt check with broad contextTerms (LinkedIn, IELTS, ChatGPT, WEF, etc.) + 5pt partial credit for global topics
+- [x] buildFAQSchema() educationalOrg — removed PK address, globalized description
+- [x] Default tags — ["education","pakistan"] → ["education","students"]
+- [x] detectQueryGeo() helper added for dynamic Serper gl param
+- [x] Deploy: npx supabase functions deploy auto-faq-generator ✅
 
 ---
 

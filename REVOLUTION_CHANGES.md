@@ -228,6 +228,33 @@ UPDATE project_ideas SET approval_status='rejected' WHERE slug IN ('test-fyp-pro
 
 ---
 
+## 2026-06-16 — Phase 4: Auto-FAQ Globalized ✅
+
+### File Changed: `supabase/functions/auto-faq-generator/index.ts`
+
+**`getRecentFAQQuestions()`** — removed `.limit(150)` → `.limit(600)` on published FAQs only; prevents duplicate FAQ generation from the same pool.
+**New categories (5 added)** — `job_search`, `freelancing`, `remote_work`, `ai_tools`, `career_growth`; total now 17 categories.
+**`pickWeightedCategory()`** — new helper; 40% Pakistan (`pakistan_boards`, `university_admissions`, `css_pms`, `scholarships`) / 30% global students (`study_abroad`, `technology`, `ai_tools`, `health`, `education`) / 30% professionals (`career`, `job_search`, `freelancing`, `remote_work`, `career_growth`, `finance`).
+**`detectQueryGeo()`** — new helper; returns "pk" for Pakistan-specific questions, "us" for global.
+**`detectCategory()`** — 5 new patterns added for new categories.
+**`fetchPAAQuestionsForCategory()`** — categoryQueries expanded with 5 new global categories; dynamic `gl` param (pk only for pakistan_boards/university_admissions/css_pms).
+**`fetchTrendingQuestionsWithGrok()`** — categoryContext rewritten for all 17 categories; conditional prompt: Pakistan-specific questions for PK categories, global questions for global categories.
+**`pickSmartTopic()` fallbacks** — 12 evergreen topics: 4 Pakistan / 4 global students / 4 professionals/career.
+**`analyzeCompetitorGaps()`** — "Pakistani students" → "students and professionals".
+**FAQ `systemPrompt`** — "Pakistan's leading student education platform" → "global platform for students and professionals"; STATISTICS rule expanded to include WHO, WEF, LinkedIn, World Bank.
+**`scoreFAQContent()` context check** — replaced Pakistan-only 10pt check with 17-term contextTerms list (includes LinkedIn, Upwork, IELTS, ChatGPT, WHO, WEF, etc.) + 5pt partial credit for topics that don't hit any contextTerms.
+**`buildFAQSchema()` educationalOrg** — removed `addressCountry: "PK"` and `addressRegion: "Pakistan"`; description globalized.
+**Default tags** — `["education","pakistan"]` → `["education","students"]`.
+**`fetchSERPForQuestion()`** — Serper `gl` now `detectQueryGeo(question)` (dynamic).
+
+### Deployment
+- `npx supabase functions deploy auto-faq-generator` ✅ deployed (84.1kB)
+
+### Git Commit
+- TBD
+
+---
+
 ## DB Sync Status
 - Phase 1 SQL: **LOCAL ONLY** — to be run in Supabase SQL Editor
 - No schema changes in Phase 1

@@ -297,6 +297,21 @@
   .bp-confirm-delete, .bp-confirm-cancel { padding: 10px 24px; border-radius: 30px; }
 }
 
+/* ── Breadcrumb ── */
+.bp-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 0.8rem; color: #64748b; margin: 12px 0 0; padding: 0 4px; }
+.bp-breadcrumb a { color: var(--royal); text-decoration: none; }
+.bp-breadcrumb a:hover { text-decoration: underline; }
+
+/* ── Tags as links ── */
+.bp-tag { text-decoration: none; cursor: pointer; display: inline-block; }
+
+/* ── Explore More block ── */
+.bp-explore-more { margin: 28px 0 8px; padding: 20px; background: rgba(26,58,143,0.04); border-radius: 14px; border: 1px solid rgba(26,58,143,0.1); }
+.bp-explore-more h3 { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--royal); margin: 0 0 14px; }
+.bp-explore-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.bp-explore-link { display: inline-flex; align-items: center; gap: 5px; background: #fff; color: var(--royal); border: 1px solid rgba(26,58,143,0.18); padding: 7px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; text-decoration: none; transition: background 0.2s, transform 0.15s; }
+.bp-explore-link:hover { background: rgba(26,58,143,0.07); transform: translateY(-1px); }
+
 @media(min-width: 1024px) {
   .blogpost-container { padding: 60px 32px 80px; }
   .bp-body, .bp-comments-section { padding: 40px 48px; }

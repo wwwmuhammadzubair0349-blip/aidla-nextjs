@@ -15,6 +15,23 @@ import "./BlogPost.css";
 ══════════════════════════════════════════════ */
 const SITE_URL = "https://www.aidla.online";
 
+const TAG_TO_FAQ_CAT = {
+  education: "education", students: "education", learning: "education",
+  career: "career", "career-growth": "career-growth", professionals: "career-growth",
+  technology: "technology", tech: "technology",
+  ai: "ai-tools", "ai-tools": "ai-tools",
+  scholarships: "scholarships", scholarship: "scholarships",
+  "study-abroad": "study-abroad",
+  health: "health",
+  finance: "finance",
+  freelancing: "freelancing",
+  "remote-work": "remote-work",
+  "job-search": "job-search",
+  pakistan: "pakistan-boards",
+  university: "university-admissions",
+  css: "css-pms", pms: "css-pms",
+};
+
 /* ══════════════════════════════════════════════
    HELPERS
 ══════════════════════════════════════════════ */
@@ -884,6 +901,13 @@ export default function BlogPostClient({ initialPost, relatedPosts, slug }) {
             <Link href="/blogs" className="bp-back" aria-label="Back to all articles">
               ‹ All Insights
             </Link>
+            <nav aria-label="Breadcrumb" className="bp-breadcrumb">
+              <Link href="/">Home</Link>
+              {" / "}
+              <Link href="/blogs">Insights</Link>
+              {" / "}
+              <span>{post.title}</span>
+            </nav>
           </motion.div>
 
           <motion.div
@@ -968,7 +992,14 @@ export default function BlogPostClient({ initialPost, relatedPosts, slug }) {
               {/* Tags */}
               {post.tags?.length > 0 && (
                 <div className="bp-tags" aria-label="Article tags">
-                  {post.tags.map(t => <span key={t} className="bp-tag">#{t}</span>)}
+                  {post.tags.map(t => {
+                    const faqCat = TAG_TO_FAQ_CAT[t];
+                    return faqCat ? (
+                      <Link key={t} href={`/faqs/category/${faqCat}`} className="bp-tag">#{t}</Link>
+                    ) : (
+                      <Link key={t} href={`/blogs?tag=${encodeURIComponent(t)}`} className="bp-tag">#{t}</Link>
+                    );
+                  })}
                 </div>
               )}
 
@@ -998,6 +1029,21 @@ export default function BlogPostClient({ initialPost, relatedPosts, slug }) {
 
               {/* Related Posts (extracted — mirrors News) */}
               <RelatedPosts posts={relatedPosts} />
+
+              {/* Explore More on AIDLA */}
+              <div className="bp-explore-more">
+                <h3>Explore More on AIDLA</h3>
+                <div className="bp-explore-links">
+                  <Link href="/faqs" className="bp-explore-link">💬 Browse FAQs</Link>
+                  {(post.tags || []).map(t => TAG_TO_FAQ_CAT[t]).find(Boolean) && (
+                    <Link href={`/faqs/category/${(post.tags || []).map(t => TAG_TO_FAQ_CAT[t]).find(Boolean)}`} className="bp-explore-link">💬 Related FAQs</Link>
+                  )}
+                  <Link href="/tools" className="bp-explore-link">🛠 Free AI Tools</Link>
+                  <Link href="/courses" className="bp-explore-link">📚 Free Courses</Link>
+                  <Link href="/tools/education/cgpa-calculator" className="bp-explore-link">🎓 CGPA Calculator</Link>
+                  <Link href="/tools/finance/salary-calculator" className="bp-explore-link">💰 Salary Calculator</Link>
+                </div>
+              </div>
             </div>
 
             {/* ── Engagement Bar (extracted — mirrors News) ── */}

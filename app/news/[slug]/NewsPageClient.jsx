@@ -15,6 +15,23 @@ import "./newspage.css";
 ══════════════════════════════════════════════ */
 const SITE_URL = "https://www.aidla.online";
 
+const TAG_TO_FAQ_CAT = {
+  education: "education", students: "education", learning: "education",
+  career: "career", "career-growth": "career-growth", professionals: "career-growth",
+  technology: "technology", tech: "technology",
+  ai: "ai-tools", "ai-tools": "ai-tools",
+  scholarships: "scholarships", scholarship: "scholarships",
+  "study-abroad": "study-abroad",
+  health: "health",
+  finance: "finance",
+  freelancing: "freelancing",
+  "remote-work": "remote-work",
+  "job-search": "job-search",
+  pakistan: "pakistan-boards",
+  university: "university-admissions",
+  css: "css-pms", pms: "css-pms",
+};
+
 const CAT_COLORS = {
   general:       "#3b82f6",
   politics:      "#8b5cf6",
@@ -927,6 +944,13 @@ export default function NewsPageClient({ post, related }) {
           <Link href="/news" className="np-back" aria-label="Back to all news">
             <span aria-hidden="true">←</span> All News
           </Link>
+          <nav aria-label="Breadcrumb" className="np-breadcrumb">
+            <Link href="/">Home</Link>
+            {" / "}
+            <Link href="/news">News</Link>
+            {" / "}
+            <span>{post.title}</span>
+          </nav>
 
           <article className="np-article" itemScope itemType="https://schema.org/NewsArticle">
 
@@ -1019,9 +1043,14 @@ export default function NewsPageClient({ post, related }) {
               {/* Tags */}
               {displayTags.length > 0 && (
                 <div className="np-tags" aria-label="Article tags">
-                  {displayTags.map(t => (
-                    <span key={t} className="np-tag">#{t}</span>
-                  ))}
+                  {displayTags.map(t => {
+                    const faqCat = TAG_TO_FAQ_CAT[t];
+                    return faqCat ? (
+                      <Link key={t} href={`/faqs/category/${faqCat}`} className="np-tag">#{t}</Link>
+                    ) : (
+                      <Link key={t} href={`/news?tag=${encodeURIComponent(t)}`} className="np-tag">#{t}</Link>
+                    );
+                  })}
                 </div>
               )}
 
@@ -1058,6 +1087,21 @@ export default function NewsPageClient({ post, related }) {
             {/* ── Related posts ── */}
             <div style={{ padding: "0 16px" }}>
               <RelatedPosts posts={related} />
+
+              {/* Explore More on AIDLA */}
+              <div className="np-explore-more">
+                <h3>Explore More on AIDLA</h3>
+                <div className="np-explore-links">
+                  <Link href="/faqs" className="np-explore-link">💬 Browse FAQs</Link>
+                  {(post.tags || []).map(t => TAG_TO_FAQ_CAT[t]).find(Boolean) && (
+                    <Link href={`/faqs/category/${(post.tags || []).map(t => TAG_TO_FAQ_CAT[t]).find(Boolean)}`} className="np-explore-link">💬 Related FAQs</Link>
+                  )}
+                  <Link href="/tools" className="np-explore-link">🛠 Free AI Tools</Link>
+                  <Link href="/courses" className="np-explore-link">📚 Free Courses</Link>
+                  <Link href="/tools/education/cgpa-calculator" className="np-explore-link">🎓 CGPA Calculator</Link>
+                  <Link href="/tools/finance/salary-calculator" className="np-explore-link">💰 Salary Calculator</Link>
+                </div>
+              </div>
             </div>
 
             {/* ── Footer CTA ── */}

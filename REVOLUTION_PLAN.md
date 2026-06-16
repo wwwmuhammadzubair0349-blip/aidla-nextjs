@@ -18,7 +18,7 @@
 | 6 | Homepage + About + llms.txt Pivot | Rewrite for global + professional audience, update all schema.org | 🟢 Complete | 2026-06-16 | 2026-06-16 |
 | 7 | Programmatic SEO Templates | /faqs/category/[category] (21 pages), /projects/domain/[domain] (14 pages), sitemap updated | 🟢 Complete | 2026-06-16 | 2026-06-16 |
 | 8 | New High-Traffic Tools | CGPA Calculator (4.0 scale + % converter + FAQ schema), Salary Calculator (PK/UAE/US/UK/IN + FBR slabs), sitemap updated | 🟢 Complete | 2026-06-16 | 2026-06-16 |
-| 9 | On-Page SEO Sweep | Related sections, breadcrumbs, Last Updated dates, author bylines, internal linking | ⚪ Not Started | — | — |
+| 9 | On-Page SEO Sweep | Related sections, breadcrumbs, Last Updated dates, author bylines, internal linking | 🟢 Complete | 2026-06-16 | 2026-06-16 |
 | 10 | Resume + Monitoring | All auto-systems confirmed running with new prompts, sitemap updated, 20-page QA sweep, admin SQL view | ⚪ Not Started | — | — |
 
 ---

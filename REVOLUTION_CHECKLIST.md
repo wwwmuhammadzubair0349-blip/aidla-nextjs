@@ -177,13 +177,13 @@
 
 ---
 
-## Phase 9 — On-Page SEO Sweep
+## Phase 9 — On-Page SEO Sweep ✅ COMPLETE
 
-- [ ] Add "Related Articles" sections to blogs, news, FAQs
-- [ ] Add breadcrumbs where missing
-- [ ] Show "Last Updated" dates on all content types
-- [ ] Ensure author bylines are visible (post Phase 5 fix)
-- [ ] Internal linking sweep — cross-link related content types
+- [x] Add "Related Articles" sections to blogs, news, FAQs — ✅ already present on all detail pages
+- [x] Add breadcrumbs where missing — ✅ added `<nav aria-label="Breadcrumb">` to BlogPostClient.jsx + NewsPageClient.jsx (FAQs/resources/projects/courses already had them)
+- [x] Show "Last Updated" dates on all content types — ✅ detail pages show `updated_at` when it differs from `published_at`; listing cards intentionally excluded (auto-content would show "Updated: today" for all)
+- [x] Ensure author bylines are visible — ✅ done in Phase 5 (removed HTML duplicate from auto-blog injection)
+- [x] Internal linking sweep — ✅ blog tags → /faqs/category/[cat] or /blogs?tag=[t]; news tags → same pattern; "Explore More on AIDLA" block added to bottom of all blog/news articles linking to FAQs, Tools, Courses, CGPA Calculator, Salary Calculator
 
 ---
 

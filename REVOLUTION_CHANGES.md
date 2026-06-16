@@ -4,6 +4,30 @@ Newest entries at top.
 
 ---
 
+## 2026-06-16 — Phase 9: On-Page SEO Sweep ✅ COMPLETE
+
+### app/blogs/[slug]/BlogPostClient.jsx
+- Added `TAG_TO_FAQ_CAT` mapping — 20 tags mapped to FAQ category slugs
+- Added `<nav aria-label="Breadcrumb" className="bp-breadcrumb">` — Home / Insights / [post title] — inserted inside the back-link motion div
+- Tags now render as `<Link>` instead of `<span>` — mapped tags → `/faqs/category/[cat]`; unmapped → `/blogs?tag=[t]`
+- Added "Explore More on AIDLA" block after RelatedPosts — links to /faqs, /faqs/category/[relevant], /tools, /courses, /tools/education/cgpa-calculator, /tools/finance/salary-calculator
+
+### app/blogs/[slug]/BlogPost.css
+- Added `.bp-breadcrumb` styles
+- Added `.bp-tag` `text-decoration:none` for anchor override
+- Added `.bp-explore-more`, `.bp-explore-links`, `.bp-explore-link` styles
+
+### app/news/[slug]/NewsPageClient.jsx
+- Same `TAG_TO_FAQ_CAT` mapping added
+- Added `<nav aria-label="Breadcrumb" className="np-breadcrumb">` after back link — Home / News / [post title]
+- `displayTags` now render as `<Link>` — mapped tags → `/faqs/category/[cat]`; unmapped → `/news?tag=[t]`
+- Added "Explore More on AIDLA" block after RelatedPosts (inside the 0 16px padding div)
+
+### app/news/[slug]/newspage.css
+- Added `.np-breadcrumb`, `.np-tag` anchor override, `.np-explore-more`, `.np-explore-links`, `.np-explore-link` styles
+
+---
+
 ## 2026-06-16 — Phase 8: New High-Traffic Tools ✅ COMPLETE
 
 ### app/tools/education/cgpa-calculator/ (NEW)

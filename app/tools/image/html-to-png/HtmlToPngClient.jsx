@@ -1,7 +1,5 @@
 "use client";
-import { useState, useRef, useCallback, useMemo, useEffect } from "react";
-
-const CDN_H2C = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+import { useState, useCallback, useMemo } from "react";
 
 /* ── Presets ─────────────────────────────────────────────────────────────── */
 const PRESETS = [
@@ -107,18 +105,6 @@ export default function HtmlToPngClient() {
   const [quality,  setQuality]    = useState(92);
   const [html,     setHtml]       = useState(DEFAULT_HTML);
   const [status,   setStatus]     = useState("idle");
-  const captureRef  = useRef();
-  const cdnFailed   = useRef(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.html2canvas || document.getElementById("html2canvas-cdn")) return;
-    const script = document.createElement("script");
-    script.id  = "html2canvas-cdn";
-    script.src = CDN_H2C;
-    script.onerror = () => { cdnFailed.current = true; };
-    document.head.appendChild(script);
-  }, []);
 
   const preset  = PRESETS.find(p => p.id === presetId);
   const canvasW = presetId === "custom" ? (Number(customW) || 800)  : preset.w;
@@ -131,55 +117,57 @@ export default function HtmlToPngClient() {
   const corsWarning = useMemo(() => detectExternalResources(html), [html]);
 
   const download = useCallback(async () => {
-    if (!captureRef.current || status === "loading") return;
+    if (status === "loading") return;
     setStatus("loading");
     try {
-      // Wait up to 5s for CDN script to load
-      let waited = 0;
-      while (!window.html2canvas && !cdnFailed.current && waited < 5000) {
-        await new Promise(r => setTimeout(r, 500));
-        waited += 500;
-        console.log("html2canvas CDN poll:", waited, "ms — loaded:", !!window.html2canvas);
-      }
-      console.log("html2canvas available:", !!window.html2canvas);
-      console.log("captureRef:", captureRef.current);
-      console.log("captureRef dimensions:", captureRef.current?.offsetWidth, captureRef.current?.offsetHeight);
-      if (!window.html2canvas) {
+      await new Promise(r => setTimeout(r, 300));
+
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasW}" height="${canvasH}">
+        <foreignObject width="100%" height="100%">
+          <div xmlns="http://www.w3.org/1999/xhtml" style="width:${canvasW}px;height:${canvasH}px;overflow:hidden;">
+            ${html}
+          </div>
+        </foreignObject>
+      </svg>`;
+
+      const svgBlob = new Blob([svg], { type: "image/svg+xml" });
+      const svgUrl  = URL.createObjectURL(svgBlob);
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width  = canvasW;
+        canvas.height = canvasH;
+        const ctx = canvas.getContext("2d");
+        if (bgColor && bgColor !== "transparent") {
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(0, 0, canvasW, canvasH);
+        }
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(svgUrl);
+        const dataUrl = format === "png"
+          ? canvas.toDataURL("image/png")
+          : canvas.toDataURL("image/jpeg", quality / 100);
+        const a = document.createElement("a");
+        a.href     = dataUrl;
+        a.download = `aidla-${preset?.id ?? "custom"}-${canvasW}x${canvasH}.${format}`;
+        a.click();
+        setStatus("done");
+        setTimeout(() => setStatus("idle"), 2500);
+      };
+      img.onerror = (e) => {
+        console.error("SVG render error:", e);
         setStatus("error");
         setTimeout(() => setStatus("idle"), 3000);
-        return;
-      }
-      await new Promise(r => setTimeout(r, 600));
-      const canvas = await window.html2canvas(captureRef.current, {
-        width: canvasW,
-        height: canvasH,
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: bgColor === "transparent" ? null : bgColor,
-        logging: false,
-        windowWidth: canvasW,
-        windowHeight: canvasH,
-        scrollX: 0,
-        scrollY: 0,
-        x: 0,
-        y: 0,
-      });
-      const dataUrl = format === "png"
-        ? canvas.toDataURL("image/png")
-        : canvas.toDataURL("image/jpeg", quality / 100);
-      const a = document.createElement("a");
-      a.href = dataUrl;
-      a.download = `aidla-${preset?.id ?? "custom"}-${canvasW}x${canvasH}.${format}`;
-      a.click();
-      setStatus("done");
-      setTimeout(() => setStatus("idle"), 2500);
+      };
+      img.src = svgUrl;
+
     } catch (err) {
-      console.error("html2canvas error:", err.message, err.stack);
+      console.error("Download error:", err);
       setStatus("error");
       setTimeout(() => setStatus("idle"), 3000);
     }
-  }, [format, quality, canvasW, canvasH, bgColor, preset, status]);
+  }, [html, format, quality, canvasW, canvasH, bgColor, preset, status]);
 
   const btnLabel = {
     idle:    `⬇ Download ${format.toUpperCase()}`,
@@ -190,24 +178,6 @@ export default function HtmlToPngClient() {
 
   return (
     <div style={S.root}>
-
-      {/* Full-res capture target — fixed outside flow, html2canvas can see it */}
-      <div
-        ref={captureRef}
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: canvasW,
-          height: canvasH,
-          opacity: 0.001,
-          pointerEvents: "none",
-          zIndex: 9999,
-          overflow: "visible",
-        }}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
 
       {/* ── Hero ── */}
       <div style={S.hero}>

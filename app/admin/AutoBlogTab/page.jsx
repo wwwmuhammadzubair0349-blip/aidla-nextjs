@@ -396,7 +396,7 @@ export default function AutoBlogTab({ onEditPost }) {
     setPreviewMetrics(null);
     showMsg("", "info");
     try {
-      const res  = await fetch(FUNCTION_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(buildBody(false)) });
+      const res  = await fetch(FUNCTION_URL, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` }, body: JSON.stringify(buildBody(false)) });
       const data = await res.json();
       if (!data.ok) { showMsg(data.error || data.reason || "Preview failed", "error"); return; }
       setPreview(data);
@@ -422,7 +422,7 @@ export default function AutoBlogTab({ onEditPost }) {
     try {
       const res  = await fetch(FUNCTION_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` },
         body: JSON.stringify(buildBody(true, overrideSchedule)),
       });
       const data = await res.json();

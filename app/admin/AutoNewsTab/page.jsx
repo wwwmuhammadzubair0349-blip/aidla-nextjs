@@ -379,7 +379,7 @@ export default function AutoNewsTab({ onEditPost }) {
   const handlePreview = async () => {
     setGenerating(true); setPreview(null); showMsg("", "info");
     try {
-      const res  = await fetch(FUNCTION_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(buildBody(false)) });
+      const res  = await fetch(FUNCTION_URL, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` }, body: JSON.stringify(buildBody(false)) });
       const data = await res.json();
       if (!data.ok) { showMsg(data.error || data.reason || "Preview failed", "error"); return; }
       setPreview(data);
@@ -393,7 +393,7 @@ export default function AutoNewsTab({ onEditPost }) {
       .select("*", { count: "exact", head: true })
       .in("author_name", ["AIDLA AI", "AIDLA News Desk"]).is("deleted_at", null);
     try {
-      const res  = await fetch(FUNCTION_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(buildBody(true, overrideSchedule)) });
+      const res  = await fetch(FUNCTION_URL, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}` }, body: JSON.stringify(buildBody(true, overrideSchedule)) });
       const data = await res.json();
       if (!data.ok) { showMsg(data.error || data.reason || "Generation failed", "error"); return; }
       showMsg("📰 Claude is writing your article in the background. Takes 60–90 seconds…", "info");

@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-06-10T11:39:23.326Z",
-  "totalPages": 66,
+  "generatedAt": "2026-06-17T12:52:34.123Z",
+  "totalPages": 68,
   "categories": {
-    "public": 40,
-    "user": 26
+    "public": 43,
+    "user": 25
   },
   "pages": [
     {
@@ -61,18 +61,6 @@
       "description": null
     },
     {
-      "route": "/cover-letter",
-      "category": "public",
-      "title": "Cover letter",
-      "description": null
-    },
-    {
-      "route": "/cv-builder",
-      "category": "public",
-      "title": "Cv builder",
-      "description": null
-    },
-    {
       "route": "/email-confirmed",
       "category": "public",
       "title": "Email confirmed",
@@ -88,6 +76,12 @@
       "route": "/faqs/[slug]",
       "category": "public",
       "title": "Faqs Detail",
+      "description": null
+    },
+    {
+      "route": "/faqs/category/[category]",
+      "category": "public",
+      "title": "Category Detail",
       "description": null
     },
     {
@@ -136,6 +130,12 @@
       "route": "/projects/[slug]",
       "category": "public",
       "title": "Projects Detail",
+      "description": null
+    },
+    {
+      "route": "/projects/domain/[domain]",
+      "category": "public",
+      "title": "Domain Detail",
       "description": null
     },
     {
@@ -220,6 +220,24 @@
       "route": "/tools/career/cv-maker",
       "category": "public",
       "title": "Cv maker",
+      "description": null
+    },
+    {
+      "route": "/tools/education/cgpa-calculator",
+      "category": "public",
+      "title": "Cgpa calculator",
+      "description": null
+    },
+    {
+      "route": "/tools/finance/salary-calculator",
+      "category": "public",
+      "title": "Salary calculator",
+      "description": null
+    },
+    {
+      "route": "/tools/image/html-to-png",
+      "category": "public",
+      "title": "Html to png",
       "description": null
     },
     {
@@ -376,12 +394,6 @@
       "route": "/user/wallet",
       "category": "user",
       "title": "Wallet",
-      "description": null
-    },
-    {
-      "route": "/user/wallet/deposit",
-      "category": "user",
-      "title": "Deposit",
       "description": null
     },
     {

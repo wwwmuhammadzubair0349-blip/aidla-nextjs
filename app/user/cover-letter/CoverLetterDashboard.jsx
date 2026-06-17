@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase";
-import { buildCoverLetterHtml, CL_TEMPLATES, CL_ACCENTS, TemplateSVG } from "@/app/cover-letter/coverLetterRenderer";
+import { buildCoverLetterHtml, CL_TEMPLATES, CL_ACCENTS, TemplateSVG } from "@/lib/coverLetterRenderer";
 
 const WIZARD_KEY = "cl_wizard_v1";
 

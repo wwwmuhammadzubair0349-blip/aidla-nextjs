@@ -348,61 +348,11 @@ function EmailWriterJsonLd({ aggregateRating, reviews }) {
     ],
   };
 
-  const howToSchema = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: "How to Write a Professional Email in 30 Seconds with AI � Free, No Sign-Up",
-    description: "Step-by-step guide using AIDLA's free AI email writer. Generate job applications, business proposals, follow-ups, and more. Opens directly in Gmail or Outlook.",
-    totalTime: "PT30S",
-    tool: { "@type": "HowToTool", name: "AIDLA Free AI Email Writer" },
-    step: [
-      {
-        "@type": "HowToStep",
-        position: 1,
-        name: "Select Category, Type & Region",
-        text: "Choose Professional, Business, Personal, or Academic. Select your email type (24 options including Pakistan-specific: HEC Follow-Up, Government Inquiry; UAE-specific: Visit Visa Follow-Up, MOHRE Compliance). Pick your tone and language (Urdu/Arabic available).",
-      },
-      {
-        "@type": "HowToStep",
-        position: 2,
-        name: "Add Context with Keywords",
-        text: "Enter your name, recipient details, and key points. For Pakistan: include CNIC, domicile, HEC degree. For UAE: include visa status, nationality. Paste job descriptions for keyword matching � AI-personalized emails see 42% higher response rates in GCC markets.",
-      },
-      {
-        "@type": "HowToStep",
-        position: 3,
-        name: "Generate, Edit & Send",
-        text: "Click 'Write Email.' AI generates subject and body. Edit inline. Regenerate with instructions like 'make shorter' or 'more confident.' Open directly in Gmail, Outlook, Yahoo, or Mail app with one click. All free � no 100-prompt limit like Grammarly Free.",
-      },
-    ],
-  };
-
-  const comparisonTableSchema = {
-    "@context": "https://schema.org",
-    "@type": "Table",
-    about: "Comparison of AI Email Writing Tools",
-    name: "AIDLA vs Grammarly Email Writer Comparison 2026",
-    description: "Detailed comparison of AIDLA AI Email Writer vs Grammarly for career-focused email generation, pricing, languages, and regional templates.",
-    mainEntity: {
-      "@type": "ItemList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Price", description: "AIDLA: 100% Free Forever | Grammarly: $12/mo (Pro) or 100-prompt limit (Free)" },
-        { "@type": "ListItem", position: 2, name: "Email Types", description: "AIDLA: 24 career-specific types | Grammarly: General writing (no email-specific types)" },
-        { "@type": "ListItem", position: 3, name: "Languages", description: "AIDLA: 11 languages (Urdu, Arabic, English + 8 more) | Grammarly: English only" },
-        { "@type": "ListItem", position: 4, name: "Regional Templates", description: "AIDLA: Pakistan (HEC, Rozee.pk), UAE (MOHRE, Bayt.com) | Grammarly: None" },
-        { "@type": "ListItem", position: 5, name: "Gmail/Outlook Integration", description: "AIDLA: One-click open | Grammarly: Browser extension" },
-        { "@type": "ListItem", position: 6, name: "AI Prompts Limit", description: "AIDLA: Unlimited | Grammarly Free: 100 prompts, Pro: 2,000" },
-      ],
-    },
-  };
-
   return (
     <>
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
-      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(comparisonTableSchema) }} />
     </>
   );
 }

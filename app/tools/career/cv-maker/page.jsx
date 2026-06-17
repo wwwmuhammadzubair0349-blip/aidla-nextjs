@@ -314,66 +314,6 @@ function CvMakerJsonLd({ aggregateRating, reviews }) {
     ],
   };
 
-  const howToSchema = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: "How to Create a Professional ATS-Friendly CV in 5 Minutes � Free",
-    description: "Step-by-step guide to build an ATS-optimized CV using AIDLA's free CV maker. No sign-up required. Includes tips for Pakistan (HEC-compliant, CNIC, FSc/Matric), UAE (MOHRE-compliant, visa status, nationality), and global job applications.",
-    totalTime: "PT5M",
-    tool: { "@type": "HowToTool", name: "AIDLA Free CV Maker" },
-    step: [
-      {
-        "@type": "HowToStep",
-        position: 1,
-        name: "Enter Personal & Regional Details",
-        text: "Fill in your full name, job title, email, phone, and location. For Pakistan: add CNIC and HEC degree details for government jobs. For UAE/GCC: add nationality, visa status (Visit/Employment/Golden), and professional photo. For US/UK: skip photo and personal details � focus on achievements. Select your target region for auto-optimized field visibility.",
-        url: `${pageUrl}#personal-details`,
-      },
-      {
-        "@type": "HowToStep",
-        position: 2,
-        name: "Add Work Experience with AI Optimization",
-        text: "Add your job roles, companies, and dates. Use 'AI Write' to transform basic duties into quantified achievements using the CAR formula (Context-Action-Result). Example: 'Managed team' becomes 'Directed 12-member team delivering AED 50M project 15% under budget.' AI adds industry-specific keywords and regional currency formatting (PKR, AED, SAR, USD) for maximum ATS matching.",
-        url: `${pageUrl}#experience`,
-      },
-      {
-        "@type": "HowToStep",
-        position: 3,
-        name: "Include Education, Skills & Certifications",
-        text: "Add HEC-recognized degrees for Pakistan, professional certifications (PMP, ACCA, CCNA, LEED), technical skills matching your target job description, and languages. Use the ATS score checker to identify missing sections or keywords that lower your parseability score. Target 85+ score for best interview results.",
-        url: `${pageUrl}#education-skills`,
-      },
-      {
-        "@type": "HowToStep",
-        position: 4,
-        name: "Select Template & Download Free PDF",
-        text: "Choose from 19 premium templates optimized for your target region (Gulf Premium for GCC, Compact ATS for maximum parseability, Dubai Pro for UAE). Preview in real-time, check final ATS score, and download as searchable PDF with selectable text � no watermarks, no sign-up, completely free. Save as JSON to edit later without losing data.",
-        url: `${pageUrl}#templates`,
-      },
-    ],
-  };
-
-
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "@id": `${pageUrl}#article`,
-    headline: "The Complete 2026 Guide to Creating ATS-Friendly CVs for Pakistan, UAE, GCC & Global Jobs",
-    description: "Learn how to create ATS-optimized CVs with AI writing, CAR formula achievements, industry-specific keywords, and regional formatting for Pakistan (HEC, CNIC, FSc/Matric), UAE (MOHRE, visa status), GCC, UK, US, and Canada.",
-    author: { "@type": "Organization", name: "AIDLA" },
-    publisher: { "@type": "Organization", name: "AIDLA", logo: { "@type": "ImageObject", url: "https://www.aidla.online/logo.png" } },
-    datePublished: "2025-01-15T00:00:00+05:00",
-    dateModified: new Date().toISOString(),
-    mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
-    articleSection: "Career Tools",
-    keywords: [
-      "ATS resume builder", "CV maker Pakistan", "Dubai CV format", "UAE resume builder",
-      "HEC recognized CV", "MOHRE compliant CV", "GCC job CV", "free resume maker",
-      "AI CV writer", "professional CV templates", "career tools", "job application tips",
-      "Google Docs CV alternative", "free resume generator", "ATS resume checker"
-    ].join(", "),
-    wordCount: 2500,
-  };
 
   return (
     <>
@@ -383,10 +323,6 @@ function CvMakerJsonLd({ aggregateRating, reviews }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-      <script type="application/ld+json" suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
-      <script type="application/ld+json" suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
     </>
   );
 }

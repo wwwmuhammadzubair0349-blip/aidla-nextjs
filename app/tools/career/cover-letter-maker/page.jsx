@@ -400,40 +400,6 @@ function CoverLetterJsonLd({ aggregateRating, reviews }) {
     ],
   };
 
-  const howToSchema = {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    name: "How to Write a Professional Cover Letter in 3 Minutes � Free",
-    description:
-      "Step-by-step guide to create an AI-optimized cover letter using AIDLA's free cover letter maker. Includes tips for Pakistan, UAE, GCC, and global job applications.",
-    totalTime: "PT3M",
-    tool: { "@type": "HowToTool", name: "AIDLA Free Cover Letter Maker" },
-    step: [
-      {
-        "@type": "HowToStep",
-        position: 1,
-        name: "Fill Your Personal & Company Details",
-        text: "Enter your full name, job title, contact information (email, phone, location), the company name you're applying to, the specific job title, and hiring manager name if known. Select your preferred tone (Professional, Enthusiastic, Confident, Formal) and length (Short, Medium, Long). For Pakistan applications, include your city (Karachi, Lahore, Islamabad). For UAE/GCC, include your visa status if relevant.",
-        url: `${pageUrl}#personal-details`,
-      },
-      {
-        "@type": "HowToStep",
-        position: 2,
-        name: "Add Content with AI Assistance",
-        text: "Use 'AI Fill All' to instantly generate highlights, custom paragraph, and reference content from your job title and company name. Or use 'AI Write' on individual fields for targeted content generation. For best results, paste the full job description into the Job Description field � the AI will extract key requirements, skills, and company context to tailor your letter with relevant keywords for ATS optimization.",
-        url: `${pageUrl}#content`,
-      },
-      {
-        "@type": "HowToStep",
-        position: 3,
-        name: "Select Template, Preview & Print PDF",
-        text: "Choose from 6 professional templates with accent color customization. Preview your letter in real-time A4 format � toggle templates and colors to see instant visual changes. Refine with Quick Chips (shorter, more confident, stronger closing) or custom instructions. Print to PDF � the output is a single-page, selectable-text document fully compatible with all Applicant Tracking Systems (Workday, Taleo, Greenhouse, Lever).",
-        url: `${pageUrl}#templates`,
-      },
-    ],
-  };
-
-
   return (
     <>
       <script
@@ -454,11 +420,6 @@ function CoverLetterJsonLd({ aggregateRating, reviews }) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(breadcrumbSchema),
         }}
-      />
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
     </>
   );

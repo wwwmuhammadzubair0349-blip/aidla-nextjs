@@ -1,5 +1,7 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+
+const CDN = "https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js";
 
 const S = {
   root: { maxWidth: 900, margin: "0 auto", padding: "2rem 1.25rem 4rem" },
@@ -17,6 +19,8 @@ const S = {
   fileName: { flex: 1, fontWeight: 600, color: "#0f172a", fontSize: "0.9rem" },
   btnRm: { padding: "4px 10px", background: "#fee2e2", color: "#dc2626", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 700, fontSize: "0.8rem" },
   statusRow: { textAlign: "center", padding: "1rem", color: "#6d28d9", fontWeight: 600, fontSize: "0.9rem" },
+  errBox: { textAlign: "center", padding: "1.25rem", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 12, marginBottom: "1rem" },
+  errText: { color: "#dc2626", fontWeight: 600, fontSize: "0.9rem", marginBottom: 10 },
   preview: {
     border: "1px solid #e2e8f0", borderRadius: 12, padding: "2rem 2.5rem",
     background: "#fff", marginBottom: "1.5rem",
@@ -26,7 +30,7 @@ const S = {
   },
   bottom: { display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" },
   btnPrint: { padding: "12px 32px", background: "#7c3aed", color: "#fff", border: "none", borderRadius: 9, fontWeight: 800, fontSize: "0.95rem", cursor: "pointer" },
-  btnClear: { padding: "12px 20px", background: "#f1f5f9", color: "#475569", border: "none", borderRadius: 9, fontWeight: 700, fontSize: "0.95rem", cursor: "pointer" },
+  btnSecondary: { padding: "12px 20px", background: "#f1f5f9", color: "#475569", border: "none", borderRadius: 9, fontWeight: 700, fontSize: "0.95rem", cursor: "pointer" },
   hint: { textAlign: "center", color: "#94a3b8", fontSize: "0.8rem", marginTop: 12 },
   info: { background: "#f5f3ff", border: "1px solid rgba(139,92,246,0.15)", borderRadius: 12, padding: "1.25rem 1.5rem", marginTop: "2rem" },
   infoTitle: { fontWeight: 700, color: "#6d28d9", marginBottom: 8, fontSize: "0.9rem" },
@@ -37,23 +41,49 @@ export default function WordToPdfClient() {
   const [file, setFile] = useState(null);
   const [drag, setDrag] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | ready | error
+  const [errMsg, setErrMsg] = useState("");
   const [html, setHtml] = useState("");
+  const cdnFailed = useRef(false);
   const inputRef = useRef();
   const previewRef = useRef();
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.mammoth || document.getElementById("mammoth-cdn")) return;
+    const script = document.createElement("script");
+    script.id = "mammoth-cdn";
+    script.src = CDN;
+    script.onerror = () => { cdnFailed.current = true; };
+    document.head.appendChild(script);
+  }, []);
+
   const processFile = useCallback(async (f) => {
     if (!f || !f.name.match(/\.docx$/i)) {
+      setErrMsg("Please select a .docx file (Word 2007 or newer).");
       setStatus("error"); return;
     }
-    setFile(f); setStatus("loading"); setHtml("");
+    setFile(f); setStatus("loading"); setHtml(""); setErrMsg("");
+
+    // wait up to 10s for mammoth to load from CDN
+    let waited = 0;
+    while (!window.mammoth && !cdnFailed.current && waited < 10000) {
+      await new Promise(r => setTimeout(r, 200));
+      waited += 200;
+    }
+
+    if (!window.mammoth) {
+      setErrMsg("The converter library failed to load. Check your internet connection, then try again.");
+      setStatus("error"); return;
+    }
+
     try {
-      const mammoth = (await import("mammoth")).default ?? (await import("mammoth"));
       const buffer = await f.arrayBuffer();
-      const result = await mammoth.convertToHtml({ arrayBuffer: buffer });
-      setHtml(result.value);
+      const result = await window.mammoth.convertToHtml({ arrayBuffer: buffer });
+      setHtml(result.value || "<p>(Document appears empty)</p>");
       setStatus("ready");
     } catch (err) {
       console.error(err);
+      setErrMsg("Could not read this file. Make sure it is a valid .docx (Word 2007+) file.");
       setStatus("error");
     }
   }, []);
@@ -65,8 +95,20 @@ export default function WordToPdfClient() {
   }, [processFile]);
 
   const clear = useCallback(() => {
-    setFile(null); setHtml(""); setStatus("idle");
+    setFile(null); setHtml(""); setStatus("idle"); setErrMsg("");
   }, []);
+
+  const retryLoad = useCallback(() => {
+    cdnFailed.current = false;
+    const old = document.getElementById("mammoth-cdn");
+    if (old) old.remove();
+    const script = document.createElement("script");
+    script.id = "mammoth-cdn";
+    script.src = CDN;
+    script.onerror = () => { cdnFailed.current = true; };
+    document.head.appendChild(script);
+    if (file) processFile(file);
+  }, [file, processFile]);
 
   const printPdf = useCallback(() => {
     if (!html) return;
@@ -131,24 +173,23 @@ export default function WordToPdfClient() {
       )}
 
       {status === "error" && (
-        <div style={{ ...S.statusRow, color: "#dc2626" }}>
-          ❌ Could not parse this file. Make sure it is a .docx (Word 2007+) file, not .doc or .odt.
-          <div style={{ marginTop: 8 }}>
-            <button style={{ ...S.btnClear, marginTop: 8 }} onClick={clear}>Try Another File</button>
+        <div style={S.errBox}>
+          <div style={S.errText}>❌ {errMsg}</div>
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+            {errMsg.includes("library") && (
+              <button style={S.btnSecondary} onClick={retryLoad}>Retry</button>
+            )}
+            <button style={S.btnSecondary} onClick={clear}>Try Another File</button>
           </div>
         </div>
       )}
 
       {status === "ready" && html && (
         <>
-          <div
-            ref={previewRef}
-            style={S.preview}
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
+          <div ref={previewRef} style={S.preview} dangerouslySetInnerHTML={{ __html: html }} />
           <div style={S.bottom}>
             <button style={S.btnPrint} onClick={printPdf}>Save as PDF →</button>
-            <button style={S.btnClear} onClick={clear}>Convert Another</button>
+            <button style={S.btnSecondary} onClick={clear}>Convert Another</button>
           </div>
           <p style={S.hint}>A print dialog will open — select "Save as PDF" to download.</p>
         </>

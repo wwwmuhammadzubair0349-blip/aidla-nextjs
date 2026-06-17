@@ -126,6 +126,17 @@ export const CATEGORIES = [
       { to: "/tools/pdf/image-to-pdf", emoji: "🖼️", label: "Image → PDF", desc: "Combine JPG, PNG, WebP images into a single PDF."            },
     ],
   },
+  {
+    id: "image",
+    icon: "🖼️",
+    title: "Image Tools",
+    badge: "🔒 Private",
+    badgeColor: "#ec4899",
+    tools: [
+      { to: "/tools/image/html-to-png", emoji: "🎨", label: "HTML → PNG / JPG", desc: "Convert HTML to pixel-perfect images. Presets for Facebook, Instagram, LinkedIn, Twitter/X.", badge: "New", badgeColor: "#059669" },
+      { to: "/tools/image/jpg-to-png",  emoji: "🖼️", label: "JPG → PNG",         desc: "Convert JPG, WEBP or BMP images to lossless PNG in one click.",                              badge: "New", badgeColor: "#059669" },
+    ],
+  },
 ];
 
 // Flat list used for search + JSON-LD
@@ -143,4 +154,5 @@ export const CAT_FILTERS = [
   { id: "career",    label: "Career",    icon: "💼" },
   { id: "utility",   label: "Utility",   icon: "⚙️" },
   { id: "pdf",       label: "PDF",       icon: "📄" },
+  { id: "image",     label: "Images",    icon: "🖼️" },
 ];

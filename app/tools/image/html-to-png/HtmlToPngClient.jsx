@@ -108,49 +108,149 @@ export default function HtmlToPngClient() {
   const download = useCallback(async () => {
     if (status === "loading") return;
     setStatus("loading");
-    try {
-      const canvas = document.createElement("canvas");
-      canvas.width  = canvasW;
-      canvas.height = canvasH;
-      const ctx = canvas.getContext("2d");
 
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    // ── Helper: build full HTML document string ──────────────────────────
+    const fullHtml = `<!DOCTYPE html><html><head><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{width:${canvasW}px;height:${canvasH}px;overflow:hidden;}</style></head><body>${html}</body></html>`;
+
+    // ── Primary: iframe + SVG foreignObject ──────────────────────────────
+    const tryIframeSVG = () => new Promise(async (resolve, reject) => {
+      const iframe = document.createElement("iframe");
+      iframe.style.cssText = `position:fixed;left:-99999px;top:0;width:${canvasW}px;height:${canvasH}px;border:none;visibility:hidden;`;
+      document.body.appendChild(iframe);
+
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(fullHtml);
+      iframe.contentDocument.close();
+
+      await new Promise(r => setTimeout(r, 800));
+
+      const iframeDoc = iframe.contentDocument;
+      const svgNS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(svgNS, "svg");
       svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-      svg.setAttribute("width",  canvasW);
-      svg.setAttribute("height", canvasH);
-      const fo = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
-      fo.setAttribute("width",  "100%");
-      fo.setAttribute("height", "100%");
-      fo.innerHTML = `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${canvasW}px;height:${canvasH}px;overflow:hidden;">${html}</div>`;
+      svg.setAttribute("xmlns:xhtml", "http://www.w3.org/1999/xhtml");
+      svg.setAttribute("width",  String(canvasW));
+      svg.setAttribute("height", String(canvasH));
+      const fo = document.createElementNS(svgNS, "foreignObject");
+      fo.setAttribute("width", "100%"); fo.setAttribute("height", "100%");
+      fo.setAttribute("x", "0");        fo.setAttribute("y", "0");
+      const div = iframeDoc.createElementNS("http://www.w3.org/1999/xhtml", "div");
+      div.style.width = canvasW + "px";
+      div.style.height = canvasH + "px";
+      div.style.overflow = "hidden";
+      div.innerHTML = html;
+      fo.appendChild(div);
       svg.appendChild(fo);
 
       const xml  = new XMLSerializer().serializeToString(svg);
       const blob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
       const url  = URL.createObjectURL(blob);
-
       console.log("SVG xml length:", xml.length);
       console.log("Blob URL:", url);
 
-      await new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0);
-          URL.revokeObjectURL(url);
-          resolve();
-        };
-        img.onerror = reject;
-        img.src = url;
-      });
+      const canvas = document.createElement("canvas");
+      canvas.width = canvasW; canvas.height = canvasH;
+      const ctx = canvas.getContext("2d");
 
-      const dataUrl = canvas.toDataURL("image/png");
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, canvasW, canvasH);
+        URL.revokeObjectURL(url);
+        document.body.removeChild(iframe);
+        resolve(canvas.toDataURL("image/png"));
+      };
+      img.onerror = (e) => {
+        console.error("iframe+SVG img.onerror:", e);
+        URL.revokeObjectURL(url);
+        document.body.removeChild(iframe);
+        reject(new Error("SVG blob load failed — Chrome blocked foreignObject"));
+      };
+      img.src = url;
+    });
+
+    // ── Fallback: CloudConvert API ───────────────────────────────────────
+    const tryCloudConvert = async () => {
+      const apiKey = process.env.NEXT_PUBLIC_CLOUDCONVERT_KEY;
+      if (!apiKey) throw new Error("NEXT_PUBLIC_CLOUDCONVERT_KEY not set in .env.local");
+
+      console.log("CloudConvert: creating job…");
+      const jobRes = await fetch("https://api.cloudconvert.com/v2/jobs", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tasks: {
+            "upload-html": { operation: "import/upload" },
+            "convert-png": {
+              operation: "convert", input: "upload-html",
+              input_format: "html", output_format: "png",
+              engine: "chrome",
+              page_width: canvasW, page_height: canvasH, page_unit: "px",
+              print_background: true,
+              margin_top: 0, margin_right: 0, margin_bottom: 0, margin_left: 0,
+            },
+            "export-png": { operation: "export/url", input: "convert-png" },
+          },
+        }),
+      });
+      if (!jobRes.ok) throw new Error(`CloudConvert job create: ${jobRes.status}`);
+      const { data: job } = await jobRes.json();
+      console.log("CloudConvert: job created:", job.id);
+
+      // Upload HTML file
+      const uploadTask = job.tasks.find(t => t.name === "upload-html");
+      const { url: formUrl, parameters } = uploadTask.result.form;
+      const formData = new FormData();
+      for (const [k, v] of Object.entries(parameters)) formData.append(k, v);
+      formData.append("file", new Blob([fullHtml], { type: "text/html" }), "index.html");
+      const uploadRes = await fetch(formUrl, { method: "POST", body: formData });
+      if (!uploadRes.ok) throw new Error(`CloudConvert upload: ${uploadRes.status}`);
+      console.log("CloudConvert: HTML uploaded, polling…");
+
+      // Poll until finished (max 60s)
+      let finished = null;
+      for (let i = 0; i < 30 && !finished; i++) {
+        await new Promise(r => setTimeout(r, 2000));
+        const poll = await fetch(`https://api.cloudconvert.com/v2/jobs/${job.id}`, {
+          headers: { Authorization: `Bearer ${apiKey}` },
+        });
+        const { data } = await poll.json();
+        console.log("CloudConvert: poll status:", data.status);
+        if (data.status === "finished") finished = data;
+        else if (data.status === "error") throw new Error("CloudConvert job errored");
+      }
+      if (!finished) throw new Error("CloudConvert timed out after 60s");
+
+      // Download result PNG as blob URL
+      const exportTask = finished.tasks.find(t => t.name === "export-png");
+      const fileUrl = exportTask.result.files[0].url;
+      console.log("CloudConvert: downloading PNG from", fileUrl);
+      const pngRes  = await fetch(fileUrl);
+      const pngBlob = await pngRes.blob();
+      return URL.createObjectURL(pngBlob);
+    };
+
+    // ── Orchestrate ──────────────────────────────────────────────────────
+    try {
+      let dataUrl;
+      try {
+        dataUrl = await tryIframeSVG();
+        console.log("Primary succeeded");
+      } catch (primaryErr) {
+        console.error("Primary failed:", primaryErr.message, "— trying CloudConvert…");
+        dataUrl = await tryCloudConvert();
+        console.log("CloudConvert succeeded");
+      }
+
       const a = document.createElement("a");
       a.href     = dataUrl;
       a.download = `aidla-${preset?.id ?? "custom"}-${canvasW}x${canvasH}.png`;
       a.click();
+      // revoke blob URLs from CloudConvert after a tick
+      setTimeout(() => { try { URL.revokeObjectURL(dataUrl); } catch (_) {} }, 1000);
       setStatus("done");
       setTimeout(() => setStatus("idle"), 2500);
     } catch (err) {
-      console.error("Download error:", err.message, err.stack);
+      console.error("Download failed:", err.message, err.stack);
       setStatus("error");
       setTimeout(() => setStatus("idle"), 3000);
     }

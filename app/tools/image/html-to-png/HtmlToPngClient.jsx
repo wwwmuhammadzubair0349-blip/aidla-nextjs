@@ -121,6 +121,8 @@ export default function HtmlToPngClient() {
   const download = useCallback(async () => {
     if (!captureRef.current || status === "loading") return;
     setStatus("loading");
+    // 500ms delay so DOM fully paints before capture
+    await new Promise(r => setTimeout(r, 500));
     try {
       const effectiveBg = (format === "jpg" && bgColor === "transparent") ? "#ffffff" : bgColor;
       const opts = {
@@ -265,43 +267,55 @@ export default function HtmlToPngClient() {
             </div>
             <div style={{ ...S.cBody, display: "flex", flexDirection: "column", alignItems: "center" }}>
 
-              {/* Hidden capture div — full resolution, off-screen */}
-              <div
-                ref={captureRef}
-                aria-hidden="true"
-                style={{
-                  position: "fixed",
-                  left: "-99999px",
-                  top: 0,
-                  width: canvasW,
-                  height: canvasH,
-                  overflow: "hidden",
-                  pointerEvents: "none",
-                }}
-                dangerouslySetInnerHTML={{ __html: html }}
-              />
-
-              {/* Visible scaled preview */}
+              {/*
+                Preview container: clips to displayW × displayH.
+                Inside are TWO layers stacked via position:absolute:
+                  1. Full-res capture div (canvasW × canvasH) — opacity:0.001 so html-to-image
+                     renders it correctly (opacity:0 breaks canvas capture).
+                  2. Scaled visible preview (same HTML, CSS-scaled for display only).
+              */}
               <div style={{
+                position: "relative",
                 width: displayW,
                 height: displayH,
                 overflow: "hidden",
                 border: "1px solid #e2e8f0",
                 borderRadius: 8,
-                background: bgColor === "transparent" ? "repeating-conic-gradient(#e2e8f0 0% 25%, #fff 0% 50%) 0 0 / 16px 16px" : bgColor,
-                position: "relative",
+                background: bgColor === "transparent"
+                  ? "repeating-conic-gradient(#e2e8f0 0% 25%, #fff 0% 50%) 0 0 / 16px 16px"
+                  : bgColor,
                 flexShrink: 0,
               }}>
+                {/* Layer 1: full-res capture target — invisible but fully rendered */}
+                <div
+                  ref={captureRef}
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: canvasW,
+                    height: canvasH,
+                    opacity: 0.001,
+                    pointerEvents: "none",
+                    overflow: "hidden",
+                    zIndex: 0,
+                  }}
+                  dangerouslySetInnerHTML={{ __html: html }}
+                />
+                {/* Layer 2: CSS-scaled display preview */}
                 <div
                   style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
                     width: canvasW,
                     height: canvasH,
                     transform: `scale(${scale})`,
                     transformOrigin: "top left",
                     overflow: "hidden",
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
+                    pointerEvents: "none",
+                    zIndex: 1,
                   }}
                   dangerouslySetInnerHTML={{ __html: html }}
                 />

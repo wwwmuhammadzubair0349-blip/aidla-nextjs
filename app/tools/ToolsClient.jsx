@@ -147,6 +147,15 @@ const TOOLS = [
         badgeColor: "#7c3aed",
         tags: ["High Quality", "Transparent"],
       },
+      {
+        href: "/tools/image/html-to-png",
+        icon: "🖼️",
+        label: "HTML to PNG / JPG",
+        desc: "Convert HTML to pixel-perfect images. Facebook, Instagram, LinkedIn, Twitter/X presets. Download PNG or JPG.",
+        badge: "New",
+        badgeColor: "#059669",
+        tags: ["Social Media", "Ad Sizes"],
+      },
     ],
   },
 ];

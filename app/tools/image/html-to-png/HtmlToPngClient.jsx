@@ -142,11 +142,11 @@ export default function HtmlToPngClient() {
       fo.appendChild(div);
       svg.appendChild(fo);
 
-      const xml  = new XMLSerializer().serializeToString(svg);
-      const blob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
-      const url  = URL.createObjectURL(blob);
+      const xml     = new XMLSerializer().serializeToString(svg);
+      const encoded = btoa(unescape(encodeURIComponent(xml)));
+      const url     = `data:image/svg+xml;base64,${encoded}`;
       console.log("SVG xml length:", xml.length);
-      console.log("Blob URL:", url);
+      console.log("data: URL length:", url.length);
 
       const canvas = document.createElement("canvas");
       canvas.width = canvasW; canvas.height = canvasH;
@@ -155,15 +155,13 @@ export default function HtmlToPngClient() {
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, canvasW, canvasH);
-        URL.revokeObjectURL(url);
         document.body.removeChild(iframe);
         resolve(canvas.toDataURL("image/png"));
       };
       img.onerror = (e) => {
         console.error("iframe+SVG img.onerror:", e);
-        URL.revokeObjectURL(url);
         document.body.removeChild(iframe);
-        reject(new Error("SVG blob load failed — Chrome blocked foreignObject"));
+        reject(new Error("SVG data: URL load failed"));
       };
       img.src = url;
     });

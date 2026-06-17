@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useCallback, useMemo } from "react";
-import { toPng, toJpeg } from "html-to-image";
+// html2canvas loaded dynamically on first download click
 
 /* ── Presets ─────────────────────────────────────────────────────────────── */
 const PRESETS = [
@@ -121,20 +121,21 @@ export default function HtmlToPngClient() {
   const download = useCallback(async () => {
     if (!captureRef.current || status === "loading") return;
     setStatus("loading");
-    // 500ms delay so DOM fully paints before capture
-    await new Promise(r => setTimeout(r, 500));
     try {
-      const effectiveBg = (format === "jpg" && bgColor === "transparent") ? "#ffffff" : bgColor;
-      const opts = {
-        pixelRatio: 1,
-        backgroundColor: effectiveBg === "transparent" ? undefined : effectiveBg,
-        width:  canvasW,
+      await new Promise(r => setTimeout(r, 600));
+      const html2canvas = (await import("html2canvas")).default;
+      const canvas = await html2canvas(captureRef.current, {
+        width: canvasW,
         height: canvasH,
-      };
+        scale: 1,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: bgColor === "transparent" ? null : bgColor,
+        logging: false,
+      });
       const dataUrl = format === "png"
-        ? await toPng(captureRef.current, opts)
-        : await toJpeg(captureRef.current, { ...opts, quality: quality / 100 });
-
+        ? canvas.toDataURL("image/png")
+        : canvas.toDataURL("image/jpeg", quality / 100);
       const a = document.createElement("a");
       a.href = dataUrl;
       a.download = `aidla-${preset?.id ?? "custom"}-${canvasW}x${canvasH}.${format}`;
@@ -142,7 +143,7 @@ export default function HtmlToPngClient() {
       setStatus("done");
       setTimeout(() => setStatus("idle"), 2500);
     } catch (err) {
-      console.error("html-to-image error:", err);
+      console.error("html2canvas error:", err);
       setStatus("error");
       setTimeout(() => setStatus("idle"), 3000);
     }
@@ -286,7 +287,7 @@ export default function HtmlToPngClient() {
                   : bgColor,
                 flexShrink: 0,
               }}>
-                {/* Layer 1: full-res capture target — invisible but fully rendered */}
+                {/* Layer 1: full-res capture target — opacity:0.001 keeps it painted */}
                 <div
                   ref={captureRef}
                   aria-hidden="true"
@@ -296,10 +297,10 @@ export default function HtmlToPngClient() {
                     left: 0,
                     width: canvasW,
                     height: canvasH,
+                    overflow: "hidden",
                     opacity: 0.001,
                     pointerEvents: "none",
-                    overflow: "hidden",
-                    zIndex: 0,
+                    zIndex: -1,
                   }}
                   dangerouslySetInnerHTML={{ __html: html }}
                 />

@@ -1,13 +1,14 @@
 export const runtime = "edge";
 
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "*",
+  "Access-Control-Max-Age": "86400",
+};
+
 export async function OPTIONS() {
-  return new Response(null, {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
+  return new Response(null, { status: 200, headers: CORS });
 }
 
 export async function POST(request) {
@@ -20,6 +21,6 @@ export async function POST(request) {
 
   return Response.json(
     { success: true, image: dataUrl, format: "svg" },
-    { headers: { "Access-Control-Allow-Origin": "*" } }
+    { headers: CORS }
   );
 }

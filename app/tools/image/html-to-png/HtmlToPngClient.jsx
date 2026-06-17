@@ -134,12 +134,16 @@ export default function HtmlToPngClient() {
     if (!captureRef.current || status === "loading") return;
     setStatus("loading");
     try {
-      // Wait up to 10s for CDN script to load
+      // Wait up to 5s for CDN script to load
       let waited = 0;
-      while (!window.html2canvas && !cdnFailed.current && waited < 10000) {
-        await new Promise(r => setTimeout(r, 200));
-        waited += 200;
+      while (!window.html2canvas && !cdnFailed.current && waited < 5000) {
+        await new Promise(r => setTimeout(r, 500));
+        waited += 500;
+        console.log("html2canvas CDN poll:", waited, "ms — loaded:", !!window.html2canvas);
       }
+      console.log("html2canvas available:", !!window.html2canvas);
+      console.log("captureRef:", captureRef.current);
+      console.log("captureRef dimensions:", captureRef.current?.offsetWidth, captureRef.current?.offsetHeight);
       if (!window.html2canvas) {
         setStatus("error");
         setTimeout(() => setStatus("idle"), 3000);
@@ -154,6 +158,12 @@ export default function HtmlToPngClient() {
         allowTaint: true,
         backgroundColor: bgColor === "transparent" ? null : bgColor,
         logging: false,
+        windowWidth: canvasW,
+        windowHeight: canvasH,
+        scrollX: 0,
+        scrollY: 0,
+        x: 0,
+        y: 0,
       });
       const dataUrl = format === "png"
         ? canvas.toDataURL("image/png")
@@ -165,7 +175,7 @@ export default function HtmlToPngClient() {
       setStatus("done");
       setTimeout(() => setStatus("idle"), 2500);
     } catch (err) {
-      console.error("html2canvas error:", err);
+      console.error("html2canvas error:", err.message, err.stack);
       setStatus("error");
       setTimeout(() => setStatus("idle"), 3000);
     }
@@ -180,6 +190,24 @@ export default function HtmlToPngClient() {
 
   return (
     <div style={S.root}>
+
+      {/* Full-res capture target — fixed outside flow, html2canvas can see it */}
+      <div
+        ref={captureRef}
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: canvasW,
+          height: canvasH,
+          opacity: 0.001,
+          pointerEvents: "none",
+          zIndex: 9999,
+          overflow: "visible",
+        }}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
 
       {/* ── Hero ── */}
       <div style={S.hero}>
@@ -290,15 +318,8 @@ export default function HtmlToPngClient() {
             </div>
             <div style={{ ...S.cBody, display: "flex", flexDirection: "column", alignItems: "center" }}>
 
-              {/*
-                Preview container: clips to displayW × displayH.
-                Inside are TWO layers stacked via position:absolute:
-                  1. Full-res capture div (canvasW × canvasH) — opacity:0.001 so html-to-image
-                     renders it correctly (opacity:0 breaks canvas capture).
-                  2. Scaled visible preview (same HTML, CSS-scaled for display only).
-              */}
+              {/* Visible scaled preview (captureRef lives in fixed position above) */}
               <div style={{
-                position: "relative",
                 width: displayW,
                 height: displayH,
                 overflow: "hidden",
@@ -308,25 +329,8 @@ export default function HtmlToPngClient() {
                   ? "repeating-conic-gradient(#e2e8f0 0% 25%, #fff 0% 50%) 0 0 / 16px 16px"
                   : bgColor,
                 flexShrink: 0,
+                position: "relative",
               }}>
-                {/* Layer 1: full-res capture target — opacity:0.001 keeps it painted */}
-                <div
-                  ref={captureRef}
-                  aria-hidden="true"
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: canvasW,
-                    height: canvasH,
-                    overflow: "hidden",
-                    opacity: 0.001,
-                    pointerEvents: "none",
-                    zIndex: -1,
-                  }}
-                  dangerouslySetInnerHTML={{ __html: html }}
-                />
-                {/* Layer 2: CSS-scaled display preview */}
                 <div
                   style={{
                     position: "absolute",
@@ -338,7 +342,6 @@ export default function HtmlToPngClient() {
                     transformOrigin: "top left",
                     overflow: "hidden",
                     pointerEvents: "none",
-                    zIndex: 1,
                   }}
                   dangerouslySetInnerHTML={{ __html: html }}
                 />

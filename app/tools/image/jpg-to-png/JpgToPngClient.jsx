@@ -187,6 +187,26 @@ export default function JpgToPngClient() {
           <li>Your files are converted locally — nothing is uploaded to any server</li>
         </ul>
       </div>
+
+      <div style={{ marginTop: "2.5rem" }}>
+        <div style={{ fontWeight: 700, color: "#0b1437", fontSize: "1rem", marginBottom: "1rem" }}>More Free Tools</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: "0.75rem" }}>
+          {[
+            { href: "/tools/pdf/image-to-pdf", icon: "🖼️", label: "Image to PDF", desc: "Convert images to a PDF document" },
+            { href: "/tools/pdf/word-to-pdf", icon: "📝", label: "Word to PDF", desc: "Convert .docx files to PDF" },
+            { href: "/tools/career/cv-maker", icon: "📄", label: "CV Maker", desc: "Build a professional CV for free" },
+            { href: "/tools/career/cover-letter-maker", icon: "✉️", label: "Cover Letter Maker", desc: "Write a cover letter in minutes" },
+          ].map(t => (
+            <a key={t.href} href={t.href} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "12px 14px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, textDecoration: "none" }}>
+              <span style={{ fontSize: "1.4rem", lineHeight: 1 }}>{t.icon}</span>
+              <div>
+                <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.85rem" }}>{t.label}</div>
+                <div style={{ color: "#64748b", fontSize: "0.78rem", marginTop: 2 }}>{t.desc}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
-import { useState, useRef, useCallback, useMemo } from "react";
-// html2canvas loaded dynamically on first download click
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+
+const CDN_H2C = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
 
 /* ── Presets ─────────────────────────────────────────────────────────────── */
 const PRESETS = [
@@ -106,7 +107,18 @@ export default function HtmlToPngClient() {
   const [quality,  setQuality]    = useState(92);
   const [html,     setHtml]       = useState(DEFAULT_HTML);
   const [status,   setStatus]     = useState("idle");
-  const captureRef = useRef();
+  const captureRef  = useRef();
+  const cdnFailed   = useRef(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.html2canvas || document.getElementById("html2canvas-cdn")) return;
+    const script = document.createElement("script");
+    script.id  = "html2canvas-cdn";
+    script.src = CDN_H2C;
+    script.onerror = () => { cdnFailed.current = true; };
+    document.head.appendChild(script);
+  }, []);
 
   const preset  = PRESETS.find(p => p.id === presetId);
   const canvasW = presetId === "custom" ? (Number(customW) || 800)  : preset.w;
@@ -122,9 +134,19 @@ export default function HtmlToPngClient() {
     if (!captureRef.current || status === "loading") return;
     setStatus("loading");
     try {
+      // Wait up to 10s for CDN script to load
+      let waited = 0;
+      while (!window.html2canvas && !cdnFailed.current && waited < 10000) {
+        await new Promise(r => setTimeout(r, 200));
+        waited += 200;
+      }
+      if (!window.html2canvas) {
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 3000);
+        return;
+      }
       await new Promise(r => setTimeout(r, 600));
-      const html2canvas = (await import("html2canvas")).default;
-      const canvas = await html2canvas(captureRef.current, {
+      const canvas = await window.html2canvas(captureRef.current, {
         width: canvasW,
         height: canvasH,
         scale: 1,

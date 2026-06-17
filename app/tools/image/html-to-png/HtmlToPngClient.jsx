@@ -58,14 +58,6 @@ const S = {
   row:    { display: "flex", gap: 8, marginBottom: "0.75rem", alignItems: "center" },
   inp:    { flex: 1, padding: "7px 10px", border: "1px solid #e2e8f0", borderRadius: 7, fontSize: "0.875rem", color: "#0f172a", background: "#f8fafc", outline: "none" },
 
-  fmtRow: { display: "flex", gap: 6, marginBottom: "0.75rem" },
-  fmtBtn: (a) => ({
-    flex: 1, padding: "8px 0", border: `2px solid ${a ? "#ec4899" : "#e2e8f0"}`,
-    borderRadius: 7, background: a ? "#fdf2f8" : "#f8fafc",
-    color: a ? "#be185d" : "#374151", fontWeight: 700, fontSize: "0.83rem",
-    cursor: "pointer",
-  }),
-
   textarea: {
     width: "100%", minHeight: 280, padding: "12px", boxSizing: "border-box",
     border: "1px solid #e2e8f0", borderRadius: 8, background: "#0f172a",
@@ -97,18 +89,15 @@ const S = {
 
 /* ── Component ───────────────────────────────────────────────────────────── */
 export default function HtmlToPngClient() {
-  const [presetId, setPresetId]   = useState("ig");
-  const [customW,  setCustomW]    = useState(1200);
-  const [customH,  setCustomH]    = useState(630);
-  const [bgColor,  setBgColor]    = useState("#ffffff");
-  const [format,   setFormat]     = useState("png");
-  const [quality,  setQuality]    = useState(92);
-  const [html,     setHtml]       = useState(DEFAULT_HTML);
-  const [status,   setStatus]     = useState("idle");
+  const [presetId, setPresetId] = useState("ig");
+  const [customW,  setCustomW]  = useState(1200);
+  const [customH,  setCustomH]  = useState(630);
+  const [html,     setHtml]     = useState(DEFAULT_HTML);
+  const [status,   setStatus]   = useState("idle");
 
   const preset  = PRESETS.find(p => p.id === presetId);
-  const canvasW = presetId === "custom" ? (Number(customW) || 800)  : preset.w;
-  const canvasH = presetId === "custom" ? (Number(customH) || 600)  : preset.h;
+  const canvasW = presetId === "custom" ? (Number(customW) || 800) : preset.w;
+  const canvasH = presetId === "custom" ? (Number(customH) || 600) : preset.h;
 
   const scale    = Math.min(PREV_MAX_W / canvasW, PREV_MAX_H / canvasH);
   const displayW = Math.round(canvasW * scale);
@@ -120,57 +109,55 @@ export default function HtmlToPngClient() {
     if (status === "loading") return;
     setStatus("loading");
     try {
-      await new Promise(r => setTimeout(r, 300));
+      const canvas = document.createElement("canvas");
+      canvas.width  = canvasW;
+      canvas.height = canvasH;
+      const ctx = canvas.getContext("2d");
 
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${canvasW}" height="${canvasH}">
-        <foreignObject width="100%" height="100%">
-          <div xmlns="http://www.w3.org/1999/xhtml" style="width:${canvasW}px;height:${canvasH}px;overflow:hidden;">
-            ${html}
-          </div>
-        </foreignObject>
-      </svg>`;
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      svg.setAttribute("width",  canvasW);
+      svg.setAttribute("height", canvasH);
+      const fo = document.createElementNS("http://www.w3.org/2000/svg", "foreignObject");
+      fo.setAttribute("width",  "100%");
+      fo.setAttribute("height", "100%");
+      fo.innerHTML = `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${canvasW}px;height:${canvasH}px;overflow:hidden;">${html}</div>`;
+      svg.appendChild(fo);
 
-      const svgBlob = new Blob([svg], { type: "image/svg+xml" });
-      const svgUrl  = URL.createObjectURL(svgBlob);
+      const xml  = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
+      const url  = URL.createObjectURL(blob);
 
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width  = canvasW;
-        canvas.height = canvasH;
-        const ctx = canvas.getContext("2d");
-        if (bgColor && bgColor !== "transparent") {
-          ctx.fillStyle = bgColor;
-          ctx.fillRect(0, 0, canvasW, canvasH);
-        }
-        ctx.drawImage(img, 0, 0);
-        URL.revokeObjectURL(svgUrl);
-        const dataUrl = format === "png"
-          ? canvas.toDataURL("image/png")
-          : canvas.toDataURL("image/jpeg", quality / 100);
-        const a = document.createElement("a");
-        a.href     = dataUrl;
-        a.download = `aidla-${preset?.id ?? "custom"}-${canvasW}x${canvasH}.${format}`;
-        a.click();
-        setStatus("done");
-        setTimeout(() => setStatus("idle"), 2500);
-      };
-      img.onerror = (e) => {
-        console.error("SVG render error:", e);
-        setStatus("error");
-        setTimeout(() => setStatus("idle"), 3000);
-      };
-      img.src = svgUrl;
+      console.log("SVG xml length:", xml.length);
+      console.log("Blob URL:", url);
 
+      await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0);
+          URL.revokeObjectURL(url);
+          resolve();
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
+
+      const dataUrl = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href     = dataUrl;
+      a.download = `aidla-${preset?.id ?? "custom"}-${canvasW}x${canvasH}.png`;
+      a.click();
+      setStatus("done");
+      setTimeout(() => setStatus("idle"), 2500);
     } catch (err) {
-      console.error("Download error:", err);
+      console.error("Download error:", err.message, err.stack);
       setStatus("error");
       setTimeout(() => setStatus("idle"), 3000);
     }
-  }, [html, format, quality, canvasW, canvasH, bgColor, preset, status]);
+  }, [html, canvasW, canvasH, preset, status]);
 
   const btnLabel = {
-    idle:    `⬇ Download ${format.toUpperCase()}`,
+    idle:    "⬇ Download PNG",
     loading: "⏳ Generating…",
     done:    "✅ Downloaded!",
     error:   "❌ Failed — try again",
@@ -182,9 +169,9 @@ export default function HtmlToPngClient() {
       {/* ── Hero ── */}
       <div style={S.hero}>
         <div style={S.badge}>🎨 Free Browser Tool — No Upload, 100% Private</div>
-        <h1 style={S.h1}>HTML to PNG / JPG Converter</h1>
+        <h1 style={S.h1}>HTML to PNG Converter</h1>
         <p style={S.sub}>
-          Paste any HTML, pick a social media preset or custom size, and download a pixel-perfect image.
+          Paste any HTML, pick a social media preset or custom size, and download a pixel-perfect PNG.
           Optimized for ads, posts, and banners. Runs entirely in your browser.
         </p>
       </div>
@@ -213,39 +200,6 @@ export default function HtmlToPngClient() {
                   <span style={{ color: "#94a3b8", fontWeight: 700 }}>×</span>
                   <input style={S.inp} type="number" min={100} max={4000} value={customH} onChange={e => setCustomH(e.target.value)} placeholder="Height px" />
                   <span style={{ fontSize: "0.75rem", color: "#94a3b8", whiteSpace: "nowrap" }}>px</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Output Settings */}
-          <div style={S.card}>
-            <div style={S.cHead}>⚙️ Output Settings</div>
-            <div style={S.cBody}>
-              <label style={S.lbl}>Format</label>
-              <div style={S.fmtRow}>
-                <button style={S.fmtBtn(format === "png")} onClick={() => setFormat("png")}>PNG — Lossless</button>
-                <button style={S.fmtBtn(format === "jpg")} onClick={() => setFormat("jpg")}>JPG — Smaller</button>
-              </div>
-
-              {format === "jpg" && (
-                <div style={{ marginBottom: "0.75rem" }}>
-                  <label style={S.lbl}>Quality: {quality}%</label>
-                  <input type="range" min={50} max={100} value={quality} onChange={e => setQuality(Number(e.target.value))} style={{ width: "100%", accentColor: "#ec4899" }} />
-                </div>
-              )}
-
-              <label style={S.lbl}>Background Color</label>
-              <div style={S.row}>
-                <input type="color" value={bgColor === "transparent" ? "#ffffff" : bgColor} onChange={e => setBgColor(e.target.value)} style={{ width: 42, height: 36, border: "1px solid #e2e8f0", borderRadius: 7, cursor: "pointer", padding: 2, background: "#fff" }} />
-                <input style={S.inp} type="text" value={bgColor} onChange={e => setBgColor(e.target.value)} placeholder="#ffffff or transparent" />
-                <button onClick={() => setBgColor("transparent")} style={{ padding: "6px 10px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 7, cursor: "pointer", fontSize: "0.72rem", color: "#475569", fontWeight: 600, whiteSpace: "nowrap" }}>
-                  Transparent
-                </button>
-              </div>
-              {format === "jpg" && bgColor === "transparent" && (
-                <div style={{ fontSize: "0.75rem", color: "#b45309", background: "#fef3c7", padding: "6px 10px", borderRadius: 6, marginTop: 4 }}>
-                  ⚠️ JPG doesn't support transparency — white will be used.
                 </div>
               )}
             </div>
@@ -288,16 +242,12 @@ export default function HtmlToPngClient() {
             </div>
             <div style={{ ...S.cBody, display: "flex", flexDirection: "column", alignItems: "center" }}>
 
-              {/* Visible scaled preview (captureRef lives in fixed position above) */}
               <div style={{
                 width: displayW,
                 height: displayH,
                 overflow: "hidden",
                 border: "1px solid #e2e8f0",
                 borderRadius: 8,
-                background: bgColor === "transparent"
-                  ? "repeating-conic-gradient(#e2e8f0 0% 25%, #fff 0% 50%) 0 0 / 16px 16px"
-                  : bgColor,
                 flexShrink: 0,
                 position: "relative",
               }}>
@@ -318,7 +268,7 @@ export default function HtmlToPngClient() {
               </div>
 
               <div style={S.dimNote}>
-                {preset?.label ?? "Custom"} · {canvasW} × {canvasH} px · {format.toUpperCase()}
+                {preset?.label ?? "Custom"} · {canvasW} × {canvasH} px · PNG
               </div>
 
               <button style={S.dlBtn(status)} onClick={download} disabled={status === "loading"}>
@@ -335,6 +285,7 @@ export default function HtmlToPngClient() {
                 <li>Use <strong>inline styles</strong> — no external CSS loaded</li>
                 <li>Add <code style={{ background: "#f1f5f9", padding: "1px 5px", borderRadius: 3, fontSize: "0.72rem" }}>height:100%</code> to your root <code style={{ background: "#f1f5f9", padding: "1px 5px", borderRadius: 3, fontSize: "0.72rem" }}>&lt;div&gt;</code></li>
                 <li>Use <code style={{ background: "#f1f5f9", padding: "1px 5px", borderRadius: 3, fontSize: "0.72rem" }}>box-sizing:border-box</code> for padding</li>
+                <li>Set background color in your HTML — tool adds no background</li>
                 <li>Avoid Google Fonts — use system fonts for reliability</li>
                 <li>Preview is scaled down — download is full resolution</li>
               </ul>
@@ -350,7 +301,7 @@ export default function HtmlToPngClient() {
           <li>Paste HTML with inline CSS — external stylesheets are not supported</li>
           <li>Pick a social media preset (Facebook, Instagram, LinkedIn, Twitter/X) or enter a custom size</li>
           <li>Live preview updates as you type — see exactly what you'll get</li>
-          <li>Click Download — your image is generated in the browser. No server, no upload, no account needed</li>
+          <li>Click Download PNG — your image is generated in the browser. No server, no upload, no account needed</li>
         </ul>
       </div>
 

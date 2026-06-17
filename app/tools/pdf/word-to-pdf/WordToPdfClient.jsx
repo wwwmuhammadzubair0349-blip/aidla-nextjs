@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 
 const S = {
   root: { maxWidth: 900, margin: "0 auto", padding: "2rem 1.25rem 4rem" },
@@ -38,40 +38,18 @@ export default function WordToPdfClient() {
   const [drag, setDrag] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | loading | ready | error
   const [html, setHtml] = useState("");
-  const [mammothReady, setMammothReady] = useState(false);
   const inputRef = useRef();
   const previewRef = useRef();
-
-  useEffect(() => {
-    if (document.getElementById("mammoth-cdn")) { setMammothReady(true); return; }
-    const script = document.createElement("script");
-    script.id = "mammoth-cdn";
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js";
-    script.onload = () => setMammothReady(true);
-    script.onerror = () => setMammothReady(false);
-    document.head.appendChild(script);
-  }, []);
 
   const processFile = useCallback(async (f) => {
     if (!f || !f.name.match(/\.docx$/i)) {
       setStatus("error"); return;
     }
     setFile(f); setStatus("loading"); setHtml("");
-
-    const waitForMammoth = () => new Promise((resolve, reject) => {
-      let attempts = 0;
-      const check = () => {
-        if (window.mammoth) return resolve();
-        if (attempts++ > 40) return reject(new Error("Mammoth.js failed to load"));
-        setTimeout(check, 200);
-      };
-      check();
-    });
-
     try {
-      await waitForMammoth();
+      const mammoth = (await import("mammoth")).default ?? (await import("mammoth"));
       const buffer = await f.arrayBuffer();
-      const result = await window.mammoth.convertToHtml({ arrayBuffer: buffer });
+      const result = await mammoth.convertToHtml({ arrayBuffer: buffer });
       setHtml(result.value);
       setStatus("ready");
     } catch (err) {
@@ -149,12 +127,15 @@ export default function WordToPdfClient() {
       )}
 
       {status === "loading" && (
-        <div style={S.statusRow}>⏳ Parsing document…{!mammothReady ? " (Loading converter…)" : ""}</div>
+        <div style={S.statusRow}>⏳ Parsing document…</div>
       )}
 
       {status === "error" && (
         <div style={{ ...S.statusRow, color: "#dc2626" }}>
           ❌ Could not parse this file. Make sure it is a .docx (Word 2007+) file, not .doc or .odt.
+          <div style={{ marginTop: 8 }}>
+            <button style={{ ...S.btnClear, marginTop: 8 }} onClick={clear}>Try Another File</button>
+          </div>
         </div>
       )}
 

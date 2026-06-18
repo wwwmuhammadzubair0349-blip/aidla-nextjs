@@ -565,6 +565,8 @@ export default function UserLayoutClient({ children }) {
                 {TABS.map(({ to, label, icon }) => (
                   <option key={to} value={to}>{icon} {label}</option>
                 ))}
+                <option value="/user/insights">✨ Insights</option>
+                <option value="/user/tools">🤖 Tools</option>
                 <option value="/user/search">🔍 Search</option>
                 <option value="/user/notifications">🔔 Notifications</option>
                 <option value="/user/settings">⚙️ Settings</option>

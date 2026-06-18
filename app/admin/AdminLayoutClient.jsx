@@ -33,6 +33,12 @@ const NAV_GROUPS = [
     ],
   },
   {
+    title: "AI Engine",
+    items: [
+      ["/admin/ai-content", "AI Content Engine"],
+    ],
+  },
+  {
     title: "Articles",
     items: [
       ["/admin/blogs", "Blogs"],

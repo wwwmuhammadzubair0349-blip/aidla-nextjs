@@ -511,15 +511,115 @@ Files Changed:
 
 # PHASE 3 — Content & Learning Revolution
 
-**Status:** 🔒 Locked (begins after Phase 2 complete)
+**Status:** ✅ Complete
+**Started:** 2026-06-18
+**Completed:** 2026-06-18
+
+---
+
+### 3.1 — AI Content Engine
 
 ```
-[ ] 3.1 — AI Content Engine (admin section + brand voice + quality dashboard)
-[ ] 3.2 — Course experience improvements
-[ ] 3.3 — Resources discovery improvements
-[ ] 3.4 — Tools section cleanup
-[ ] 3.5 — Blogs + News → Insights hub
-[ ] 3.6 — Certificate sharing upgrade
+[x] Create app/admin/ai-content/page.jsx — AI Content Engine dashboard
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/admin/ai-content/page.jsx (created — quality dashboard, pending review queue, brand voice editor)
+  - app/admin/AdminLayoutClient.jsx (added "AI Engine" nav group with AI Content Engine link)
+DB Changes: None (reads existing ai_generated, ai_quality_score, ai_review_status columns)
+```
+
+---
+
+### 3.2 — Course Experience Improvements
+
+```
+[x] Course notes tab already implemented in CoursePlayerClient
+[x] Create SQL migration for course_notes table
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/course/[id]/CoursePlayerClient.jsx (notes tab + NotesPanel component pre-existing)
+  - supabase/migrations/20260618000006_course_notes.sql (created — course_notes table with RLS)
+DB Changes: course_notes table (user_id, lesson_id, content, unique constraint)
+Notes: Run 20260618000006_course_notes.sql in Supabase SQL Editor
+```
+
+---
+
+### 3.3 — Resources Discovery Improvements
+
+```
+[x] Add sort dropdown to resources browse tab (Newest / A-Z / Free only / Paid only)
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/resources/page.jsx (added sort state, handleSort fn, sort select UI, updated loadMaterials to support sort)
+DB Changes: None
+```
+
+---
+
+### 3.4 — Tools Section Cleanup
+
+```
+[x] Create app/user/tools/ — unified AI Tools hub
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/tools/ToolsContent.jsx (created — 8 tool cards: AIDLA AI, Career Counselor, CV Maker, Cover Letter, Battle Arena, Daily Quiz, Resources, Projects)
+  - app/user/tools/page.jsx (thin shell — ssr:false)
+  - app/user/UserLayoutClient.jsx (added 🤖 Tools to mobile dropdown nav)
+DB Changes: None
+```
+
+---
+
+### 3.5 — Blogs + News → Insights Hub
+
+```
+[x] Create app/user/insights/ — unified insights hub
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/insights/InsightsContent.jsx (created — All/Blogs/News tabs, debounced search, shimmer loading, card grid, AI badge)
+  - app/user/insights/page.jsx (thin shell — ssr:false)
+  - app/user/UserLayoutClient.jsx (added ✨ Insights to mobile dropdown nav)
+DB Changes: None (reads blogs_posts + news_posts, status=published)
+```
+
+---
+
+### 3.6 — Certificate Sharing Upgrade
+
+```
+[x] Add WhatsApp sharing + LinkedIn Add-to-Profile to MyCertificates
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - components/MyCertificates.jsx (added shareWhatsApp(), addToLinkedIn() with proper LinkedIn cert URL; updated Share row to 3 buttons)
+DB Changes: None
+Notes: CertificateClient already had full 5-platform share modal (LinkedIn, Twitter, WhatsApp, Facebook, Instagram) + PNG/PDF/Print
+```
+
+---
+
+### Phase 3 Completion Gate
+
+```
+[x] All Phase 3 code tasks complete
+[x] AI Content Engine admin page with quality dashboard + brand voice
+[x] Course notes migration SQL written
+[x] Resources sort dropdown added
+[x] Tools hub page created + linked from mobile nav
+[x] Insights hub page created + linked from mobile nav
+[x] Certificate sharing upgraded (WhatsApp + LinkedIn Add-to-Profile)
+[x] Admin nav updated with AI Engine section
+
+[ ] Run SQL migration in Supabase SQL Editor:
+    - 20260618000006_course_notes.sql
+
+[ ] Git commit: "Phase 3 complete — Content & Learning Revolution"
 ```
 
 ---

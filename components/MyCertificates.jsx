@@ -76,6 +76,25 @@ export default function MyCertificates() {
     window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, "_blank");
   };
 
+  const shareWhatsApp = (cert) => {
+    const url = `${window.location.origin}/verify/${cert.id}`;
+    const text = encodeURIComponent(`🎓 I just earned a verified certificate in *"${cert.course?.title}"* from *AIDLA*!\n\nVerify it here: ${url}`);
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  };
+
+  const addToLinkedIn = (cert) => {
+    const params = new URLSearchParams({
+      startTask:         "CERTIFICATION_NAME",
+      name:              cert.course?.title || "AIDLA Certificate",
+      organizationName:  "AIDLA",
+      issueYear:         new Date(cert.issued_at).getFullYear(),
+      issueMonth:        new Date(cert.issued_at).getMonth() + 1,
+      certUrl:           `${window.location.origin}/verify/${cert.id}`,
+      certId:            cert.certificate_number || cert.id,
+    });
+    window.open(`https://www.linkedin.com/profile/add?${params}`, "_blank");
+  };
+
   const downloadPDF = async (cert) => {
     setDownloading(cert.id);
     const { data: profile } = await supabase
@@ -298,14 +317,18 @@ export default function MyCertificates() {
                 </div>
 
                 {/* Share */}
-                <div style={{ display:"flex", gap:8, marginTop:8 }}>
-                  <button className="action-btn" onClick={() => shareLinkedIn(cert)}
-                    style={{ flex:1, padding:"8px 10px", background:"#EFF5FB", color:"#0077B5", border:"none", borderRadius:8, fontWeight:700, fontSize:11, cursor:"pointer", fontFamily:"inherit" }}>
-                    LinkedIn
+                <div style={{ display:"flex", gap:8, marginTop:8, flexWrap:"wrap" }}>
+                  <button className="action-btn" title="Add to LinkedIn Profile" onClick={() => addToLinkedIn(cert)}
+                    style={{ flex:1, padding:"8px 10px", background:"#EFF5FB", color:"#0077B5", border:"none", borderRadius:8, fontWeight:700, fontSize:11, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap" }}>
+                    🔗 LinkedIn
+                  </button>
+                  <button className="action-btn" onClick={() => shareWhatsApp(cert)}
+                    style={{ flex:1, padding:"8px 10px", background:"#F0FDF4", color:"#15803d", border:"none", borderRadius:8, fontWeight:700, fontSize:11, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap" }}>
+                    💬 WhatsApp
                   </button>
                   <button className="action-btn" onClick={() => shareTwitter(cert)}
-                    style={{ flex:1, padding:"8px 10px", background:"#EFF8FF", color:"#1DA1F2", border:"none", borderRadius:8, fontWeight:700, fontSize:11, cursor:"pointer", fontFamily:"inherit" }}>
-                    Twitter / X
+                    style={{ flex:1, padding:"8px 10px", background:"#f9fafb", color:"#374151", border:"none", borderRadius:8, fontWeight:700, fontSize:11, cursor:"pointer", fontFamily:"inherit", whiteSpace:"nowrap" }}>
+                    𝕏 Twitter
                   </button>
                 </div>
               </div>

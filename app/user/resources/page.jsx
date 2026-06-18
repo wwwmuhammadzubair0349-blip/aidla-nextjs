@@ -194,6 +194,7 @@ export default function ResourcesPage() {
   const [purchasedIds, setPurchasedIds] = useState(new Set());
   const [buyMsg,       setBuyMsg]       = useState("");
   const [stats,        setStats]        = useState({ total:0, free:0, paid:0 });
+  const [sort,         setSort]         = useState("newest");
 
   // My Uploads
   const [myUploads,      setMyUploads]      = useState([]);
@@ -244,7 +245,7 @@ export default function ResourcesPage() {
     setCoinsSpent((data||[]).reduce((s,r) => s + Number(r.coins_spent||0), 0));
   }, []);
 
-  const loadMaterials = useCallback(async (q=search, cat=category, p=page) => {
+  const loadMaterials = useCallback(async (q=search, cat=category, p=page, s=sort) => {
     setLoading(true);
     let query = supabase
       .from("study_materials")
@@ -252,7 +253,12 @@ export default function ResourcesPage() {
       .eq("status","published").eq("approval_status","approved").is("deleted_at",null);
     if (q)   query = query.ilike("title", `%${q}%`);
     if (cat) query = query.eq("category", cat);
-    const { data, error, count } = await query.order("created_at",{ ascending:false }).range((p-1)*LIMIT, p*LIMIT-1);
+    if (s === "free")  query = query.eq("is_free", true);
+    if (s === "paid")  query = query.eq("is_free", false);
+    const orderMap = { newest:"created_at", az:"title" };
+    const col = orderMap[s] || "created_at";
+    const asc = s === "az";
+    const { data, error, count } = await query.order(col,{ ascending:asc }).range((p-1)*LIMIT, p*LIMIT-1);
     if (!error && data) { setMaterials(data); setTotal(count||0); }
     setLoading(false);
   }, [search, category, page]);
@@ -306,10 +312,11 @@ export default function ResourcesPage() {
   const handleSearch = (val) => {
     setSearch(val);
     clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => { setPage(1); loadMaterials(val,category,1); }, 350);
+    debounceRef.current = setTimeout(() => { setPage(1); loadMaterials(val,category,1,sort); }, 350);
   };
 
-  const handleCategory = (cat) => { setCategory(cat); setPage(1); loadMaterials(search,cat,1); };
+  const handleCategory = (cat) => { setCategory(cat); setPage(1); loadMaterials(search,cat,1,sort); };
+  const handleSort = (s) => { setSort(s); setPage(1); loadMaterials(search,category,1,s); };
 
   const handleDownload = async (item) => {
     setDownloading(item.id);
@@ -559,8 +566,17 @@ export default function ResourcesPage() {
                 ))}
               </div>
 
-              <div style={{ fontSize:13, fontWeight:700, color:"#0f172a", marginBottom:10 }}>
-                {loading?"Loading…":`${total.toLocaleString()} Material${total!==1?"s":""}`}
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:10, flexWrap:"wrap", gap:8 }}>
+                <div style={{ fontSize:13, fontWeight:700, color:"#0f172a" }}>
+                  {loading?"Loading…":`${total.toLocaleString()} Material${total!==1?"s":""}`}
+                </div>
+                <select value={sort} onChange={e => handleSort(e.target.value)}
+                  style={{ padding:"5px 10px", border:"1px solid #e2e8f0", borderRadius:7, fontSize:12, fontWeight:700, color:"#475569", background:"#fff", cursor:"pointer", fontFamily:"inherit", outline:"none" }}>
+                  <option value="newest">Newest first</option>
+                  <option value="az">A → Z</option>
+                  <option value="free">Free only</option>
+                  <option value="paid">Paid only</option>
+                </select>
               </div>
 
               {loading ? (

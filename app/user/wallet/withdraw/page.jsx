@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
-const ADMIN_EMAIL = "zkafridi317@gmail.com";
+// Admin email removed — server-side only. Do not add NEXT_PUBLIC_ADMIN_EMAIL here.
 
 // ─── helpers ────────────────────────────────────────────────
 function fmt(n, decimals = 2) {
@@ -386,7 +386,13 @@ export default function WalletWithdraw() {
             </div>
           )}
 
-          <button style={{ ...styles.btn, opacity: (!canSubmit || submitting) ? 0.6 : 1, marginTop: 16 }}
+          {/* Legal compliance */}
+          <div style={{ background:"#fffbeb", border:"1px solid #fde68a", borderRadius:12, padding:"12px 14px", margin:"16px 0 0", fontSize:".78rem", color:"#92400e", lineHeight:1.5 }}>
+            <strong>Important:</strong> Withdrawals are processed manually within 3–5 business days.
+            By submitting, you confirm that your account activity is legitimate and you agree to our
+            Withdrawal Terms. Fraudulent requests will result in permanent account suspension.
+          </div>
+          <button style={{ ...styles.btn, opacity: (!canSubmit || submitting) ? 0.6 : 1, marginTop: 10 }}
             disabled={!canSubmit || submitting} onClick={onSubmit}>
             {submitting ? "Submitting…" : "Submit Withdrawal"}
           </button>

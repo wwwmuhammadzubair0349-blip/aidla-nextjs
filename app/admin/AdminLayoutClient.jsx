@@ -39,6 +39,13 @@ const NAV_GROUPS = [
     ],
   },
   {
+    title: "System",
+    items: [
+      ["/admin/roles",  "Admin Roles"],
+      ["/admin/errors", "Error Log"],
+    ],
+  },
+  {
     title: "Articles",
     items: [
       ["/admin/blogs", "Blogs"],

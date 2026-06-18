@@ -7,6 +7,18 @@ import Link from "next/link";
 export default function Error({ error, reset }) {
   useEffect(() => {
     console.error("[AIDLA Error]", error);
+    // Report to platform error log (best-effort, no await)
+    try {
+      fetch("/api/errors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: error?.message || String(error),
+          stack:   error?.stack   || "",
+          url:     typeof window !== "undefined" ? window.location.href : "",
+        }),
+      }).catch(() => {});
+    } catch {}
   }, [error]);
 
   return (

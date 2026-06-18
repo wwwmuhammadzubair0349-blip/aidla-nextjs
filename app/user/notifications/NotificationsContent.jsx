@@ -85,19 +85,37 @@ export default function NotificationsPage() {
   const [userId,  setUserId]  = useState(null);
 
   useEffect(() => {
+    let channel;
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
-      setUserId(session.user.id);
+      const uid = session.user.id;
+      setUserId(uid);
+
       const { data } = await supabase
         .from("notifications")
         .select("*")
-        .eq("user_id", session.user.id)
+        .eq("user_id", uid)
         .order("created_at", { ascending: false })
         .limit(60);
       setNotifs(data || []);
       setLoading(false);
+
+      // Realtime: prepend new notifications as they arrive
+      channel = supabase
+        .channel(`notifs:${uid}`)
+        .on("postgres_changes", {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${uid}`,
+        }, payload => {
+          setNotifs(prev => [payload.new, ...prev]);
+        })
+        .subscribe();
     })();
+
+    return () => { if (channel) supabase.removeChannel(channel); };
   }, []);
 
   const markRead = async (id) => {

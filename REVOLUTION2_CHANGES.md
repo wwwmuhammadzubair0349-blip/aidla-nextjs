@@ -60,6 +60,74 @@ Copy this template and fill every field:
 
 ---
 
+## 2026-06-18 — Phase 2 — Tasks 2.1–2.10: UX Revolution
+
+**Date:** 2026-06-18  
+**Phase:** Phase 2 — User Experience Revolution  
+**Task:** 2.1–2.10 — All Phase 2 tasks  
+**Status:** ✅ Complete
+
+### Before
+- Onboarding: placeholder single-step page
+- Dashboard: generic "Welcome to your AIDLA user area" header, no stats
+- Navigation: 4 tabs, no search/bell icons
+- No /user/learn, /user/community, /user/settings, /user/search, /user/notifications pages
+
+### After
+- 5-step onboarding wizard (goal → level → field → preview → name)
+- Dashboard hero: stats bar (streak 🔥, coins 🪙, rank 📈, courses 🎓) + continue-learning widget + today's quiz CTA
+- 5-tab navigation (Home/Learn/Compete/Community/Profile) + search + bell icons with unread count
+- /user/learn: merged learning hub (My Courses | Discover | Resources tabs) with shimmer loading and empty states
+- /user/courses: redirects to /user/learn
+- /user/community: merged forum + channels hub (lazy-loaded)
+- /user/settings: profile editing + security tab (avatar upload, password reset)
+- Profile page: added ⚙️ Settings link in header
+- /user/search: universal search across courses/blogs/news/FAQs/resources with debounce + filter pills
+- /user/notifications: grouped notification center with mark-as-read
+- Empty states: all new pages + verified existing components have them
+- Loading states: shimmer skeletons (learn hub, search) + spinners (settings, notifications)
+- notifications table created (20260618000005_notifications.sql)
+
+### Files Changed
+- `app/user/onboarding/page.jsx` — full 5-step wizard rewrite
+- `app/user/page.jsx` — DashHero component, hero stats data fetching, updated section links
+- `app/user/UserLayoutClient.jsx` — 5 tabs, search/bell icons, unreadCount query, Settings in mobile dropdown
+- `app/user/learn/page.jsx` — created: learning hub with 3 tabs
+- `app/user/courses/page.jsx` — redirect to /user/learn
+- `app/user/community/page.jsx` — created: forum + channels hub
+- `app/user/settings/page.jsx` — created: account settings (profile + security)
+- `app/user/profile/page.jsx` — added Settings link in header
+- `app/user/search/page.jsx` — created: universal search
+- `app/user/notifications/page.jsx` — created: notification center
+
+### Database Changes
+- `notifications` table: `20260618000005_notifications.sql` — user_id, type, title, body, link, is_read, created_at; RLS; 2 indexes
+
+### Edge Functions Changed
+None
+
+### Pages Changed
+- `/user` — new hero stats bar
+- `/user/onboarding` — full 5-step wizard
+- `/user/learn` — new learning hub (merged from courses)
+- `/user/courses` — now redirects to /user/learn
+- `/user/community` — new community hub (merged from forum + social)
+- `/user/settings` — new settings page
+- `/user/search` — new universal search
+- `/user/notifications` — new notification center
+
+### Reason
+Phase 2 — User Experience Revolution. Goal: convert the dashboard from a flat link-grid into a cohesive, engagement-driven experience with stats, streaks, and unified hubs.
+
+### Impact
+Users see their streak, coins, rank, and last course on first load. Navigation is streamlined to 5 tabs. Settings is properly separated from profile viewing. Universal search eliminates needing to know URL paths.
+
+### Rollback Notes
+- `git revert` the Phase 2 commit (single commit)
+- Drop notifications table: `DROP TABLE IF EXISTS public.notifications;`
+
+---
+
 ## 2026-06-18 — Phase 1 — Task 1.10: Branded Error Pages
 
 **Date:** 2026-06-18  

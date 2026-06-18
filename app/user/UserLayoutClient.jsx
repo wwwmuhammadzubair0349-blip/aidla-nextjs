@@ -12,10 +12,11 @@ import SkeletonDashboard from "@/components/SkeletonDashboard";
 const FULLSCREEN_ROUTES = ["/user/learning", "/user/aidla-ai", "/user/battle"];
 
 const TABS = [
-  { to: "/user",          label: "Home",     icon: "⚡" },
-  { to: "/user/forum",    label: "Forum",    icon: "💬" },
-  { to: "/user/aidla-ai", label: "AIDLA AI", icon: "🤖" },
-  { to: "/user/profile",  label: "Profile",  icon: "👤" },
+  { to: "/user",              label: "Home",      icon: "⚡" },
+  { to: "/user/learn",        label: "Learn",     icon: "📚" },
+  { to: "/user/test",         label: "Compete",   icon: "🏆" },
+  { to: "/user/community",    label: "Community", icon: "💬" },
+  { to: "/user/profile",      label: "Profile",   icon: "👤" },
 ];
 
 function LogoutIcon() {
@@ -102,7 +103,7 @@ const CSS = `
   background: rgba(241,245,249,.82);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
   width: 100%;
-  max-width: 520px;
+  max-width: 600px;
 }
 
 /* ── Right group (greeting + mobile dropdown + logout) ── */
@@ -178,6 +179,22 @@ const CSS = `
   pointer-events: none;
   font-size: 0.72rem;
   color: #64748b;
+}
+
+/* ── Icon buttons (search, bell, logout) ── */
+.ul-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0; width: 34px; height: 34px;
+  border-radius: 10px; border: 1.5px solid #e2e8f0;
+  background: rgba(248,250,252,.9); color: #475569;
+  cursor: pointer; transition: all 0.18s; position: relative; text-decoration: none;
+}
+.ul-icon-btn:hover { background: #f0f4ff; border-color: rgba(26,58,143,0.2); color: #1a3a8f; transform: translateY(-1px); }
+.ul-icon-btn.bell-active { color: #f59e0b; border-color: rgba(245,158,11,0.3); }
+.ul-notif-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #ef4444; border: 1.5px solid #fff;
 }
 
 /* ── Logout ── */
@@ -431,8 +448,9 @@ export default function UserLayoutClient({ children }) {
   const isFullscreen = FULLSCREEN_ROUTES.some(p => pathname.startsWith(p));
   const { user, loading, logout } = useAuth();
 
-  const [userName,   setUserName]   = useState("");
-  const [isVerified, setIsVerified] = useState(false);
+  const [userName,     setUserName]     = useState("");
+  const [isVerified,   setIsVerified]   = useState(false);
+  const [unreadCount,  setUnreadCount]  = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -444,10 +462,16 @@ export default function UserLayoutClient({ children }) {
         .single();
       if (data?.full_name) setUserName(data.full_name.split(" ")[0]);
       if (data?.is_verified) setIsVerified(true);
-      // Redirect new users to onboarding (only from exact /user route)
       if (data?.onboarding_completed === false && pathname === "/user") {
         router.replace("/user/onboarding");
       }
+      // Unread notifications count
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("is_read", false);
+      if (count) setUnreadCount(count);
     })();
   }, [user, pathname, router]);
 
@@ -541,8 +565,26 @@ export default function UserLayoutClient({ children }) {
                 {TABS.map(({ to, label, icon }) => (
                   <option key={to} value={to}>{icon} {label}</option>
                 ))}
+                <option value="/user/search">🔍 Search</option>
+                <option value="/user/notifications">🔔 Notifications</option>
+                <option value="/user/settings">⚙️ Settings</option>
               </select>
             </div>
+
+            {/* Search */}
+            <Link href="/user/search" className="ul-icon-btn" aria-label="Search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </Link>
+
+            {/* Notifications bell */}
+            <Link href="/user/notifications" className={`ul-icon-btn${unreadCount > 0 ? " bell-active" : ""}`} aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              {unreadCount > 0 && <span className="ul-notif-dot" aria-hidden="true" />}
+            </Link>
 
             <button onClick={logout} className="ul-logout" aria-label="Logout">
               <LogoutIcon />

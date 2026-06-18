@@ -1018,7 +1018,10 @@ export default function ProfilePage() {
           </aside>
 
           <section className="pf-main-panel">
-            <h1 className="pf-title">My Profile</h1>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+              <h1 className="pf-title" style={{ margin: 0 }}>My Profile</h1>
+              <a href="/user/settings" style={{ fontSize: "0.76rem", fontWeight: 700, color: "#64748b", textDecoration: "none", border: "1.5px solid #e2e8f0", borderRadius: 20, padding: "5px 12px", display: "inline-flex", alignItems: "center", gap: 4 }}>⚙️ Settings</a>
+            </div>
 
         {/* ══════════════ TAB: CERTIFICATES ══════════════ */}
         {activeTab === "certificates" && <MyCertificates />}

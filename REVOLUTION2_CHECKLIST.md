@@ -343,22 +343,169 @@ All items below must be true before Phase 2 begins:
 
 # PHASE 2 — User Experience Revolution
 
-**Status:** 🔒 Locked (begins after Phase 1 complete)
+**Status:** ✅ Complete  
+**Started:** 2026-06-18  
+**Completed:** 2026-06-18
+
+---
+
+### 2.1 — Complete Onboarding Flow
 
 ```
-[ ] 2.1 — Complete onboarding flow (/user/onboarding)
-[ ] 2.2 — Dashboard hero redesign
-[ ] 2.3 — Context-aware navigation (public / user / admin)
-[ ] 2.4 — Merge learning hub (/user/learn)
-[ ] 2.5 — Merge community hub (/user/community)
-[ ] 2.6 — Profile / settings split
-[ ] 2.7 — Universal search page (/search)
-[ ] 2.8 — Notifications center (/user/notifications)
-[ ] 2.9 — Empty states for all sections
-[ ] 2.10 — Loading states polish
+[x] Rewrite app/user/onboarding/page.jsx — full 5-step wizard
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/onboarding/page.jsx (5-step wizard: goal, level, field, preview, name; saves onboarding_completed)
+DB Changes: Uses onboarding columns from 20260618000002_onboarding_columns.sql
 ```
 
-*Detailed sub-tasks will be expanded when Phase 2 is unlocked.*
+---
+
+### 2.2 — Dashboard Hero Redesign
+
+```
+[x] Redesign app/user/page.jsx — hero stats bar + continue-learning widget
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/page.jsx (DashHero component: streak, coins, rank, courses count, continue-learning widget, today's quiz CTA)
+DB Changes: None (reads daily_quiz_attempts.streak_days, users_profiles.coins+rank, course_enrollments)
+```
+
+---
+
+### 2.3 — Context-Aware Navigation
+
+```
+[x] Update app/user/UserLayoutClient.jsx — 5 tabs, search/bell icons, unreadCount
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/UserLayoutClient.jsx (5 tabs: Home/Learn/Compete/Community/Profile; search icon; bell with unread dot; Settings in mobile dropdown)
+```
+
+---
+
+### 2.4 — Learning Hub
+
+```
+[x] Create app/user/learn/page.jsx — merged learning hub with tabs
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/learn/page.jsx (My Courses | Discover | Resources tabs; shimmer loading; empty states)
+  - app/user/courses/page.jsx (redirect → /user/learn)
+```
+
+---
+
+### 2.5 — Community Hub
+
+```
+[x] Create app/user/community/page.jsx — merged forum + channels
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/community/page.jsx (Forum + Channels tabs; lazy-loads forum/social pages)
+```
+
+---
+
+### 2.6 — Profile / Settings Split
+
+```
+[x] Create app/user/settings/page.jsx — account settings page
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/settings/page.jsx (Profile + Security tabs; avatar upload; profile fields; password reset)
+  - app/user/profile/page.jsx (added ⚙️ Settings link to profile header)
+```
+
+---
+
+### 2.7 — Universal Search
+
+```
+[x] Create app/user/search/page.jsx — universal search across all content
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/search/page.jsx (debounced search; filter pills: All/Courses/Articles/News/FAQs/Resources; shimmer loading; empty state; Ctrl+K shortcut)
+```
+
+---
+
+### 2.8 — Notifications Center
+
+```
+[x] Create supabase/migrations/20260618000005_notifications.sql
+[x] Create app/user/notifications/page.jsx — notification center
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/notifications/page.jsx (grouped by Today/Yesterday/This Week/Older; mark as read; unread dot; empty state)
+DB Changes: notifications table (20260618000005_notifications.sql)
+```
+
+---
+
+### 2.9 — Empty States
+
+```
+[x] EmptyState component already exists at components/ui/EmptyState.jsx
+[x] New Phase 2 pages all include proper empty states (search, notifications, learn hub, community hub)
+[x] MyCertificates already has empty state
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - components/ui/EmptyState.jsx (pre-existing; verified adequate)
+  - app/user/learn/page.jsx (has empty states per tab)
+  - app/user/search/page.jsx (has empty state for no results)
+  - app/user/notifications/page.jsx (has empty state for zero notifications)
+```
+
+---
+
+### 2.10 — Loading States Polish
+
+```
+[x] Shimmer skeleton screens applied in: learn hub (6 course skeletons), search (4 shimmer rows)
+[x] Spinner states in: settings, notifications, community, profile
+[x] Resources page has existing SkeletonRow; forum has fr-loading spinner
+Status: Completed
+Date: 2026-06-18
+Files Changed:
+  - app/user/learn/page.jsx (shimmer CSS + 6 skeleton cards)
+  - app/user/search/page.jsx (shimmer CSS + 4 skeleton rows)
+  - app/user/settings/page.jsx (spinner loading state)
+  - app/user/notifications/page.jsx (spinner loading state)
+```
+
+---
+
+### Phase 2 Completion Gate
+
+```
+[x] All Phase 2 code tasks complete
+[x] Onboarding wizard: 5 steps, saves to DB, onboarding_completed flag
+[x] Dashboard hero: stats bar (streak/coins/rank/courses), continue-learning widget
+[x] Navigation: 5 tabs, search/bell icons, settings in mobile dropdown
+[x] Learn hub: /user/learn with tabs; /user/courses redirects to it
+[x] Community hub: /user/community with forum + channels tabs
+[x] Settings page: /user/settings with profile edit + security tab
+[x] Universal search: /user/search with filter pills and debounce
+[x] Notifications: /user/notifications with grouping + mark-as-read
+[x] Empty states: all new pages + MyCertificates + existing pages
+[x] Loading states: shimmer skeletons + spinners across all data-fetching sections
+
+[ ] Run SQL migration in Supabase SQL Editor:
+    - 20260618000005_notifications.sql
+
+[ ] Git commit: "Phase 2 complete — UX Revolution"
+[ ] REVOLUTION2_CHANGES.md updated with all Phase 2 entries
+```
 
 ---
 

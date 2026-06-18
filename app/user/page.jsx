@@ -13,6 +13,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 /* ── Floating AIDLA Bot Bubble ── */
@@ -103,6 +104,103 @@ function RegCard({ title, subtitle, icon, to, iconClass, isSoon }) {
       </div>
       {isSoon && <span className="badge-soon">Soon</span>}
     </button>
+  );
+}
+
+/* ── Dashboard Hero Stats ── */
+const DH_CSS = `
+.dh-wrap { margin-bottom: 22px; }
+.dh-greeting { font-size: 1rem; font-weight: 800; color: #0f172a; margin-bottom: 12px; }
+.dh-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;
+}
+.dh-stat {
+  background: rgba(255,255,255,0.72); border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 14px; padding: 10px 8px; text-align: center;
+  box-shadow: 0 1px 4px rgba(15,23,42,0.05);
+}
+.dh-stat-val { font-size: 1.2rem; font-weight: 900; color: #0f172a; line-height: 1; margin-bottom: 3px; }
+.dh-stat-lbl { font-size: 0.62rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
+.dh-stat-icon { font-size: 1rem; margin-bottom: 2px; display: block; }
+.dh-widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dh-widget {
+  border-radius: 16px; padding: 13px 14px;
+  border: 1px solid rgba(255,255,255,0.8);
+  box-shadow: 0 1px 4px rgba(15,23,42,0.04);
+  cursor: pointer; text-decoration: none; display: block;
+}
+.dh-widget:hover { box-shadow: 0 4px 14px rgba(15,23,42,0.09); }
+.dh-widget-quiz { background: linear-gradient(135deg, rgba(254,243,199,0.8), rgba(253,230,138,0.5)); }
+.dh-widget-learn { background: linear-gradient(135deg, rgba(219,234,254,0.8), rgba(191,219,254,0.5)); }
+.dh-widget-tag { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #92400e; background: rgba(255,255,255,0.6); border-radius: 20px; padding: 2px 7px; display: inline-block; margin-bottom: 5px; }
+.dh-widget-learn .dh-widget-tag { color: #1e40af; }
+.dh-widget-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+.dh-widget-title { font-size: 0.82rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
+.dh-widget-sub { font-size: 0.7rem; color: #475569; line-height: 1.35; }
+.dh-progress { height: 4px; background: rgba(15,23,42,0.08); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+.dh-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #1a3a8f, #3b82f6); transition: width 0.4s ease; }
+@media(max-width:480px) { .dh-stats { grid-template-columns: repeat(2, 1fr); } .dh-widgets { grid-template-columns: 1fr; } }
+`;
+
+function DashHero({ name, streak, coins, rank, coursesCount, lastCourse }) {
+  const router = useRouter();
+  const streakLabel = streak >= 3 ? `🔥 ${streak}` : `${streak}`;
+  const firstName = name?.split(" ")[0] || "there";
+  return (
+    <>
+      <style>{DH_CSS}</style>
+      <div className="dh-wrap">
+        <div className="dh-greeting">Hi, {firstName}! 👋</div>
+        <div className="dh-stats">
+          <div className="dh-stat">
+            <span className="dh-stat-icon">🔥</span>
+            <div className="dh-stat-val">{streakLabel}</div>
+            <div className="dh-stat-lbl">Streak</div>
+          </div>
+          <div className="dh-stat">
+            <span className="dh-stat-icon">🪙</span>
+            <div className="dh-stat-val">{coins >= 1000 ? `${(coins/1000).toFixed(1)}k` : coins}</div>
+            <div className="dh-stat-lbl">Coins</div>
+          </div>
+          <div className="dh-stat">
+            <span className="dh-stat-icon">📈</span>
+            <div className="dh-stat-val" style={{ fontSize: "0.75rem" }}>{rank || "Learner"}</div>
+            <div className="dh-stat-lbl">Rank</div>
+          </div>
+          <div className="dh-stat">
+            <span className="dh-stat-icon">🎓</span>
+            <div className="dh-stat-val">{coursesCount}</div>
+            <div className="dh-stat-lbl">Courses</div>
+          </div>
+        </div>
+        <div className="dh-widgets">
+          <button className="dh-widget dh-widget-quiz" onClick={() => router.push("/user/dailyquizz")}>
+            <span className="dh-widget-tag">Today</span>
+            <span className="dh-widget-icon">❓</span>
+            <div className="dh-widget-title">Daily Quiz</div>
+            <div className="dh-widget-sub">+15 coins · 2 min</div>
+          </button>
+          {lastCourse ? (
+            <button className="dh-widget dh-widget-learn" onClick={() => router.push(`/user/course/${lastCourse.id}`)}>
+              <span className="dh-widget-tag">Continue</span>
+              <span className="dh-widget-icon">📚</span>
+              <div className="dh-widget-title" style={{ fontSize: "0.76rem" }}>{lastCourse.title?.slice(0, 28)}{lastCourse.title?.length > 28 ? "…" : ""}</div>
+              <div className="dh-widget-sub">{lastCourse.category || "Course"}</div>
+              {lastCourse.progress > 0 && (
+                <div className="dh-progress"><div className="dh-progress-fill" style={{ width: `${Math.min(100, lastCourse.progress)}%` }} /></div>
+              )}
+            </button>
+          ) : (
+            <button className="dh-widget dh-widget-learn" onClick={() => router.push("/user/learn")}>
+              <span className="dh-widget-tag">Browse</span>
+              <span className="dh-widget-icon">📚</span>
+              <div className="dh-widget-title">Start Learning</div>
+              <div className="dh-widget-sub">Explore free & paid courses</div>
+            </button>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -410,7 +508,7 @@ function GettingStartedBanner() {
             </div>
             <span className="gs-step-coins">+15 coins</span>
           </button>
-          <button className="gs-step" onClick={() => router.push("/user/courses")}>
+          <button className="gs-step" onClick={() => router.push("/user/learn")}>
             <span className="gs-step-icon">🎓</span>
             <div className="gs-step-text">
               <p className="gs-step-title">Enroll in a course</p>
@@ -442,32 +540,51 @@ function GettingStartedBanner() {
 
 export default function UserDashboard() {
   const router = useRouter();
-  const [isNewUser, setIsNewUser] = useState(false);
+  const [isNewUser,    setIsNewUser]    = useState(false);
+  const [heroData,     setHeroData]     = useState({ name: "", streak: 0, coins: 0, rank: "Learner", coursesCount: 0, lastCourse: null });
 
   useEffect(() => {
-    async function check() {
+    async function load() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
-        const { count } = await supabase
-          .from("course_enrollments")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", session.user.id);
-        setIsNewUser((count || 0) === 0);
+        const uid = session.user.id;
+
+        const [profileRes, enrollRes, streakRes] = await Promise.all([
+          supabase.from("users_profiles").select("full_name,coins,rank").eq("user_id", uid).single(),
+          supabase.from("course_enrollments").select("course_id,progress,enrolled_at,course_courses(id,title,category)").eq("user_id", uid).order("enrolled_at", { ascending: false }).limit(10),
+          supabase.from("daily_quiz_attempts").select("streak_days").eq("user_id", uid).order("attempt_date", { ascending: false }).limit(1).single(),
+        ]);
+
+        const profile      = profileRes.data || {};
+        const enrollments  = enrollRes.data  || [];
+        const latestStreak = streakRes.data?.streak_days || 0;
+
+        const lastEnrollment = enrollments[0];
+        const lastCourse = lastEnrollment?.course_courses
+          ? { ...lastEnrollment.course_courses, progress: lastEnrollment.progress || 0 }
+          : null;
+
+        setIsNewUser(enrollments.length === 0);
+        setHeroData({
+          name:         profile.full_name  || "",
+          streak:       latestStreak,
+          coins:        profile.coins      || 0,
+          rank:         profile.rank       || "Learner",
+          coursesCount: enrollments.length,
+          lastCourse,
+        });
       } catch (_) {}
     }
-    check();
+    load();
   }, []);
 
   return (
     <div className="dashboard">
       <style>{CSS}</style>
 
-      {/* Header */}
-      <header className="dash-header">
-        <h2 className="dash-title">Dashboard</h2>
-        <p className="dash-sub">Welcome to your AIDLA user area. Explore your features below.</p>
-      </header>
+      {/* Hero Stats Bar */}
+      <DashHero {...heroData} />
 
       {/* Getting Started — shown only for new users with no course enrollments */}
       {isNewUser && <GettingStartedBanner />}
@@ -483,10 +600,10 @@ export default function UserDashboard() {
           badgeColor="badge-blue"
         />
         <HeroCard
-          title="Courses"
+          title="Learn"
           subtitle="Paid & free specialized courses tailored for your growth."
           icon="🎓"
-          to="/user/courses"
+          to="/user/learn"
           accentClass="hero-emerald"
           badgeColor="badge-emerald"
         />
@@ -513,7 +630,7 @@ export default function UserDashboard() {
         <RegCard title="Lucky Draw"   subtitle="Scheduled draws & big prizes"       icon="🎟️" to="/user/lucky-draw"  iconClass="ic-amber" />
         <RegCard title="Lucky Wheel"  subtitle="Spin the wheel & win rewards"       icon="🎡" to="/user/lucky-wheel" iconClass="ic-amber" />
         <RegCard title="Shop"         subtitle="Spend AIDLA coins on rewards"       icon="🛍️" to="/user/shop"        iconClass="ic-amber" />
-        <RegCard title="Follow Us"    subtitle="Join our social media channels"     icon="📱" to="/user/social"      iconClass="ic-coral" />
+        <RegCard title="Community"    subtitle="Forum, channels & social"           icon="💬" to="/user/community"  iconClass="ic-coral" />
       </Section>
 
     </div>

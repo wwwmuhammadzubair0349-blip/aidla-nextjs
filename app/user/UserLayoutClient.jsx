@@ -567,6 +567,8 @@ export default function UserLayoutClient({ children }) {
                 ))}
                 <option value="/user/insights">✨ Insights</option>
                 <option value="/user/tools">🤖 Tools</option>
+                <option value="/user/achievements">🏆 Achievements</option>
+                <option value="/user/changelog">📋 Changelog</option>
                 <option value="/user/search">🔍 Search</option>
                 <option value="/user/notifications">🔔 Notifications</option>
                 <option value="/user/settings">⚙️ Settings</option>

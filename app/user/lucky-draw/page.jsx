@@ -426,6 +426,7 @@ export default function LuckyDraw() {
   const [participants,     setParticipants]     = useState([]);
   const [pendingAnnouncements, setPendingAnnouncements] = useState([]);
   const [activeAnnouncement,   setActiveAnnouncement]   = useState(null);
+  const [myBalance,            setMyBalance]            = useState(null);
   const lastRunRef      = useRef(0);
   const shownWinIdRef   = useRef(null);
   const lastDrawIdRef   = useRef(null);
@@ -494,6 +495,9 @@ export default function LuckyDraw() {
     } else {
       setIsRegistered(false); setRegisteredCount(0);
     }
+
+    const profRes = await supabase.from("users_profiles").select("total_aidla_coins").eq("user_id", uid).maybeSingle();
+    setMyBalance(profRes.data?.total_aidla_coins ?? null);
 
     const histRes = await supabase.from("luckydraw_results").select("id,draw_title,winner_name,prize_text,created_at,seq_no,announced_at").order("created_at", {ascending:false}).limit(50);
     setAllHistory(histRes.data || []);
@@ -668,6 +672,7 @@ export default function LuckyDraw() {
                 <span className="ldp-chip">{draw.entry_type==="paid"?`💰 Paid · ${Number(draw.entry_cost||0)} coins`:"🆓 Free Entry"}</span>
                 <span className="ldp-chip">🎯 {Number(draw.draws_count||1)} Draw{Number(draw.draws_count||1)>1?"s":""}</span>
                 <span className="ldp-chip">👥 {registeredCount} Registered</span>
+                {myBalance !== null && <span className="ldp-chip" style={{background:"#eff6ff",color:"#1e3a8a",fontWeight:800}}>🪙 Your balance: {Number(myBalance).toLocaleString()} coins</span>}
               </div>
             </div>
             <div className="ldp-actions">

@@ -537,10 +537,60 @@ function GettingStartedBanner() {
   );
 }
 
+const STREAK_CSS = `
+.ds-wrap{background:#fff;border:1px solid rgba(226,232,240,.7);border-radius:18px;padding:16px 20px;margin-bottom:18px;box-shadow:0 4px 16px rgba(15,23,42,.05);}
+.ds-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.ds-title{font-size:.82rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+.ds-days{display:flex;gap:6px;align-items:center;}
+.ds-day{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.ds-circle{width:28px;height:28px;border-radius:50%;background:#f1f5f9;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#94a3b8;transition:all .2s;}
+.ds-circle.done{background:linear-gradient(135deg,#f59e0b,#ef4444);border-color:transparent;color:#fff;}
+.ds-circle.today{box-shadow:0 0 0 3px rgba(245,158,11,.2);}
+.ds-day-lbl{font-size:.6rem;color:#94a3b8;font-weight:600;}
+.ds-stats{display:flex;gap:14px;margin-left:auto;flex-shrink:0;}
+.ds-stat{text-align:center;}
+.ds-stat-val{font-size:1.1rem;font-weight:900;color:#f59e0b;line-height:1;}
+.ds-stat-lbl{font-size:.65rem;color:#94a3b8;font-weight:600;}
+@media(max-width:480px){.ds-stats{margin-left:0;width:100%;justify-content:flex-start;}.ds-circle{width:24px;height:24px;font-size:.58rem;}}
+`;
+
+function DashStreak({ weekDays, currentStreak }) {
+  const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  return (
+    <div className="ds-wrap">
+      <style>{STREAK_CSS}</style>
+      <div className="ds-row">
+        <span className="ds-title">🔥 Weekly Streak</span>
+        <div className="ds-days">
+          {weekDays.map((d, i) => (
+            <div className="ds-day" key={i}>
+              <div className={`ds-circle${d.done ? " done" : ""}${d.isToday ? " today" : ""}`}>
+                {d.done ? "✓" : DAY_NAMES[d.dayOfWeek][0]}
+              </div>
+              <div className="ds-day-lbl">{DAY_NAMES[d.dayOfWeek]}</div>
+            </div>
+          ))}
+        </div>
+        <div className="ds-stats">
+          <div className="ds-stat">
+            <div className="ds-stat-val">{currentStreak}</div>
+            <div className="ds-stat-lbl">Current</div>
+          </div>
+          <div className="ds-stat">
+            <div className="ds-stat-val">{weekDays.filter(d => d.done).length}/7</div>
+            <div className="ds-stat-lbl">This Week</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function UserDashboard() {
   const router = useRouter();
   const [isNewUser,    setIsNewUser]    = useState(false);
   const [heroData,     setHeroData]     = useState({ name: "", streak: 0, coins: 0, rank: "Learner", coursesCount: 0, lastCourse: null });
+  const [weekDays,     setWeekDays]     = useState([]);
 
   useEffect(() => {
     async function load() {
@@ -549,15 +599,27 @@ export default function UserDashboard() {
         if (!session) return;
         const uid = session.user.id;
 
-        const [profileRes, enrollRes, streakRes] = await Promise.all([
+        const sevenDaysAgo = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
+        const [profileRes, enrollRes, streakRes, weekRes] = await Promise.all([
           supabase.from("users_profiles").select("full_name,coins,rank").eq("user_id", uid).single(),
           supabase.from("course_enrollments").select("course_id,progress,enrolled_at,course_courses(id,title,category)").eq("user_id", uid).order("enrolled_at", { ascending: false }).limit(10),
           supabase.from("daily_quiz_attempts").select("streak_days").eq("user_id", uid).order("attempt_date", { ascending: false }).limit(1).single(),
+          supabase.from("daily_quiz_attempts").select("attempt_date").eq("user_id", uid).gte("attempt_date", sevenDaysAgo),
         ]);
 
         const profile      = profileRes.data || {};
         const enrollments  = enrollRes.data  || [];
         const latestStreak = streakRes.data?.streak_days || 0;
+
+        const doneDates = new Set((weekRes.data || []).map(r => r.attempt_date?.slice(0, 10)));
+        const today = new Date();
+        const days = Array.from({ length: 7 }, (_, i) => {
+          const d = new Date(today);
+          d.setDate(today.getDate() - (6 - i));
+          const iso = d.toISOString().slice(0, 10);
+          return { dayOfWeek: d.getDay(), done: doneDates.has(iso), isToday: i === 6 };
+        });
+        setWeekDays(days);
 
         const lastEnrollment = enrollments[0];
         const lastCourse = lastEnrollment?.course_courses
@@ -584,6 +646,9 @@ export default function UserDashboard() {
 
       {/* Hero Stats Bar */}
       <DashHero {...heroData} />
+
+      {/* 7-Day Streak Widget */}
+      {weekDays.length > 0 && <DashStreak weekDays={weekDays} currentStreak={heroData.streak} />}
 
       {/* Getting Started — shown only for new users with no course enrollments */}
       {isNewUser && <GettingStartedBanner />}

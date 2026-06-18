@@ -57,6 +57,7 @@ export default function Blogs() {
   const [msg, setMsg]                   = useState("");
   const [msgType, setMsgType]           = useState("info");
   const [posts, setPosts]               = useState([]);
+  const [aiFilter, setAiFilter]         = useState(false); // true = show pending AI review only
   const [editing, setEditing]           = useState(null);
   const [title, setTitle]               = useState("");
   const [authorName, setAuthorName]     = useState("");
@@ -97,7 +98,7 @@ export default function Blogs() {
     setLoading(true); showMsg("", "info");
     const { data, error } = await supabase
       .from("blogs_posts")
-      .select("id,title,author_name,slug,status,excerpt,cover_image_url,published_at,scheduled_at,updated_at,created_at,deleted_at,view_count")
+      .select("id,title,author_name,slug,status,excerpt,cover_image_url,published_at,scheduled_at,updated_at,created_at,deleted_at,view_count,ai_generated,ai_quality_score,ai_review_status")
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
     if (error) { showMsg(error.message, "error"); setPosts([]); setLoading(false); return; }
@@ -137,6 +138,24 @@ export default function Blogs() {
     setTags((data.tags || []).join(", "));
     setActiveTab("content"); setShowComments(false);
     await loadComments(data.id);
+  };
+
+  const onApproveAI = async (row, e) => {
+    e.stopPropagation();
+    const { error } = await supabase.from("blogs_posts")
+      .update({ ai_review_status: "approved", status: "published" })
+      .eq("id", row.id);
+    if (error) return showMsg(error.message, "error");
+    await load(); showMsg("Post approved ✅", "success");
+  };
+
+  const onRejectAI = async (row, e) => {
+    e.stopPropagation();
+    const { error } = await supabase.from("blogs_posts")
+      .update({ ai_review_status: "flagged", status: "draft" })
+      .eq("id", row.id);
+    if (error) return showMsg(error.message, "error");
+    await load(); showMsg("Post flagged and set to draft", "info");
   };
 
   const onDelete = async (row) => {
@@ -332,7 +351,15 @@ export default function Blogs() {
         <div className="ab-card ab-list-card">
           <div className="ab-list-header">
             <span className="ab-card-title">All Posts <span className="ab-count">{posts.length}</span></span>
-            <div style={{ display:"flex", gap:6 }}>
+            <div style={{ display:"flex", gap:6, flexWrap:"wrap", alignItems:"center" }}>
+              {posts.filter(p => p.ai_review_status === "pending_review").length > 0 && (
+                <button
+                  onClick={() => setAiFilter(f => !f)}
+                  style={{ padding:"5px 10px", border:"none", borderRadius:8, background: aiFilter ? "#7c3aed" : "rgba(124,58,237,0.1)", color: aiFilter ? "#fff" : "#7c3aed", fontWeight:700, fontSize:"0.72rem", cursor:"pointer" }}
+                >
+                  🤖 AI Review ({posts.filter(p => p.ai_review_status === "pending_review").length})
+                </button>
+              )}
               <button onClick={load} className="ab-btn ab-btn-ghost" title="Refresh">↻</button>
               <button onClick={resetForm} className="ab-btn ab-btn-primary">+ New</button>
             </div>
@@ -344,10 +371,12 @@ export default function Blogs() {
             <div className="ab-empty">No blog posts yet.<br/>Create one!</div>
           ) : (
             <div className="ab-list-scroll">
-              {posts.map(p => {
+              {posts.filter(p => aiFilter ? p.ai_review_status === "pending_review" : true).map(p => {
                 const psc = statusColors[p.status] || statusColors.draft;
+                const isPending = p.ai_review_status === "pending_review";
                 return (
-                  <div key={p.id} className={`ab-post-item${editing?.id===p.id?" ab-post-item-active":""}`} onClick={() => onPickEdit(p)}>
+                  <div key={p.id} className={`ab-post-item${editing?.id===p.id?" ab-post-item-active":""}`} onClick={() => onPickEdit(p)}
+                    style={isPending ? { borderLeft: "3px solid #7c3aed" } : {}}>
                     {p.cover_image_url && <div className="ab-post-thumb"><img src={p.cover_image_url} alt=""/></div>}
                     <div className="ab-post-body">
                       <div className="ab-post-top">
@@ -355,6 +384,19 @@ export default function Blogs() {
                         <span className="ab-status-pill" style={{ background:psc.bg, color:psc.color, border:`1px solid ${psc.border}` }}>{p.status}</span>
                       </div>
                       <div className="ab-post-slug">/blogs/{p.slug}</div>
+                      {p.ai_generated && (
+                        <div style={{ display:"flex", gap:5, marginTop:3, alignItems:"center" }}>
+                          <span style={{ fontSize:9, fontWeight:800, padding:"1px 6px", borderRadius:10, background:"rgba(124,58,237,0.1)", color:"#7c3aed" }}>
+                            🤖 AI {p.ai_quality_score ? `${p.ai_quality_score}/100` : ""}
+                          </span>
+                          {isPending && (
+                            <>
+                              <button onClick={(e) => onApproveAI(p, e)} style={{ fontSize:9, fontWeight:800, padding:"1px 7px", borderRadius:8, border:"none", background:"#dcfce7", color:"#15803d", cursor:"pointer" }}>✓ Approve</button>
+                              <button onClick={(e) => onRejectAI(p, e)} style={{ fontSize:9, fontWeight:800, padding:"1px 7px", borderRadius:8, border:"none", background:"#fee2e2", color:"#b91c1c", cursor:"pointer" }}>✗ Reject</button>
+                            </>
+                          )}
+                        </div>
+                      )}
                       {p.status==="scheduled" && p.scheduled_at && (
                         <div style={{ fontSize:10, color:"#b45309", fontWeight:700, marginTop:3 }}>
                           🕐 {scheduledDisplay(p.scheduled_at)}

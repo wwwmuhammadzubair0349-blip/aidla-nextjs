@@ -55,9 +55,19 @@ function CallbackHandler() {
         }]);
       }
 
-      // Check if admin
-      const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "").toLowerCase();
-      const destination = userEmail === adminEmail ? "/admin" : next;
+      // Check if admin via server-side endpoint (never exposes admin email client-side)
+      let destination = next;
+      try {
+        const { data: { session: freshSession } } = await supabase.auth.getSession();
+        if (freshSession?.access_token) {
+          const res = await fetch("/api/admin/check-session", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${freshSession.access_token}` },
+          });
+          const { isAdmin } = await res.json();
+          if (isAdmin) destination = "/admin";
+        }
+      } catch (_) {}
 
       router.replace(destination);
     };

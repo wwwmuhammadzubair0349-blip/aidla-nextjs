@@ -74,6 +74,7 @@ export default function AdminNews() {
   const [posts, setPosts]               = useState([]);
   const [listSearch, setListSearch]     = useState("");
   const [listFilter, setListFilter]     = useState("all");
+  const [aiFilter, setAiFilter]         = useState(false);
   const [editing, setEditing]           = useState(null);
   const [mobileView, setMobileView]     = useState("list");
 
@@ -114,7 +115,7 @@ export default function AdminNews() {
     setLoading(true);
     const { data, error } = await supabase
       .from("news_posts")
-      .select("id,title,slug,status,excerpt,cover_image_url,published_at,scheduled_at,updated_at,created_at,view_count,tags")
+      .select("id,title,slug,status,excerpt,cover_image_url,published_at,scheduled_at,updated_at,created_at,view_count,tags,ai_generated,ai_quality_score,ai_review_status")
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
     if (error) { showMsg(error.message, "error"); setPosts([]); } else setPosts(data || []);
@@ -206,6 +207,17 @@ export default function AdminNews() {
     await load(); showMsg(editing ? "Updated ✅" : "Created ✅", "success"); resetForm();
   };
 
+  const onApproveAI = async (row, e) => {
+    e.stopPropagation();
+    await supabase.from("news_posts").update({ ai_review_status: "approved", status: "published" }).eq("id", row.id);
+    await load(); showMsg("Article approved ✅", "success");
+  };
+  const onRejectAI = async (row, e) => {
+    e.stopPropagation();
+    await supabase.from("news_posts").update({ ai_review_status: "flagged", status: "draft" }).eq("id", row.id);
+    await load(); showMsg("Article flagged and set to draft", "info");
+  };
+
   const onDelete = async (row) => {
     if (!confirm("Delete this article?")) return;
     const { data, error } = await supabase.rpc("news_admin_delete_post", { p_id: row.id });
@@ -284,13 +296,14 @@ export default function AdminNews() {
 
   const filteredPosts = useMemo(() => {
     let r = posts;
-    if (listFilter !== "all") r = r.filter(p => p.status === listFilter);
+    if (aiFilter) r = r.filter(p => p.ai_review_status === "pending_review");
+    else if (listFilter !== "all") r = r.filter(p => p.status === listFilter);
     if (listSearch.trim()) {
       const q = listSearch.toLowerCase();
       r = r.filter(p => p.title?.toLowerCase().includes(q) || p.slug?.toLowerCase().includes(q));
     }
     return r;
-  }, [posts, listFilter, listSearch]);
+  }, [posts, listFilter, listSearch, aiFilter]);
 
   const stats = useMemo(() => ({
     total: posts.length,
@@ -356,7 +369,13 @@ export default function AdminNews() {
 
           <div className="an-list-header">
             <span className="an-card-title">Articles <span className="an-count">{filteredPosts.length}</span></span>
-            <div style={{display:"flex", gap:6}}>
+            <div style={{display:"flex", gap:6, flexWrap:"wrap", alignItems:"center"}}>
+              {posts.filter(p => p.ai_review_status === "pending_review").length > 0 && (
+                <button onClick={() => setAiFilter(f => !f)}
+                  style={{ padding:"5px 10px", border:"none", borderRadius:8, background: aiFilter ? "#7c3aed" : "rgba(124,58,237,0.1)", color: aiFilter ? "#fff" : "#7c3aed", fontWeight:700, fontSize:"0.72rem", cursor:"pointer" }}>
+                  🤖 AI Review ({posts.filter(p => p.ai_review_status === "pending_review").length})
+                </button>
+              )}
               <button onClick={load} className="an-btn an-btn-ghost" title="Refresh">↻</button>
               <button onClick={() => { resetForm(); setMobileView("editor"); }} className="an-btn an-btn-primary">+ New</button>
             </div>
@@ -372,8 +391,10 @@ export default function AdminNews() {
                 const psc = statusColors[p.status] || statusColors.draft;
                 const pCat = (p.tags || []).find(t => CATEGORIES.map(c => c.value).filter(Boolean).includes(t));
                 const pBreaking = (p.tags || []).includes("breaking");
+                const isPending = p.ai_review_status === "pending_review";
                 return (
-                  <div key={p.id} className={`an-post-item${editing?.id===p.id?" an-post-item-active":""}`} onClick={() => onPickEdit(p)}>
+                  <div key={p.id} className={`an-post-item${editing?.id===p.id?" an-post-item-active":""}`} onClick={() => onPickEdit(p)}
+                    style={isPending ? { borderLeft: "3px solid #7c3aed" } : {}}>
                     {p.cover_image_url && <div className="an-post-thumb"><img src={p.cover_image_url} alt=""/></div>}
                     <div className="an-post-body">
                       <div className="an-post-top">
@@ -389,6 +410,19 @@ export default function AdminNews() {
                       <div className="an-post-slug">/news/{p.slug}</div>
                       {p.status==="scheduled" && p.scheduled_at && <div style={{fontSize:10, color:"#b45309", fontWeight:700, marginTop:3}}>🕐 {scheduledDisplay(p.scheduled_at)}</div>}
                       {(p.view_count||0)>0 && <div style={{fontSize:10, color:"#94a3b8", marginTop:2}}>👁 {p.view_count.toLocaleString()} views</div>}
+                      {p.ai_generated && (
+                        <div style={{ display:"flex", gap:5, marginTop:3, alignItems:"center" }}>
+                          <span style={{ fontSize:9, fontWeight:800, padding:"1px 6px", borderRadius:10, background:"rgba(124,58,237,0.1)", color:"#7c3aed" }}>
+                            🤖 AI {p.ai_quality_score ? `${p.ai_quality_score}/100` : ""}
+                          </span>
+                          {isPending && (
+                            <>
+                              <button onClick={(e) => onApproveAI(p, e)} style={{ fontSize:9, fontWeight:800, padding:"1px 7px", borderRadius:8, border:"none", background:"#dcfce7", color:"#15803d", cursor:"pointer" }}>✓ Approve</button>
+                              <button onClick={(e) => onRejectAI(p, e)} style={{ fontSize:9, fontWeight:800, padding:"1px 7px", borderRadius:8, border:"none", background:"#fee2e2", color:"#b91c1c", cursor:"pointer" }}>✗ Reject</button>
+                            </>
+                          )}
+                        </div>
+                      )}
                       {p.status==="draft" && (
                         <button onClick={e => { e.stopPropagation(); onQuickStatus(p, "published"); }}
                           style={{marginTop:6, padding:"3px 10px", border:"1px solid rgba(22,163,74,0.3)", borderRadius:20, background:"rgba(22,163,74,0.07)", color:"#15803d", fontSize:"0.62rem", fontWeight:800, cursor:"pointer"}}>

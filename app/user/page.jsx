@@ -13,6 +13,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 /* ── Floating AIDLA Bot Bubble ── */
 function BotBubble({ onClick, onClose, isOpen }) {
@@ -340,8 +341,123 @@ const CSS = `
   }
 `;
 
+const GETTING_STARTED_CSS = `
+.gs-banner {
+  background: linear-gradient(135deg,rgba(219,234,254,0.7),rgba(237,233,254,0.5));
+  border: 1px solid rgba(147,197,253,0.4);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 22px;
+}
+.gs-heading {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin: 0 0 6px;
+}
+.gs-sub {
+  font-size: 0.78rem;
+  color: #475569;
+  font-weight: 500;
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+.gs-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gs-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  transition: box-shadow 0.15s;
+}
+.gs-step:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
+.gs-step-icon { font-size: 1.1rem; flex-shrink: 0; }
+.gs-step-text {}
+.gs-step-title { font-size: 0.8rem; font-weight: 800; color: #0f172a; margin: 0 0 1px; }
+.gs-step-desc  { font-size: 0.7rem; color: #64748b; margin: 0; }
+.gs-step-coins { margin-left: auto; font-size: 0.72rem; font-weight: 700; color: #d97706; flex-shrink: 0; }
+@media (min-width: 480px) {
+  .gs-steps { flex-direction: row; flex-wrap: wrap; }
+  .gs-step   { flex: 1 1 calc(50% - 4px); }
+}
+`;
+
+function GettingStartedBanner() {
+  const router = useRouter();
+  return (
+    <>
+      <style>{GETTING_STARTED_CSS}</style>
+      <div className="gs-banner">
+        <p className="gs-heading">👋 Welcome to AIDLA — here&apos;s how to get started</p>
+        <p className="gs-sub">Complete these 3 actions to earn your first coins and unlock your full profile.</p>
+        <div className="gs-steps">
+          <button className="gs-step" onClick={() => router.push("/user/dailyquizz")}>
+            <span className="gs-step-icon">❓</span>
+            <div className="gs-step-text">
+              <p className="gs-step-title">Take today&apos;s quiz</p>
+              <p className="gs-step-desc">2 minutes · Knowledge challenge</p>
+            </div>
+            <span className="gs-step-coins">+15 coins</span>
+          </button>
+          <button className="gs-step" onClick={() => router.push("/user/courses")}>
+            <span className="gs-step-icon">🎓</span>
+            <div className="gs-step-text">
+              <p className="gs-step-title">Enroll in a course</p>
+              <p className="gs-step-desc">Free · Start learning today</p>
+            </div>
+            <span className="gs-step-coins">+10/lesson</span>
+          </button>
+          <button className="gs-step" onClick={() => router.push("/user/cv-maker")}>
+            <span className="gs-step-icon">📝</span>
+            <div className="gs-step-text">
+              <p className="gs-step-title">Build your CV</p>
+              <p className="gs-step-desc">AI-powered · 5 minutes</p>
+            </div>
+            <span className="gs-step-coins">Free</span>
+          </button>
+          <button className="gs-step" onClick={() => router.push("/user/battle")}>
+            <span className="gs-step-icon">⚔️</span>
+            <div className="gs-step-text">
+              <p className="gs-step-title">Try a battle</p>
+              <p className="gs-step-desc">1v1 quiz · Win coins</p>
+            </div>
+            <span className="gs-step-coins">+25 win</span>
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 export default function UserDashboard() {
   const router = useRouter();
+  const [isNewUser, setIsNewUser] = useState(false);
+
+  useEffect(() => {
+    async function check() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const { count } = await supabase
+          .from("course_enrollments")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", session.user.id);
+        setIsNewUser((count || 0) === 0);
+      } catch (_) {}
+    }
+    check();
+  }, []);
 
   return (
     <div className="dashboard">
@@ -352,6 +468,9 @@ export default function UserDashboard() {
         <h2 className="dash-title">Dashboard</h2>
         <p className="dash-sub">Welcome to your AIDLA user area. Explore your features below.</p>
       </header>
+
+      {/* Getting Started — shown only for new users with no course enrollments */}
+      {isNewUser && <GettingStartedBanner />}
 
       {/* Hero Row */}
       <div className="hero-row">

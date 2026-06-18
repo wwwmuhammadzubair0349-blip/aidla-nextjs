@@ -429,6 +429,7 @@ export default function AdminFAQs() {
     scheduled: faqs.filter(f => f.status === "scheduled").length,
     draft:     faqs.filter(f => f.status === "draft").length,
     pending:   questions.filter(q => q.status === "pending").length,
+    aiPending: faqs.filter(f => f.ai_review_status === "pending_review").length,
   };
 
   /* ── Filtered FAQs ── */
@@ -596,6 +597,7 @@ export default function AdminFAQs() {
             { n: stats.scheduled, l: "Scheduled",   c:"#d97706" },
             { n: stats.draft,     l: "Drafts",      c:"#64748b" },
             { n: stats.pending,   l: "Pending Qs",  c:"#1a3a8f" },
+            { n: stats.aiPending, l: "AI Review",   c:"#7c3aed" },
           ].map((s,i) => (
             <div key={i} style={S.statCard}>
               <span style={{ ...S.statNum, color: s.c }}>{s.n}</span>
@@ -731,6 +733,7 @@ export default function AdminFAQs() {
                         <span style={{ ...S.badge, background:"#f0f4ff", color:"#1a3a8f" }}>{catLabel(f.category)}</span>
                         {!f.is_visible && <span style={{ ...S.badge, background:"#fee2e2", color:"#b91c1c" }}>👁 Hidden</span>}
                         {f.source_question_id && <span style={{ ...S.badge, background:"#f0fdf4", color:"#166534" }}>💬 From user</span>}
+                        {f.ai_generated && <span style={{ ...S.badge, background:"rgba(124,58,237,0.1)", color:"#7c3aed" }}>🤖 AI {f.ai_quality_score ? `${f.ai_quality_score}/100` : "generated"}</span>}
                       </div>
                       {/* Slug display */}
                       {f.slug && (

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 import FloatingAssistant from "@/components/FloatingAssistant";
+import SkeletonDashboard from "@/components/SkeletonDashboard";
 
 const FULLSCREEN_ROUTES = ["/user/learning", "/user/aidla-ai", "/user/battle"];
 
@@ -438,13 +439,17 @@ export default function UserLayoutClient({ children }) {
     (async () => {
       const { data } = await supabase
         .from("users_profiles")
-        .select("full_name, is_verified")
+        .select("full_name, is_verified, onboarding_completed")
         .eq("user_id", user.id)
         .single();
       if (data?.full_name) setUserName(data.full_name.split(" ")[0]);
       if (data?.is_verified) setIsVerified(true);
+      // Redirect new users to onboarding (only from exact /user route)
+      if (data?.onboarding_completed === false && pathname === "/user") {
+        router.replace("/user/onboarding");
+      }
     })();
-  }, [user]);
+  }, [user, pathname, router]);
 
   const hour = new Date().getHours();
   const greetWord =
@@ -460,9 +465,18 @@ export default function UserLayoutClient({ children }) {
     return (
       <>
         <style>{CSS}</style>
-        <div className="ul-loading" role="status" aria-label="Loading AIDLA">
-          <div className="ul-spinner" aria-hidden="true" />
-          <span className="ul-loading-text">AIDLA</span>
+        {/* Branded header stays visible during auth — no blank flash */}
+        <div className="ul-wrap">
+          <header className="ul-header">
+            <div className="ul-inner">
+              <span className="ul-brand" aria-label="AIDLA">AID<span>L</span>A</span>
+            </div>
+          </header>
+          <main className="ul-main">
+            <div className="ul-outlet">
+              <SkeletonDashboard />
+            </div>
+          </main>
         </div>
       </>
     );

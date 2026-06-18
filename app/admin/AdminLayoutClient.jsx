@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import SkeletonAdmin from "@/components/SkeletonAdmin";
 
 const NAV_GROUPS = [
   {
@@ -137,12 +138,7 @@ export default function AdminLayout({ children }) {
   const title = active?.[1] || "Dashboard";
 
   if (loading) {
-    return (
-      <>
-        <style>{CSS}</style>
-        <div className="auth-loading"><div className="auth-spinner" /></div>
-      </>
-    );
+    return <SkeletonAdmin />;
   }
 
   return (

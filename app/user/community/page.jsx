@@ -6,8 +6,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 // Lazy-load the full forum and social pages to keep initial bundle small
-const ForumContent  = dynamic(() => import("@/app/user/forum/page"),  { ssr: false, loading: () => <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>Loading forum…</div> });
-const SocialContent = dynamic(() => import("@/app/user/social/page"), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>Loading channels…</div> });
+const ForumContent  = dynamic(() => import("@/app/user/forum/ForumContent"),  { ssr: false, loading: () => <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>Loading forum…</div> });
+const SocialContent = dynamic(() => import("@/app/user/social/SocialContent"), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>Loading channels…</div> });
 
 const CSS = `
 .cm-wrap { font-family: 'DM Sans', system-ui, sans-serif; min-height: 40vh; }

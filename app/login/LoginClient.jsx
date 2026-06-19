@@ -350,7 +350,6 @@ export default function LoginClient() {
   const prefillEmail = searchParams.get("email") || "";
   const redirectTo   = searchParams.get("redirect") || null;
   const oauthError   = searchParams.get("error");
-  const adminEmail   = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "").toLowerCase();
 
   const [email,           setEmail]           = useState(prefillEmail);
   const [password,        setPassword]        = useState("");
@@ -420,8 +419,18 @@ export default function LoginClient() {
       if (error) throw error;
       if (rememberMe) localStorage.setItem("aidla_remembered_email", email);
       else            localStorage.removeItem("aidla_remembered_email");
-      const userEmail = (data.user?.email || "").toLowerCase();
-      const isAdmin   = userEmail === adminEmail;
+
+      // Check admin via server-side endpoint — never uses client-side env var
+      let isAdmin = false;
+      try {
+        const res = await fetch("/api/admin/check-session", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${data.session.access_token}` },
+        });
+        const json = await res.json();
+        isAdmin = json.isAdmin === true;
+      } catch (_) {}
+
       let destination;
       if (redirectTo) {
         destination = (redirectTo.startsWith("/admin") && !isAdmin) ? "/user" : redirectTo;

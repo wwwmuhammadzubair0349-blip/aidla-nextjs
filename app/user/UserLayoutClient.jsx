@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import FloatingAssistant from "@/components/FloatingAssistant";
 import SkeletonDashboard from "@/components/SkeletonDashboard";
 
-const FULLSCREEN_ROUTES = ["/user/learning", "/user/aidla-ai", "/user/battle"];
+const FULLSCREEN_ROUTES = ["/user/aidla-ai", "/user/battle"];
 
 const TABS = [
   { to: "/user",              label: "Home",      icon: "⚡" },

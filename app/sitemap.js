@@ -189,24 +189,6 @@ export default async function sitemap() {
       lastModified: now,
     },
     {
-      url: `${base}/tools/pdf/image-to-pdf`,
-      priority: 0.75,
-      changefreq: "monthly",
-      lastModified: now,
-    },
-    {
-      url: `${base}/tools/pdf/word-to-pdf`,
-      priority: 0.75,
-      changefreq: "monthly",
-      lastModified: now,
-    },
-    {
-      url: `${base}/tools/image/jpg-to-png`,
-      priority: 0.75,
-      changefreq: "monthly",
-      lastModified: now,
-    },
-    {
       url: `${base}/courses`,
       priority: 0.9,
       changefreq: "daily",

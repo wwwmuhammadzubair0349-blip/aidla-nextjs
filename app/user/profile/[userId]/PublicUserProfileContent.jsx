@@ -62,7 +62,7 @@ export default function PublicUserProfile() {
         @media(min-width:640px){.pub-grid{grid-template-columns:repeat(2,1fr)}.pub-card{padding:34px 24px}}
         @media(max-width:360px){.pub-card{padding:24px 12px}}
       `}</style>
-      <Link href="/user/forum" className="pub-back">← Back to Forum</Link>
+      <Link href="/user/community?tab=forum" className="pub-back">← Back to Forum</Link>
       <section className="pub-card">
         <div className="pub-avatar">
           {profile.avatar_url ? <Image src={profile.avatar_url} alt={profile.full_name || "User"} width={104} height={104} unoptimized /> : initials}

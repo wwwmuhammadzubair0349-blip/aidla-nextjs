@@ -957,9 +957,9 @@ export default function CoverLetterClient() {
             <p className="cvm-suggest-label">Need something else?</p>
             <nav className="cvm-suggest" aria-label="Related tools">
               <Link href="/tools/career/cv-maker"><span aria-hidden="true">📄</span> CV Maker</Link>
-              <Link href="/tools/ai/cover-letter"><span aria-hidden="true">🤖</span> AI Cover Letter</Link>
-              <Link href="/tools/pdf/word-to-pdf"><span aria-hidden="true">📝</span> Word → PDF</Link>
-              <Link href="/tools/image/jpg-to-png"><span aria-hidden="true">🔄</span> JPG → PNG</Link>
+              <Link href="/tools/ai/email-writer"><span aria-hidden="true">✉️</span> Email Writer</Link>
+              <Link href="/tools/ai/linkedin-bio"><span aria-hidden="true">💼</span> LinkedIn Bio</Link>
+              <Link href="/tools/ai/interview-prep"><span aria-hidden="true">🎯</span> Interview Prep</Link>
             </nav>
             <div className="cvm-cta">
               <div>

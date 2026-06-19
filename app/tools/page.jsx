@@ -51,9 +51,6 @@ const pageSchema = buildGraph(
       { "@type": "ListItem", position: 7,  name: "Cover Letter Maker",   url: "https://www.aidla.online/tools/career/cover-letter-maker"      },
       { "@type": "ListItem", position: 8,  name: "CGPA Calculator",      url: "https://www.aidla.online/tools/education/cgpa-calculator"      },
       { "@type": "ListItem", position: 9,  name: "Salary Calculator",    url: "https://www.aidla.online/tools/finance/salary-calculator"      },
-      { "@type": "ListItem", position: 10, name: "Image to PDF",         url: "https://www.aidla.online/tools/pdf/image-to-pdf"               },
-      { "@type": "ListItem", position: 11, name: "Word to PDF",          url: "https://www.aidla.online/tools/pdf/word-to-pdf"                },
-      { "@type": "ListItem", position: 12, name: "JPG to PNG",           url: "https://www.aidla.online/tools/image/jpg-to-png"               },
     ],
   },
 );

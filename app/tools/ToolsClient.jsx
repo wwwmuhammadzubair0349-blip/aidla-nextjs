@@ -113,51 +113,6 @@ const TOOLS = [
       },
     ],
   },
-  {
-    category: "PDF & Image",
-    slug: "utilities",
-    icon: "📄",
-    gradient: "135deg, #7c3aed 0%, #d946ef 100%",
-    color: "#7c3aed",
-    items: [
-      {
-        href: "/tools/pdf/image-to-pdf",
-        icon: "🖼️",
-        label: "Image to PDF",
-        desc: "Convert images to high-quality PDFs instantly. No sign-up, no limits.",
-        badge: "Free",
-        badgeColor: "#7c3aed",
-        tags: ["Instant", "No Login"],
-      },
-      {
-        href: "/tools/pdf/word-to-pdf",
-        icon: "📄",
-        label: "Word to PDF",
-        desc: "Convert Word documents to PDF with one click. Preserves formatting and layout perfectly.",
-        badge: "Free",
-        badgeColor: "#7c3aed",
-        tags: ["One Click", "Formatting"],
-      },
-      {
-        href: "/tools/image/jpg-to-png",
-        icon: "🎨",
-        label: "JPG to PNG",
-        desc: "Convert JPG images to high-quality PNGs instantly. Transparency supported.",
-        badge: "Free",
-        badgeColor: "#7c3aed",
-        tags: ["High Quality", "Transparent"],
-      },
-      {
-        href: "/tools/image/html-to-png",
-        icon: "🖼️",
-        label: "HTML to PNG / JPG",
-        desc: "Convert HTML to pixel-perfect images. Facebook, Instagram, LinkedIn, Twitter/X presets. Download PNG or JPG.",
-        badge: "New",
-        badgeColor: "#059669",
-        tags: ["Social Media", "Ad Sizes"],
-      },
-    ],
-  },
 ];
 
 const FILTERS = [

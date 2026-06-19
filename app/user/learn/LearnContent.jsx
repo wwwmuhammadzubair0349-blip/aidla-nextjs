@@ -161,7 +161,7 @@ export default function LearnPage() {
       <style>{CSS}</style>
 
       {/* AI Tutor banner */}
-      <div className="lh-ai-banner" onClick={() => router.push("/user/learning")} role="button" tabIndex={0}>
+      <div className="lh-ai-banner" onClick={() => router.push("/user/aidla-ai")} role="button" tabIndex={0}>
         <span style={{ fontSize: "1.6rem" }}>🤖</span>
         <div>
           <div className="lh-ai-title">AI Learning Assistant</div>

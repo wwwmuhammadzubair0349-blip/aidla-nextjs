@@ -228,7 +228,7 @@ export default function CertificateClient() {
       <div style={{ fontSize:48 }}>❌</div>
       <h2 style={{ color:'#B91C1C' }}>Invalid Certificate</h2>
       <p style={{ color:C.muted }}>{error}</p>
-      <Link href="/user/courses" style={{ background:C.blue,color:C.white,padding:'10px 22px',borderRadius:8,textDecoration:'none',fontWeight:700 }}>← Back to Courses</Link>
+      <Link href="/user/learn" style={{ background:C.blue,color:C.white,padding:'10px 22px',borderRadius:8,textDecoration:'none',fontWeight:700 }}>← Back to Courses</Link>
     </div>
   );
 
@@ -284,7 +284,7 @@ export default function CertificateClient() {
       <div className="cert-page">
         <div className="toolbar">
           {/* ← Link from next/link replaces Link from react-router-dom */}
-          <Link href="/user/courses" className="tb-el tb-back">← Dashboard</Link>
+          <Link href="/user/learn" className="tb-el tb-back">← Dashboard</Link>
           <div className="tb-div"/>
           <div className="btn-group">
             <button className="tb-exp" onClick={downloadPNG} disabled={!!exporting}>{exporting==='png'?<><Spin/> PNG…</>:'⬇ PNG'}</button>

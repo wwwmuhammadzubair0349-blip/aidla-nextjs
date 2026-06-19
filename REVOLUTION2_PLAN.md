@@ -794,12 +794,27 @@ Battle mode and live quiz features use Supabase Realtime. Under load:
 
 ## Progress Tracker
 
-| Phase | Tasks | Completed | Status |
-|---|---|---|---|
-| Phase 1 | 10 | 0 | ⏳ Pending |
-| Phase 2 | 10 | 0 | 🔒 Locked |
-| Phase 3 | 6 | 0 | 🔒 Locked |
-| Phase 4 | 7 | 0 | 🔒 Locked |
-| Phase 5 | 6 | 0 | 🔒 Locked |
+**Last Updated:** 2026-06-20 — Reality audit. Phases marked complete in earlier checklist were NOT fully complete. Corrected below.
 
-*Update this table as phases complete.*
+| Phase | Tasks | Code Done | DB Applied | Edge Deployed | Real Status |
+|---|---|---|---|---|---|
+| Phase 1 | 10 | 10/10 | 0/4 migrations | 0/3 functions | ⚠️ Partial |
+| Phase 2 | 10 | 8/10 | 0/1 migration | N/A | ⚠️ Partial |
+| Phase 3 | 6 | 4/6 | 0/1 migration | N/A | ⚠️ Partial |
+| Phase 4 | 7 | 4/7 | 0 | N/A | ⚠️ Partial |
+| Phase 5 | 6 | 6/6 | 0/2 migrations | N/A | ⚠️ Partial |
+
+### What "Partial" Means Per Phase
+- **Phase 1:** All code complete. 4 SQL migrations and 3 edge functions not deployed. Admin AI review queue, onboarding wizard, and auto-content safety metadata are broken in production.
+- **Phase 2:** Core UX live. Notifications page crashes (no DB table). /user/social and /user/forum still standalone (not redirected to community hub).
+- **Phase 3:** Core pages live. content_engine_settings/log tables not created. Brand voice edge function integration not done. Course notes can't save (migration not run).
+- **Phase 4:** Achievements page is UI-only with hardcoded logic (no achievement DB). Streak is visual-only. Coin economy NOT redesigned. Shareable profile NOT built. Lucky draw/wheel NOT merit-gated.
+- **Phase 5:** All code committed. Platform_settings, content_likes, content_comments, platform_errors tables not created (migration not run). Error logging crashes. Realtime notifications crash (notifications table not created).
+
+### Critical Blockers (Must Fix Before Any New Work)
+1. Run 8 pending SQL migrations (Supabase SQL Editor)
+2. Deploy 3 edge functions
+3. Fix /user/social and /user/forum redirects
+4. Verify core features end-to-end in browser
+
+*See REVOLUTION2_CHECKLIST.md — "Before Phase 4 Gate" section for complete prerequisite list.*

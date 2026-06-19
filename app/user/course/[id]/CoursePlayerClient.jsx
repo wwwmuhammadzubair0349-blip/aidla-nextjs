@@ -387,7 +387,7 @@ export default function CoursePlayerClient() {
     if (!c) { alert('Course not found'); setLoading(false); return; }
     setCourse(c);
     const { data: e } = await supabase.from('course_enrollments').select('*').eq('course_id',courseId).eq('user_id',userId).single();
-    if (!e) { alert('You are not enrolled.'); router.push('/user/courses'); return; } // ← router.push
+    if (!e) { alert('You are not enrolled.'); router.push('/user/learn'); return; }
     setEnrollment(e);
     const { data: cert } = await supabase.from('course_certificates').select('*').eq('course_id',courseId).eq('user_id',userId).single();
     if (cert) setCertificate(cert);

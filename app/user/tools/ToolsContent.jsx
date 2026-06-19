@@ -55,21 +55,12 @@ const CSS = `
 const AI_TOOLS = [
   {
     name: "AIDLA AI",
-    desc: "Your personal AI learning & career assistant",
+    desc: "General AI + career counselor, roadmap, interview coach, resume, and more",
     icon: "🤖",
-    href: "/user/learning",
+    href: "/user/aidla-ai",
     color: "#3b82f6",
     bg: "rgba(59,130,246,0.12)",
     label: "Chat now",
-  },
-  {
-    name: "Career Counselor",
-    desc: "AI-guided career planning and direction",
-    icon: "🎯",
-    href: "/user/aidla-ai",
-    color: "#8b5cf6",
-    bg: "rgba(139,92,246,0.12)",
-    label: "Get advice",
   },
   {
     name: "CV Maker",
@@ -155,7 +146,7 @@ export default function ToolsContent() {
         <p className="tools-sub">All your learning and career tools in one place</p>
       </div>
 
-      <Link href="/user/learning" className="tools-banner">
+      <Link href="/user/aidla-ai" className="tools-banner">
         <div className="tools-banner-icon">🤖</div>
         <div>
           <div className="tools-banner-title">AIDLA AI — Your Learning Assistant</div>

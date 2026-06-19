@@ -386,68 +386,271 @@ Re-add `NEXT_PUBLIC_ADMIN_EMAIL` to .env files and revert useAuth.js and auth/ca
 
 ---
 
-## Phase Status Summary
+---
 
-| Phase | Changes Logged | Last Entry |
-|---|---|---|
-| Phase 1 — Foundation Revolution | 10 | 2026-06-18 |
-| Phase 2 — UX Revolution | 0 | — |
-| Phase 3 — Content & Learning Revolution | 0 | — |
-| Phase 4 — Growth & Retention Revolution | 0 | — |
-| Phase 5 — Scale Revolution | 0 | — |
+## 2026-06-19 — Phase 4 — Growth & Retention Revolution (Partial)
+
+**Date:** 2026-06-19  
+**Phase:** Phase 4 — Growth & Retention Revolution  
+**Status:** ⚠️ Partial — 4 of 7 tasks partially built. Tasks 4.3, 4.4, 4.5 (full) not done.
+
+### What Was Built
+- **4.1 Achievements page** — `/user/achievements` with 8 badge cards (First Quiz, 7-Day Streak, Coins, Courses, Certificate, Referral, Verified). Uses existing tables (daily_quiz_attempts, course_enrollments, course_certificates, users_profiles). No `achievement_definitions` or `user_achievements` DB tables created — achievements are hardcoded logic.
+- **4.2 Streak widget** — Dashboard now shows 7-day flame circles, current quiz streak, weekly count. Reads `daily_quiz_attempts.streak_days`. No dedicated streak engine or recovery mechanic.
+- **4.3 Coin economy** — NOT redesigned. Mining/lucky draw still unrestricted.
+- **4.4 Shareable profile** — NOT built.
+- **4.5 Referral improvements** — Invite page extracted to InviteContent.jsx + thin shell. No tracker, no tiers, no leaderboard.
+- **4.6 Changelog** — `/user/changelog` static timeline with v1/v2/v3 entries.
+- **4.7 Lucky draw reform** — Added live coin balance chip to entry row. Merit-gating NOT implemented — still casino-style.
+
+### Files Changed
+- `app/user/achievements/AchievementsContent.jsx` — created
+- `app/user/achievements/page.jsx` — thin shell
+- `app/user/changelog/page.jsx` — static changelog
+- `app/user/page.jsx` — streak widget added to DashHero
+- `app/user/wallet/coin-history/CoinHistoryContent.jsx` — created
+- `app/user/wallet/coin-history/page.jsx` — thin shell
+- `app/user/wallet/invite/InviteContent.jsx` — extracted from page.jsx
+- `app/user/wallet/invite/page.jsx` — converted to thin shell
+- `app/user/lucky-draw/page.jsx` — coin balance chip added
+- `app/user/UserLayoutClient.jsx` — Achievements + Changelog added to mobile dropdown
+
+### Database Changes
+None applied. achievement_definitions and user_achievements tables NOT created.
+
+### What's Still Missing From Phase 4
+- achievement_definitions + user_achievements tables
+- Proper streak engine (DB + increment logic)
+- Coin economy redesign (mining → daily login, lucky draw/wheel merit gating)
+- Shareable public profile (heatmap, OG image)
+- Referral system improvements (tracker, tiers, leaderboard)
+
+---
+
+## 2026-06-19 — Phase 5 — Scale Revolution (Partial)
+
+**Date:** 2026-06-19  
+**Phase:** Phase 5 — Scale Revolution  
+**Status:** ⚠️ Partial — Code complete. All DB migrations NOT run.
+
+### What Was Built
+- **5.1 Multi-admin roles** — check-session now queries `admin_roles` table (after ADMIN_EMAIL check). `app/admin/roles/RolesContent.jsx` — grant/revoke admin access UI.
+- **5.2 DB consolidation** — `20260619000001_consolidation.sql` written (platform_settings, content_likes, content_comments, platform_errors). NOT run.
+- **5.3 Performance indexes** — `20260619000002_indexes.sql` written (12 indexes). NOT run.
+- **5.4 Error monitoring** — `app/api/errors/route.js` logs to platform_errors. `app/error.jsx` reports crashes. `app/admin/errors/ErrorsContent.jsx` admin view. Code crashes in prod (platform_errors table missing).
+- **5.5 Wallet compliance** — Legal disclaimer banner above withdraw. Hardcoded ADMIN_EMAIL removed.
+- **5.6 Realtime notifications** — Supabase channel subscription in NotificationsContent. Crashes until notifications table migration runs.
+
+### Files Changed
+- `app/admin/AdminLayoutClient.jsx` — added Roles + Errors to nav
+- `app/admin/errors/ErrorsContent.jsx` + `page.jsx` — error log viewer (thin shell)
+- `app/admin/roles/RolesContent.jsx` + `page.jsx` — admin role management (thin shell)
+- `app/api/admin/check-session/route.js` — now queries admin_roles table
+- `app/api/errors/route.js` — created: POST error logging endpoint
+- `app/error.jsx` — reports crashes to /api/errors
+- `app/user/notifications/NotificationsContent.jsx` — realtime subscription added
+- `app/user/wallet/withdraw/page.jsx` — legal disclaimer banner
+
+### Database Changes (WRITTEN, NOT RUN)
+- `supabase/migrations/20260619000001_consolidation.sql` — platform_settings, content_likes, content_comments, platform_errors
+- `supabase/migrations/20260619000002_indexes.sql` — 12 performance indexes
+
+### What's Still Missing From Phase 5
+- Run both migrations
+- Verify /api/errors works (after consolidation migration)
+- Full KYC/AML wallet compliance (requires legal consultation — out of scope for code)
+
+---
+
+## 2026-06-19 — Infrastructure — Admin Login Fix + Bundle Size Fix
+
+**Date:** 2026-06-19  
+**Status:** ✅ Complete
+
+### Changes
+- `app/login/LoginClient.jsx` — replaced dead `NEXT_PUBLIC_ADMIN_EMAIL` comparison with `fetch("/api/admin/check-session")`. Admin email/password login now correctly redirects to `/admin`.
+- `ADMIN_EMAIL` added as Cloudflare Worker **Secret** (not plaintext variable — plaintext gets wiped on every deploy).
+- All 51 `app/admin/*` and `app/user/*` pages converted to thin-shell + `ssr:false` pattern to keep Cloudflare Worker gzip bundle under 3 MiB limit.
+
+---
+
+## 2026-06-20 — Recovery: Page Merges + Route Cleanup + Tools Cleanup
+
+**Date:** 2026-06-20  
+**Status:** ✅ Complete
+
+### Changes
+
+#### Merged `/user/learning` → `/user/aidla-ai`
+- `app/user/aidla-ai/AidlaAIContent.jsx` — added MODES array (8 career modes: General, Career, Roadmap, Interview, Resume, Skills, Uni, Salary), mode pills row in composer, mode-specific system prompts, mode-specific suggestion chips, brand subtitle updates
+- Deleted `app/user/learning/` (entire folder — LearningContent.jsx + page.jsx)
+
+#### Merged `/user/courses` → deleted (redirected to `/user/learn` in Phase 2)
+- Deleted `app/user/courses/` (entire folder — CoursesPageContent.jsx + page.jsx + CoursesClient.jsx)
+
+#### Merged `/user/social` + `/user/forum` → `/user/community`
+- Deleted `app/user/social/page.jsx` (SocialContent.jsx kept — still used by community)
+- Deleted `app/user/forum/page.jsx` (ForumContent.jsx kept — still used by community)
+- Updated `app/user/forum/ForumContent.jsx` — clipboard URL changed from `/user/forum` to `/user/community?tab=forum`
+- Updated `app/user/profile/[userId]/PublicUserProfileContent.jsx` — Back link updated to `/user/community?tab=forum`
+
+#### All `/user/learning` and `/user/courses` references updated
+- `app/user/UserLayoutClient.jsx` — removed `/user/learning` from FULLSCREEN_ROUTES
+- `app/user/UserDashboardContent.jsx` — AIDLA AI hero card links to `/user/aidla-ai`
+- `app/user/tools/ToolsContent.jsx` — merged AIDLA AI + Career Counselor into single AIDLA AI card at `/user/aidla-ai`; banner updated
+- `app/user/learn/LearnContent.jsx` — AI Tutor banner links to `/user/aidla-ai`
+- `components/MyCertificates.jsx` — all `/user/courses` → `/user/learn`; stale migration comments removed
+- `app/user/certificate/[certId]/CertificateClient.jsx` — `/user/courses` → `/user/learn`
+- `app/user/course/[id]/CoursePlayerClient.jsx` — `/user/courses` → `/user/learn`
+
+#### Deleted generic converter tools (no AIDLA brand value)
+- Deleted `app/tools/image/jpg-to-png/`
+- Deleted `app/tools/pdf/image-to-pdf/`
+- Deleted `app/tools/pdf/word-to-pdf/`
+- Deleted `app/tools/image/html-to-png/`
+- Deleted empty `app/tools/image/` directory
+- Deleted empty `app/tools/pdf/` directory
+
+#### Cleaned all references to deleted tools
+- `app/tools/toolsData.js` — removed PDF and Image categories
+- `app/tools/ToolsClient.jsx` — removed PDF & Image section
+- `app/tools/page.jsx` — removed 3 tools from JSON-LD schema
+- `app/sitemap.js` — removed image-to-pdf, word-to-pdf, jpg-to-png URLs
+- `app/tools/career/cover-letter-maker/CoverLetterClient.jsx` — replaced dead tool links with Email Writer, LinkedIn Bio, Interview Prep
+- `scripts/thin-shell-all.js` — removed deleted paths
+- `app/user/social/SocialContent.jsx` — updated file header comment
+- `app/user/forum/ForumContent.jsx` — updated file header comment
+
+### Files Deleted
+- `app/user/learning/page.jsx`
+- `app/user/learning/LearningContent.jsx`
+- `app/user/courses/page.jsx`
+- `app/user/courses/CoursesPageContent.jsx`
+- `app/user/courses/CoursesClient.jsx`
+- `app/user/social/page.jsx`
+- `app/user/forum/page.jsx`
+- `app/tools/image/jpg-to-png/page.jsx`
+- `app/tools/image/jpg-to-png/JpgToPngClient.jsx`
+- `app/tools/pdf/image-to-pdf/page.jsx`
+- `app/tools/pdf/image-to-pdf/ImageToPdfClient.jsx`
+- `app/tools/pdf/word-to-pdf/page.jsx`
+- `app/tools/pdf/word-to-pdf/WordToPdfClient.jsx`
+- `app/tools/image/html-to-png/page.jsx`
+- `app/tools/image/html-to-png/HtmlToPngClient.jsx`
+
+### Route Map (Before → After)
+| Old Route | New Route |
+|---|---|
+| `/user/learning` | `/user/aidla-ai` (merged with 8 career modes) |
+| `/user/courses` | `/user/learn` (all references updated) |
+| `/user/social` | `/user/community?tab=connect` (route deleted, component kept) |
+| `/user/forum` | `/user/community?tab=forum` (route deleted, component kept) |
+| `/tools/image/jpg-to-png` | Deleted |
+| `/tools/pdf/image-to-pdf` | Deleted |
+| `/tools/pdf/word-to-pdf` | Deleted |
+| `/tools/image/html-to-png` | Deleted |
+
+### Kept (backend API — used by certificates)
+- `app/api/html-to-png/route.js` — kept (certificates use this for PNG export)
+
+---
+
+## 2026-06-20 — Reality Audit
+
+**Date:** 2026-06-20  
+**Action:** Full reality audit of all 5 phases. Checklist and plan updated to reflect actual state.
+
+### Key Findings
+- All 5 phases have code committed. None are fully complete.
+- 8 SQL migrations written but never run. Multiple features broken in production because of this.
+- 3 edge functions updated but never deployed. Old versions running.
+- Phase 4 was rushed — 3 of 7 tasks either not done or incomplete.
+- Checklist was incorrectly marked ✅ Complete for Phases 1, 2, 3.
+
+### Corrected In This Audit
+- REVOLUTION2_CHECKLIST.md — complete rewrite reflecting real status
+- REVOLUTION2_PLAN.md — Progress Tracker updated with real numbers
+- REVOLUTION2_CHANGES.md — Phase 4 and 5 entries added, Phase Status Summary corrected
+
+---
+
+## Phase Status Summary (as of 2026-06-20 audit)
+
+| Phase | Real Status | Code | DB | Edge | Blocking Issues |
+|---|---|---|---|---|---|
+| Phase 1 — Foundation Revolution | ⚠️ Partial | ✅ 10/10 | ❌ 0/4 | ❌ 0/3 | 4 migrations + 3 deploys pending |
+| Phase 2 — UX Revolution | ⚠️ Partial | ✅ 8/10 | ❌ 0/1 | N/A | Notifications crashes, 2 redirects missing |
+| Phase 3 — Content & Learning Revolution | ⚠️ Partial | ⚠️ 4/6 | ❌ 0/1 | N/A | Course notes broken, 2 DB tables not created |
+| Phase 4 — Growth & Retention Revolution | ⚠️ Partial | ⚠️ 4/7 | ❌ 0 | N/A | Coin economy, profile, referrals not done |
+| Phase 5 — Scale Revolution | ⚠️ Partial | ✅ 6/6 | ❌ 0/2 | N/A | All tables missing in production |
 
 ---
 
 ## Quick Reference — All DB Changes
 
-*Will be populated as changes are made. This section provides a single-place view of all database changes across the entire revolution.*
+### New Tables (WRITTEN — NOT YET RUN IN PRODUCTION)
+- `admin_roles` — role-based admin authorization — `20260618000001_admin_roles.sql`
+- `notifications` — user notification center — `20260618000005_notifications.sql`
+- `course_notes` — inline course notes per lesson — `20260618000006_course_notes.sql`
+- `platform_settings` — centralized feature settings — `20260619000001_consolidation.sql`
+- `content_likes` — polymorphic likes (blog/news/faq/forum) — `20260619000001_consolidation.sql`
+- `content_comments` — polymorphic comments — `20260619000001_consolidation.sql`
+- `platform_errors` — error log for monitoring — `20260619000001_consolidation.sql`
 
-### New Tables
-- `admin_roles` — role-based admin authorization (2026-06-18)
+### Altered Tables (WRITTEN — NOT YET RUN)
+- `users_profiles` — ADD 5 onboarding columns — `20260618000002_onboarding_columns.sql`
+- `blogs_posts` — ADD 4 AI safety columns — `20260618000003_ai_content_safety.sql`
+- `news_posts` — ADD 4 AI safety columns — `20260618000003_ai_content_safety.sql`
+- `faqs` — ADD 3 AI safety columns — `20260618000003_ai_content_safety.sql`
 
-### Altered Tables
-- `users_profiles` — ADD 5 onboarding columns (2026-06-18)
-- `blogs_posts` — ADD 4 AI safety columns (2026-06-18)
-- `news_posts` — ADD 4 AI safety columns (2026-06-18)
-- `faqs` — ADD 3 AI safety columns (2026-06-18)
+### Archived Tables (WRITTEN — NOT YET RUN)
+- `autotube_history` → `_archive_autotube_history` — `20260618000004_archive_autotube.sql`
 
-### New Columns
-- `users_profiles.onboarding_completed`, `onboarding_completed_at`, `user_goal`, `user_level`, `user_field`
-- `blogs_posts.ai_generated`, `ai_quality_score`, `ai_review_status`, `ai_review_flag_reason`
-- `news_posts.ai_generated`, `ai_quality_score`, `ai_review_status`, `ai_review_flag_reason`
-- `faqs.ai_generated`, `ai_quality_score`, `ai_review_status`
+### New Indexes (WRITTEN — NOT YET RUN)
+- 12 composite indexes on key query paths — `20260619000002_indexes.sql`
 
-### Archived Tables
-- `autotube_history` → `_archive_autotube_history` (2026-06-18)
-
-### New Indexes
-*(none)*
-
-### New Functions / RPCs
-- `news_update_seo_data()` — updated with 3 new optional AI params (backward-compatible)
+### New Functions / RPCs (WRITTEN — NOT YET DEPLOYED)
+- `news_update_seo_data()` — updated with 3 new optional AI params (in auto-news edge function)
 
 ---
 
 ## Quick Reference — All Edge Function Deployments
 
-| Date | Function | Deploy Reason | Commit |
+| Date | Function | Status | Action Needed |
 |---|---|---|---|
-| 2026-06-18 | auto-blog | AI safety metadata (ai_generated, ai_quality_score, ai_review_status) | Phase 1 |
-| 2026-06-18 | auto-news | AI safety metadata via news_update_seo_data RPC params | Phase 1 |
-| 2026-06-18 | auto-faq-generator | AI safety metadata on both insert paths | Phase 1 |
+| 2026-06-18 | auto-blog | ⚠️ Code updated, NOT deployed | `npx supabase functions deploy auto-blog` |
+| 2026-06-18 | auto-news | ⚠️ Code updated, NOT deployed | `npx supabase functions deploy auto-news` |
+| 2026-06-18 | auto-faq-generator | ⚠️ Code updated, NOT deployed | `npx supabase functions deploy auto-faq-generator` |
 
 ---
 
-## Quick Reference — All Pages Created / Deleted / Redirected
+## Quick Reference — All Pages Created / Redirected
 
-| Date | Page | Action | Notes |
+| Date | Page | Action | Status |
 |---|---|---|---|
-| 2026-06-18 | `/user/onboarding` | Created | Phase 1 placeholder; full wizard in Phase 2 |
-| 2026-06-18 | `/[404]` | Created | Branded not-found.jsx |
-| 2026-06-18 | `/[error]` | Created | Branded error.jsx (client component) |
-| 2026-06-18 | `/api/admin/check-session` | Created | Server-side admin check endpoint |
+| 2026-06-18 | `/user/onboarding` | Created — 5-step wizard | ⚠️ Crashes on save (migration not run) |
+| 2026-06-18 | `/[404]` | Created — branded not-found.jsx | ✅ Live |
+| 2026-06-18 | `/[error]` | Created — branded error.jsx | ✅ Live |
+| 2026-06-18 | `/api/admin/check-session` | Created | ✅ Live |
+| 2026-06-18 | `/user/learn` | Created — courses/resources hub | ✅ Live |
+| 2026-06-18 | `/user/courses` | Redirect → `/user/learn` | ✅ Live |
+| 2026-06-18 | `/user/community` | Created — forum+channels hub | ✅ Live |
+| 2026-06-18 | `/user/settings` | Created | ✅ Live |
+| 2026-06-18 | `/user/search` | Created | ✅ Live |
+| 2026-06-18 | `/user/notifications` | Created | ⚠️ Crashes (no DB table) |
+| 2026-06-18 | `/user/tools` | Created — AI tools hub | ✅ Live |
+| 2026-06-18 | `/user/insights` | Created — blogs+news hub | ✅ Live |
+| 2026-06-18 | `/admin/ai-content` | Created — AI content engine | ⚠️ Crashes (ai cols missing) |
+| 2026-06-19 | `/user/achievements` | Created | ✅ Live (UI-only, no achievement DB) |
+| 2026-06-19 | `/user/changelog` | Created | ✅ Live (static) |
+| 2026-06-19 | `/user/wallet/coin-history` | Created | ✅ Live |
+| 2026-06-19 | `/admin/roles` | Created | ⚠️ Depends on admin_roles migration |
+| 2026-06-19 | `/admin/errors` | Created | ⚠️ Depends on consolidation migration |
+| 2026-06-19 | `/api/errors` | Created | ⚠️ Crashes (platform_errors missing) |
+| PENDING | `/user/social` | Redirect → `/user/community?tab=connect` | ❌ Not done |
+| PENDING | `/user/forum` | Redirect → `/user/community?tab=forum` | ❌ Not done |
 
 ---
 
 *Log started: 2026-06-18*  
-*Format version: 1.0*
+*Last updated: 2026-06-20 — Phase 4, 5 entries added. Reality audit complete.*

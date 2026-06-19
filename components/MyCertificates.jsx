@@ -1,14 +1,4 @@
 "use client";
-// components/MyCertificates.jsx  (or app/user/profile/MyCertificates.jsx)
-// Converted from React Router MyCertificates.jsx
-//
-// Changes:
-//   1. "use client" directive
-//   2. import { useNavigate } from "react-router-dom" → import { useRouter } from "next/navigation"
-//   3. const navigate = useNavigate() → const router = useRouter()
-//   4. navigate("/user/courses") → router.push("/user/courses")
-//   5. navigate(`/user/certificate/${cert.id}`) → router.push(`/user/certificate/${cert.id}`)
-//   6. supabase import path: ../../lib/supabase → @/lib/supabase
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -238,7 +228,7 @@ export default function MyCertificates() {
           </p>
         </div>
         {/* navigate → router.push */}
-        <button onClick={() => router.push("/user/courses")}
+        <button onClick={() => router.push("/user/learn")}
           style={{ background:C.blue, color:C.white, border:"none", borderRadius:8, padding:"10px 18px", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit" }}>
           + Earn More
         </button>
@@ -254,7 +244,7 @@ export default function MyCertificates() {
           <p style={{ color:C.muted, fontSize:14, marginBottom:20 }}>
             Complete a course to earn your first AIDLA certificate
           </p>
-          <button onClick={() => router.push("/user/courses")}
+          <button onClick={() => router.push("/user/learn")}
             style={{ background:C.blue, color:C.white, border:"none", borderRadius:8, padding:"11px 24px", fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit" }}>
             Browse Courses
           </button>

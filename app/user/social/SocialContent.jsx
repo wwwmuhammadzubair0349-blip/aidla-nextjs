@@ -1,6 +1,5 @@
 "use client";
-// app/user/social/page.jsx
-// Premium Community & Social page
+// SocialContent — used by /user/community (Channels tab)
 //
 // Enhancements:
 //   - Mobile-first responsive grid (320px–ultrawide)

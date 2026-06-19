@@ -659,7 +659,7 @@ export default function UserDashboard() {
           title="AIDLA AI"
           subtitle="AI-powered career assistant — chat, plan, and grow smarter."
           icon="🤖"
-          to="/user/learning"
+          to="/user/aidla-ai"
           accentClass="hero-blue"
           badgeColor="badge-blue"
         />

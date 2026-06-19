@@ -1,6 +1,5 @@
 "use client";
-// app/user/forum/page.jsx
-// AIDLA Discussion Forum — Reddit-inspired, educational, mobile-first
+// ForumContent — used by /user/community (Forum tab)
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
@@ -332,7 +331,7 @@ function ThreadCard({ post, currentUserId, currentProfile, isAdmin, onDelete }) 
                 )}
                 <button role="menuitem" onClick={() => {
                   setMenuOpen(false);
-                  navigator.clipboard.writeText(`${window.location.origin}/user/forum`).catch(() => {});
+                  navigator.clipboard.writeText(`${window.location.origin}/user/community?tab=forum`).catch(() => {});
                   alert("Link copied! 🔗");
                 }}>🔗 Copy Link</button>
               </div>

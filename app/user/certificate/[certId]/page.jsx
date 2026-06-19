@@ -1,2 +1,4 @@
 "use client";
-export { default } from "./CertificateClient";
+import dynamic from "next/dynamic";
+const CertificateClient = dynamic(() => import("./CertificateClient"), { ssr: false });
+export default function CertIdPage() { return <CertificateClient />; }

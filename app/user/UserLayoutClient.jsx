@@ -15,7 +15,6 @@ const TABS = [
   { to: "/user",              label: "Home",      icon: "⚡" },
   { to: "/user/learn",        label: "Learn",     icon: "📚" },
   { to: "/user/community",    label: "Community", icon: "💬" },
-  { to: "/user/tools",        label: "Tools",     icon: "🛠️" },
   { to: "/user/profile",      label: "Profile",   icon: "👤" },
 ];
 
@@ -566,7 +565,6 @@ export default function UserLayoutClient({ children }) {
                   <option key={to} value={to}>{icon} {label}</option>
                 ))}
                 <option value="/user/insights">✨ Insights</option>
-                <option value="/user/tools">🤖 Tools</option>
                 <option value="/user/achievements">🏆 Achievements</option>
                 <option value="/user/changelog">📋 Changelog</option>
                 <option value="/user/search">🔍 Search</option>
@@ -574,13 +572,6 @@ export default function UserLayoutClient({ children }) {
                 <option value="/user/settings">⚙️ Settings</option>
               </select>
             </div>
-
-            {/* Search */}
-            <Link href="/user/search" className="ul-icon-btn" aria-label="Search">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-              </svg>
-            </Link>
 
             {/* Notifications bell */}
             <Link href="/user/notifications" className={`ul-icon-btn${unreadCount > 0 ? " bell-active" : ""}`} aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}>

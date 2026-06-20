@@ -1,700 +1,562 @@
 "use client";
-// app/user/page.jsx  (User Dashboard)
-// Converted from React Router Dashboard.jsx
-//
-// Changes:
-//   1. "use client" directive
-//   2. useNavigate → useRouter from next/navigation
-//   3. navigate(to) → router.push(to)
-//   4. CSS string identical to original
-//   5. Performance optimized — removed expensive backdrop-filter, transforms, pulse animations
-//   6. Hover effects refined — flat, elegant, opacity/border-based only
-//   7. Floating bot converted to component with state
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-/* ── Floating AIDLA Bot Bubble ── */
-function BotBubble({ onClick, onClose, isOpen }) {
-  const [showGreeting, setShowGreeting] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    if (dismissed || isOpen) return;
-    const t = setTimeout(() => setShowGreeting(true), 2000);
-    return () => clearTimeout(t);
-  }, [dismissed, isOpen]);
-
-  useEffect(() => {
-    if (isOpen) setShowGreeting(false);
-  }, [isOpen]);
-
-  const handleBtnClick = () => {
-    if (isOpen) { onClose(); } else { setShowGreeting(false); onClick(); }
-  };
-
+/* ─── Avatar ─────────────────────────────────────────────── */
+function Avatar({ url, name, size = 72 }) {
+  const initials = name ? name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase() : "U";
   return (
-    <div className="bot-wrap">
-      {showGreeting && !dismissed && !isOpen && (
-        <div className="bot-greeting" onClick={e => e.stopPropagation()}>
-          <button className="bot-greeting-close" onClick={() => { setDismissed(true); setShowGreeting(false); }} aria-label="Dismiss">×</button>
-          <div className="bot-greeting-title">Need help? 👋</div>
-          <div className="bot-greeting-sub">How may I help you?</div>
-          <button className="bot-greeting-cta" onClick={() => { setShowGreeting(false); onClick(); }}>
-            Start a conversation →
-          </button>
-          <div className="bot-greeting-arrow" aria-hidden="true" />
-        </div>
-      )}
-      <button
-        className={`bot-fab${isOpen ? " bot-fab-open" : ""}`}
-        onClick={handleBtnClick}
-        aria-label={isOpen ? "Close chat" : "Open chat"}
-      >
-        {isOpen ? (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        ) : (
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>
-          </svg>
-        )}
-      </button>
+    <div style={{
+      width: size, height: size, borderRadius: "50%",
+      background: url ? "transparent" : "linear-gradient(135deg,#f59e0b,#d97706)",
+      border: "3px solid #f59e0b",
+      boxShadow: "0 0 0 3px rgba(245,158,11,.25), 0 8px 24px rgba(0,0,0,.35)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      flexShrink: 0, overflow: "hidden",
+    }}>
+      {url
+        ? <img src={url} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        : <span style={{ fontSize: size * 0.35, fontWeight: 900, color: "#fff", letterSpacing: "-0.02em" }}>{initials}</span>
+      }
     </div>
   );
 }
 
-/* ── Hero Card ── */
-function HeroCard({ title, subtitle, icon, to, accentClass, badgeColor }) {
-  const router = useRouter();
-  return (
-    <button
-      className={`hero-card ${accentClass}`}
-      onClick={() => router.push(to)}
-      aria-label={title}
-    >
-      <span className={`hero-badge ${badgeColor}`}>✦ Featured</span>
-      <span className="hero-icon" aria-hidden="true">{icon}</span>
-      <div className="hero-title">{title}</div>
-      <div className="hero-sub">{subtitle}</div>
-      <span className="hero-arrow" aria-hidden="true">→</span>
-    </button>
-  );
-}
-
-/* ── Regular Card ── */
-function RegCard({ title, subtitle, icon, to, iconClass, isSoon }) {
-  const router = useRouter();
-  return (
-    <button
-      className="reg-card"
-      onClick={() => !isSoon && router.push(to)}
-      disabled={isSoon}
-      aria-label={`${title}${isSoon ? " — coming soon" : ""}`}
-    >
-      <div className={`reg-icon ${iconClass}`} aria-hidden="true">
-        <span className="reg-icon-inner">{icon}</span>
-      </div>
-      <div className="reg-text">
-        <div className="reg-title">{title}</div>
-        <div className="reg-sub">{subtitle}</div>
-      </div>
-      {isSoon && <span className="badge-soon">Soon</span>}
-    </button>
-  );
-}
-
-/* ── Dashboard Hero Stats ── */
-const DH_CSS = `
-.dh-wrap { margin-bottom: 22px; }
-.dh-greeting { font-size: 1rem; font-weight: 800; color: #0f172a; margin-bottom: 12px; }
-.dh-stats {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;
-}
-.dh-stat {
-  background: rgba(255,255,255,0.72); border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 14px; padding: 10px 8px; text-align: center;
-  box-shadow: 0 1px 4px rgba(15,23,42,0.05);
-}
-.dh-stat-val { font-size: 1.2rem; font-weight: 900; color: #0f172a; line-height: 1; margin-bottom: 3px; }
-.dh-stat-lbl { font-size: 0.62rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
-.dh-stat-icon { font-size: 1rem; margin-bottom: 2px; display: block; }
-.dh-widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.dh-widget {
-  border-radius: 16px; padding: 13px 14px;
-  border: 1px solid rgba(255,255,255,0.8);
-  box-shadow: 0 1px 4px rgba(15,23,42,0.04);
-  cursor: pointer; text-decoration: none; display: block;
-}
-.dh-widget:hover { box-shadow: 0 4px 14px rgba(15,23,42,0.09); }
-.dh-widget-quiz { background: linear-gradient(135deg, rgba(254,243,199,0.8), rgba(253,230,138,0.5)); }
-.dh-widget-learn { background: linear-gradient(135deg, rgba(219,234,254,0.8), rgba(191,219,254,0.5)); }
-.dh-widget-tag { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #92400e; background: rgba(255,255,255,0.6); border-radius: 20px; padding: 2px 7px; display: inline-block; margin-bottom: 5px; }
-.dh-widget-learn .dh-widget-tag { color: #1e40af; }
-.dh-widget-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
-.dh-widget-title { font-size: 0.82rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; }
-.dh-widget-sub { font-size: 0.7rem; color: #475569; line-height: 1.35; }
-.dh-progress { height: 4px; background: rgba(15,23,42,0.08); border-radius: 4px; margin-top: 8px; overflow: hidden; }
-.dh-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #1a3a8f, #3b82f6); transition: width 0.4s ease; }
-@media(max-width:480px) { .dh-stats { grid-template-columns: repeat(2, 1fr); } .dh-widgets { grid-template-columns: 1fr; } }
-`;
-
-function DashHero({ name, streak, perks, rank, coursesCount, lastCourse }) {
-  const router = useRouter();
-  const streakLabel = streak >= 3 ? `🔥 ${streak}` : `${streak}`;
-  const firstName = name?.split(" ")[0] || "there";
-  return (
-    <>
-      <style>{DH_CSS}</style>
-      <div className="dh-wrap">
-        <div className="dh-greeting">Hi, {firstName}! 👋</div>
-        <div className="dh-stats">
-          <div className="dh-stat">
-            <span className="dh-stat-icon">🔥</span>
-            <div className="dh-stat-val">{streakLabel}</div>
-            <div className="dh-stat-lbl">Streak</div>
-          </div>
-          <div className="dh-stat">
-            <span className="dh-stat-icon">⭐</span>
-            <div className="dh-stat-val">{perks >= 1000 ? `${(perks/1000).toFixed(1)}k` : perks}</div>
-            <div className="dh-stat-lbl">Perks</div>
-          </div>
-          <div className="dh-stat">
-            <span className="dh-stat-icon">📈</span>
-            <div className="dh-stat-val" style={{ fontSize: "0.75rem" }}>{rank || "Learner"}</div>
-            <div className="dh-stat-lbl">Rank</div>
-          </div>
-          <div className="dh-stat">
-            <span className="dh-stat-icon">🎓</span>
-            <div className="dh-stat-val">{coursesCount}</div>
-            <div className="dh-stat-lbl">Courses</div>
-          </div>
-        </div>
-        <div className="dh-widgets">
-          <button className="dh-widget dh-widget-quiz" onClick={() => router.push("/user/dailyquizz")}>
-            <span className="dh-widget-tag">Today</span>
-            <span className="dh-widget-icon">❓</span>
-            <div className="dh-widget-title">Daily Quiz</div>
-            <div className="dh-widget-sub">+15 perks · 2 min</div>
-          </button>
-          {lastCourse ? (
-            <button className="dh-widget dh-widget-learn" onClick={() => router.push(`/user/course/${lastCourse.id}`)}>
-              <span className="dh-widget-tag">Continue</span>
-              <span className="dh-widget-icon">📚</span>
-              <div className="dh-widget-title" style={{ fontSize: "0.76rem" }}>{lastCourse.title?.slice(0, 28)}{lastCourse.title?.length > 28 ? "…" : ""}</div>
-              <div className="dh-widget-sub">{lastCourse.category || "Course"}</div>
-              {lastCourse.progress > 0 && (
-                <div className="dh-progress"><div className="dh-progress-fill" style={{ width: `${Math.min(100, lastCourse.progress)}%` }} /></div>
-              )}
-            </button>
-          ) : (
-            <button className="dh-widget dh-widget-learn" onClick={() => router.push("/user/learn")}>
-              <span className="dh-widget-tag">Browse</span>
-              <span className="dh-widget-icon">📚</span>
-              <div className="dh-widget-title">Start Learning</div>
-              <div className="dh-widget-sub">Explore free & paid courses</div>
-            </button>
-          )}
-        </div>
-      </div>
-    </>
-  );
-}
-
-/* ── Section ── */
-function Section({ label, labelClass, children }) {
-  return (
-    <div className="section-block">
-      <div className={`section-label ${labelClass}`} role="heading" aria-level={3}>{label}</div>
-      <div className="cards-grid">{children}</div>
-    </div>
-  );
-}
-
-/* ── CSS (performance optimized) ── */
+/* ─── CSS ─────────────────────────────────────────────────── */
 const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-  .dashboard {
-    font-family: 'DM Sans', system-ui, sans-serif;
-    position: relative;
-    min-height: 60vh;
-    animation: dashIn 0.35s cubic-bezier(0.16,1,0.3,1) both;
-  }
-  @keyframes dashIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+.vd { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
 
-  .dashboard::before {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(219,234,254,0.55) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 60% at 80% 80%, rgba(209,250,229,0.45) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 60% 30%, rgba(237,233,254,0.35) 0%, transparent 60%);
-    pointer-events: none; z-index: 0;
-  }
-  .dashboard > * { position: relative; z-index: 1; }
+/* ── HERO ── */
+.vd-hero {
+  background: linear-gradient(160deg, #0a0f2e 0%, #0d1b4b 40%, #1a1040 100%);
+  border-radius: 28px;
+  padding: 28px 20px 24px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.vd-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  background: radial-gradient(circle, rgba(245,158,11,.22) 0%, transparent 70%);
+  pointer-events: none;
+}
+.vd-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: -40px;
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(99,102,241,.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.vd-hero-top {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 20px; position: relative; z-index: 1;
+}
+.vd-hero-info { flex: 1; min-width: 0; }
+.vd-greeting {
+  font-size: 0.72rem; font-weight: 600;
+  color: rgba(245,158,11,.85); letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 3px;
+}
+.vd-name {
+  font-size: 1.5rem; font-weight: 900;
+  color: #fff; letter-spacing: -0.04em;
+  line-height: 1.1; margin-bottom: 4px;
+}
+.vd-rank-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.3);
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 0.7rem; font-weight: 700; color: #f59e0b;
+}
+.vd-stats-row {
+  display: flex; gap: 8px; position: relative; z-index: 1;
+}
+.vd-stat {
+  flex: 1; background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px; padding: 10px 8px; text-align: center;
+}
+.vd-stat-val {
+  font-size: 1.15rem; font-weight: 900; color: #fff;
+  line-height: 1; margin-bottom: 3px;
+}
+.vd-stat-val.gold { color: #f59e0b; }
+.vd-stat-lbl {
+  font-size: 0.58rem; font-weight: 700; color: rgba(255,255,255,.45);
+  text-transform: uppercase; letter-spacing: 0.07em;
+}
 
-  /* Header */
-  .dash-header { margin-bottom: 22px; }
-  .dash-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2rem; font-weight: 400;
-    color: #0f172a; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 6px;
-  }
-  .dash-sub { font-size: 0.88rem; color: #64748b; font-weight: 500; }
+/* ── STREAK BAR ── */
+.vd-streak {
+  background: #fff; border: 1px solid rgba(226,232,240,.8);
+  border-radius: 20px; padding: 16px 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(15,23,42,.06);
+}
+.vd-streak-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.vd-streak-title {
+  font-size: 0.72rem; font-weight: 800;
+  color: #64748b; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.vd-streak-count {
+  font-size: 0.72rem; font-weight: 800; color: #f59e0b;
+}
+.vd-streak-days { display: flex; gap: 5px; align-items: center; }
+.vd-s-day { display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1; }
+.vd-s-circle {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #f8fafc; border: 2px solid #e2e8f0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700; color: #94a3b8;
+  transition: all .25s;
+}
+.vd-s-circle.done {
+  background: linear-gradient(135deg,#f59e0b,#ef4444);
+  border-color: transparent; color: #fff; font-size: 0.75rem;
+}
+.vd-s-circle.today { box-shadow: 0 0 0 3px rgba(245,158,11,.25); }
+.vd-s-lbl { font-size: 0.56rem; color: #94a3b8; font-weight: 600; }
 
-  /* Hero Row */
-  .hero-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px; }
+/* ── QUICK ACTIONS ── */
+.vd-quick {
+  display: flex; gap: 10px; overflow-x: auto;
+  padding-bottom: 4px; margin-bottom: 22px;
+  scrollbar-width: none; -ms-overflow-style: none;
+}
+.vd-quick::-webkit-scrollbar { display: none; }
+.vd-qa {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  flex-shrink: 0; min-width: 72px;
+  cursor: pointer; background: none; border: none; padding: 0;
+  font-family: inherit;
+}
+.vd-qa-icon {
+  width: 52px; height: 52px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; border: 1px solid transparent;
+  box-shadow: 0 2px 10px rgba(15,23,42,.08);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+}
+.vd-qa:active .vd-qa-icon { transform: scale(0.93); }
+.vd-qa:hover .vd-qa-icon  { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(15,23,42,.13); }
+.vd-qa-lbl { font-size: 0.62rem; font-weight: 700; color: #475569; white-space: nowrap; }
+.qa-quiz   { background: linear-gradient(135deg,#fef3c7,#fde68a); border-color: rgba(252,211,77,.4); }
+.qa-ai     { background: linear-gradient(135deg,#dbeafe,#bfdbfe); border-color: rgba(147,197,253,.4); }
+.qa-battle { background: linear-gradient(135deg,#fce7f3,#fbcfe8); border-color: rgba(249,168,212,.4); }
+.qa-wheel  { background: linear-gradient(135deg,#d1fae5,#a7f3d0); border-color: rgba(110,231,183,.4); }
+.qa-learn  { background: linear-gradient(135deg,#ede9fe,#ddd6fe); border-color: rgba(196,181,253,.4); }
+.qa-perks  { background: linear-gradient(135deg,#fff7ed,#fed7aa); border-color: rgba(253,186,116,.4); }
 
-  .hero-card {
-    border: 1px solid rgba(255,255,255,0.75);
-    border-radius: 22px; padding: 22px 20px 20px;
-    cursor: pointer; text-align: left; position: relative; overflow: hidden;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
-    display: flex; flex-direction: column;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 4px 16px rgba(15,23,42,0.04);
-  }
-  .hero-card:hover {
-    box-shadow: 0 1px 3px rgba(15,23,42,0.08), 0 8px 24px rgba(15,23,42,0.06);
-    border-color: rgba(255,255,255,0.95);
-  }
-  .hero-card:active { opacity: 0.95; }
-  .hero-card:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+/* ── FEATURED CARDS ── */
+.vd-featured {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-bottom: 24px;
+}
+.vd-feat {
+  border-radius: 22px; padding: 20px 16px;
+  cursor: pointer; border: 1px solid transparent;
+  display: flex; flex-direction: column; gap: 8px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 2px 12px rgba(15,23,42,.07);
+  transition: box-shadow .2s, transform .2s cubic-bezier(.34,1.56,.64,1);
+  min-height: 140px;
+}
+.vd-feat:active { transform: scale(0.97); }
+.vd-feat-ai   { background: linear-gradient(145deg,#0a0f2e,#1a1040); border-color: rgba(99,102,241,.3); }
+.vd-feat-quiz { background: linear-gradient(145deg,#fffbeb,#fef3c7); border-color: rgba(245,158,11,.3); }
+.vd-feat-tag {
+  font-size: 0.58rem; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 3px 8px;
+  border-radius: 20px; display: inline-block; width: fit-content;
+}
+.vd-feat-ai .vd-feat-tag   { background: rgba(99,102,241,.2); color: #a5b4fc; border: 1px solid rgba(99,102,241,.3); }
+.vd-feat-quiz .vd-feat-tag { background: rgba(245,158,11,.15); color: #d97706; border: 1px solid rgba(245,158,11,.3); }
+.vd-feat-icon { font-size: 1.6rem; }
+.vd-feat-title { font-size: 0.9rem; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; }
+.vd-feat-ai .vd-feat-title   { color: #fff; }
+.vd-feat-quiz .vd-feat-title { color: #0f172a; }
+.vd-feat-sub  { font-size: 0.68rem; line-height: 1.4; font-weight: 500; }
+.vd-feat-ai .vd-feat-sub   { color: rgba(255,255,255,.5); }
+.vd-feat-quiz .vd-feat-sub { color: #64748b; }
+.vd-feat-arrow {
+  position: absolute; bottom: 14px; right: 14px;
+  font-size: 0.9rem; opacity: 0.3;
+  transition: opacity .2s, transform .2s;
+}
+.vd-feat:hover .vd-feat-arrow { opacity: 0.8; transform: translateX(3px); }
 
-  .hero-blue    { background: rgba(219,234,254,0.62); }
-  .hero-emerald { background: rgba(209,250,229,0.62); }
+/* ── CONTINUE LEARNING ── */
+.vd-continue {
+  background: #fff; border: 1px solid rgba(226,232,240,.8);
+  border-radius: 20px; padding: 16px 18px;
+  margin-bottom: 22px;
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(15,23,42,.05);
+  transition: box-shadow .2s;
+}
+.vd-continue:hover { box-shadow: 0 4px 20px rgba(15,23,42,.09); }
+.vd-continue-icon {
+  width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0;
+  background: linear-gradient(135deg,#ede9fe,#ddd6fe);
+  display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+}
+.vd-continue-info { flex: 1; min-width: 0; }
+.vd-continue-label { font-size: 0.6rem; font-weight: 800; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+.vd-continue-title { font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vd-continue-bar { height: 4px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+.vd-continue-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg,#6d28d9,#a78bfa); transition: width .5s ease; }
+.vd-continue-arrow { font-size: 1rem; color: #cbd5e1; flex-shrink: 0; }
 
-  .hero-badge {
-    font-size: 9px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase;
-    padding: 4px 10px; border-radius: 20px;
-    display: inline-block; margin-bottom: 14px; width: fit-content;
-  }
-  .badge-blue    { background: rgba(219,234,254,0.9); color: #1e40af; border: 1px solid rgba(147,197,253,0.5); }
-  .badge-emerald { background: rgba(209,250,229,0.9); color: #065f46; border: 1px solid rgba(110,231,183,0.5); }
+/* ── SECTION ── */
+.vd-section { margin-bottom: 24px; }
+.vd-section-head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.vd-section-title {
+  font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #64748b;
+}
+.vd-section-line { flex: 1; height: 1px; background: rgba(226,232,240,.8); }
 
-  .hero-icon  { font-size: 2rem; margin-bottom: 10px; display: block; }
-  .hero-title { font-size: 1rem; font-weight: 800; color: #0f172a; margin-bottom: 5px; letter-spacing: -0.3px; }
-  .hero-sub   { font-size: 0.78rem; color: #475569; line-height: 1.5; flex: 1; }
-  .hero-arrow {
-    position: absolute; bottom: 18px; right: 20px;
-    font-size: 1rem; color: rgba(15,23,42,0.2);
-    transition: color 0.2s ease, transform 0.2s ease;
-  }
-  .hero-card:hover .hero-arrow { color: rgba(15,23,42,0.5); transform: translateX(3px); }
+/* ── GRID CARDS ── */
+.vd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vd-card {
+  background: #fff; border: 1px solid rgba(226,232,240,.8);
+  border-radius: 18px; padding: 14px 13px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; text-align: left;
+  box-shadow: 0 1px 6px rgba(15,23,42,.04);
+  transition: box-shadow .18s, transform .18s cubic-bezier(.34,1.56,.64,1);
+  width: 100%; font-family: inherit;
+}
+.vd-card:hover  { box-shadow: 0 4px 16px rgba(15,23,42,.08); }
+.vd-card:active { transform: scale(0.96); }
+.vd-card-icon {
+  width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+.vd-card-text { flex: 1; min-width: 0; }
+.vd-card-title { font-size: 0.78rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; letter-spacing: -0.01em; }
+.vd-card-sub   { font-size: 0.65rem; color: #64748b; line-height: 1.3; }
+.ci-blue   { background: rgba(219,234,254,.8); border: 1px solid rgba(147,197,253,.35); }
+.ci-amber  { background: rgba(254,243,199,.8); border: 1px solid rgba(252,211,77,.35);  }
+.ci-purple { background: rgba(237,233,254,.8); border: 1px solid rgba(196,181,253,.35); }
+.ci-rose   { background: rgba(255,228,230,.8); border: 1px solid rgba(252,165,165,.35); }
+.ci-green  { background: rgba(209,250,229,.8); border: 1px solid rgba(110,231,183,.35); }
+.ci-orange { background: rgba(255,237,213,.8); border: 1px solid rgba(253,186,116,.35); }
 
-  /* Section */
-  .section-block { margin-bottom: 22px; }
-  .section-label {
-    font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
-    margin-bottom: 10px; padding: 0 2px;
-  }
-  .label-blue   { color: #1e40af; }
-  .label-amber  { color: #92400e; }
-  .label-purple { color: #5b21b6; }
-
-  /* Cards Grid */
-  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  /* Regular Card */
-  .reg-card {
-    background: rgba(255,255,255,0.58); border: 1px solid rgba(255,255,255,0.85);
-    border-radius: 16px; padding: 13px; cursor: pointer; text-align: left;
-    display: flex; align-items: center; gap: 11px;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-    position: relative; overflow: hidden;
-    box-shadow: 0 1px 3px rgba(15,23,42,0.04); width: 100%;
-  }
-  .reg-card:hover {
-    background: rgba(255,255,255,0.78);
-    box-shadow: 0 1px 3px rgba(15,23,42,0.06), 0 4px 12px rgba(15,23,42,0.05);
-    border-color: rgba(255,255,255,0.95);
-  }
-  .reg-card:active { opacity: 0.9; }
-  .reg-card:disabled { opacity: 0.5; cursor: not-allowed; }
-  .reg-card:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; border-radius: 16px; }
-
-  .reg-icon { width: 40px; height: 40px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .reg-icon-inner { font-size: 18px; line-height: 1; }
-
-  .ic-blue   { background: rgba(219,234,254,0.8); border: 1px solid rgba(147,197,253,0.35); }
-  .ic-amber  { background: rgba(254,243,199,0.8); border: 1px solid rgba(252,211,77,0.35);  }
-  .ic-purple { background: rgba(237,233,254,0.8); border: 1px solid rgba(196,181,253,0.35); }
-  .ic-coral  { background: rgba(254,226,226,0.8); border: 1px solid rgba(252,165,165,0.35); }
-  .ic-green  { background: rgba(209,250,229,0.8); border: 1px solid rgba(110,231,183,0.35); }
-
-  .reg-title { font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; letter-spacing: -0.15px; }
-  .reg-sub   { font-size: 0.7rem; color: #64748b; line-height: 1.3; }
-
-  .badge-soon {
-    position: absolute; top: 9px; right: 9px;
-    background: rgba(241,245,249,0.85); color: #94a3b8;
-    font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px;
-    padding: 3px 7px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.8);
-  }
-
-  /* Floating Bot */
-  .bot-wrap { position: fixed; bottom: 28px; right: 24px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
-  .bot-fab {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: linear-gradient(135deg, #1a3a8f, #3b82f6);
-    border: none;
-    box-shadow: 0 4px 20px rgba(59,130,246,0.4), 0 2px 8px rgba(15,23,42,0.12);
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-    color: #fff;
-    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease;
-  }
-  .bot-fab:hover {
-    transform: scale(1.08);
-    box-shadow: 0 6px 28px rgba(59,130,246,0.5), 0 2px 8px rgba(15,23,42,0.14);
-  }
-  .bot-fab:active { transform: scale(0.96); }
-  .bot-fab-open {
-    background: linear-gradient(135deg, #334155, #475569);
-    box-shadow: 0 4px 16px rgba(15,23,42,0.25);
-  }
-
-  .bot-greeting {
-    background: #fff;
-    border: 1px solid rgba(15,23,42,0.08);
-    border-radius: 16px;
-    padding: 16px 18px 14px;
-    box-shadow: 0 8px 32px rgba(15,23,42,0.12), 0 2px 8px rgba(15,23,42,0.06);
-    max-width: 240px;
-    position: relative;
-    animation: greetIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
-  }
-  @keyframes greetIn {
-    from { opacity: 0; transform: translateY(10px) scale(0.96); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .bot-greeting-arrow {
-    position: absolute; bottom: -7px; right: 22px;
-    width: 14px; height: 14px;
-    background: #fff;
-    border-right: 1px solid rgba(15,23,42,0.08);
-    border-bottom: 1px solid rgba(15,23,42,0.08);
-    transform: rotate(45deg);
-  }
-  .bot-greeting-close {
-    position: absolute; top: 8px; right: 10px;
-    background: none; border: none; font-size: 16px; color: #94a3b8;
-    cursor: pointer; line-height: 1; padding: 2px 4px; border-radius: 4px;
-    transition: color 0.15s ease;
-  }
-  .bot-greeting-close:hover { color: #475569; }
-  .bot-greeting-title { font-size: 0.88rem; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
-  .bot-greeting-sub { font-size: 0.8rem; color: #64748b; font-weight: 500; line-height: 1.45; margin-bottom: 12px; }
-  .bot-greeting-cta {
-    display: block; width: 100%;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, #1a3a8f, #3b82f6);
-    color: #fff; border: none; border-radius: 10px;
-    font-size: 0.78rem; font-weight: 700; cursor: pointer;
-    transition: filter 0.15s ease; font-family: inherit;
-  }
-  .bot-greeting-cta:hover { filter: brightness(1.1); }
-
-
-  /* Mobile ≤ 640px */
-  @media (max-width: 640px) {
-    .dash-title { font-size: 1.55rem; }
-    .dash-sub   { font-size: 0.8rem; }
-    .dash-header { margin-bottom: 16px; }
-    .hero-row { gap: 10px; margin-bottom: 20px; }
-    .hero-card { padding: 14px 13px 30px; border-radius: 17px; }
-    .hero-icon  { font-size: 1.6rem; margin-bottom: 7px; }
-    .hero-title { font-size: 0.82rem; }
-    .hero-sub   { font-size: 0.68rem; }
-    .hero-badge { font-size: 8px; padding: 3px 8px; margin-bottom: 10px; }
-    .cards-grid { gap: 8px; }
-    .reg-card   { padding: 11px 10px; border-radius: 13px; gap: 9px; }
-    .reg-icon   { width: 34px; height: 34px; border-radius: 9px; }
-    .reg-icon-inner { font-size: 15px; }
-    .reg-title  { font-size: 0.75rem; }
-    .reg-sub    { font-size: 0.62rem; }
-    .section-block { margin-bottom: 16px; }
-    .section-label { font-size: 9px; }
-    .bot-wrap { bottom: 18px; right: 16px; }
-    .bot-fab  { width: 50px; height: 50px; }
-    .bot-greeting { max-width: 210px; }
-  }
-
-  /* Extra small ≤ 380px */
-  @media (max-width: 380px) {
-    .hero-card { padding: 12px 10px 28px; border-radius: 14px; }
-    .hero-title { font-size: 0.76rem; }
-    .hero-sub   { font-size: 0.62rem; }
-    .hero-icon  { font-size: 1.4rem; }
-    .reg-card   { padding: 9px 8px; gap: 7px; }
-    .reg-icon   { width: 30px; height: 30px; border-radius: 8px; }
-    .reg-icon-inner { font-size: 13px; }
-    .reg-title  { font-size: 0.7rem; }
-    .reg-sub    { font-size: 0.58rem; }
-  }
-`;
-
-const GETTING_STARTED_CSS = `
-.gs-banner {
-  background: linear-gradient(135deg,rgba(219,234,254,0.7),rgba(237,233,254,0.5));
-  border: 1px solid rgba(147,197,253,0.4);
-  border-radius: 20px;
-  padding: 20px;
+/* ── GET STARTED BANNER ── */
+.vd-start {
+  background: linear-gradient(135deg, rgba(99,102,241,.08), rgba(168,85,247,.06));
+  border: 1px solid rgba(99,102,241,.2);
+  border-radius: 22px; padding: 20px;
   margin-bottom: 22px;
 }
-.gs-heading {
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: #1e3a8a;
-  margin: 0 0 6px;
+.vd-start-title { font-size: 0.88rem; font-weight: 900; color: #1e1b4b; margin-bottom: 4px; }
+.vd-start-sub   { font-size: 0.72rem; color: #64748b; margin-bottom: 14px; line-height: 1.5; }
+.vd-start-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.vd-start-item {
+  background: #fff; border: 1px solid rgba(226,232,240,.9);
+  border-radius: 14px; padding: 12px;
+  display: flex; flex-direction: column; gap: 4px;
+  cursor: pointer; text-align: left; font-family: inherit;
+  box-shadow: 0 1px 4px rgba(15,23,42,.04);
+  transition: box-shadow .15s;
 }
-.gs-sub {
-  font-size: 0.78rem;
-  color: #475569;
-  font-weight: 500;
-  margin: 0 0 14px;
-  line-height: 1.5;
+.vd-start-item:hover { box-shadow: 0 4px 12px rgba(15,23,42,.08); }
+.vd-start-item-icon  { font-size: 1.1rem; }
+.vd-start-item-title { font-size: 0.76rem; font-weight: 800; color: #0f172a; }
+.vd-start-item-perks { font-size: 0.65rem; font-weight: 700; color: #d97706; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 360px) {
+  .vd-hero    { border-radius: 20px; padding: 22px 16px 20px; }
+  .vd-name    { font-size: 1.3rem; }
+  .vd-stat-val { font-size: 1rem; }
+  .vd-s-circle { width: 28px; height: 28px; }
+  .vd-grid    { gap: 8px; }
+  .vd-card    { padding: 11px 10px; }
 }
-.gs-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+@media (min-width: 540px) {
+  .vd-qa-icon { width: 58px; height: 58px; }
+  .vd-card    { padding: 16px 14px; }
+  .vd-card-icon { width: 46px; height: 46px; }
+  .vd-feat    { min-height: 160px; }
 }
-.gs-step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.7);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 12px;
-  padding: 10px 12px;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  font-family: 'DM Sans', system-ui, sans-serif;
-  transition: box-shadow 0.15s;
+@media (min-width: 768px) {
+  .vd-featured { grid-template-columns: 1fr 1fr 1fr; }
+  .vd-grid     { grid-template-columns: 1fr 1fr 1fr; }
+  .vd-start-grid { grid-template-columns: repeat(4, 1fr); }
+  .vd-hero     { padding: 32px 28px 28px; }
 }
-.gs-step:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
-.gs-step-icon { font-size: 1.1rem; flex-shrink: 0; }
-.gs-step-text {}
-.gs-step-title { font-size: 0.8rem; font-weight: 800; color: #0f172a; margin: 0 0 1px; }
-.gs-step-desc  { font-size: 0.7rem; color: #64748b; margin: 0; }
-.gs-step-coins { margin-left: auto; font-size: 0.72rem; font-weight: 700; color: #d97706; flex-shrink: 0; }
-@media (min-width: 480px) {
-  .gs-steps { flex-direction: row; flex-wrap: wrap; }
-  .gs-step   { flex: 1 1 calc(50% - 4px); }
-}
+
+@keyframes vdIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+.vd { animation: vdIn .4s cubic-bezier(.16,1,.3,1) both; }
 `;
 
-function GettingStartedBanner() {
+const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+export default function UserDashboardContent() {
   const router = useRouter();
-  return (
-    <>
-      <style>{GETTING_STARTED_CSS}</style>
-      <div className="gs-banner">
-        <p className="gs-heading">👋 Welcome to AIDLA — here&apos;s how to get started</p>
-        <p className="gs-sub">Complete these actions to earn perks and unlock your full profile.</p>
-        <div className="gs-steps">
-          <button className="gs-step" onClick={() => router.push("/user/dailyquizz")}>
-            <span className="gs-step-icon">❓</span>
-            <div className="gs-step-text">
-              <p className="gs-step-title">Take today&apos;s quiz</p>
-              <p className="gs-step-desc">2 minutes · Knowledge challenge</p>
-            </div>
-            <span className="gs-step-coins">+15 perks</span>
-          </button>
-          <button className="gs-step" onClick={() => router.push("/user/learn")}>
-            <span className="gs-step-icon">🎓</span>
-            <div className="gs-step-text">
-              <p className="gs-step-title">Enroll in a course</p>
-              <p className="gs-step-desc">Free · Start learning today</p>
-            </div>
-            <span className="gs-step-coins">+10/lesson</span>
-          </button>
-          <button className="gs-step" onClick={() => router.push("/user/cv-maker")}>
-            <span className="gs-step-icon">📝</span>
-            <div className="gs-step-text">
-              <p className="gs-step-title">Build your CV</p>
-              <p className="gs-step-desc">AI-powered · 5 minutes</p>
-            </div>
-            <span className="gs-step-coins">Free</span>
-          </button>
-          <button className="gs-step" onClick={() => router.push("/user/battle")}>
-            <span className="gs-step-icon">⚔️</span>
-            <div className="gs-step-text">
-              <p className="gs-step-title">Try a quiz battle</p>
-              <p className="gs-step-desc">1v1 · Win perks</p>
-            </div>
-            <span className="gs-step-coins">+25 win</span>
-          </button>
-        </div>
-      </div>
-    </>
-  );
-}
+  const [profile,    setProfile]    = useState({ name: "", perks: 0, rank: "Learner", avatarUrl: null });
+  const [streak,     setStreak]     = useState(0);
+  const [weekDays,   setWeekDays]   = useState([]);
+  const [lastCourse, setLastCourse] = useState(null);
+  const [isNew,      setIsNew]      = useState(false);
 
-const STREAK_CSS = `
-.ds-wrap{background:#fff;border:1px solid rgba(226,232,240,.7);border-radius:18px;padding:16px 20px;margin-bottom:18px;box-shadow:0 4px 16px rgba(15,23,42,.05);}
-.ds-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.ds-title{font-size:.82rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
-.ds-days{display:flex;gap:6px;align-items:center;}
-.ds-day{display:flex;flex-direction:column;align-items:center;gap:3px;}
-.ds-circle{width:28px;height:28px;border-radius:50%;background:#f1f5f9;border:2px solid #e2e8f0;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#94a3b8;transition:all .2s;}
-.ds-circle.done{background:linear-gradient(135deg,#f59e0b,#ef4444);border-color:transparent;color:#fff;}
-.ds-circle.today{box-shadow:0 0 0 3px rgba(245,158,11,.2);}
-.ds-day-lbl{font-size:.6rem;color:#94a3b8;font-weight:600;}
-.ds-stats{display:flex;gap:14px;margin-left:auto;flex-shrink:0;}
-.ds-stat{text-align:center;}
-.ds-stat-val{font-size:1.1rem;font-weight:900;color:#f59e0b;line-height:1;}
-.ds-stat-lbl{font-size:.65rem;color:#94a3b8;font-weight:600;}
-@media(max-width:480px){.ds-stats{margin-left:0;width:100%;justify-content:flex-start;}.ds-circle{width:24px;height:24px;font-size:.58rem;}}
-`;
-
-function DashStreak({ weekDays, currentStreak }) {
-  const DAY_NAMES = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  return (
-    <div className="ds-wrap">
-      <style>{STREAK_CSS}</style>
-      <div className="ds-row">
-        <span className="ds-title">🔥 Weekly Streak</span>
-        <div className="ds-days">
-          {weekDays.map((d, i) => (
-            <div className="ds-day" key={i}>
-              <div className={`ds-circle${d.done ? " done" : ""}${d.isToday ? " today" : ""}`}>
-                {d.done ? "✓" : DAY_NAMES[d.dayOfWeek][0]}
-              </div>
-              <div className="ds-day-lbl">{DAY_NAMES[d.dayOfWeek]}</div>
-            </div>
-          ))}
-        </div>
-        <div className="ds-stats">
-          <div className="ds-stat">
-            <div className="ds-stat-val">{currentStreak}</div>
-            <div className="ds-stat-lbl">Current</div>
-          </div>
-          <div className="ds-stat">
-            <div className="ds-stat-val">{weekDays.filter(d => d.done).length}/7</div>
-            <div className="ds-stat-lbl">This Week</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function UserDashboard() {
-  const router = useRouter();
-  const [isNewUser,    setIsNewUser]    = useState(false);
-  const [heroData,     setHeroData]     = useState({ name: "", streak: 0, perks: 0, rank: "Learner", coursesCount: 0, lastCourse: null });
-  const [weekDays,     setWeekDays]     = useState([]);
+  const hour = new Date().getHours();
+  const greeting =
+    hour >= 5  && hour < 12 ? "Good Morning" :
+    hour >= 12 && hour < 17 ? "Good Afternoon" :
+    hour >= 17 && hour < 21 ? "Good Evening"   : "Good Night";
 
   useEffect(() => {
-    async function load() {
+    (async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
         const uid = session.user.id;
-
         const sevenDaysAgo = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
-        const [profileRes, enrollRes, streakRes, weekRes] = await Promise.all([
-          supabase.from("users_profiles").select("full_name,total_aidla_perks,rank").eq("user_id", uid).single(),
+
+        const [pRes, eRes, sRes, wRes] = await Promise.all([
+          supabase.from("users_profiles").select("full_name,total_aidla_perks,rank,avatar_url").eq("user_id", uid).single(),
           supabase.from("course_enrollments").select("course_id,progress,enrolled_at,course_courses(id,title,category)").eq("user_id", uid).order("enrolled_at", { ascending: false }).limit(10),
           supabase.from("daily_quiz_attempts").select("streak_days").eq("user_id", uid).order("attempt_date", { ascending: false }).limit(1).single(),
           supabase.from("daily_quiz_attempts").select("attempt_date").eq("user_id", uid).gte("attempt_date", sevenDaysAgo),
         ]);
 
-        const profile      = profileRes.data || {};
-        const enrollments  = enrollRes.data  || [];
-        const latestStreak = streakRes.data?.streak_days || 0;
+        const p = pRes.data || {};
+        setProfile({ name: p.full_name || "", perks: p.total_aidla_perks || 0, rank: p.rank || "Learner", avatarUrl: p.avatar_url || null });
+        setStreak(sRes.data?.streak_days || 0);
 
-        const doneDates = new Set((weekRes.data || []).map(r => r.attempt_date?.slice(0, 10)));
+        const doneDates = new Set((wRes.data || []).map(r => r.attempt_date?.slice(0, 10)));
         const today = new Date();
-        const days = Array.from({ length: 7 }, (_, i) => {
+        setWeekDays(Array.from({ length: 7 }, (_, i) => {
           const d = new Date(today);
           d.setDate(today.getDate() - (6 - i));
           const iso = d.toISOString().slice(0, 10);
           return { dayOfWeek: d.getDay(), done: doneDates.has(iso), isToday: i === 6 };
-        });
-        setWeekDays(days);
+        }));
 
-        const lastEnrollment = enrollments[0];
-        const lastCourse = lastEnrollment?.course_courses
-          ? { ...lastEnrollment.course_courses, progress: lastEnrollment.progress || 0 }
-          : null;
-
-        setIsNewUser(enrollments.length === 0);
-        setHeroData({
-          name:         profile.full_name             || "",
-          streak:       latestStreak,
-          perks:        profile.total_aidla_perks    || 0,
-          rank:         profile.rank                 || "Learner",
-          coursesCount: enrollments.length,
-          lastCourse,
-        });
+        const enr = eRes.data || [];
+        setIsNew(enr.length === 0);
+        const last = enr[0];
+        if (last?.course_courses) setLastCourse({ ...last.course_courses, progress: last.progress || 0 });
       } catch (_) {}
-    }
-    load();
+    })();
   }, []);
 
+  const firstName  = profile.name.split(" ")[0] || "there";
+  const perksLabel = profile.perks >= 1000 ? `${(profile.perks / 1000).toFixed(1)}k` : Math.round(profile.perks);
+
+  function go(path) { router.push(path); }
+
   return (
-    <div className="dashboard">
+    <div className="vd">
       <style>{CSS}</style>
 
-      {/* Hero Stats Bar */}
-      <DashHero {...heroData} />
-
-      {/* 7-Day Streak Widget */}
-      {weekDays.length > 0 && <DashStreak weekDays={weekDays} currentStreak={heroData.streak} />}
-
-      {/* Getting Started — shown only for new users with no course enrollments */}
-      {isNewUser && <GettingStartedBanner />}
-
-      {/* Hero Row */}
-      <div className="hero-row">
-        <HeroCard
-          title="AIDLA AI"
-          subtitle="AI-powered career assistant — chat, plan, and grow smarter."
-          icon="🤖"
-          to="/user/aidla-ai"
-          accentClass="hero-blue"
-          badgeColor="badge-blue"
-        />
-        <HeroCard
-          title="Learn"
-          subtitle="Paid & free specialized courses tailored for your growth."
-          icon="🎓"
-          to="/user/learn"
-          accentClass="hero-emerald"
-          badgeColor="badge-emerald"
-        />
+      {/* ── HERO ─────────────────────────────────── */}
+      <div className="vd-hero">
+        <div className="vd-hero-top">
+          <Avatar url={profile.avatarUrl} name={profile.name} size={64} />
+          <div className="vd-hero-info">
+            <div className="vd-greeting">{greeting}</div>
+            <div className="vd-name">{firstName}</div>
+            <div className="vd-rank-pill">
+              <span>📈</span> {profile.rank}
+            </div>
+          </div>
+        </div>
+        <div className="vd-stats-row">
+          <div className="vd-stat">
+            <div className="vd-stat-val gold">{perksLabel}</div>
+            <div className="vd-stat-lbl">⭐ Perks</div>
+          </div>
+          <div className="vd-stat">
+            <div className="vd-stat-val">{streak >= 3 ? `🔥 ${streak}` : streak}</div>
+            <div className="vd-stat-lbl">Streak</div>
+          </div>
+          <div className="vd-stat">
+            <div className="vd-stat-val" style={{ fontSize: "0.9rem" }}>{weekDays.filter(d => d.done).length}/7</div>
+            <div className="vd-stat-lbl">This Week</div>
+          </div>
+        </div>
       </div>
 
-      {/* Learning */}
-      <Section label="📘 Learning" labelClass="label-blue">
-        <RegCard title="Daily Quiz"   subtitle="Daily knowledge challenge"          icon="❓" to="/user/dailyquizz"  iconClass="ic-blue"   />
-        <RegCard title="Assessments"  subtitle="Tests & skill evaluations"          icon="✅" to="/user/test"         iconClass="ic-blue"   />
-        <RegCard title="Resources"    subtitle="Study materials & past papers"       icon="📚" to="/user/resources"   iconClass="ic-blue"   />
-        <RegCard title="Projects"     subtitle="Project ideas & FYP guidance"        icon="🛠️" to="/user/projects"    iconClass="ic-blue"   />
-      </Section>
+      {/* ── STREAK ───────────────────────────────── */}
+      {weekDays.length > 0 && (
+        <div className="vd-streak">
+          <div className="vd-streak-head">
+            <span className="vd-streak-title">🔥 Weekly Streak</span>
+            <span className="vd-streak-count">{streak} day{streak !== 1 ? "s" : ""}</span>
+          </div>
+          <div className="vd-streak-days">
+            {weekDays.map((d, i) => (
+              <div className="vd-s-day" key={i}>
+                <div className={`vd-s-circle${d.done ? " done" : ""}${d.isToday ? " today" : ""}`}>
+                  {d.done ? "✓" : DAY_NAMES[d.dayOfWeek][0]}
+                </div>
+                <div className="vd-s-lbl">{DAY_NAMES[d.dayOfWeek]}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {/* Career */}
-      <Section label="💼 Career Toolkit" labelClass="label-purple">
-        <RegCard title="CV Maker"      subtitle="Build, edit & download your CV"  icon="📝" to="/user/cv-maker"     iconClass="ic-purple" />
-        <RegCard title="Cover Letters" subtitle="AI-crafted professional letters" icon="✉️" to="/user/cover-letter" iconClass="ic-purple" />
-      </Section>
+      {/* ── QUICK ACTIONS ────────────────────────── */}
+      <div className="vd-quick">
+        {[
+          { icon: "❓", label: "Daily Quiz",  cls: "qa-quiz",   path: "/user/dailyquizz" },
+          { icon: "🤖", label: "AIDLA AI",    cls: "qa-ai",     path: "/user/aidla-ai"   },
+          { icon: "⚔️", label: "Battle",      cls: "qa-battle", path: "/user/battle"     },
+          { icon: "📚", label: "Learn",       cls: "qa-learn",  path: "/user/learn"      },
+          { icon: "🎡", label: "Perks Spin",  cls: "qa-wheel",  path: "/user/lucky-wheel"},
+          { icon: "🎁", label: "Perks Store", cls: "qa-perks",  path: "/user/perks"      },
+        ].map(a => (
+          <button key={a.path} className="vd-qa" onClick={() => go(a.path)}>
+            <div className={`vd-qa-icon ${a.cls}`}>{a.icon}</div>
+            <span className="vd-qa-lbl">{a.label}</span>
+          </button>
+        ))}
+      </div>
 
-      {/* Perks & Rewards */}
-      <Section label="⭐ Perks & Rewards" labelClass="label-amber">
-        <RegCard title="Battle Arena"    subtitle="1v1 quiz battles — earn perks"        icon="⚔️" to="/user/battle"      iconClass="ic-amber" />
-        <RegCard title="Learning Draw"   subtitle="Scheduled draws & learning prizes"    icon="🎟️" to="/user/lucky-draw"  iconClass="ic-amber" />
-        <RegCard title="Perks Spin"      subtitle="Spin & win perks, resources, unlocks" icon="🎡" to="/user/lucky-wheel" iconClass="ic-amber" />
-        <RegCard title="Perks Store"     subtitle="Redeem perks for premium content"     icon="🎁" to="/user/perks"       iconClass="ic-amber" />
-        <RegCard title="Community"       subtitle="Forum, channels & social"             icon="💬" to="/user/community"   iconClass="ic-coral" />
-      </Section>
+      {/* ── FEATURED CARDS ───────────────────────── */}
+      <div className="vd-featured">
+        <button className="vd-feat vd-feat-ai" onClick={() => go("/user/aidla-ai")}>
+          <span className="vd-feat-tag">AI Assistant</span>
+          <span className="vd-feat-icon">🤖</span>
+          <div className="vd-feat-title">AIDLA AI</div>
+          <div className="vd-feat-sub">Chat, plan & grow your career smarter</div>
+          <span className="vd-feat-arrow">→</span>
+        </button>
+        <button className="vd-feat vd-feat-quiz" onClick={() => go("/user/dailyquizz")}>
+          <span className="vd-feat-tag">Today</span>
+          <span className="vd-feat-icon">❓</span>
+          <div className="vd-feat-title">Daily Quiz</div>
+          <div className="vd-feat-sub">+15 perks · 2 min challenge</div>
+          <span className="vd-feat-arrow">→</span>
+        </button>
+      </div>
+
+      {/* ── CONTINUE LEARNING ────────────────────── */}
+      {lastCourse && (
+        <button className="vd-continue" onClick={() => go(`/user/course/${lastCourse.id}`)}>
+          <div className="vd-continue-icon">📚</div>
+          <div className="vd-continue-info">
+            <div className="vd-continue-label">Continue Learning</div>
+            <div className="vd-continue-title">{lastCourse.title}</div>
+            <div className="vd-continue-bar">
+              <div className="vd-continue-fill" style={{ width: `${Math.min(100, lastCourse.progress || 0)}%` }} />
+            </div>
+          </div>
+          <span className="vd-continue-arrow">›</span>
+        </button>
+      )}
+
+      {/* ── GETTING STARTED ──────────────────────── */}
+      {isNew && (
+        <div className="vd-start">
+          <div className="vd-start-title">👋 Welcome to AIDLA</div>
+          <div className="vd-start-sub">Complete these to earn perks and unlock your full profile.</div>
+          <div className="vd-start-grid">
+            {[
+              { icon: "❓", title: "Daily Quiz",      desc: "+15 perks",    path: "/user/dailyquizz" },
+              { icon: "🎓", title: "Enroll a Course", desc: "+10/lesson",   path: "/user/learn"      },
+              { icon: "📝", title: "Build your CV",   desc: "AI-powered",   path: "/user/cv-maker"   },
+              { icon: "⚔️", title: "Quiz Battle",     desc: "Win perks",    path: "/user/battle"     },
+            ].map(s => (
+              <button key={s.path} className="vd-start-item" onClick={() => go(s.path)}>
+                <span className="vd-start-item-icon">{s.icon}</span>
+                <span className="vd-start-item-title">{s.title}</span>
+                <span className="vd-start-item-perks">{s.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── LEARNING ─────────────────────────────── */}
+      <div className="vd-section">
+        <div className="vd-section-head">
+          <span className="vd-section-title">📘 Learning</span>
+          <div className="vd-section-line" />
+        </div>
+        <div className="vd-grid">
+          {[
+            { icon: "❓", title: "Daily Quiz",   sub: "Daily knowledge challenge",    cls: "ci-blue",   path: "/user/dailyquizz"  },
+            { icon: "✅", title: "Assessments",  sub: "Tests & skill evaluations",    cls: "ci-blue",   path: "/user/test"         },
+            { icon: "📚", title: "Resources",    sub: "Study materials & past papers", cls: "ci-blue",   path: "/user/resources"   },
+            { icon: "🛠️", title: "Projects",     sub: "Project ideas & FYP guidance", cls: "ci-blue",   path: "/user/projects"    },
+          ].map(c => (
+            <button key={c.path} className="vd-card" onClick={() => go(c.path)}>
+              <div className={`vd-card-icon ${c.cls}`}>{c.icon}</div>
+              <div className="vd-card-text">
+                <div className="vd-card-title">{c.title}</div>
+                <div className="vd-card-sub">{c.sub}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── CAREER TOOLKIT ───────────────────────── */}
+      <div className="vd-section">
+        <div className="vd-section-head">
+          <span className="vd-section-title">💼 Career Toolkit</span>
+          <div className="vd-section-line" />
+        </div>
+        <div className="vd-grid">
+          {[
+            { icon: "📝", title: "CV Maker",       sub: "Build & download your CV",      cls: "ci-purple", path: "/user/cv-maker"     },
+            { icon: "✉️", title: "Cover Letters",  sub: "AI-crafted letters",            cls: "ci-purple", path: "/user/cover-letter" },
+          ].map(c => (
+            <button key={c.path} className="vd-card" onClick={() => go(c.path)}>
+              <div className={`vd-card-icon ${c.cls}`}>{c.icon}</div>
+              <div className="vd-card-text">
+                <div className="vd-card-title">{c.title}</div>
+                <div className="vd-card-sub">{c.sub}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── PERKS & REWARDS ──────────────────────── */}
+      <div className="vd-section">
+        <div className="vd-section-head">
+          <span className="vd-section-title">⭐ Perks & Rewards</span>
+          <div className="vd-section-line" />
+        </div>
+        <div className="vd-grid">
+          {[
+            { icon: "⚔️", title: "Battle Arena",  sub: "1v1 quiz battles",             cls: "ci-amber",  path: "/user/battle"      },
+            { icon: "🎟️", title: "Learning Draw",  sub: "Draws & learning prizes",      cls: "ci-amber",  path: "/user/lucky-draw"  },
+            { icon: "🎡", title: "Perks Spin",     sub: "Spin & win",                   cls: "ci-green",  path: "/user/lucky-wheel" },
+            { icon: "🎁", title: "Perks Store",    sub: "Redeem perks for content",     cls: "ci-orange", path: "/user/perks"       },
+            { icon: "💬", title: "Community",      sub: "Forum, channels & social",     cls: "ci-rose",   path: "/user/community"   },
+          ].map(c => (
+            <button key={c.path} className="vd-card" onClick={() => go(c.path)}>
+              <div className={`vd-card-icon ${c.cls}`}>{c.icon}</div>
+              <div className="vd-card-text">
+                <div className="vd-card-title">{c.title}</div>
+                <div className="vd-card-sub">{c.sub}</div>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
 
     </div>
   );

@@ -14,8 +14,8 @@ const FULLSCREEN_ROUTES = ["/user/aidla-ai", "/user/battle"];
 const TABS = [
   { to: "/user",              label: "Home",      icon: "⚡" },
   { to: "/user/learn",        label: "Learn",     icon: "📚" },
-  { to: "/user/test",         label: "Compete",   icon: "🏆" },
   { to: "/user/community",    label: "Community", icon: "💬" },
+  { to: "/user/tools",        label: "Tools",     icon: "🛠️" },
   { to: "/user/profile",      label: "Profile",   icon: "👤" },
 ];
 

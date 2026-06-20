@@ -16,20 +16,12 @@ const NAV_GROUPS = [
     ],
   },
   {
-    title: "Finance",
+    title: "Perks & Rewards",
     items: [
-      ["/admin/withdraws", "Withdrawals"],
-      ["/admin/deposits", "Deposits"],
-      ["/admin/mining", "Mining"],
+      ["/admin/shop", "Perks Redemption Center"],
+      ["/admin/lucky-wheel", "Perks Spin"],
+      ["/admin/lucky-draw", "Learning Draw"],
       ["/admin/invite", "Invite Rewards"],
-    ],
-  },
-  {
-    title: "Commerce",
-    items: [
-      ["/admin/shop", "Shop"],
-      ["/admin/lucky-wheel", "Lucky Wheel"],
-      ["/admin/lucky-draw", "Lucky Draw"],
     ],
   },
   {

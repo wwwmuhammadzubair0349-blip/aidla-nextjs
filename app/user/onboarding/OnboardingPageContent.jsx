@@ -298,10 +298,10 @@ export default function OnboardingPage() {
               ))}
             </ul>
             <div style={{ background: "linear-gradient(135deg, rgba(26,58,143,0.06), rgba(59,130,246,0.06))", borderRadius: 14, padding: "14px 16px", marginBottom: 24, display: "flex", gap: 10, alignItems: "center" }}>
-              <span style={{ fontSize: "1.5rem" }}>🪙</span>
+              <span style={{ fontSize: "1.5rem" }}>⭐</span>
               <div>
-                <div style={{ fontSize: "0.82rem", fontWeight: 800, color: "#0f172a" }}>Earn 50 coins today</div>
-                <div style={{ fontSize: "0.74rem", color: "#64748b" }}>Complete the daily quiz to earn your first coins</div>
+                <div style={{ fontSize: "0.82rem", fontWeight: 800, color: "#0f172a" }}>Earn 50 perks today</div>
+                <div style={{ fontSize: "0.74rem", color: "#64748b" }}>Complete the daily quiz to earn your first perks</div>
               </div>
             </div>
             <div className="ob-actions">

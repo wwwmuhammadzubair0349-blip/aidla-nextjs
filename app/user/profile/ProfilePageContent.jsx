@@ -39,7 +39,7 @@ const ACHIEVEMENTS = [
   { key: "first_quiz",      label: "First Quiz",       icon: "🎯", desc: "Complete your first daily quiz"         },
   { key: "streak_7",        label: "7 Day Streak",      icon: "🔥", desc: "7 consecutive quiz days"               },
   { key: "streak_30",       label: "30 Day Streak",     icon: "⚡", desc: "30 consecutive quiz days"              },
-  { key: "first_coin",      label: "First Coin",        icon: "🪙", desc: "Earn your first AIDLA Coin"            },
+  { key: "first_coin",      label: "First Perk",        icon: "⭐", desc: "Earn your first AIDLA Perk"            },
   { key: "first_referral",  label: "First Referral",    icon: "🤝", desc: "Invite your first person"              },
   { key: "course_starter",  label: "Course Starter",    icon: "📚", desc: "Enroll in your first course"          },
   { key: "graduate",        label: "Graduate",          icon: "🎓", desc: "Complete a course and earn a cert"     },
@@ -89,7 +89,7 @@ function computeAchievements(profile, quizData, enrollments, certs) {
   const toEarn = new Set();
 
   const referrals   = profile?.my_referals    || 0;
-  const coins       = profile?.total_aidla_coins || 0;
+  const coins       = profile?.total_aidla_perks || 0;
   const streak      = quizData?.maxStreak      || 0;
   const quizCount   = quizData?.totalQuizzes   || 0;
   const certCount   = certs?.length            || 0;
@@ -1003,7 +1003,7 @@ export default function ProfilePage() {
               { key: "rank",         label: "Rank"         },
               { key: "achievements", label: "Badges"       },
               { key: "certificates", label: "Certs"        },
-              { key: "wallet",       label: "Wallet"       },
+              { key: "perks",        label: "Perks"        },
             ].map(t => (
               <button
                 key={t.key}
@@ -1026,30 +1026,30 @@ export default function ProfilePage() {
         {/* ══════════════ TAB: CERTIFICATES ══════════════ */}
         {activeTab === "certificates" && <MyCertificates />}
 
-        {/* ══════════════ TAB: WALLET ══════════════ */}
-        {activeTab === "wallet" && (
+        {/* ══════════════ TAB: PERKS ══════════════ */}
+        {activeTab === "perks" && (
           <div>
             <div className="pf-wallet-card">
-              <div className="pf-wallet-icon" aria-hidden="true">💎</div>
+              <div className="pf-wallet-icon" aria-hidden="true">⭐</div>
               <div className="pf-wallet-body">
-                <h2 className="pf-wallet-title">My Wallet</h2>
-                <p className="pf-wallet-sub">Total AIDLA Coins</p>
+                <h2 className="pf-wallet-title">My Perks</h2>
+                <p className="pf-wallet-sub">Total AIDLA Perks</p>
                 <span className="pf-wallet-coins">
-                  🪙 {Math.round(profile?.total_aidla_coins || 0).toLocaleString()} Coins
+                  ⭐ {Math.round(profile?.total_aidla_perks || 0).toLocaleString()} Perks
                 </span>
               </div>
-              <a href="/user/wallet" className="pf-wallet-btn">
-                Open Wallet →
+              <a href="/user/perks" className="pf-wallet-btn">
+                Redeem Perks →
               </a>
             </div>
 
             {/* Quick stats */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: 12 }}>
               {[
-                { icon: "🪙", label: "Total Coins",     value: Math.round(profile?.total_aidla_coins || 0).toLocaleString() },
-                { icon: "🎡", label: "Wheel Coins",     value: Math.round(profile?.lw_earned_coins || 0).toLocaleString() },
-                { icon: "📊", label: "Total LW Earned", value: Math.round(profile?.total_lw_earned || 0).toLocaleString() },
-                { icon: "🎟️", label: "LW Draws Left",   value: profile?.lw_draws_remaining || 0 },
+                { icon: "⭐", label: "Total Perks",     value: Math.round(profile?.total_aidla_perks || 0).toLocaleString() },
+                { icon: "🎡", label: "Spin Perks",      value: Math.round(profile?.lw_earned_coins || 0).toLocaleString() },
+                { icon: "📊", label: "Total Spins",     value: Math.round(profile?.total_lw_earned || 0).toLocaleString() },
+                { icon: "🎟️", label: "Draws Left",      value: profile?.lw_draws_remaining || 0 },
               ].map(s => (
                 <div key={s.label} style={{
                   background: "#fff", border: "1px solid #e2e8f0",
@@ -1157,7 +1157,7 @@ export default function ProfilePage() {
                   <div className="pf-mini-stats">
                     <div className="pf-mini-stat"><strong>{pct}%</strong><span>Complete</span></div>
                     <div className="pf-mini-stat"><strong>{earnedAchievements.length}</strong><span>Badges</span></div>
-                    <div className="pf-mini-stat"><strong>{Math.round(profile?.total_aidla_coins || 0).toLocaleString()}</strong><span>Coins</span></div>
+                    <div className="pf-mini-stat"><strong>{Math.round(profile?.total_aidla_perks || 0).toLocaleString()}</strong><span>Perks</span></div>
                   </div>
                 </div>
 

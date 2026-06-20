@@ -434,7 +434,7 @@ export default function AdminTests() {
                         </span>
                       </div>
                       <div className="at-test-item-meta">
-                        {t.entry_type === "paid" ? `💰 ${t.entry_cost} coins` : "🆓 Free"} · {t.questions_per_user}Qs · {t.time_per_question_sec}s/Q
+                        {t.entry_type === "paid" ? `⭐ ${t.entry_cost} perks` : "🆓 Free"} · {t.questions_per_user}Qs · {t.time_per_question_sec}s/Q
                       </div>
                       <div className="at-test-item-dates">
                         <span>📅 {fmtUAE(t.registration_open_at)}</span>
@@ -511,7 +511,7 @@ export default function AdminTests() {
                   </select>
                 </div>
                 <div className="at-field">
-                  <label className="at-label">Entry Cost (coins)</label>
+                  <label className="at-label">Entry Cost (perks)</label>
                   <input className="at-input" type="number" disabled={form.entry_type !== "paid"} value={form.entry_cost} onChange={e => setForm(x => ({ ...x, entry_cost: e.target.value }))} />
                 </div>
                 <div className="at-field">
@@ -577,7 +577,7 @@ export default function AdminTests() {
                       <input className="at-input" type="number" value={form.add_time_limit} onChange={e => setForm(x => ({ ...x, add_time_limit: e.target.value }))} />
                     </div>
                     <div className="at-field">
-                      <label className="at-label">Price (coins)</label>
+                      <label className="at-label">Price (perks)</label>
                       <input className="at-input" type="number" value={form.add_time_price} onChange={e => setForm(x => ({ ...x, add_time_price: e.target.value }))} />
                     </div>
                     <div className="at-field">
@@ -826,18 +826,18 @@ function PrizeEditor({ maxWinners, prizes, onSave }) {
             <div className="at-field">
               <label className="at-label">Type</label>
               <select className="at-input" value={r.prize_type} onChange={e => setRows(prev => prev.map((x, i) => i === idx ? { ...x, prize_type: e.target.value } : x))}>
-                <option value="coins">coins</option>
+                <option value="coins">perks</option>
                 <option value="item">item</option>
                 <option value="other">other</option>
               </select>
             </div>
             <div className="at-field" style={{ flex: 2 }}>
               <label className="at-label">Prize Text / Description</label>
-              <input className="at-input" value={r.prize_text} placeholder="e.g. iPhone 15, 1000 coins…"
+              <input className="at-input" value={r.prize_text} placeholder="e.g. iPhone 15, 1000 perks…"
                 onChange={e => setRows(prev => prev.map((x, i) => i === idx ? { ...x, prize_text: e.target.value } : x))} />
             </div>
             <div className="at-field">
-              <label className="at-label">Coins Amount</label>
+              <label className="at-label">Perks Amount</label>
               <input className="at-input" type="number" value={r.coins_amount} disabled={r.prize_type !== "coins"}
                 onChange={e => setRows(prev => prev.map((x, i) => i === idx ? { ...x, coins_amount: e.target.value } : x))} />
             </div>

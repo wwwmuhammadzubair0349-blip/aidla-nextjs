@@ -85,10 +85,10 @@ export default function AdminBattlePage() {
                 ["Real Battles", stats.real_battles, "#dcfce7", "#166534"],
                 ["Bot Battles", stats.bot_battles, "#fef9c3", "#854d0e"],
                 ["Active Now", stats.active_rooms, "#eff6ff", "#1e40af"],
-                ["Coins In", stats.coins_collected+"🪙", "#dcfce7", "#166534"],
-                ["Coins Out", stats.coins_paid_out+"🪙", "#fee2e2", "#991b1b"],
-                ["Net Revenue", stats.net_revenue+"🪙", "#f0fdf4", "#15803d"],
-                ["Free Spent", stats.free_coins_spent+"🪙", "#fff7ed", "#c2410c"],
+                ["Perks In", stats.coins_collected+"⭐", "#dcfce7", "#166534"],
+                ["Perks Out", stats.coins_paid_out+"⭐", "#fee2e2", "#991b1b"],
+                ["Net Revenue", stats.net_revenue+"⭐", "#f0fdf4", "#15803d"],
+                ["Free Spent", stats.free_coins_spent+"⭐", "#fff7ed", "#c2410c"],
               ].map(([label, val, bg, color]) => (
                 <div key={label} style={{ background:bg, borderRadius:10, padding:"14px 12px", textAlign:"center" }}>
                   <div style={{ fontSize:20, fontWeight:800, color }}>{val ?? "—"}</div>
@@ -101,13 +101,13 @@ export default function AdminBattlePage() {
               <div style={S.card}>
                 <div style={S.cardTitle}>🏆 Top Players</div>
                 <table style={S.table}>
-                  <thead><tr>{["Name","Wins","Coins"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                  <thead><tr>{["Name","Wins","Perks"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
                   <tbody>
                     {stats.top_players.map((p, i) => (
                       <tr key={i}>
                         <td style={S.td}>{p.full_name}</td>
                         <td style={S.td}>{p.wins}</td>
-                        <td style={S.td}>{p.coins}🪙</td>
+                        <td style={S.td}>{p.coins}⭐</td>
                       </tr>
                     ))}
                   </tbody>
@@ -137,7 +137,7 @@ export default function AdminBattlePage() {
                   </span>
                 </div>
                 <div style={{ fontSize:11, color:"#94a3b8" }}>
-                  Mode: {r.mode} · Stake: {r.coins_staked}🪙 · {new Date(r.created_at).toLocaleTimeString()}
+                  Mode: {r.mode} · Stake: {r.coins_staked}⭐ · {new Date(r.created_at).toLocaleTimeString()}
                 </div>
               </div>
             ))}
@@ -153,7 +153,7 @@ export default function AdminBattlePage() {
             ) : (
               <table style={S.table}>
                 <thead>
-                  <tr>{["#","Player","W","L","T","Coins"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr>
+                  <tr>{["#","Player","W","L","T","Perks"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr>
                 </thead>
                 <tbody>
                   {leaderboard.map((l, i) => (
@@ -163,7 +163,7 @@ export default function AdminBattlePage() {
                       <td style={S.td}>{l.wins}</td>
                       <td style={S.td}>{l.losses}</td>
                       <td style={S.td}>{l.ties}</td>
-                      <td style={{ ...S.td, fontWeight:700, color:"#059669" }}>+{l.coins_earned}🪙</td>
+                      <td style={{ ...S.td, fontWeight:700, color:"#059669" }}>+{l.coins_earned}⭐</td>
                     </tr>
                   ))}
                 </tbody>

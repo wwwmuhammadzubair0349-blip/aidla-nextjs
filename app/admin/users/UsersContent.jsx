@@ -325,7 +325,7 @@ function Dashboard({ users }) {
   const cityData    = useMemo(() => groupBy(users, "city"),    [users]);
   const growthData  = useMemo(() => buildGrowthData(users),    [users]);
   const totalCoins  = useMemo(() =>
-    users.reduce((s, u) => s + (parseFloat(u.total_aidla_coins) || 0), 0), [users]);
+    users.reduce((s, u) => s + (parseFloat(u.total_aidla_perks) || 0), 0), [users]);
 
   return (
     <>
@@ -333,7 +333,7 @@ function Dashboard({ users }) {
         <StatCard emoji="👥" label="Total Users"       value={users.length.toLocaleString()} bg="rgba(99,102,241,0.1)" />
         <StatCard emoji="🌍" label="Countries"         value={Object.keys(countryData).length} bg="rgba(16,185,129,0.1)" />
         <StatCard emoji="🏙️" label="Cities"            value={Object.keys(cityData).length}    bg="rgba(245,158,11,0.1)" />
-        <StatCard emoji="🪙" label="Total AIDLA Coins" value={fmtCoins(totalCoins)}             bg="rgba(236,72,153,0.1)" />
+        <StatCard emoji="⭐" label="Total AIDLA Perks" value={fmtCoins(totalCoins)}             bg="rgba(236,72,153,0.1)" />
       </div>
 
       {/* Growth Chart */}
@@ -444,7 +444,7 @@ function UsersList({ users, loading, onDelete }) {
                   <th className="usr-th">Email</th>
                   <th className="usr-th hide-mobile">City</th>
                   <th className="usr-th hide-mobile">Country</th>
-                  <th className="usr-th right">AIDLA Coins</th>
+                  <th className="usr-th right">AIDLA Perks</th>
                   <th className="usr-th hide-mobile">Joined</th>
                   <th className="usr-th right">Actions</th>
                 </tr>
@@ -480,8 +480,8 @@ function UsersList({ users, loading, onDelete }) {
                             : "—"}
                         </td>
                         <td className="usr-td right">
-                          {Number(u.total_aidla_coins) > 0
-                            ? <span className="badge badge-gold">🪙 {fmtCoins(u.total_aidla_coins)}</span>
+                          {Number(u.total_aidla_perks) > 0
+                            ? <span className="badge badge-gold">⭐ {fmtCoins(u.total_aidla_perks)}</span>
                             : <span style={{ color: "var(--slate)" }}>0</span>}
                         </td>
                         <td className="usr-td muted hide-mobile" style={{ fontSize: "0.78rem" }}>
@@ -529,7 +529,7 @@ export default function Users() {
   useEffect(() => {
     supabase
       .from("users_profiles")
-      .select("user_id,full_name,email,city,country,total_aidla_coins,created_at")
+      .select("user_id,full_name,email,city,country,total_aidla_perks,created_at")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
         if (error) setError(error.message);

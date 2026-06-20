@@ -154,7 +154,7 @@ export default function AdminShop() {
         body: { type: "cashback_approved", user_email: cb.user_email, txn_no: cb.txn_no, product_name: cb.product_name, coins_amount: cb.coins_amount }
       });
     } catch (_) {}
-    setCbActionMsg({ id: cb.id, text: `✅ Cashback of ${fmt(cb.coins_amount,0)} coins sent!`, ok: true });
+    setCbActionMsg({ id: cb.id, text: `✅ Cashback of ${fmt(cb.coins_amount,0)} perks sent!`, ok: true });
     await loadAll();
   };
 
@@ -193,7 +193,7 @@ export default function AdminShop() {
       <div style={S.page}>
         <div style={S.header}>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900 }}>
-            🛍️ Shop Management
+            🎁 Perks Redemption Center
             {pendingCount > 0 && <span style={S.badge}>{pendingCount} orders</span>}
             {pendingCb > 0 && <span style={{ ...S.badge, background: "#7c3aed" }}>🎁 {pendingCb} cashbacks</span>}
             {lowStock.length > 0 && <span style={{ ...S.badge, background: "#ef4444" }}>⚠️ {lowStock.length} low stock</span>}
@@ -237,7 +237,7 @@ export default function AdminShop() {
                   </div>
                   <div style={{ textAlign: "right" }}>
                     {statusBadge(order.status)}
-                    <div style={{ fontWeight: 900, fontSize: 18, color: "#1e3a8a", marginTop: 4 }}>{fmt(order.total_coins,0)} coins</div>
+                    <div style={{ fontWeight: 900, fontSize: 18, color: "#1e3a8a", marginTop: 4 }}>{fmt(order.total_coins,0)} perks</div>
                     <div style={{ fontSize: 12, color: "#64748b" }}>Qty: {order.quantity}</div>
                     {order.cashback_coins > 0 && <div style={{ fontSize: 12, color: "#7c3aed" }}>🎁 {fmt(order.cashback_coins,0)} cashback</div>}
                   </div>
@@ -276,7 +276,7 @@ export default function AdminShop() {
                     <span style={{ background: cb.status==="pending"?"#ede9fe":cb.status==="approved"?"#dcfce7":"#fee2e2", color: cb.status==="pending"?"#6d28d9":cb.status==="approved"?"#166534":"#b91c1c", padding: "3px 10px", borderRadius: 12, fontSize: 12, fontWeight: 700 }}>
                       {cb.status==="pending"?"⏳ Pending":cb.status==="approved"?"✅ Approved":"❌ Rejected"}
                     </span>
-                    <div style={{ fontWeight: 900, fontSize: 18, color: "#7c3aed", marginTop: 4 }}>🎁 {fmt(cb.coins_amount,0)} coins</div>
+                    <div style={{ fontWeight: 900, fontSize: 18, color: "#7c3aed", marginTop: 4 }}>🎁 {fmt(cb.coins_amount,0)} perks</div>
                   </div>
                 </div>
                 {cb.status==="pending" && (
@@ -308,7 +308,7 @@ export default function AdminShop() {
                   <div><Label text="Name" /><input style={S.input} value={productForm.name} onChange={e => setProductForm(f => ({ ...f, name: e.target.value }))} /></div>
                   <div><Label text="Type" /><select style={S.input} value={productForm.type} onChange={e => setProductForm(f => ({ ...f, type: e.target.value }))}>{["physical","digital","service","recharge"].map(t=><option key={t} value={t}>{t}</option>)}</select></div>
                   <div><Label text="Category" /><select style={S.input} value={productForm.category_id} onChange={e => setProductForm(f => ({ ...f, category_id: e.target.value }))}><option value="">-- Select --</option>{data.categories.map(c=><option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}</select></div>
-                  <div><Label text="Price (coins)" /><input style={S.input} type="number" value={productForm.price_coins} onChange={e => setProductForm(f => ({ ...f, price_coins: e.target.value }))} /></div>
+                  <div><Label text="Price (perks)" /><input style={S.input} type="number" value={productForm.price_coins} onChange={e => setProductForm(f => ({ ...f, price_coins: e.target.value }))} /></div>
                   <div><Label text="Stock" /><input style={S.input} type="number" value={productForm.stock} onChange={e => setProductForm(f => ({ ...f, stock: e.target.value }))} /></div>
                   <div><Label text="Discount %" /><input style={S.input} type="number" value={productForm.discount_pct} onChange={e => setProductForm(f => ({ ...f, discount_pct: e.target.value }))} /></div>
                   <div><Label text="Cashback %" /><input style={S.input} type="number" value={productForm.cashback_pct} onChange={e => setProductForm(f => ({ ...f, cashback_pct: e.target.value }))} /></div>
@@ -349,7 +349,7 @@ export default function AdminShop() {
                     <tr key={p.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={S.td}><div style={{ fontWeight: 700 }}>{p.name}</div>{p.is_featured&&<span style={{ fontSize:10,background:"#fef3c7",color:"#92400e",padding:"2px 6px",borderRadius:6,fontWeight:700 }}>⭐</span>}{p.discount_pct>0&&<span style={{ fontSize:10,background:"#dcfce7",color:"#166534",padding:"2px 6px",borderRadius:6,fontWeight:700,marginLeft:4 }}>{p.discount_pct}% OFF</span>}{p.cashback_pct>0&&<span style={{ fontSize:10,background:"#ede9fe",color:"#6d28d9",padding:"2px 6px",borderRadius:6,fontWeight:700,marginLeft:4 }}>🎁{p.cashback_pct}%</span>}</td>
                       <td style={S.td}>{p.type}</td>
-                      <td style={S.td}>{fmt(p.price_coins,0)} coins</td>
+                      <td style={S.td}>{fmt(p.price_coins,0)} perks</td>
                       <td style={S.td}>
                         {p.unlimited_stock?"∞":<span style={{ color:p.stock<=p.low_stock_threshold?"#ef4444":"inherit",fontWeight:p.stock<=p.low_stock_threshold?800:400 }}>{p.stock}</span>}
                         {!p.unlimited_stock&&<div style={{ display:"flex",gap:4,marginTop:4 }}><input type="number" placeholder="+" style={{ ...S.input,width:50,padding:"2px 6px",fontSize:11 }} value={restockInputs[p.id]||""} onChange={e=>setRestockInputs(r=>({...r,[p.id]:e.target.value}))} /><button style={{ ...S.btn,padding:"2px 8px",fontSize:11 }} onClick={()=>handleRestock(p.id)}>+</button></div>}
@@ -378,7 +378,7 @@ export default function AdminShop() {
 
         {tab==="fees" && (
           <div style={S.card}>
-            <div style={S.cardTitle}>Shop Fees</div>
+            <div style={S.cardTitle}>Perks Fees</div>
             <div style={{ display:"flex",gap:10,marginBottom:16,flexWrap:"wrap",background:"#f8fafc",padding:14,borderRadius:10 }}>
               <input style={{ ...S.input,flex:2,minWidth:140 }} placeholder="Fee name" value={newFee.name} onChange={e=>setNewFee(f=>({...f,name:e.target.value}))} />
               <input style={{ ...S.input,flex:1,minWidth:100 }} type="number" placeholder="% e.g. 2.5" value={newFee.percentage} onChange={e=>setNewFee(f=>({...f,percentage:e.target.value}))} />

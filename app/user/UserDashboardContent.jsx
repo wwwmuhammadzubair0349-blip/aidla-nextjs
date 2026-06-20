@@ -141,7 +141,7 @@ const DH_CSS = `
 @media(max-width:480px) { .dh-stats { grid-template-columns: repeat(2, 1fr); } .dh-widgets { grid-template-columns: 1fr; } }
 `;
 
-function DashHero({ name, streak, coins, rank, coursesCount, lastCourse }) {
+function DashHero({ name, streak, perks, rank, coursesCount, lastCourse }) {
   const router = useRouter();
   const streakLabel = streak >= 3 ? `🔥 ${streak}` : `${streak}`;
   const firstName = name?.split(" ")[0] || "there";
@@ -157,9 +157,9 @@ function DashHero({ name, streak, coins, rank, coursesCount, lastCourse }) {
             <div className="dh-stat-lbl">Streak</div>
           </div>
           <div className="dh-stat">
-            <span className="dh-stat-icon">🪙</span>
-            <div className="dh-stat-val">{coins >= 1000 ? `${(coins/1000).toFixed(1)}k` : coins}</div>
-            <div className="dh-stat-lbl">Coins</div>
+            <span className="dh-stat-icon">⭐</span>
+            <div className="dh-stat-val">{perks >= 1000 ? `${(perks/1000).toFixed(1)}k` : perks}</div>
+            <div className="dh-stat-lbl">Perks</div>
           </div>
           <div className="dh-stat">
             <span className="dh-stat-icon">📈</span>
@@ -177,7 +177,7 @@ function DashHero({ name, streak, coins, rank, coursesCount, lastCourse }) {
             <span className="dh-widget-tag">Today</span>
             <span className="dh-widget-icon">❓</span>
             <div className="dh-widget-title">Daily Quiz</div>
-            <div className="dh-widget-sub">+15 coins · 2 min</div>
+            <div className="dh-widget-sub">+15 perks · 2 min</div>
           </button>
           {lastCourse ? (
             <button className="dh-widget dh-widget-learn" onClick={() => router.push(`/user/course/${lastCourse.id}`)}>
@@ -497,7 +497,7 @@ function GettingStartedBanner() {
       <style>{GETTING_STARTED_CSS}</style>
       <div className="gs-banner">
         <p className="gs-heading">👋 Welcome to AIDLA — here&apos;s how to get started</p>
-        <p className="gs-sub">Complete these 3 actions to earn your first coins and unlock your full profile.</p>
+        <p className="gs-sub">Complete these actions to earn perks and unlock your full profile.</p>
         <div className="gs-steps">
           <button className="gs-step" onClick={() => router.push("/user/dailyquizz")}>
             <span className="gs-step-icon">❓</span>
@@ -505,7 +505,7 @@ function GettingStartedBanner() {
               <p className="gs-step-title">Take today&apos;s quiz</p>
               <p className="gs-step-desc">2 minutes · Knowledge challenge</p>
             </div>
-            <span className="gs-step-coins">+15 coins</span>
+            <span className="gs-step-coins">+15 perks</span>
           </button>
           <button className="gs-step" onClick={() => router.push("/user/learn")}>
             <span className="gs-step-icon">🎓</span>
@@ -526,8 +526,8 @@ function GettingStartedBanner() {
           <button className="gs-step" onClick={() => router.push("/user/battle")}>
             <span className="gs-step-icon">⚔️</span>
             <div className="gs-step-text">
-              <p className="gs-step-title">Try a battle</p>
-              <p className="gs-step-desc">1v1 quiz · Win coins</p>
+              <p className="gs-step-title">Try a quiz battle</p>
+              <p className="gs-step-desc">1v1 · Win perks</p>
             </div>
             <span className="gs-step-coins">+25 win</span>
           </button>
@@ -589,7 +589,7 @@ function DashStreak({ weekDays, currentStreak }) {
 export default function UserDashboard() {
   const router = useRouter();
   const [isNewUser,    setIsNewUser]    = useState(false);
-  const [heroData,     setHeroData]     = useState({ name: "", streak: 0, coins: 0, rank: "Learner", coursesCount: 0, lastCourse: null });
+  const [heroData,     setHeroData]     = useState({ name: "", streak: 0, perks: 0, rank: "Learner", coursesCount: 0, lastCourse: null });
   const [weekDays,     setWeekDays]     = useState([]);
 
   useEffect(() => {
@@ -601,7 +601,7 @@ export default function UserDashboard() {
 
         const sevenDaysAgo = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
         const [profileRes, enrollRes, streakRes, weekRes] = await Promise.all([
-          supabase.from("users_profiles").select("full_name,coins,rank").eq("user_id", uid).single(),
+          supabase.from("users_profiles").select("full_name,total_aidla_perks,rank").eq("user_id", uid).single(),
           supabase.from("course_enrollments").select("course_id,progress,enrolled_at,course_courses(id,title,category)").eq("user_id", uid).order("enrolled_at", { ascending: false }).limit(10),
           supabase.from("daily_quiz_attempts").select("streak_days").eq("user_id", uid).order("attempt_date", { ascending: false }).limit(1).single(),
           supabase.from("daily_quiz_attempts").select("attempt_date").eq("user_id", uid).gte("attempt_date", sevenDaysAgo),
@@ -628,10 +628,10 @@ export default function UserDashboard() {
 
         setIsNewUser(enrollments.length === 0);
         setHeroData({
-          name:         profile.full_name  || "",
+          name:         profile.full_name             || "",
           streak:       latestStreak,
-          coins:        profile.coins      || 0,
-          rank:         profile.rank       || "Learner",
+          perks:        profile.total_aidla_perks    || 0,
+          rank:         profile.rank                 || "Learner",
           coursesCount: enrollments.length,
           lastCourse,
         });
@@ -687,14 +687,13 @@ export default function UserDashboard() {
         <RegCard title="Cover Letters" subtitle="AI-crafted professional letters" icon="✉️" to="/user/cover-letter" iconClass="ic-purple" />
       </Section>
 
-      {/* Earn & Win */}
-      <Section label="🏆 Earn & Win" labelClass="label-amber">
-        <RegCard title="Battle Arena" subtitle="Compete in skill-based 1v1 battles" icon="⚔️" to="/user/battle"      iconClass="ic-amber" />
-        <RegCard title="Mining"       subtitle="Mine AIDLA coins passively"         icon="💎" to="/user/mining"       iconClass="ic-amber" />
-        <RegCard title="Lucky Draw"   subtitle="Scheduled draws & big prizes"       icon="🎟️" to="/user/lucky-draw"  iconClass="ic-amber" />
-        <RegCard title="Lucky Wheel"  subtitle="Spin the wheel & win rewards"       icon="🎡" to="/user/lucky-wheel" iconClass="ic-amber" />
-        <RegCard title="Shop"         subtitle="Spend AIDLA coins on rewards"       icon="🛍️" to="/user/shop"        iconClass="ic-amber" />
-        <RegCard title="Community"    subtitle="Forum, channels & social"           icon="💬" to="/user/community"  iconClass="ic-coral" />
+      {/* Perks & Rewards */}
+      <Section label="⭐ Perks & Rewards" labelClass="label-amber">
+        <RegCard title="Battle Arena"    subtitle="1v1 quiz battles — earn perks"        icon="⚔️" to="/user/battle"      iconClass="ic-amber" />
+        <RegCard title="Learning Draw"   subtitle="Scheduled draws & learning prizes"    icon="🎟️" to="/user/lucky-draw"  iconClass="ic-amber" />
+        <RegCard title="Perks Spin"      subtitle="Spin & win perks, resources, unlocks" icon="🎡" to="/user/lucky-wheel" iconClass="ic-amber" />
+        <RegCard title="Perks Store"     subtitle="Redeem perks for premium content"     icon="🎁" to="/user/perks"       iconClass="ic-amber" />
+        <RegCard title="Community"       subtitle="Forum, channels & social"             icon="💬" to="/user/community"   iconClass="ic-coral" />
       </Section>
 
     </div>

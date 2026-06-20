@@ -172,7 +172,7 @@ export default function AdminDailyQuizPage() {
               <Row label="Pass Threshold">
                 <input style={S.input} type="number" min={1} max={cfg.total_questions} value={cfg.pass_threshold} onChange={e => setCfg({ ...cfg, pass_threshold: +e.target.value })} />
               </Row>
-              <Row label="Prize Coins 🪙">
+              <Row label="Prize Perks ⭐">
                 <input style={S.input} type="number" min={0} value={cfg.prize_coins} onChange={e => setCfg({ ...cfg, prize_coins: +e.target.value })} />
               </Row>
               <Row label="Max Winners">
@@ -195,7 +195,7 @@ export default function AdminDailyQuizPage() {
                 </label>
               </Row>
               {cfg.hint_enabled && (
-                <Row label="Hint Cost (coins)">
+                <Row label="Hint Cost (perks)">
                   <input style={S.input} type="number" min={0} value={cfg.hint_cost_coins} onChange={e => setCfg({ ...cfg, hint_cost_coins: +e.target.value })} />
                 </Row>
               )}
@@ -210,7 +210,7 @@ export default function AdminDailyQuizPage() {
                 </label>
               </Row>
               {cfg.streak_bonus_enabled && (
-                <Row label="Streak Bonus Coins">
+                <Row label="Streak Bonus Perks">
                   <input style={S.input} type="number" min={0} value={cfg.streak_bonus_coins} onChange={e => setCfg({ ...cfg, streak_bonus_coins: +e.target.value })} />
                 </Row>
               )}
@@ -320,7 +320,7 @@ export default function AdminDailyQuizPage() {
                     ["Passed ✅", stats.passed, "#dcfce7", "#166534"],
                     ["Eliminated ❌", stats.eliminated, "#fee2e2", "#991b1b"],
                     ["In Progress", stats.in_progress, "#fef9c3", "#854d0e"],
-                    ["Coins Out 🪙", stats.total_coins_out, "#fce7f3", "#9d174d"],
+                    ["Perks Out ⭐", stats.total_coins_out, "#fce7f3", "#9d174d"],
                     ["Avg Score", stats.avg_score, "#f1f5f9", "#334155"],
                     ["Flagged ⚠️", stats.flagged_answers, "#fff7ed", "#c2410c"],
                   ].map(([label, val, bg, color]) => (
@@ -334,14 +334,14 @@ export default function AdminDailyQuizPage() {
                   <>
                     <div style={S.sectionTitle}>Winners</div>
                     <table style={S.table}>
-                      <thead><tr>{["Rank", "Name", "Score", "Coins"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                      <thead><tr>{["Rank", "Name", "Score", "Perks"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
                       <tbody>
                         {stats.winners.map((w, i) => (
                           <tr key={i}>
                             <td style={S.td}>#{w.rank}</td>
                             <td style={S.td}>{w.full_name}</td>
                             <td style={S.td}>{w.score}</td>
-                            <td style={S.td}>{w.coins_earned} 🪙</td>
+                            <td style={S.td}>{w.coins_earned} ⭐</td>
                           </tr>
                         ))}
                       </tbody>
@@ -368,7 +368,7 @@ export default function AdminDailyQuizPage() {
               <p style={S.empty}>No winners for this date.</p>
             ) : (
               <table style={S.table}>
-                <thead><tr>{["Rank", "Name", "Score", "Time", "Coins", "Streak"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
+                <thead><tr>{["Rank", "Name", "Score", "Time", "Perks", "Streak"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
                 <tbody>
                   {winnersHistory.map((w, i) => (
                     <tr key={i}>

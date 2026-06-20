@@ -26,7 +26,7 @@ function msToHMS(ms) {
 }
 function prizeToText(p) {
   if (!p) return "-";
-  if (p.type === "coins") return `${Number(p.coins || 0)} coins`;
+  if (p.type === "coins") return `${Number(p.coins || 0)} perks`;
   if (p.type === "item") return p.name || "Item";
   return p.name || "Prize";
 }
@@ -496,8 +496,8 @@ export default function LuckyDraw() {
       setIsRegistered(false); setRegisteredCount(0);
     }
 
-    const profRes = await supabase.from("users_profiles").select("total_aidla_coins").eq("user_id", uid).maybeSingle();
-    setMyBalance(profRes.data?.total_aidla_coins ?? null);
+    const profRes = await supabase.from("users_profiles").select("total_aidla_perks").eq("user_id", uid).maybeSingle();
+    setMyBalance(profRes.data?.total_aidla_perks ?? null);
 
     const histRes = await supabase.from("luckydraw_results").select("id,draw_title,winner_name,prize_text,created_at,seq_no,announced_at").order("created_at", {ascending:false}).limit(50);
     setAllHistory(histRes.data || []);
@@ -645,7 +645,7 @@ export default function LuckyDraw() {
       <div className="ldp-header">
         <div className="ldp-header-icon">🎰</div>
         <div>
-          <h1 className="ldp-title">Lucky Draw</h1>
+          <h1 className="ldp-title">Learning Draw</h1>
           <div className="ldp-sub">Live Raffle · UAE Time</div>
         </div>
       </div>
@@ -669,10 +669,10 @@ export default function LuckyDraw() {
                 </span>
               </div>
               <div className="ldp-meta-chips">
-                <span className="ldp-chip">{draw.entry_type==="paid"?`💰 Paid · ${Number(draw.entry_cost||0)} coins`:"🆓 Free Entry"}</span>
+                <span className="ldp-chip">{draw.entry_type==="paid"?`⭐ Paid · ${Number(draw.entry_cost||0)} perks`:"🆓 Free Entry"}</span>
                 <span className="ldp-chip">🎯 {Number(draw.draws_count||1)} Draw{Number(draw.draws_count||1)>1?"s":""}</span>
                 <span className="ldp-chip">👥 {registeredCount} Registered</span>
-                {myBalance !== null && <span className="ldp-chip" style={{background:"#eff6ff",color:"#1e3a8a",fontWeight:800}}>🪙 Your balance: {Number(myBalance).toLocaleString()} coins</span>}
+                {myBalance !== null && <span className="ldp-chip" style={{background:"#eff6ff",color:"#1e3a8a",fontWeight:800}}>⭐ Your perks: {Number(myBalance).toLocaleString()}</span>}
               </div>
             </div>
             <div className="ldp-actions">

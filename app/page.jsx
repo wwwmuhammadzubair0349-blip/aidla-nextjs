@@ -17,11 +17,11 @@ export const revalidate = 3600;
 export const metadata = {
   title: "AIDLA — Free AI Learning Platform for Students & Professionals",
   description:
-    "AIDLA: free courses, AI tools, quizzes, CV builder & cover letter maker. Earn AIDLA Coins, win rewards, and grow your career — for students and professionals worldwide.",
+    "AIDLA: free courses, AI tools, quizzes, CV builder & cover letter maker. Earn AIDLA Perks, unlock rewards, and grow your career — for students and professionals worldwide.",
   keywords: [
     "AIDLA","global AI learning platform","free online courses","AI tools for students",
     "career tools","career switching","freshers CV builder","cover letter maker",
-    "AI for beginners","professional development","learn and earn","AIDLA coins",
+    "AI for beginners","professional development","learn and earn","AIDLA perks",
     "online learning platform","free career tools","AI learning",
   ],
   authors: [{ name: "AIDLA", url: SITE_URL }],
@@ -38,13 +38,13 @@ export const metadata = {
   openGraph: {
     type: "website", siteName: "AIDLA", locale: "en_US", url: `${SITE_URL}/`,
     title: "AIDLA — Free AI Learning Platform for Students & Professionals",
-    description: "Free courses, AI tools, career resources, quizzes, AIDLA Coins and rewards for students, professionals, freshers and career switchers worldwide.",
+    description: "Free courses, AI tools, career resources, quizzes, AIDLA Perks and rewards for students, professionals, freshers and career switchers worldwide.",
     images: [{ url: `${SITE_URL}/og-home.jpg`, width: 1200, height: 630, alt: "AIDLA free AI learning and rewards platform", type: "image/jpeg" }],
   },
   twitter: {
     card: "summary_large_image", site: "@AIDLA_online", creator: "@AIDLA_online",
     title: "AIDLA — Free AI Learning Platform for Students & Professionals",
-    description: "Free courses, AI tools, career resources, quizzes, daily competitions and AIDLA Coins — for students and professionals worldwide.",
+    description: "Free courses, AI tools, career resources, quizzes, daily competitions and AIDLA Perks — for students and professionals worldwide.",
     images: [`${SITE_URL}/og-home.jpg`],
   },
 };
@@ -53,7 +53,7 @@ export const metadata = {
 
 const PLATFORM_STATS = [
   { value: "500+",    label: "Registered Learners",  icon: "👨‍🎓" },
-  { value: "10,000+", label: "AIDLA Coins Distributed", icon: "🪙" },
+  { value: "10,000+", label: "AIDLA Perks Distributed", icon: "⭐" },
   { value: "100%",    label: "Free to Join",          icon: "🎁" },
   { value: "#1",      label: "AI Learning Platform",       icon: "🏆" },
 ];
@@ -62,8 +62,8 @@ const TRUST_ITEMS = [
   "✦ Curriculum Quizzes",
   "✦ Daily Quiz Winners",
   "✦ AI Career Tools",
-  "✦ AIDLA Coins & Rewards",
-  "✦ Wallet & Shop",
+  "✦ AIDLA Perks & Rewards",
+  "✦ Perks Redemption Center",
   "✦ Mobile Friendly",
   "✦ 100% Free",
   "✦ Global Access",
@@ -80,24 +80,24 @@ const STEPS = [
   {
     num: "02",
     title: "Earn",
-    text: "Collect AIDLA Coins as you complete learning actions and build daily momentum.",
-    icon: "🪙",
+    text: "Collect AIDLA Perks as you complete learning actions and build daily momentum.",
+    icon: "⭐",
     color: "#10b981",
   },
   {
     num: "03",
     title: "Redeem",
-    text: "Use your coins for platform rewards, prizes, and future learner benefits.",
+    text: "Use your perks for platform rewards, prizes, and future learner benefits.",
     icon: "🎁",
     color: "#3b82f6",
   },
 ];
 
 const FEATURES = [
-  { emoji: "🎯", title: "Daily Quiz", text: "Compete every day, see yesterday's winners, and earn coins for consistent learning.", href: "/user/dailyquizz", label: "Play daily quiz" },
+  { emoji: "🎯", title: "Daily Quiz", text: "Compete every day, see yesterday's winners, and earn perks for consistent learning.", href: "/user/dailyquizz", label: "Play daily quiz" },
   { emoji: "📚", title: "Courses & Resources", text: "Structured courses and study resources for learners who want clear next steps.", href: "/courses", label: "Browse courses" },
   { emoji: "🤖", title: "AI Career Tools", text: "CV, cover letter, summarizer, paraphraser, interview prep, email writer, and more.", href: "/tools", label: "Open tools" },
-  { emoji: "🪙", title: "Rewards, Wallet & Shop", text: "Earn AIDLA Coins, track wallet activity, redeem products, and manage withdrawals.", href: "/user/shop", label: "See rewards" },
+  { emoji: "⭐", title: "Perks & Rewards", text: "Earn AIDLA Perks through learning activities and redeem them for premium content and features.", href: "/user/perks", label: "See perks" },
   { emoji: "🏆", title: "Leaderboards & Tests", text: "Live rankings, quiz champions, test winners, and prize history in one place.", href: "/leaderboard", label: "View ranks" },
   { emoji: "🤝", title: "Community Learning", text: "Forum, social learning, lucky draw, lucky wheel, referrals, and learner milestones.", href: "/user", label: "Go to dashboard" },
 ];
@@ -166,7 +166,7 @@ export default async function Home() {
     buildWebPageSchema({
       path: "/",
       name: "AIDLA — Free AI Learning Platform for Students & Professionals",
-      description: "AIDLA helps students, professionals, freshers, and career switchers worldwide grow with free courses, AI tools, quizzes, AIDLA Coins, and rewards.",
+      description: "AIDLA helps students, professionals, freshers, and career switchers worldwide grow with free courses, AI tools, quizzes, AIDLA Perks, and rewards.",
       dateModified: LAST_MODIFIED,
       speakableSelectors: ["#hero-heading", "#how-heading", "#faq-heading"],
     }),
@@ -192,12 +192,12 @@ export default async function Home() {
               <h1 id="hero-heading" className="hp-hero-title">
                 <em>Learn</em> with AI.<br />
                 Win Daily.<br />
-                Earn <span className="hp-title-accent">AIDLA Coins.</span>
+                Earn <span className="hp-title-accent">AIDLA Perks.</span>
               </h1>
 
               <p className="hp-hero-sub">
                 AIDLA brings courses, daily quiz competitions, AI career tools,
-                resources, wallets, rewards, and learner leaderboards into one
+                resources, perks, rewards, and learner leaderboards into one
                 free platform for learners worldwide.
               </p>
 
@@ -266,7 +266,7 @@ export default async function Home() {
                         <p>{winner.full_name || "AIDLA Learner"}</p>
                         <small>{winner.score}/{winner.total_questions} correct</small>
                       </div>
-                      <span className="hp-winner-coins">+{winner.coins_earned || 0} <small>coins</small></span>
+                      <span className="hp-winner-coins">+{winner.coins_earned || 0} <small>perks</small></span>
                     </div>
                   ))
                 ) : (
@@ -323,7 +323,7 @@ export default async function Home() {
           <div className="hp-section-head center">
             <span className="hp-eyebrow-dark">Simple Path</span>
             <h2 id="how-heading">How AIDLA Works</h2>
-            <p>Three steps, no clutter: learn useful skills, earn coins, and keep moving forward.</p>
+            <p>Three steps, no clutter: learn useful skills, earn perks, and keep moving forward.</p>
           </div>
 
           <div className="hp-steps-grid">

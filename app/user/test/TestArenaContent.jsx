@@ -296,7 +296,7 @@ function FailModal({ failReason, canRevive, reviveUsed, reviveLimit, selectedTes
         <div className="ta-modal-urgency">⚡ You're about to be eliminated — decide quickly!</div>
         <div className="ta-modal-actions">
           <button className={`ta-modal-btn-revive${!canRevive ? " ta-modal-btn-dim" : ""}`} onClick={onRevive} disabled={!canRevive||busyDecision}>
-            {busyDecision ? "⏳ Processing…" : `⚡ Revive (${selectedTest?.revive_price||0} coins)`}
+            {busyDecision ? "⏳ Processing…" : `⚡ Revive (${selectedTest?.revive_price||0} perks)`}
           </button>
           <button className="ta-modal-btn-danger" onClick={onGiveUp} disabled={busyDecision}>☠️ Give Up</button>
         </div>
@@ -372,10 +372,10 @@ function PrizesSection({ prizes }) {
               <div className="ta-prize-body">
                 <div className="ta-prize-rank" style={{ color: c.text }}>Rank {p.rank_no}</div>
                 <div className="ta-prize-text">
-                  {p.prize_text || (p.prize_type === "coins" ? `${Number(p.coins_amount).toLocaleString()} coins` : "Prize")}
+                  {p.prize_text || (p.prize_type === "coins" ? `${Number(p.coins_amount).toLocaleString()} perks` : "Prize")}
                 </div>
                 {p.prize_type === "coins" && p.coins_amount > 0 && p.prize_text && (
-                  <div className="ta-prize-coins">💰 {Number(p.coins_amount).toLocaleString()} coins</div>
+                  <div className="ta-prize-coins">⭐ {Number(p.coins_amount).toLocaleString()} perks</div>
                 )}
               </div>
             </div>
@@ -914,7 +914,7 @@ function TestArenaInner() {
                         </span>
                       </div>
                       <div className="ta-test-item-meta">
-                        {t.entry_type === "paid" ? `💰 ${t.entry_cost} coins` : "🆓 Free"} · {t.questions_per_user} Qs · {t.time_per_question_sec}s/Q
+                        {t.entry_type === "paid" ? `⭐ ${t.entry_cost} perks` : "🆓 Free"} · {t.questions_per_user} Qs · {t.time_per_question_sec}s/Q
                       </div>
                     </button>
                   );
@@ -944,7 +944,7 @@ function TestArenaInner() {
                         </span>
                       </div>
                       <div className="ta-detail-chips">
-                        <span className="ta-chip">{selectedTest.entry_type === "paid" ? `💰 ${selectedTest.entry_cost} coins` : "🆓 Free"}</span>
+                        <span className="ta-chip">{selectedTest.entry_type === "paid" ? `⭐ ${selectedTest.entry_cost} perks` : "🆓 Free"}</span>
                         <span className="ta-chip">❓ {selectedTest.questions_per_user} Questions</span>
                         <span className="ta-chip">⏱ {selectedTest.time_per_question_sec}s / Q</span>
                         {registered && <span className="ta-chip ta-chip-green">✅ Registered</span>}
@@ -1016,9 +1016,9 @@ function TestArenaInner() {
                     <div className="ta-section">
                       <div className="ta-section-title">⚡ Power-Ups</div>
                       <div className="ta-powerups-info">
-                        {selectedTest.revive_enabled  && <div className="ta-pu-chip"><span className="ta-pu-icon">💊</span><div><div className="ta-pu-name">Revive</div><div className="ta-pu-meta">{selectedTest.revive_price} coins · {selectedTest.revive_limit}x max</div></div></div>}
-                        {selectedTest.skip_enabled    && <div className="ta-pu-chip"><span className="ta-pu-icon">⏭</span><div><div className="ta-pu-name">Skip</div><div className="ta-pu-meta">{selectedTest.skip_price} coins · {selectedTest.skip_limit}x max</div></div></div>}
-                        {selectedTest.add_time_enabled && <div className="ta-pu-chip"><span className="ta-pu-icon">⌛</span><div><div className="ta-pu-name">+Time</div><div className="ta-pu-meta">{selectedTest.add_time_price} coins · {selectedTest.add_time_limit}x max</div></div></div>}
+                        {selectedTest.revive_enabled  && <div className="ta-pu-chip"><span className="ta-pu-icon">💊</span><div><div className="ta-pu-name">Revive</div><div className="ta-pu-meta">{selectedTest.revive_price} perks · {selectedTest.revive_limit}x max</div></div></div>}
+                        {selectedTest.skip_enabled    && <div className="ta-pu-chip"><span className="ta-pu-icon">⏭</span><div><div className="ta-pu-name">Skip</div><div className="ta-pu-meta">{selectedTest.skip_price} perks · {selectedTest.skip_limit}x max</div></div></div>}
+                        {selectedTest.add_time_enabled && <div className="ta-pu-chip"><span className="ta-pu-icon">⌛</span><div><div className="ta-pu-name">+Time</div><div className="ta-pu-meta">{selectedTest.add_time_price} perks · {selectedTest.add_time_limit}x max</div></div></div>}
                       </div>
                     </div>
                   )}

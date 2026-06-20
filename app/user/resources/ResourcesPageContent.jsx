@@ -223,8 +223,8 @@ export default function ResourcesPage() {
 
   // ── Loaders ───────────────────────────────────────────────────────────────
   const loadBalance = useCallback(async (uid) => {
-    const { data } = await supabase.from("users_profiles").select("total_aidla_coins,full_name").eq("user_id",uid).single();
-    setBalance(Number(data?.total_aidla_coins || 0));
+    const { data } = await supabase.from("users_profiles").select("total_aidla_perks,full_name").eq("user_id",uid).single();
+    setBalance(Number(data?.total_aidla_perks || 0));
     if (data?.full_name) setFullName(data.full_name);
   }, []);
 

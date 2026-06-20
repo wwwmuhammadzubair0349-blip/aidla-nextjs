@@ -291,7 +291,7 @@ function MessageBubble({ msg }) {
 const CHIPS = [
   "Write me a Python function to reverse a string 🐍",
   "Help me write a professional CV 📄",
-  "How do I earn coins on AIDLA? 🪙",
+  "How do I earn perks on AIDLA? ⭐",
   "Explain photosynthesis simply 🌿",
   "Write an Instagram caption for a study post 📱",
   "How to prepare for a job interview? 💼",

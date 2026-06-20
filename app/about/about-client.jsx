@@ -69,20 +69,20 @@ function TiltCard({ children, className = "" }) {
 const MILESTONES = [
   { year: "2026", title: "The Spark", desc: "Identified the global access gap learners, freshers, and professionals face when premium education and career tools are locked behind paywalls." },
   { year: "2026", title: "Platform Launched", desc: "AIDLA goes live with AI tools, CV maker, and daily quiz competitions â€” 100% free, no watermarks." },
-  { year: "2026", title: "Rewards Engine", desc: "AIDLA Coins system activated - real learn-to-earn rewards for active learners worldwide." },
+  { year: "2026", title: "Perks System", desc: "AIDLA Perks system activated — learning rewards for active learners worldwide." },
   { year: "Now",  title: "500+ Learners", desc: "A growing global AI learning platform for students, professionals, and lifelong learners worldwide." },
 ];
 
 const VALUES = [
   { icon: "ðŸ¤", title: "Inclusivity",    desc: "Education and career growth should be accessible to students, professionals, freshers, and self-learners everywhere." },
   { icon: "ðŸ’¡", title: "Innovation",     desc: "Leveraging cutting-edge AI to solve real learning, productivity, career, and skill-building challenges." },
-  { icon: "ðŸ”", title: "Transparency",   desc: "From lucky draws to coin withdrawals â€” everything on AIDLA is openly tracked and verified." },
+  { icon: "ðŸ”", title: "Transparency",   desc: "From lucky draws to perks redemption â€” everything on AIDLA is openly tracked and verified." },
   { icon: "ðŸš€", title: "Accessibility",  desc: "Every tool, course, and reward is designed to work on any device for users worldwide." },
 ];
 
 const IMPACT_STATS = [
   { value: "500+",  label: "Active Learners",     desc: "Students & professionals learning free" },
-  { value: "10K+",  label: "Coins Distributed",   desc: "Real rewards earned by learners" },
+  { value: "10K+",  label: "Perks Distributed",   desc: "Real rewards earned by learners" },
   { value: "15+",   label: "Free AI Tools",        desc: "CV, cover letter, interview prep & more" },
   { value: "100%",  label: "Free â€” Forever",       desc: "No subscriptions, no paywalls, ever" },
 ];

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 const TYPE_ICONS = {
-  coins:       "🪙",
+  coins:       "⭐",
   rank:        "📈",
   content:     "📰",
   reply:       "💬",
@@ -149,7 +149,7 @@ export default function NotificationsPage() {
         <div className="nc-empty">
           <span className="nc-empty-icon">🔔</span>
           <div className="nc-empty-title">No notifications yet</div>
-          <div className="nc-empty-sub">You'll be notified about coins, rank changes, quiz results, and more.</div>
+          <div className="nc-empty-sub">You'll be notified about perks, rank changes, quiz results, and more.</div>
         </div>
       )}
 

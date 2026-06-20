@@ -1,5 +1,5 @@
 "use client";
-// app/user/shop/page.jsx
+// app/user/perks/page.jsx — Perks Redemption Center
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
@@ -28,7 +28,7 @@ function ReceiptModal({ order, onClose }) {
           <button onClick={onClose} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer", color: "#64748b" }}>×</button>
         </div>
         <div style={{ background: "#f8fafc", border: "1px dashed #cbd5e1", borderRadius: 10, padding: 16, fontFamily: "'Courier New', monospace" }}>
-          <div style={{ textAlign: "center", fontWeight: 900, fontSize: 20, color: "#1e3a8a", marginBottom: 4 }}>AIDLA SHOP</div>
+          <div style={{ textAlign: "center", fontWeight: 900, fontSize: 20, color: "#1e3a8a", marginBottom: 4 }}>AIDLA PERKS</div>
           <div style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginBottom: 12 }}>{order.txn_no}</div>
           <RRow label="Date"     value={new Date(order.created_at).toLocaleString()} />
           <RRow label="Product"  value={order.product_name} />
@@ -39,13 +39,13 @@ function ReceiptModal({ order, onClose }) {
           {order.whatsapp     && <RRow label="WhatsApp" value={order.whatsapp} />}
           {order.city         && <RRow label="City"    value={`${order.city}, ${order.country}`} />}
           <div style={{ borderTop: "1px dashed #e2e8f0", margin: "10px 0" }} />
-          <RRow label="Unit Price"  value={`${fmt(order.unit_price)} coins`} />
-          {order.discount_pct > 0 && <RRow label={`Discount (${order.discount_pct}%)`} value={`-${fmt(order.unit_price * order.discount_pct / 100)} coins`} small />}
-          {order.coupon_code  && <RRow label={`Coupon (${order.coupon_discount}%)`} value={`-${fmt(order.coupon_discount)} coins`} small />}
-          {order.fee_pct > 0  && <RRow label={`Fee (${order.fee_pct}%)`} value={`+${fmt(order.fee_coins)} coins`} small />}
+          <RRow label="Unit Price"  value={`${fmt(order.unit_price)} perks`} />
+          {order.discount_pct > 0 && <RRow label={`Discount (${order.discount_pct}%)`} value={`-${fmt(order.unit_price * order.discount_pct / 100)} perks`} small />}
+          {order.coupon_code  && <RRow label={`Coupon (${order.coupon_discount}%)`} value={`-${fmt(order.coupon_discount)} perks`} small />}
+          {order.fee_pct > 0  && <RRow label={`Fee (${order.fee_pct}%)`} value={`+${fmt(order.fee_coins)} perks`} small />}
           <div style={{ borderTop: "1px dashed #e2e8f0", margin: "10px 0" }} />
-          <RRow label="TOTAL"    value={`${fmt(order.total_coins)} coins`} bold />
-          {order.cashback_coins > 0 && <RRow label="🎁 Cashback" value={`${fmt(order.cashback_coins)} coins`} small />}
+          <RRow label="TOTAL"    value={`${fmt(order.total_coins)} perks`} bold />
+          {order.cashback_coins > 0 && <RRow label="🎁 Cashback" value={`${fmt(order.cashback_coins)} perks`} small />}
           {order.admin_note   && (
             <div style={{ marginTop: 10, background: "#fffbeb", padding: "8px 10px", borderRadius: 8, fontSize: 12, color: "#92400e" }}>
               <strong>Note:</strong> {order.admin_note}
@@ -109,7 +109,7 @@ function ReviewModal({ order, onClose, onSubmit }) {
   );
 }
 
-export default function UserShop() {
+export default function PerksContent() {
   const [loading, setLoading]         = useState(true);
   const [data, setData]               = useState({ profile: {}, products: [], cart: [], wishlist: [], categories: [], fees: [] });
   const [orders, setOrders]           = useState([]);
@@ -151,7 +151,7 @@ export default function UserShop() {
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
-  const balance  = Number(data.profile?.total_aidla_coins || 0);
+  const balance  = Number(data.profile?.total_aidla_perks || 0);
   const cartCount = (data.cart || []).reduce((s, c) => s + c.quantity, 0);
 
   const feePct = useMemo(() =>
@@ -292,11 +292,10 @@ export default function UserShop() {
         <div style={S.overlay} onClick={() => setShowInsufficientModal(false)}>
           <div style={{ ...S.modal, maxWidth: 320 }} onClick={e => e.stopPropagation()}>
             <div style={{ fontSize: 40, textAlign: "center", marginBottom: 12 }}>😔</div>
-            <div style={{ fontWeight: 900, fontSize: 18, textAlign: "center", marginBottom: 8 }}>Insufficient Coins</div>
-            <div style={{ color: "#64748b", textAlign: "center", marginBottom: 16, fontSize: 14 }}>You don't have enough coins for this purchase.</div>
+            <div style={{ fontWeight: 900, fontSize: 18, textAlign: "center", marginBottom: 8 }}>Not Enough Perks</div>
+            <div style={{ color: "#64748b", textAlign: "center", marginBottom: 16, fontSize: 14 }}>You don&apos;t have enough perks for this redemption. Earn more by completing quizzes and courses.</div>
             <div style={{ display: "flex", gap: 10, flexDirection: "column" }}>
-              <button style={S.btn} onClick={() => { setShowInsufficientModal(false); window.location.href = "/user/wallet"; }}>💰 Buy Coins</button>
-              <button style={{ ...S.btn, background: "linear-gradient(135deg,#16a34a,#22c55e)" }} onClick={() => { setShowInsufficientModal(false); window.location.href = "/user/mining"; }}>⛏️ Earn Coins</button>
+              <button style={S.btn} onClick={() => { setShowInsufficientModal(false); window.location.href = "/user/dailyquizz"; }}>❓ Take Daily Quiz</button>
               <button style={{ ...S.btn, background: "#94a3b8" }} onClick={() => setShowInsufficientModal(false)}>Cancel</button>
             </div>
           </div>
@@ -306,17 +305,17 @@ export default function UserShop() {
       <div style={S.page}>
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: "#1e3a8a" }}>🛍️ Shop</h2>
+          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 900, color: "#1e3a8a" }}>🎁 Perks Redemption Center</h2>
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <div style={{ background: "#eff6ff", color: "#1e3a8a", padding: "6px 14px", borderRadius: 20, fontWeight: 800, fontSize: 14 }}>
-              💰 {fmt(balance)} coins
+              ⭐ {fmt(balance)} perks
             </div>
             <button style={{ ...S.tabBtn, position: "relative" }} onClick={() => setView("cart")}>
               🛒 Cart
               {cartCount > 0 && <span style={{ position: "absolute", top: -6, right: -6, background: "#ef4444", color: "#fff", borderRadius: "50%", width: 18, height: 18, fontSize: 10, fontWeight: 900, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
             </button>
-            <button style={S.tabBtn} onClick={() => setView("orders")}>📦 Orders</button>
-            <button style={S.tabBtn} onClick={() => setView("shop")}>🏠 Shop</button>
+            <button style={S.tabBtn} onClick={() => setView("orders")}>📦 History</button>
+            <button style={S.tabBtn} onClick={() => setView("shop")}>🎁 Browse</button>
           </div>
         </div>
 
@@ -463,7 +462,7 @@ export default function UserShop() {
                             <div style={{ fontWeight: 700, fontSize: 14 }}>{item.product_name}</div>
                             {item.variant_value && <div style={{ fontSize: 12, color: "#64748b" }}>{item.variant_value}</div>}
                             <div style={{ fontSize: 13, color: "#1e3a8a", fontWeight: 700 }}>
-                              {fmt(discountedPrice(item.price_coins, item.discount_pct) + Number(item.variant_extra||0))} coins each
+                              {fmt(discountedPrice(item.price_coins, item.discount_pct) + Number(item.variant_extra||0))} perks each
                             </div>
                           </div>
                         </div>
@@ -478,7 +477,7 @@ export default function UserShop() {
                       <div style={{ marginTop: 10 }}>
                         <button style={{ ...S.btn, padding: "8px 18px", fontSize: 13, width: "100%" }}
                           onClick={() => handleCartCheckout(item)}>
-                          ⚡ Checkout this item ({fmt((discountedPrice(item.price_coins, item.discount_pct) + Number(item.variant_extra||0)) * item.quantity * (1 + feePct/100))} coins)
+                          ⚡ Checkout this item ({fmt((discountedPrice(item.price_coins, item.discount_pct) + Number(item.variant_extra||0)) * item.quantity * (1 + feePct/100))} perks)
                         </button>
                       </div>
                     </div>
@@ -560,7 +559,7 @@ export default function UserShop() {
               </div>
               <button style={{ ...S.btn, marginTop: 14, width: "100%", opacity: submitting ? 0.6 : 1 }}
                 disabled={submitting} onClick={handlePlaceOrder}>
-                {submitting ? "Placing Order…" : `✅ Confirm Order · ${fmt(calcOrderTotal(checkoutItem.product, checkoutItem.variant, checkoutItem.quantity))} coins`}
+                {submitting ? "Placing Order…" : `✅ Confirm Order · ${fmt(calcOrderTotal(checkoutItem.product, checkoutItem.variant, checkoutItem.quantity))} perks`}
               </button>
             </div>
           </div>
@@ -589,7 +588,7 @@ export default function UserShop() {
                         {/* Cashback status */}
                         {o.cashback_coins > 0 && (
                           <div style={{ fontSize: 12, marginTop: 2 }}>
-                            🎁 Cashback {fmt(o.cashback_coins)} coins —{" "}
+                            🎁 Cashback {fmt(o.cashback_coins)} perks —{" "}
                             {o.cashback_status === "approved" ? <span style={{ color: "#166534", fontWeight: 700 }}>✅ Credited</span>
                              : o.cashback_status === "rejected" ? <span style={{ color: "#b91c1c", fontWeight: 700 }}>❌ Rejected</span>
                              : o.cashback_status === "pending" ? <span style={{ color: "#92400e", fontWeight: 700 }}>⏳ Pending</span>

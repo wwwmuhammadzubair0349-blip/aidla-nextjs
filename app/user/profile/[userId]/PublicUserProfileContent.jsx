@@ -29,7 +29,7 @@ export default function PublicUserProfile() {
     (async () => {
       const { data } = await supabase
         .from("users_profiles")
-        .select("full_name,avatar_url,email,is_verified,rank,profession,city,country,educational_level,institute_company,interests,bio,total_aidla_coins,profile_completion_pct")
+        .select("full_name,avatar_url,email,is_verified,rank,profession,city,country,educational_level,institute_company,interests,bio,total_aidla_perks,profile_completion_pct")
         .eq("user_id", userId)
         .single();
       setProfile(data || null);

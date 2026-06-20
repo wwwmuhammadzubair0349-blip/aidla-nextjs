@@ -4926,7 +4926,7 @@ export type Database = {
           profile_reminder_sent_at: string | null
           rank: string
           referral_code_used: string | null
-          total_aidla_coins: number
+          total_aidla_perks: number
           total_lw_earned: number
           updated_at: string
           user_id: string
@@ -4958,7 +4958,7 @@ export type Database = {
           profile_reminder_sent_at?: string | null
           rank?: string
           referral_code_used?: string | null
-          total_aidla_coins?: number
+          total_aidla_perks?: number
           total_lw_earned?: number
           updated_at?: string
           user_id: string
@@ -4990,7 +4990,7 @@ export type Database = {
           profile_reminder_sent_at?: string | null
           rank?: string
           referral_code_used?: string | null
-          total_aidla_coins?: number
+          total_aidla_perks?: number
           total_lw_earned?: number
           updated_at?: string
           user_id?: string

@@ -549,7 +549,7 @@ export default function AdminLuckyDraw() {
             WebkitTextFillColor: "transparent",
             filter: "drop-shadow(0 4px 6px rgba(30, 58, 138, 0.2))"
           }}>
-            Lucky Draw 2060
+            Learning Draw
           </h1>
           <p style={{ color: "#64748b", fontSize: "1.1rem", marginTop: 5 }}>
             Next-generation draw management system
@@ -702,13 +702,13 @@ export default function AdminLuckyDraw() {
                       onChange={(e) => setEntryType(e.target.value)}
                     >
                       <option value="free">🎟️ Free Entry</option>
-                      <option value="paid">💰 Paid Entry (Coins)</option>
+                      <option value="paid">⭐ Paid Entry (Perks)</option>
                     </select>
                   </div>
 
                   <div>
                     <label style={{ display: "block", marginBottom: 8, fontWeight: 700, color: "#1e3a8a" }}>
-                      Entry Cost (Coins)
+                      Entry Cost (Perks)
                     </label>
                     <input
                       className="ld-input-focus"
@@ -925,7 +925,7 @@ export default function AdminLuckyDraw() {
                           value={prize.type}
                           onChange={(e) => updatePrize(index, { type: e.target.value })}
                         >
-                          <option value="coins">💰 Coins</option>
+                          <option value="coins">⭐ Perks</option>
                           <option value="item">🎁 Item / Other</option>
                         </select>
                       </div>
@@ -933,7 +933,7 @@ export default function AdminLuckyDraw() {
                       {prize.type === "coins" ? (
                         <div>
                           <label style={{ display: "block", marginBottom: 5, fontSize: "0.9rem", color: "#64748b" }}>
-                            Coins Amount
+                            Perks Amount
                           </label>
                           <input
                             className="ld-input-focus"
@@ -1087,7 +1087,7 @@ export default function AdminLuckyDraw() {
             <span>🔒 Secured by Supabase</span>
             <span>🎯 Dubai Timezone</span>
           </div>
-          <p>Lucky Draw Management System v2.0 - 2060 Edition</p>
+          <p>Learning Draw Management System v2.0</p>
         </div>
       </div>
     </div>

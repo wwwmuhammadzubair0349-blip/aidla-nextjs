@@ -5,9 +5,9 @@ import { supabase } from "@/lib/supabase";
 
 const MODES = [
   { id:"free",  label:"Free",       stake:0,   prize:10,  tax:0,  color:"#059669", glow:"rgba(5,150,105,0.25)",  icon:"🎮", badge:"FREE" },
-  { id:"25",    label:"25 Coins",   stake:25,  prize:45,  tax:5,  color:"#6366f1", glow:"rgba(99,102,241,0.25)", icon:"⚔️", badge:"25" },
-  { id:"50",    label:"50 Coins",   stake:50,  prize:90,  tax:10, color:"#f59e0b", glow:"rgba(245,158,11,0.25)", icon:"🔥", badge:"50" },
-  { id:"100",   label:"100 Coins",  stake:100, prize:180, tax:20, color:"#ef4444", glow:"rgba(239,68,68,0.25)",  icon:"👑", badge:"100" },
+  { id:"25",    label:"25 Perks",   stake:25,  prize:45,  tax:5,  color:"#6366f1", glow:"rgba(99,102,241,0.25)", icon:"⚔️", badge:"25" },
+  { id:"50",    label:"50 Perks",   stake:50,  prize:90,  tax:10, color:"#f59e0b", glow:"rgba(245,158,11,0.25)", icon:"🔥", badge:"50" },
+  { id:"100",   label:"100 Perks",  stake:100, prize:180, tax:20, color:"#ef4444", glow:"rgba(239,68,68,0.25)",  icon:"👑", badge:"100" },
 ];
 
 const HINT_COSTS  = [2.5, 5, 10, 20, 40];
@@ -666,7 +666,7 @@ export default function BattlePage() {
 
   async function findBattle(mode) {
     const modeObj = MODES.find(m => m.id === mode);
-    if (modeObj.stake > 0 && profile?.total_aidla_coins < modeObj.stake) { flash("Insufficient coins"); return; }
+    if (modeObj.stake > 0 && profile?.total_aidla_perks < modeObj.stake) { flash("Insufficient perks"); return; }
     setView("waiting");
     setIsPrivateRoom(false);
     setRoom(null);
@@ -1259,28 +1259,28 @@ export default function BattlePage() {
     if (hintLockRef.current || submitLock.current) return;
     hintLockRef.current = true;
     const cost = HINT_COSTS[hintsUsed] || 40;
-    if ((profile?.total_aidla_coins || 0) < cost) { flash("Insufficient coins"); hintLockRef.current = false; return; }
+    if ((profile?.total_aidla_perks || 0) < cost) { flash("Insufficient perks"); hintLockRef.current = false; return; }
     const q    = questions[qIndex];
     const wrong= [0,1,2,3].filter(i => i !== q.correct_option_index && !eliminated.includes(i));
     if (wrong.length === 0) return;
     const toElim = wrong[Math.floor(Math.random() * wrong.length)];
     setEliminated(prev => [...prev, toElim]);
     setHintsUsed(h => h + 1);
-    const newBal = (profile?.total_aidla_coins || 0) - cost;
-    setProfile(prev => ({ ...prev, total_aidla_coins: newBal }));
+    const newBal = (profile?.total_aidla_perks || 0) - cost;
+    setProfile(prev => ({ ...prev, total_aidla_perks: newBal }));
     const txnNo  = "HINT-BTL-" + Date.now();
-    const poolBal= await supabase.from("admin_pool").select("total_aidla_coins").eq("id",1).single().then(r => r.data?.total_aidla_coins || 0);
+    const poolBal= await supabase.from("admin_pool").select("total_aidla_perks").eq("id",1).single().then(r => r.data?.total_aidla_perks || 0);
     await supabase.from("users_transactions").insert({
       txn_no: txnNo+"-U", user_id: user.id, user_email: profile?.email || user.email,
       txn_type:"battle_hint", direction:"OUT", amount: cost,
-      balance_before: profile?.total_aidla_coins || 0, balance_after: newBal, note:"Battle hint used",
+      balance_before: profile?.total_aidla_perks || 0, balance_after: newBal, note:"Battle hint used",
     });
     await supabase.from("admin_pool_transactions").insert({
       txn_no: txnNo+"-A", txn_type:"battle_hint", direction:"IN", amount: cost,
       admin_email:"system@battle", target_user_id: user.id, target_user_email: profile?.email || user.email,
       target_user_name: profile?.full_name || "User",
       pool_balance_before: poolBal, pool_balance_after: poolBal + cost,
-      user_balance_before: profile?.total_aidla_coins || 0, user_balance_after: newBal, note:"Hint fee collected from battle",
+      user_balance_before: profile?.total_aidla_perks || 0, user_balance_after: newBal, note:"Hint fee collected from battle",
     });
     hintLockRef.current = false;
   }
@@ -1294,7 +1294,7 @@ export default function BattlePage() {
   async function createPrivateRoom() {
     if (!selectedMode) return;
     const modeObj = selectedMode;
-    if (modeObj.stake > 0 && profile?.total_aidla_coins < modeObj.stake) { flash("Insufficient coins"); return; }
+    if (modeObj.stake > 0 && profile?.total_aidla_perks < modeObj.stake) { flash("Insufficient perks"); return; }
     setView("waiting");
     setIsPrivateRoom(true);
     setRoom(null);
@@ -1426,7 +1426,7 @@ export default function BattlePage() {
           <div style={{ background:"#1e1b4b", borderRadius:14, padding:"18px 16px", maxWidth:280, width:"100%", textAlign:"center" }}>
             <div style={{ fontSize:28, marginBottom:7 }}>🏳️</div>
             <div style={{ color:"white", fontWeight:800, fontSize:15, marginBottom:6 }}>Forfeit Battle?</div>
-            <div style={{ color:"rgba(255,255,255,0.6)", fontSize:12, marginBottom:16 }}>Your opponent wins and you lose any coins at stake.</div>
+            <div style={{ color:"rgba(255,255,255,0.6)", fontSize:12, marginBottom:16 }}>Your opponent wins and you lose any perks at stake.</div>
             <div style={{ display:"flex", gap:8 }}>
               <button style={{ flex:1, padding:"9px 0", borderRadius:9, border:"1px solid rgba(255,255,255,0.2)", background:"transparent", color:"white", fontWeight:700, cursor:"pointer", fontFamily:"inherit", fontSize:13 }} onClick={() => setConfirmForfeit(false)}>Stay</button>
               <button style={{ flex:1, padding:"9px 0", borderRadius:9, border:"none", background:"#ef4444", color:"white", fontWeight:800, cursor:"pointer", fontFamily:"inherit", fontSize:13 }} onClick={() => { setConfirmForfeit(false); goLobby(); }}>Forfeit</button>
@@ -1443,8 +1443,8 @@ export default function BattlePage() {
           <span style={S.headerTitle}>1v1 Battle Arena</span>
         </div>
         <div style={S.coinsBadge}>
-          <span style={{ fontSize:14 }}>🪙</span>
-          <span style={{ fontWeight:800, fontSize:13 }}>{(profile?.total_aidla_coins||0).toLocaleString()}</span>
+          <span style={{ fontSize:14 }}>⭐</span>
+          <span style={{ fontWeight:800, fontSize:13 }}>{(profile?.total_aidla_perks||0).toLocaleString()}</span>
         </div>
       </div>
 
@@ -1488,7 +1488,7 @@ export default function BattlePage() {
                       ["⚔️","Battles", myStats.total,    "#a5b4fc"],
                       ["🏆","Wins",    myStats.wins,     "#6ee7b7"],
                       ["💀","Losses",  myStats.losses,   "#fca5a5"],
-                      ["🪙","Earned", `+${myStats.coins_earned}`,"#fcd34d"],
+                      ["⭐","Earned", `+${myStats.coins_earned}`,"#fcd34d"],
                     ].map(([icon,label,val,color]) => (
                       <div key={label} style={{ background:"rgba(255,255,255,0.08)", borderRadius:10, padding:"7px 4px", textAlign:"center" }}>
                         <div style={{ fontSize:15, marginBottom:2 }}>{icon}</div>
@@ -1514,7 +1514,7 @@ export default function BattlePage() {
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{ fontWeight:800, fontSize:13, color:"#0f172a", marginBottom:1 }}>{m.label}</div>
                         <div style={{ fontSize:10, color:"#64748b" }}>
-                          {m.stake === 0 ? "Free" : `Stake ${m.stake}🪙`} · Win <strong style={{ color: m.color }}>{m.prize}🪙</strong>
+                          {m.stake === 0 ? "Free" : `Stake ${m.stake}⭐`} · Win <strong style={{ color: m.color }}>{m.prize}⭐</strong>
                         </div>
                       </div>
                       <div style={{ background: m.color, color:"white", fontSize:9, fontWeight:900, padding:"3px 7px", borderRadius:16, flexShrink:0 }}>
@@ -1526,7 +1526,7 @@ export default function BattlePage() {
               </div>
 
               <div style={{ background:"#fffbeb", border:"1px solid #fde68a", borderRadius:10, padding:"7px 11px", fontSize:10, color:"#92400e", fontWeight:600 }}>
-                💡 Hints: 1st=2.5 · 2nd=5 · 3rd=10 · 4th=20 · 5th=40 🪙 — eliminates a wrong option
+                💡 Hints: 1st=2.5 · 2nd=5 · 3rd=10 · 4th=20 · 5th=40 ⭐ — eliminates a wrong option
               </div>
             </div>
           )}
@@ -1564,7 +1564,7 @@ export default function BattlePage() {
                       <AvatarCircle name={r.player1_name} size={36} ring={m?.color || "#6366f1"} />
                       <div style={{ flex:1 }}>
                         <div style={{ fontWeight:700, fontSize:14, color:"#0f172a" }}>{r.player1_name}</div>
-                        <div style={{ fontSize:11, color:"#64748b" }}>{m?.label} mode · Win {m?.prize} coins</div>
+                        <div style={{ fontSize:11, color:"#64748b" }}>{m?.label} mode · Win {m?.prize} perks</div>
                       </div>
                       <button style={{ ...S.smBtn, background: joiningRoomId === r.id ? "#94a3b8" : "#6366f1", color:"white", border:"none" }} disabled={!!joiningRoomId} onClick={() => joinRoom(r.id)}>
                         {joiningRoomId === r.id ? "Joining..." : "Join ⚔️"}
@@ -1595,10 +1595,10 @@ export default function BattlePage() {
                     </div>
                     <div style={{ flex:1 }}>
                       <div style={{ fontWeight:700, fontSize:13, color:"#0f172a" }}>{h.opponent_name}</div>
-                      <div style={{ fontSize:11, color:"#94a3b8" }}>{h.my_score} vs {h.opp_score} · {h.mode==="free"?"Free":h.mode+" coins"}</div>
+                      <div style={{ fontSize:11, color:"#94a3b8" }}>{h.my_score} vs {h.opp_score} · {h.mode==="free"?"Free":h.mode+" perks"}</div>
                     </div>
                     <div style={{ fontWeight:900, fontSize:14, color: h.coins_change>=0?"#059669":"#dc2626" }}>
-                      {h.coins_change>=0?"+":""}{h.coins_change} 🪙
+                      {h.coins_change>=0?"+":""}{h.coins_change} ⭐
                     </div>
                   </div>
                 );
@@ -1652,7 +1652,7 @@ export default function BattlePage() {
             <div style={{ fontSize:34, marginBottom:5 }}>{selectedMode.icon}</div>
             <div style={{ fontSize:18, fontWeight:900, color:"white", marginBottom:2 }}>{selectedMode.label} Mode</div>
             <div style={{ fontSize:11, color:"rgba(255,255,255,0.6)", marginBottom:10 }}>
-              {selectedMode.stake === 0 ? "Free to play" : `Stake: ${selectedMode.stake}🪙`} · Win <span style={{ color:"#fbbf24", fontWeight:800 }}>{selectedMode.prize}🪙</span>
+              {selectedMode.stake === 0 ? "Free to play" : `Stake: ${selectedMode.stake}⭐`} · Win <span style={{ color:"#fbbf24", fontWeight:800 }}>{selectedMode.prize}⭐</span>
             </div>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6 }}>
               {[["Entry",selectedMode.stake===0?"Free":`${selectedMode.stake}`],["Prize",`${selectedMode.prize}`],["Tax",`${selectedMode.tax}`]].map(([l,v]) => (
@@ -2028,7 +2028,7 @@ export default function BattlePage() {
               {!feedback && hintsUsed < HINT_COSTS.length && (
                 <button onClick={useHint}
                   style={{ padding:"2px 8px", background:"#fffbeb", border:"1px solid #fde068", borderRadius:20, fontSize:9, fontWeight:800, color:"#92400e", cursor:"pointer", fontFamily:"inherit", display:"flex", alignItems:"center", gap:3, flexShrink:0 }}>
-                  💡 {HINT_COSTS[Math.min(hintsUsed, HINT_COSTS.length-1)]}🪙
+                  💡 {HINT_COSTS[Math.min(hintsUsed, HINT_COSTS.length-1)]}⭐
                 </button>
               )}
             </div>
@@ -2133,9 +2133,9 @@ export default function BattlePage() {
               </div>
 
               <div style={{ background:"rgba(52,211,153,0.15)", borderRadius:10, padding:"9px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-                <span style={{ fontSize:18 }}>🪙</span>
+                <span style={{ fontSize:18 }}>⭐</span>
                 <span style={{ fontWeight:900, fontSize:18, color:"#6ee7b7" }}>+{result.coinsChange}</span>
-                <span style={{ fontSize:11, color:"rgba(255,255,255,0.55)" }}>coins earned</span>
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.55)" }}>perks earned</span>
               </div>
 
               <button className="battle-btn" style={{ ...S.btn, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)", color:"#fff", marginBottom:7 }} onClick={() => setShowShare(true)}>
@@ -2213,9 +2213,9 @@ export default function BattlePage() {
               </div>
 
               <div style={{ background:"rgba(239,68,68,0.18)", borderRadius:10, padding:"9px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-                <span style={{ fontSize:16 }}>🪙</span>
+                <span style={{ fontSize:16 }}>⭐</span>
                 <span style={{ fontWeight:900, fontSize:18, color:"#fca5a5" }}>{result.coinsChange}</span>
-                <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>coins lost</span>
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.45)" }}>perks lost</span>
               </div>
 
               <button className="battle-btn" style={{ ...S.btn, background:"linear-gradient(135deg,#7c3aed,#db2777)", border:"none", marginBottom:7 }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
@@ -2284,9 +2284,9 @@ export default function BattlePage() {
               </div>
 
               <div style={{ background:"rgba(251,191,36,0.15)", borderRadius:10, padding:"9px", marginBottom:12, display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
-                <span style={{ fontSize:16 }}>🪙</span>
+                <span style={{ fontSize:16 }}>⭐</span>
                 <span style={{ fontWeight:900, fontSize:18, color:"#fcd34d" }}>{result.coinsChange < 0 ? result.coinsChange : `+${result.coinsChange}`}</span>
-                <span style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>coins</span>
+                <span style={{ fontSize:11, color:"rgba(255,255,255,0.5)" }}>perks</span>
               </div>
 
               <button style={{ ...S.btnGhost, background:"rgba(255,255,255,0.12)", color:"#fff", border:"1px solid rgba(255,255,255,0.2)" }} onClick={() => { setView("lobby"); setResult(null); loadHistory(); }}>
@@ -2324,7 +2324,7 @@ function BattleShareCard({ profile, result, onClose }) {
     `I just WON a 1v1 Battle on AIDLA!`,``,
     `vs ${result.oppName}`,
     `Score: ${result.myScore} vs ${result.oppScore}`,
-    `Earned: +${result.coinsChange} coins`,``,
+    `Earned: +${result.coinsChange} perks`,``,
     `Can you beat me? Challenge now`,
     `www.aidla.online/user/battle`,``,
     `#AIDLA #1v1Battle #LearnAndEarn`,

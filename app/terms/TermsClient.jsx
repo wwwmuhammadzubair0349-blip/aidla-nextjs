@@ -13,7 +13,7 @@ const sections = [
   { n: 1, title: "Acceptance", body: "By accessing AIDLA, you agree to comply with these Terms and Conditions. If you do not agree, please do not use our platform." },
   { n: 2, title: "Platform Description", body: "AIDLA is an educational platform allowing users to learn, participate in activities, and earn digital rewards." },
   { n: 3, title: "User Accounts", list: ["You must provide accurate and truthful information.", "You are solely responsible for your account security.", "Multiple fraudulent accounts are strictly prohibited."] },
-  { n: 4, title: "Rewards & Coins", highlight: "Rewards earned through AIDLA activities have no guaranteed monetary value and may change at any time without prior notice." },
+  { n: 4, title: "Rewards & Perks", highlight: "Perks earned through AIDLA activities have no cash value, are non-transferable, and may change at any time without prior notice." },
   { n: 5, title: "Prohibited Use", list: ["No cheating or automated abuse of any kind", "No illegal or fraudulent activity", "No harmful, offensive, or disruptive content"] },
   { n: 6, title: "Intellectual Property", body: "All platform content, logos, branding, and materials are the exclusive property of AIDLA and may not be reproduced without permission." },
   { n: 7, title: "Limitation of Liability", body: "AIDLA provides services on an as-is basis without warranties of any kind, express or implied." },

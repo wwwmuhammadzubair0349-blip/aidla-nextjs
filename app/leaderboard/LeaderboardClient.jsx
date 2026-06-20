@@ -33,10 +33,10 @@ function fmtCoins(val) {
 
 function fmtDrawPrize(r) {
   const coins = Number(r.coins_amount);
-  if (coins > 0) return `🪙 ${fmtCoins(coins)}`;
+  if (coins > 0) return `⭐ ${fmtCoins(coins)}`;
   if (r.prize_text) {
-    const numMatch = r.prize_text.trim().match(/^([\d.]+)(\s*coins?)?$/i);
-    if (numMatch) return `🪙 ${fmtCoins(numMatch[1])}`;
+    const numMatch = r.prize_text.trim().match(/^([\d.]+)(\s*perks?)?$/i);
+    if (numMatch) return `⭐ ${fmtCoins(numMatch[1])}`;
     return `🎁 ${r.prize_text}`;
   }
   return "Prize";
@@ -323,7 +323,7 @@ function TestResults() {
               {w.prize_text && <div className={styles.winnerPrize}><span aria-hidden="true">🎁</span> {w.prize_text}</div>}
               {Number(w.coins_amount) > 0 && (
                 <div className={`${styles.winnerPrize} ${styles.winnerPrizeBlue}`}>
-                  <span aria-hidden="true">🪙</span> {fmtCoins(w.coins_amount)} coins
+                  <span aria-hidden="true">⭐</span> {fmtCoins(w.coins_amount)} perks
                 </div>
               )}
               {w.note && <div className={styles.winnerNote}>{w.note}</div>}
@@ -452,13 +452,13 @@ function LuckyWheelHistory() {
   }, []);
 
   const resultLabel = (type) => {
-    if (type === "coins") return "🪙 Coins";
+    if (type === "coins") return "⭐ Perks";
     if (type === "gift") return "🎁 Gift";
     if (type === "plus1_chance") return "➕ Bonus Spin";
     return type;
   };
   const wheelIcon = (type) => {
-    if (type === "coins") return "🪙";
+    if (type === "coins") return "⭐";
     if (type === "gift") return "🎁";
     if (type === "plus1_chance") return "🔄";
     return "🎡";
@@ -624,7 +624,7 @@ function DailyQuizResults() {
                 <div className={styles.resultName}>{w.full_name || "AIDLA Learner"}</div>
                 <div className={styles.resultSub}>{w.score}/{w.total_questions} correct {w.streak_days >= 3 ? `· 🔥 ${w.streak_days}` : ""}</div>
               </div>
-              <div className={`${styles.resultPrize} ${styles.gold}`}>+{fmtCoins(w.coins_earned || 0)} coins</div>
+              <div className={`${styles.resultPrize} ${styles.gold}`}>+{fmtCoins(w.coins_earned || 0)} perks</div>
             </motion.div>
           ))}
         </>

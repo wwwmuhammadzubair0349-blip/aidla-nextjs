@@ -105,7 +105,7 @@ export default function AdminCommandCenter() {
   async function loadDashboard() {
     setLoading(true);
     const results = await Promise.all([
-      safe("users", async () => (await supabase.from("users_profiles").select("user_id,full_name,email,total_aidla_coins,created_at,city,country").order("created_at", { ascending: false })).data || []),
+      safe("users", async () => (await supabase.from("users_profiles").select("user_id,full_name,email,total_aidla_perks,created_at,city,country").order("created_at", { ascending: false })).data || []),
       safe("pool", async () => (await supabase.from("admin_pool").select("total_aidla_coins").eq("id", 1).single()).data),
       safe("transactions", async () => (await supabase.from("admin_pool_transactions").select("*").order("created_at", { ascending: false }).limit(250)).data || []),
       safe("withdraws", async () => (await supabase.rpc("wd_admin_get_all")).data?.requests || []),
@@ -147,7 +147,7 @@ export default function AdminCommandCenter() {
       if (!clean) throw new Error("Enter user email");
       const { data, error } = await supabase
         .from("users_profiles")
-        .select("full_name,email,total_aidla_coins,user_id")
+        .select("full_name,email,total_aidla_perks,user_id")
         .eq("email", clean)
         .single();
       if (error) throw new Error(error.code === "PGRST116" ? "No account found for this email." : error.message);
@@ -189,7 +189,7 @@ export default function AdminCommandCenter() {
   const stats = useMemo(() => {
     const today = startOfToday();
     const todayUsers = users.filter(u => new Date(u.created_at) >= today).length;
-    const userCoins = users.reduce((s, u) => s + Number(u.total_aidla_coins || 0), 0);
+    const userCoins = users.reduce((s, u) => s + Number(u.total_aidla_perks || 0), 0);
     const sent = txs.filter(isOut).reduce((s, t) => s + Number(t.amount || 0), 0);
     const received = txs.filter(t => !isOut(t)).reduce((s, t) => s + Number(t.amount || 0), 0);
     const todaySent = txs.filter(t => isOut(t) && new Date(t.created_at) >= today).reduce((s, t) => s + Number(t.amount || 0), 0);
@@ -213,8 +213,8 @@ export default function AdminCommandCenter() {
   }, [users, txs, withdraws, shop, study, projects, questions, reviews, emailLogs]);
 
   const recent = useMemo(() => [
-    ...txs.slice(0, 8).map(t => ({ type: isOut(t) ? "Coins sent" : "Coins received", text: `${isOut(t) ? "-" : "+"}${nfmt(t.amount)} AIDLA`, sub: t.target_user_email || t.note || t.txn_no, date: t.created_at })),
-    ...withdraws.slice(0, 4).map(w => ({ type: "Withdrawal", text: `${w.status} - ${nfmt(w.coins_requested)} coins`, sub: w.user_email, date: w.created_at })),
+    ...txs.slice(0, 8).map(t => ({ type: isOut(t) ? "Perks sent" : "Perks received", text: `${isOut(t) ? "-" : "+"}${nfmt(t.amount)} AIDLA`, sub: t.target_user_email || t.note || t.txn_no, date: t.created_at })),
+    ...withdraws.slice(0, 4).map(w => ({ type: "Withdrawal", text: `${w.status} - ${nfmt(w.coins_requested)} perks`, sub: w.user_email, date: w.created_at })),
     ...shop.orders.slice(0, 4).map(o => ({ type: "Shop order", text: `${o.status} - ${o.product_name}`, sub: o.user_email, date: o.created_at })),
     ...emailLogs.slice(0, 4).map(e => ({ type: "Email blast", text: `${nfmt(e.sent_count)} sent`, sub: e.subject, date: e.sent_at || e.created_at })),
   ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10), [txs, withdraws, shop.orders, emailLogs]);
@@ -252,10 +252,10 @@ export default function AdminCommandCenter() {
           <section className="ad-grid">
             <Stat label="Total Users" value={nfmt(users.length)} />
             <Stat label="Joined Today" value={nfmt(stats.todayUsers)} tone="green" />
-            <Stat label="Admin Pool" value={pool === null ? "-" : nfmt(pool)} hint="AIDLA coins" tone="indigo" />
-            <Stat label="User Coins" value={nfmt(stats.userCoins)} hint="total balances" tone="gold" />
-            <Stat label="Coins Sent" value={nfmt(stats.sent)} tone="red" />
-            <Stat label="Coins Received" value={nfmt(stats.received)} tone="green" />
+            <Stat label="Admin Pool" value={pool === null ? "-" : nfmt(pool)} hint="AIDLA perks" tone="indigo" />
+            <Stat label="User Perks" value={nfmt(stats.userCoins)} hint="total balances" tone="gold" />
+            <Stat label="Perks Sent" value={nfmt(stats.sent)} tone="red" />
+            <Stat label="Perks Received" value={nfmt(stats.received)} tone="green" />
             <Stat label="Today Sent" value={nfmt(stats.todaySent)} tone="red" />
             <Stat label="Today Received" value={nfmt(stats.todayReceived)} tone="green" />
             <Stat label="Emails Today" value={nfmt(stats.emailsToday)} hint="manual logs" tone="blue" />
@@ -269,8 +269,8 @@ export default function AdminCommandCenter() {
                 <small>All-time and today</small>
               </div>
               <MiniBars items={[
-                { label: "Coins sent", value: stats.sent },
-                { label: "Coins received", value: stats.received },
+                { label: "Perks sent", value: stats.sent },
+                { label: "Perks received", value: stats.received },
                 { label: "Today sent", value: stats.todaySent },
                 { label: "Today received", value: stats.todayReceived },
               ]} />
@@ -349,7 +349,7 @@ export default function AdminCommandCenter() {
                 <div className="ad-user">
                   <b>{userFound.full_name || "User"}</b>
                   <span>{userFound.email}</span>
-                  <strong>{nfmt(userFound.total_aidla_coins)} AIDLA</strong>
+                  <strong>{nfmt(userFound.total_aidla_perks)} perks</strong>
                 </div>
               )}
             </div>

@@ -8,7 +8,7 @@ const SLICE_TYPES =[
   { value: "try_again_free", label: "Try Again" },
   { value: "plus1_chance", label: "+1 Chance" },
   { value: "gift", label: "Gift" },
-  { value: "coins", label: "Coins" },
+  { value: "coins", label: "Perks" },
 ];
 
 const SLICE_COLORS =["#1E3A8A", "#3B82F6", "#0EA5E9", "#8B5CF6"];
@@ -161,7 +161,7 @@ export default function AdminLuckyWheel() {
       
       <div className="admin-header-row">
         <div>
-          <h2 className="admin-title">Lucky Wheel Settings</h2>
+          <h2 className="admin-title">Perks Spin Settings</h2>
           <p className="admin-subtitle">Configure entries, slices, quotas, and forced outcomes.</p>
         </div>
         <div className="admin-header-actions">
@@ -196,7 +196,7 @@ export default function AdminLuckyWheel() {
                   </select>
                 </div>
                 <div className="admin-form-group">
-                  <label>Entry Cost (Coins)</label>
+                  <label>Entry Cost (Perks)</label>
                   <input 
                     type="number" min={0} value={entryCost} 
                     onChange={(e) => setEntryCost(e.target.value)} 
@@ -227,7 +227,7 @@ export default function AdminLuckyWheel() {
                       </select>
                     </div>
                     <div className="admin-form-group">
-                      <label>Value {slice.type === "coins" ? "(Coins)" : ""}</label>
+                      <label>Value {slice.type === "coins" ? "(Perks)" : ""}</label>
                       <input 
                         type="number" min={0} value={slice.value ?? 0} 
                         onChange={(e) => updateSlice(idx, { value: e.target.value })} 
@@ -257,7 +257,7 @@ export default function AdminLuckyWheel() {
                 <div className="preview-stats">
                   <div className="preview-stat-badge">
                     <span>Entry</span>
-                    <strong>{entryType === "paid" ? `${entryCost} Coins` : "Free"}</strong>
+                    <strong>{entryType === "paid" ? `${entryCost} Perks` : "Free"}</strong>
                   </div>
                   <div className="preview-stat-badge">
                     <span>Daily Limit</span>
@@ -275,7 +275,7 @@ export default function AdminLuckyWheel() {
                   <div key={idx} className="legend-item">
                     <div className="legend-color" style={{ backgroundColor: SLICE_COLORS[idx] }}></div>
                     <span className="legend-label">{s.label}</span>
-                    <span className="legend-desc">({s.type === 'coins' ? `${s.value} Coins` : SLICE_TYPES.find(t=>t.value===s.type)?.label})</span>
+                    <span className="legend-desc">({s.type === 'coins' ? `${s.value} Perks` : SLICE_TYPES.find(t=>t.value===s.type)?.label})</span>
                   </div>
                 ))}
               </div>

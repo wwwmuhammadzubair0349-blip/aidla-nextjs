@@ -30,7 +30,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
 
   const caption = [
     isWinnerWithCoins
-      ? `🏆 I WON the AIDLA Daily Quiz and earned ${result.coins_earned} coins!`
+      ? `🏆 I WON the AIDLA Daily Quiz and earned ${result.coins_earned} perks!`
       : passed
         ? "🎯 I passed today's AIDLA Daily Quiz!"
         : "💪 I took the AIDLA Daily Quiz!",
@@ -38,8 +38,8 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
     `📊 Score: ${score}`,
     result?.rank ? `🥇 Rank: #${result.rank}` : "",
     isWinnerWithCoins
-      ? `🪙 Coins earned: +${result.coins_earned}`
-      : "🪙 Coins distributed at end of day",
+      ? `⭐ Perks earned: +${result.coins_earned}`
+      : "⭐ Perks distributed at end of day",
     result?.date ? `📅 Date: ${result.date}` : "",
     "",
     `Think you can beat ${name.split(" ")[0]}? 💪`,
@@ -69,7 +69,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
               </div>
             </div>
             <div style={{ background:"rgba(255,255,255,0.15)", color:"white", fontSize:11, fontWeight:700, padding:"3px 10px", borderRadius:20, whiteSpace:"nowrap", flexShrink:0 }}>
-              {result?.coins_earned > 0 ? `🏆 +${result.coins_earned}🪙` : passed ? "🏆 Winner" : "💪 Player"}
+              {result?.coins_earned > 0 ? `🏆 +${result.coins_earned}⭐` : passed ? "🏆 Winner" : "💪 Player"}
             </div>
           </div>
 
@@ -86,7 +86,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
 
           {/* Stats */}
           <div style={{ display:"flex", borderTop:"1px solid #f1f5f9", background:"white" }}>
-            {[["Score", score], ["Rank", rank], result?.coins_earned > 0 ? ["Coins", `+${result.coins_earned}🪙`] : ["Date", date]].map(([l,v], i) => (
+            {[["Score", score], ["Rank", rank], result?.coins_earned > 0 ? ["Perks", `+${result.coins_earned}⭐`] : ["Date", date]].map(([l,v], i) => (
               <div key={l} style={{ flex:1, padding:"14px 8px", textAlign:"center", borderRight: i<2 ? "1px solid #f1f5f9" : "none" }}>
                 <div style={{ fontSize:15, fontWeight:800, color:"#0f172a" }}>{v}</div>
                 <div style={{ fontSize:9, color:"#94a3b8", marginTop:3, textTransform:"uppercase", letterSpacing:0.5 }}>{l}</div>
@@ -516,7 +516,7 @@ export default function DailyQuizPage() {
     const toEliminate = wrongOptions.sort(() => Math.random() - 0.5).slice(0, 2);
     setEliminatedOptions(toEliminate);
     setHintUsed(true);
-    setProfile(prev => ({ ...prev, total_aidla_coins: prev.total_aidla_coins - data.cost }));
+    setProfile(prev => ({ ...prev, total_aidla_perks: prev.total_aidla_perks - data.cost }));
   }
 
   function shareResult() {
@@ -545,7 +545,7 @@ export default function DailyQuizPage() {
             </div>
             <div style={{ fontSize:13, color:"#64748b", marginBottom:6 }}>Date: {winResult.date}</div>
             <div style={{ fontSize:16, fontWeight:800, color:"#059669", marginBottom:20 }}>
-              +{winResult.coins_earned} 🪙 added to your wallet!
+              +{winResult.coins_earned} ⭐ perks added!
             </div>
             <div style={{ display:"flex", gap:10 }}>
               <button style={{ flex:1, padding:"12px", background:"#f1f5f9", border:"none", borderRadius:10, fontWeight:600, fontSize:13, cursor:"pointer", color:"#475569" }}
@@ -583,7 +583,7 @@ export default function DailyQuizPage() {
       <div style={S.header}>
         <Link href="/user" style={S.back}>←</Link>
         <span style={S.headerTitle}>Daily Quiz</span>
-        <span style={S.coins}>🪙 {(profile?.total_aidla_coins || 0).toLocaleString()}</span>
+        <span style={S.coins}>⭐ {(profile?.total_aidla_perks || 0).toLocaleString()}</span>
       </div>
 
       {showShareCard && result && (
@@ -613,7 +613,7 @@ export default function DailyQuizPage() {
                     {w.avatar_url && <img src={w.avatar_url} alt="" style={S.avatar} />}
                     <span style={{ flex: 1, fontWeight: 600, fontSize: 14 }}>{w.user_id === profile?.user_id ? "🙋 You" : w.full_name}</span>
                     <span style={{ fontSize: 12, color: "#64748b" }}>{w.score}/{w.total_questions}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#059669", marginLeft: 8 }}>+{w.coins_earned}🪙</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#059669", marginLeft: 8 }}>+{w.coins_earned}⭐</span>
                     {w.streak_days >= 3 && <span style={{ fontSize: 12 }}>🔥{w.streak_days}</span>}
                     {w.user_id === profile?.user_id && w.coins_earned > 0 && (
                       <button style={{ fontSize:11, padding:"3px 8px", background:"#059669", color:"white", border:"none", borderRadius:6, cursor:"pointer", fontWeight:700, marginLeft:4 }}
@@ -662,13 +662,13 @@ export default function DailyQuizPage() {
               <div>
                 <div style={S.card}>
                   <div style={S.viewTitle}>🧠 Daily Quiz</div>
-                  <div style={S.viewSub}>Answer correctly, beat the threshold, earn coins.</div>
+                  <div style={S.viewSub}>Answer correctly, beat the threshold, earn perks.</div>
                   <div style={S.statsGrid}>
                     {[
                       ["Questions", cfg.total_questions],
                       ["Pass", `${cfg.pass_threshold}/${cfg.total_questions}`],
                       ["Time/Q", `${cfg.time_per_question_sec}s`],
-                      ["Prize", `🪙${cfg.prize_coins}`],
+                      ["Prize", `⭐${cfg.prize_coins}`],
                       ["Winners", cfg.max_winners],
                       ["Attempts", `${status.attempts_left} left`],
                     ].map(([k, v]) => (
@@ -678,8 +678,8 @@ export default function DailyQuizPage() {
                       </div>
                     ))}
                   </div>
-                  {cfg.hint_enabled && <div style={S.infoBanner}>💡 Hints available — costs {cfg.hint_cost_coins} coins to eliminate 2 wrong options</div>}
-                  {cfg.streak_bonus_enabled && <div style={S.infoBanner}>🔥 3-day streak bonus: +{cfg.streak_bonus_coins} extra coins</div>}
+                  {cfg.hint_enabled && <div style={S.infoBanner}>💡 Hints available — costs {cfg.hint_cost_coins} perks to eliminate 2 wrong options</div>}
+                  {cfg.streak_bonus_enabled && <div style={S.infoBanner}>🔥 3-day streak bonus: +{cfg.streak_bonus_coins} extra perks</div>}
                   {status.attempts_used > 0 && (
                     <div style={{ ...S.infoBanner, background: "#fff7ed", color: "#92400e" }}>
                       {status.attempts_used} attempt(s) used today · {status.attempts_left} remaining
@@ -718,9 +718,9 @@ export default function DailyQuizPage() {
                     "Timeout counts as wrong answer",
                     "Wrong answers over the limit = eliminated",
                     "Answers auto-advance — no going back",
-                    cfg.hint_enabled ? `Hints cost ${cfg.hint_cost_coins} coins (eliminates 2 wrong options)` : null,
-                    cfg.streak_bonus_enabled ? `3+ day streak = +${cfg.streak_bonus_coins} bonus coins` : null,
-                    `Top ${cfg.max_winners} passers earn 🪙${cfg.prize_coins}`,
+                    cfg.hint_enabled ? `Hints cost ${cfg.hint_cost_coins} perks (eliminates 2 wrong options)` : null,
+                    cfg.streak_bonus_enabled ? `3+ day streak = +${cfg.streak_bonus_coins} bonus perks` : null,
+                    `Top ${cfg.max_winners} passers earn ⭐${cfg.prize_coins} perks`,
                   ].filter(Boolean).map((r, i) => (
                     <div key={i} style={S.ruleItem}><span style={S.ruleDot}>•</span>{r}</div>
                   ))}
@@ -786,7 +786,7 @@ export default function DailyQuizPage() {
                 {/* Hint button */}
                 {cfg?.hint_enabled && !hintUsed && !feedback && (
                   <button style={S.hintBtn} onClick={useHint}>
-                    💡 Use Hint ({cfg.hint_cost_coins} coins)
+                    💡 Use Hint ({cfg.hint_cost_coins} perks)
                   </button>
                 )}
               </div>
@@ -809,9 +809,9 @@ export default function DailyQuizPage() {
 
                   <div style={S.statsGrid}>
                     <div style={S.statBox}><div style={S.statVal}>{result.correct_answers}/{result.total_questions}</div><div style={S.statKey}>Score</div></div>
-                    <div style={S.statBox}><div style={{ ...S.statVal, color: "#059669" }}>{result.passed ? "⏳ EOD" : "0"}🪙</div><div style={S.statKey}>{result.passed ? "Coins at 23:59" : "Earned"}</div></div>
+                    <div style={S.statBox}><div style={{ ...S.statVal, color: "#059669" }}>{result.passed ? "⏳ EOD" : "0"}⭐</div><div style={S.statKey}>{result.passed ? "Perks at 23:59" : "Earned"}</div></div>
                     {result.rank && <div style={S.statBox}><div style={S.statVal}>#{result.rank}</div><div style={S.statKey}>Rank</div></div>}
-                    {result.streak_bonus > 0 && <div style={S.statBox}><div style={{ ...S.statVal, color: "#f59e0b" }}>+{result.streak_bonus}🪙</div><div style={S.statKey}>Streak Bonus</div></div>}
+                    {result.streak_bonus > 0 && <div style={S.statBox}><div style={{ ...S.statVal, color: "#f59e0b" }}>+{result.streak_bonus}⭐</div><div style={S.statKey}>Streak Bonus</div></div>}
                   </div>
 
                   {result.passed && (
@@ -842,7 +842,7 @@ export default function DailyQuizPage() {
                         {w.avatar_url && <img src={w.avatar_url} alt="" style={S.avatar} />}
                         <span style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{w.user_id === profile?.user_id ? "🙋 You" : w.full_name}</span>
                         <span style={{ fontSize: 12, color: "#64748b" }}>{w.score}/{w.total_questions}</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#059669", marginLeft: 8 }}>+{w.coins_earned}🪙</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "#059669", marginLeft: 8 }}>+{w.coins_earned}⭐</span>
                       </div>
                     ))}
                   </div>
@@ -861,7 +861,7 @@ export default function DailyQuizPage() {
                     Score: {status?.last_attempt?.correct_answers}/{status?.last_attempt?.total_questions}
                   </div>
                   <div style={{ fontSize: 13, color: "#4ade80", fontWeight: 600, marginBottom: 16 }}>
-                    🪙 Coins will be distributed at 23:59
+                    ⭐ Perks will be distributed at 23:59
                   </div>
                   <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>Next quiz in</div>
                   <div style={S.countdown}>{countdown}</div>
@@ -881,7 +881,7 @@ export default function DailyQuizPage() {
                         <span style={{ ...S.lbRank, color: i === 0 ? "#f59e0b" : "#475569" }}>#{w.rank}</span>
                         {w.avatar_url && <img src={w.avatar_url} alt="" style={S.avatar} />}
                         <span style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{w.user_id === profile?.user_id ? "🙋 You" : w.full_name}</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#059669" }}>+{w.coins_earned}🪙</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "#059669" }}>+{w.coins_earned}⭐</span>
                       </div>
                     ))}
                   </div>
@@ -913,7 +913,7 @@ export default function DailyQuizPage() {
                         <span style={{ ...S.lbRank, color: i === 0 ? "#f59e0b" : "#475569" }}>#{w.rank}</span>
                         {w.avatar_url && <img src={w.avatar_url} alt="" style={S.avatar} />}
                         <span style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{w.user_id === profile?.user_id ? "🙋 You" : w.full_name}</span>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: "#059669" }}>+{w.coins_earned}🪙</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: "#059669" }}>+{w.coins_earned}⭐</span>
                       </div>
                     ))}
                   </div>

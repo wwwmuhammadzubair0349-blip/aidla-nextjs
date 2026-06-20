@@ -18,7 +18,7 @@ const typeToNice = (t) => {
     case "try_again_free": return "🔄 Try Again";
     case "plus1_chance":   return "🍀 +1 Chance";
     case "gift":           return "🎁 Gift";
-    case "coins":          return "💰 Coins";
+    case "coins":          return "⭐ Perks";
     default:               return t;
   }
 };
@@ -130,7 +130,7 @@ export default function LuckyWheel() {
 
   const entryText = useMemo(()=>{
     if (!settings) return "";
-    if (settings.entry_type==="paid") return `Paid entry: ${settings.entry_cost} coins`;
+    if (settings.entry_type==="paid") return `Paid entry: ${settings.entry_cost} perks`;
     return "Free entry";
   },[settings]);
 
@@ -148,7 +148,7 @@ export default function LuckyWheel() {
       supabase.from("luckywheel_settings").select("*").eq("id",1).single(),
       supabase.from("users_profiles").select("*").eq("user_id",userId).single(),
       supabase.from("luckywheel_history").select("id",{count:"exact",head:true}).eq("user_id",userId).gte("created_at",uaeDayStartISO()),
-      supabase.from("luckywheel_history").select("id,created_at,result_type,coins_won,entry_type,entry_cost,slice_index").eq("user_id",userId).order("created_at",{ascending:false}).limit(50),
+      supabase.from("luckywheel_history").select("id,created_at,result_type,perks_won,entry_type,entry_cost,slice_index").eq("user_id",userId).order("created_at",{ascending:false}).limit(50),
     ]);
     if (settingsRes.data) setSettings(settingsRes.data);
     if (profileRes.data)  setProfile(profileRes.data);
@@ -185,8 +185,8 @@ export default function LuckyWheel() {
     if (drawsLeft<=0) { setMsg("Daily limit reached."); return; }
     if (settings.entry_type==="paid") {
       const cost=Number(settings.entry_cost||0);
-      const bal =Number(profile.total_aidla_coins||0);
-      if (bal<cost) { setMsg("Insufficient coins for paid entry."); return; }
+      const bal =Number(profile.total_aidla_perks||0);
+      if (bal<cost) { setMsg("Insufficient perks for paid entry."); return; }
     }
     setSpinning(true); spinningRef.current=true;
     const { data, error } = await supabase.rpc("lw_draw");
@@ -202,7 +202,7 @@ export default function LuckyWheel() {
     const { data, error } = await supabase.rpc("lw_claim");
     if (error) { setMsg(`Claim failed: ${error.message}`); return; }
     if (!data?.ok) { setMsg(data?.error||"Nothing to claim"); return; }
-    setMsg(`🎉 Claimed ${data.claimed} coins!`);
+    setMsg(`🎉 Claimed ${data.claimed} perks!`);
     await loadAll();
   };
 
@@ -219,7 +219,7 @@ export default function LuckyWheel() {
           <h2 className="lw-modal-title">Congratulations!</h2>
           <div className="lw-modal-result-text">
             {typeToNice(lastResult.result_type)}
-            {lastResult.result_type==="coins"?` +${lastResult.coins_won}`:""}
+            {lastResult.result_type==="coins"?` +${lastResult.perks_won}`:""}
           </div>
           <div className="lw-modal-footer">Closes in 5 seconds</div>
         </div>
@@ -238,7 +238,7 @@ export default function LuckyWheel() {
           <div className="lw-header-left">
             <span className="lw-header-icon">🎡</span>
             <div>
-              <h1 className="lw-title">Lucky Wheel</h1>
+              <h1 className="lw-title">Perks Spin</h1>
               <div className="lw-entry-badge">{entryText}</div>
             </div>
           </div>
@@ -276,12 +276,12 @@ export default function LuckyWheel() {
                   <div className="lw-stat-grid">
                     <StatBox label="Draws today"  value={drawsToday}/>
                     <StatBox label="Daily limit"  value={Number(settings?.daily_limit??0)}/>
-                    <StatBox label="Your balance" value={Number(profile?.total_aidla_coins??0)}/>
+                    <StatBox label="Your perks" value={Number(profile?.total_aidla_perks??0)}/>
                     <StatBox label="Total earned" value={Number(profile?.total_lw_earned??0)}/>
                   </div>
                   <div className="lw-claim-box">
                     <div className="lw-claim-row">
-                      <span>Claimable Coins</span>
+                      <span>Claimable Perks</span>
                       <strong className="lw-claim-val">{Number(profile?.lw_earned_coins??0)}</strong>
                     </div>
                     <button onClick={onClaim} disabled={!canClaim||spinning} className="lw-btn">
@@ -327,7 +327,7 @@ export default function LuckyWheel() {
                           <td className="lw-td-date">{new Date(h.created_at).toLocaleString()}</td>
                           <td className="lw-td-result">{typeToNice(h.result_type)}</td>
                           <td className="lw-td-prize" style={{ color:h.result_type==="coins"?"#3b82f6":"inherit" }}>
-                            {h.result_type==="coins"?`+${h.coins_won}`:"—"}
+                            {h.result_type==="coins"?`+${h.perks_won}`:"—"}
                           </td>
                           <td><span className={`lw-entry-tag${h.entry_type==="paid"?" paid":" free"}`}>{h.entry_type==="paid"?"Paid":"Free"}</span></td>
                           <td>{h.entry_type==="paid"?`${h.entry_cost}C`:"—"}</td>

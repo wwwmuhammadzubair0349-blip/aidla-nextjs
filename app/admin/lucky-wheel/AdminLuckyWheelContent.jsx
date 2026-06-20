@@ -8,7 +8,7 @@ const SLICE_TYPES =[
   { value: "try_again_free", label: "Try Again" },
   { value: "plus1_chance", label: "+1 Chance" },
   { value: "gift", label: "Gift" },
-  { value: "coins", label: "Perks" },
+  { value: "perks", label: "Perks" },
 ];
 
 const SLICE_COLORS =["#1E3A8A", "#3B82F6", "#0EA5E9", "#8B5CF6"];
@@ -17,7 +17,7 @@ const defaultSlices =[
   { label: "Slice 1", type: "try_again_free", value: 0 },
   { label: "Slice 2", type: "plus1_chance", value: 0 },
   { label: "Slice 3", type: "gift", value: 0 },
-  { label: "Slice 4", type: "coins", value: 10 },
+  { label: "Slice 4", type: "perks", value: 10 },
 ];
 
 const defaultCaps = {
@@ -227,12 +227,12 @@ export default function AdminLuckyWheel() {
                       </select>
                     </div>
                     <div className="admin-form-group">
-                      <label>Value {slice.type === "coins" ? "(Perks)" : ""}</label>
+                      <label>Value {(slice.type === "perks" || slice.type === "coins") ? "(Perks)" : ""}</label>
                       <input 
                         type="number" min={0} value={slice.value ?? 0} 
                         onChange={(e) => updateSlice(idx, { value: e.target.value })} 
                         className="admin-input" 
-                        disabled={slice.type !== "coins" && slice.type !== "gift"} 
+                        disabled={slice.type !== "perks" && slice.type !== "coins" && slice.type !== "gift"}
                       />
                     </div>
                   </div>
@@ -275,7 +275,7 @@ export default function AdminLuckyWheel() {
                   <div key={idx} className="legend-item">
                     <div className="legend-color" style={{ backgroundColor: SLICE_COLORS[idx] }}></div>
                     <span className="legend-label">{s.label}</span>
-                    <span className="legend-desc">({s.type === 'coins' ? `${s.value} Perks` : SLICE_TYPES.find(t=>t.value===s.type)?.label})</span>
+                    <span className="legend-desc">({(s.type === 'perks' || s.type === 'coins') ? `${s.value} Perks` : SLICE_TYPES.find(t=>t.value===s.type)?.label})</span>
                   </div>
                 ))}
               </div>

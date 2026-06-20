@@ -18,6 +18,7 @@ const typeToNice = (t) => {
     case "try_again_free": return "🔄 Try Again";
     case "plus1_chance":   return "🍀 +1 Chance";
     case "gift":           return "🎁 Gift";
+    case "perks":
     case "coins":          return "⭐ Perks";
     default:               return t;
   }
@@ -82,7 +83,7 @@ function WheelCanvas({ slices, rotation, onDraw, drawDisabled, spinning }) {
             <div key={i} className="lw-slice-label" style={{ transform:`rotate(${i*90+45}deg)` }}>
               <div className="lw-slice-inner">
                 {typeToNice(s.type)}
-                {s.type==="coins"&&<div className="lw-slice-val">{s.value}</div>}
+                {(s.type==="perks"||s.type==="coins")&&<div className="lw-slice-val">{s.value}</div>}
               </div>
             </div>
           ))}
@@ -124,7 +125,7 @@ export default function LuckyWheel() {
       { label:"Slice 1", type:"try_again_free", value:0 },
       { label:"Slice 2", type:"plus1_chance",   value:0 },
       { label:"Slice 3", type:"gift",            value:0 },
-      { label:"Slice 4", type:"coins",           value:10 },
+      { label:"Slice 4", type:"perks",            value:10 },
     ];
   },[settings]);
 
@@ -148,7 +149,7 @@ export default function LuckyWheel() {
       supabase.from("luckywheel_settings").select("*").eq("id",1).single(),
       supabase.from("users_profiles").select("*").eq("user_id",userId).single(),
       supabase.from("luckywheel_history").select("id",{count:"exact",head:true}).eq("user_id",userId).gte("created_at",uaeDayStartISO()),
-      supabase.from("luckywheel_history").select("id,created_at,result_type,perks_won,entry_type,entry_cost,slice_index").eq("user_id",userId).order("created_at",{ascending:false}).limit(50),
+      supabase.from("luckywheel_history").select("id,created_at,result_type,coins_won,entry_type,entry_cost,slice_index").eq("user_id",userId).order("created_at",{ascending:false}).limit(50),
     ]);
     if (settingsRes.data) setSettings(settingsRes.data);
     if (profileRes.data)  setProfile(profileRes.data);
@@ -219,7 +220,7 @@ export default function LuckyWheel() {
           <h2 className="lw-modal-title">Congratulations!</h2>
           <div className="lw-modal-result-text">
             {typeToNice(lastResult.result_type)}
-            {lastResult.result_type==="coins"?` +${lastResult.perks_won}`:""}
+            {(lastResult.result_type==="perks"||lastResult.result_type==="coins")?` +${lastResult.coins_won}`:""}
           </div>
           <div className="lw-modal-footer">Closes in 5 seconds</div>
         </div>
@@ -259,7 +260,7 @@ export default function LuckyWheel() {
                     {slices.map((s,i)=>(
                       <div key={i} className="lw-legend-item">
                         <div className="lw-legend-dot" style={{ background:SLICE_COLORS[i] }}/>
-                        <span>{typeToNice(s.type)}{s.type==="coins"?` (${s.value})`:""}</span>
+                        <span>{typeToNice(s.type)}{(s.type==="perks"||s.type==="coins")?` (${s.value})`:""}</span>
                       </div>
                     ))}
                   </div>
@@ -326,8 +327,8 @@ export default function LuckyWheel() {
                         <tr key={h.id}>
                           <td className="lw-td-date">{new Date(h.created_at).toLocaleString()}</td>
                           <td className="lw-td-result">{typeToNice(h.result_type)}</td>
-                          <td className="lw-td-prize" style={{ color:h.result_type==="coins"?"#3b82f6":"inherit" }}>
-                            {h.result_type==="coins"?`+${h.perks_won}`:"—"}
+                          <td className="lw-td-prize" style={{ color:(h.result_type==="perks"||h.result_type==="coins")?"#3b82f6":"inherit" }}>
+                            {(h.result_type==="perks"||h.result_type==="coins")?`+${h.coins_won}`:"—"}
                           </td>
                           <td><span className={`lw-entry-tag${h.entry_type==="paid"?" paid":" free"}`}>{h.entry_type==="paid"?"Paid":"Free"}</span></td>
                           <td>{h.entry_type==="paid"?`${h.entry_cost}C`:"—"}</td>

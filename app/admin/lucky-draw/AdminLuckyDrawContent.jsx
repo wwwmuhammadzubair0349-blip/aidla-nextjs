@@ -47,7 +47,7 @@ function dubaiNowPlusMinutesLocalInput(mins) {
   );
 }
 
-const defaultPrize = () => ({ type: "coins", coins: 1000, name: "" });
+const defaultPrize = () => ({ type: "perks", coins: 1000, name: "" });
 
 // Simplified styles – only essential scrollbar and subtle transitions
 const baseStyles = `
@@ -359,8 +359,8 @@ export default function AdminLuckyDraw() {
 
     // Validate prizes
     prizes.slice(0, Number(drawsCount || 1)).forEach((prize, index) => {
-      if (prize.type === "coins" && (!prize.coins || prize.coins < 1)) {
-        errors[`prize_${index}`] = `Prize ${index + 1} coins must be at least 1`;
+      if ((prize.type === "perks" || prize.type === "coins") && (!prize.coins || prize.coins < 1)) {
+        errors[`prize_${index}`] = `Prize ${index + 1} perks must be at least 1`;
       }
       if (prize.type === "item" && !prize.name?.trim()) {
         errors[`prize_${index}`] = `Prize ${index + 1} item name is required`;
@@ -374,10 +374,10 @@ export default function AdminLuckyDraw() {
   const cleanPrizes = useMemo(() => {
     const dc = Number(drawsCount || 1);
     return prizes.slice(0, dc).map((p, idx) => {
-      const type = p.type === "item" ? "item" : "coins";
-      if (type === "coins") {
+      const type = p.type === "item" ? "item" : "perks";
+      if (type === "perks") {
         return {
-          type: "coins",
+          type: "perks",
           coins: Math.max(1, parseInt(p.coins || 0, 10) || 0),
           name: "",
           label: `Prize ${idx + 1}`,
@@ -925,12 +925,12 @@ export default function AdminLuckyDraw() {
                           value={prize.type}
                           onChange={(e) => updatePrize(index, { type: e.target.value })}
                         >
-                          <option value="coins">⭐ Perks</option>
+                          <option value="perks">⭐ Perks</option>
                           <option value="item">🎁 Item / Other</option>
                         </select>
                       </div>
 
-                      {prize.type === "coins" ? (
+                      {(prize.type === "perks" || prize.type === "coins") ? (
                         <div>
                           <label style={{ display: "block", marginBottom: 5, fontSize: "0.9rem", color: "#64748b" }}>
                             Perks Amount

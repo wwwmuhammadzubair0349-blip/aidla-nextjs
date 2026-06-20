@@ -13,12 +13,6 @@ const startOfToday = () => {
 const nfmt = n => Number(n || 0).toLocaleString();
 const shortDate = v => v ? new Date(v).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
 
-function isOut(tx) {
-  return tx?.direction === "OUT"
-    || String(tx?.txn_type || "").toUpperCase().includes("SEND")
-    || String(tx?.txn_no || "").startsWith("RES-APR");
-}
-
 async function safe(label, fn) {
   try { return { label, data: await fn(), error: null }; }
   catch (e) { return { label, data: null, error: e?.message || String(e) }; }
@@ -46,21 +40,6 @@ function QueueCard({ title, count, href, tone = "amber", meta }) {
   );
 }
 
-function MiniBars({ items }) {
-  const max = Math.max(...items.map(i => Number(i.value || 0)), 1);
-  return (
-    <div className="ad-chart-bars">
-      {items.map(item => (
-        <div className="ad-bar-row" key={item.label}>
-          <span>{item.label}</span>
-          <div><i style={{ width: `${Math.max(3, (Number(item.value || 0) / max) * 100)}%` }} /></div>
-          <b>{nfmt(item.value)}</b>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function Donut({ pending }) {
   const pct = Math.min(100, pending * 8);
   return (
@@ -71,44 +50,28 @@ function Donut({ pending }) {
       </div>
       <div className="ad-donut-meta">
         <b>{pending ? "Attention required" : "Queues clear"}</b>
-        <span>Tracked across withdrawals, shop, content, FAQs, and reviews</span>
+        <span>Tracked across shop, content, FAQs, and reviews</span>
       </div>
     </div>
   );
 }
 
 export default function AdminCommandCenter() {
-  const [tab, setTab] = useState("overview");
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState([]);
   const [users, setUsers] = useState([]);
-  const [pool, setPool] = useState(null);
-  const [txs, setTxs] = useState([]);
-  const [withdraws, setWithdraws] = useState([]);
   const [shop, setShop] = useState({ orders: [], cashbacks: [], products: [] });
   const [study, setStudy] = useState([]);
   const [projects, setProjects] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [emailLogs, setEmailLogs] = useState([]);
-
-  const [email, setEmail] = useState("");
-  const [userFound, setUserFound] = useState(null);
-  const [amount, setAmount] = useState("");
-  const [note, setNote] = useState("");
-  const [loadingUser, setLoadingUser] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [msg, setMsg] = useState("");
-  const [ledgerOpen, setLedgerOpen] = useState(false);
   const [recentOpen, setRecentOpen] = useState(false);
 
   async function loadDashboard() {
     setLoading(true);
     const results = await Promise.all([
       safe("users", async () => (await supabase.from("users_profiles").select("user_id,full_name,email,total_aidla_perks,created_at,city,country").order("created_at", { ascending: false })).data || []),
-      safe("pool", async () => (await supabase.from("admin_pool").select("total_aidla_coins").eq("id", 1).single()).data),
-      safe("transactions", async () => (await supabase.from("admin_pool_transactions").select("*").order("created_at", { ascending: false }).limit(250)).data || []),
-      safe("withdraws", async () => (await supabase.rpc("wd_admin_get_all")).data?.requests || []),
       safe("shop", async () => (await supabase.rpc("shop_admin_load")).data || {}),
       safe("study", async () => (await supabase.from("study_materials").select("id,approval_status,uploader_type,created_at")).data || []),
       safe("projects", async () => (await supabase.from("project_ideas").select("id,approval_status,uploader_type,created_at")).data || []),
@@ -119,9 +82,6 @@ export default function AdminCommandCenter() {
 
     const by = Object.fromEntries(results.map(r => [r.label, r]));
     setUsers(by.users.data || []);
-    setPool(by.pool.data?.total_aidla_coins ?? null);
-    setTxs(by.transactions.data || []);
-    setWithdraws(by.withdraws.data || []);
     setShop({
       orders: by.shop.data?.orders || [],
       cashbacks: by.shop.data?.cashbacks || [],
@@ -138,63 +98,10 @@ export default function AdminCommandCenter() {
 
   useEffect(() => { loadDashboard(); }, []);
 
-  async function findUser() {
-    setMsg("");
-    setUserFound(null);
-    setLoadingUser(true);
-    try {
-      const clean = email.trim().toLowerCase();
-      if (!clean) throw new Error("Enter user email");
-      const { data, error } = await supabase
-        .from("users_profiles")
-        .select("full_name,email,total_aidla_perks,user_id")
-        .eq("email", clean)
-        .single();
-      if (error) throw new Error(error.code === "PGRST116" ? "No account found for this email." : error.message);
-      setUserFound(data);
-    } catch (e) {
-      setMsg(e.message || "User lookup failed");
-    } finally {
-      setLoadingUser(false);
-    }
-  }
-
-  async function doTransfer(mode) {
-    setMsg("");
-    setSending(true);
-    try {
-      if (!userFound?.email) throw new Error("Find a user first");
-      const amt = Number(amount);
-      if (!amt || amt <= 0) throw new Error("Enter a valid amount");
-      const { data, error } = await supabase.rpc("admin_transfer_coins", {
-        target_email: userFound.email,
-        amount: amt,
-        mode,
-        note: note || null,
-      });
-      if (error) throw error;
-      const res = Array.isArray(data) ? data[0] : data;
-      setMsg(`Success. Transaction: ${res?.txn_no || "created"}`);
-      setAmount("");
-      setNote("");
-      await loadDashboard();
-      await findUser();
-    } catch (e) {
-      setMsg(e.message || "Transfer failed");
-    } finally {
-      setSending(false);
-    }
-  }
-
   const stats = useMemo(() => {
     const today = startOfToday();
     const todayUsers = users.filter(u => new Date(u.created_at) >= today).length;
-    const userCoins = users.reduce((s, u) => s + Number(u.total_aidla_perks || 0), 0);
-    const sent = txs.filter(isOut).reduce((s, t) => s + Number(t.amount || 0), 0);
-    const received = txs.filter(t => !isOut(t)).reduce((s, t) => s + Number(t.amount || 0), 0);
-    const todaySent = txs.filter(t => isOut(t) && new Date(t.created_at) >= today).reduce((s, t) => s + Number(t.amount || 0), 0);
-    const todayReceived = txs.filter(t => !isOut(t) && new Date(t.created_at) >= today).reduce((s, t) => s + Number(t.amount || 0), 0);
-    const pendingWithdraws = withdraws.filter(r => r.status === "pending");
+    const userPerks = users.reduce((s, u) => s + Number(u.total_aidla_perks || 0), 0);
     const pendingOrders = shop.orders.filter(o => o.status === "pending");
     const pendingCashbacks = shop.cashbacks.filter(c => c.status === "pending");
     const lowStock = shop.products.filter(p => !p.unlimited_stock && Number(p.stock) <= Number(p.low_stock_threshold || 0));
@@ -205,19 +112,17 @@ export default function AdminCommandCenter() {
     const emailsToday = emailLogs.filter(e => new Date(e.sent_at || e.created_at) >= today).reduce((s, e) => s + Number(e.sent_count || 0), 0);
     const emailFailedToday = emailLogs.filter(e => new Date(e.sent_at || e.created_at) >= today).reduce((s, e) => s + Number(e.failed_count || 0), 0);
     return {
-      todayUsers, userCoins, sent, received, todaySent, todayReceived,
-      pendingWithdraws, pendingOrders, pendingCashbacks, lowStock,
+      todayUsers, userPerks,
+      pendingOrders, pendingCashbacks, lowStock,
       pendingStudy, pendingProjects, pendingQuestions, pendingReviews,
       emailsToday, emailFailedToday,
     };
-  }, [users, txs, withdraws, shop, study, projects, questions, reviews, emailLogs]);
+  }, [users, shop, study, projects, questions, reviews, emailLogs]);
 
   const recent = useMemo(() => [
-    ...txs.slice(0, 8).map(t => ({ type: isOut(t) ? "Perks sent" : "Perks received", text: `${isOut(t) ? "-" : "+"}${nfmt(t.amount)} AIDLA`, sub: t.target_user_email || t.note || t.txn_no, date: t.created_at })),
-    ...withdraws.slice(0, 4).map(w => ({ type: "Withdrawal", text: `${w.status} - ${nfmt(w.coins_requested)} perks`, sub: w.user_email, date: w.created_at })),
-    ...shop.orders.slice(0, 4).map(o => ({ type: "Shop order", text: `${o.status} - ${o.product_name}`, sub: o.user_email, date: o.created_at })),
-    ...emailLogs.slice(0, 4).map(e => ({ type: "Email blast", text: `${nfmt(e.sent_count)} sent`, sub: e.subject, date: e.sent_at || e.created_at })),
-  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10), [txs, withdraws, shop.orders, emailLogs]);
+    ...shop.orders.slice(0, 6).map(o => ({ type: "Shop order", text: `${o.status} - ${o.product_name}`, sub: o.user_email, date: o.created_at })),
+    ...emailLogs.slice(0, 6).map(e => ({ type: "Email blast", text: `${nfmt(e.sent_count)} sent`, sub: e.subject, date: e.sent_at || e.created_at })),
+  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 10), [shop.orders, emailLogs]);
 
   return (
     <div className="ad-root">
@@ -237,27 +142,10 @@ export default function AdminCommandCenter() {
         </div>
       )}
 
-      <nav className="ad-tabs" aria-label="Admin command center">
-        {[
-          ["overview", "Overview"],
-          ["pool", "Pool Transfer"],
-          ["history", "Coin Ledger"],
-        ].map(([id, label]) => (
-          <button key={id} className={tab === id ? "on" : ""} onClick={() => setTab(id)}>{label}</button>
-        ))}
-      </nav>
-
-      {tab === "overview" && (
-        <>
-          <section className="ad-grid">
+      <section className="ad-grid">
             <Stat label="Total Users" value={nfmt(users.length)} />
             <Stat label="Joined Today" value={nfmt(stats.todayUsers)} tone="green" />
-            <Stat label="Admin Pool" value={pool === null ? "-" : nfmt(pool)} hint="AIDLA perks" tone="indigo" />
-            <Stat label="User Perks" value={nfmt(stats.userCoins)} hint="total balances" tone="gold" />
-            <Stat label="Perks Sent" value={nfmt(stats.sent)} tone="red" />
-            <Stat label="Perks Received" value={nfmt(stats.received)} tone="green" />
-            <Stat label="Today Sent" value={nfmt(stats.todaySent)} tone="red" />
-            <Stat label="Today Received" value={nfmt(stats.todayReceived)} tone="green" />
+            <Stat label="User Perks" value={nfmt(stats.userPerks)} hint="total balances" tone="gold" />
             <Stat label="Emails Today" value={nfmt(stats.emailsToday)} hint="manual logs" tone="blue" />
             <Stat label="Email Failed" value={nfmt(stats.emailFailedToday)} hint="today" tone="red" />
           </section>
@@ -265,22 +153,10 @@ export default function AdminCommandCenter() {
           <section className="ad-insights">
             <div className="ad-panel">
               <div className="ad-panel-head">
-                <h3>Financial Flow</h3>
-                <small>All-time and today</small>
-              </div>
-              <MiniBars items={[
-                { label: "Perks sent", value: stats.sent },
-                { label: "Perks received", value: stats.received },
-                { label: "Today sent", value: stats.todaySent },
-                { label: "Today received", value: stats.todayReceived },
-              ]} />
-            </div>
-            <div className="ad-panel">
-              <div className="ad-panel-head">
                 <h3>Workload Clearance</h3>
                 <small>Pending queues</small>
               </div>
-              <Donut pending={stats.pendingWithdraws.length + stats.pendingOrders.length + stats.pendingCashbacks.length + stats.lowStock.length + stats.pendingStudy.length + stats.pendingProjects.length + stats.pendingQuestions.length + stats.pendingReviews.length} />
+              <Donut pending={stats.pendingOrders.length + stats.pendingCashbacks.length + stats.lowStock.length + stats.pendingStudy.length + stats.pendingProjects.length + stats.pendingQuestions.length + stats.pendingReviews.length} />
             </div>
           </section>
 
@@ -291,7 +167,6 @@ export default function AdminCommandCenter() {
                 <small>Highest priority pending work</small>
               </div>
               <div className="ad-queues">
-                <QueueCard title="Withdrawals" count={stats.pendingWithdraws.length} href="/admin/withdraws" />
                 <QueueCard title="Shop Orders" count={stats.pendingOrders.length} href="/admin/shop" />
                 <QueueCard title="Cashbacks" count={stats.pendingCashbacks.length} href="/admin/shop" tone="violet" />
                 <QueueCard title="Low Stock" count={stats.lowStock.length} href="/admin/shop" tone="red" />
@@ -329,76 +204,6 @@ export default function AdminCommandCenter() {
               )}
             </div>
           </section>
-        </>
-      )}
-
-      {tab === "pool" && (
-        <section className="ad-panel">
-          <div className="ad-panel-head">
-            <h3>Admin Pool Transfer</h3>
-            <small>Current pool: {pool === null ? "-" : `${nfmt(pool)} AIDLA`}</small>
-          </div>
-          <div className="ad-form-grid">
-            <div>
-              <label>User email</label>
-              <div className="ad-inline">
-                <input value={email} onChange={e => setEmail(e.target.value)} placeholder="name@example.com" />
-                <button onClick={findUser} disabled={loadingUser}>{loadingUser ? "Searching" : "Search"}</button>
-              </div>
-              {userFound && (
-                <div className="ad-user">
-                  <b>{userFound.full_name || "User"}</b>
-                  <span>{userFound.email}</span>
-                  <strong>{nfmt(userFound.total_aidla_perks)} perks</strong>
-                </div>
-              )}
-            </div>
-            <div>
-              <label>Amount</label>
-              <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="1500" />
-            </div>
-            <div>
-              <label>Reference note</label>
-              <input value={note} onChange={e => setNote(e.target.value)} placeholder="Optional" />
-            </div>
-          </div>
-          <div className="ad-actions">
-            <button onClick={() => doTransfer("SEND")} disabled={sending || !userFound}>Send to User</button>
-            <button className="secondary" onClick={() => doTransfer("RECEIVE")} disabled={sending || !userFound}>Receive from User</button>
-          </div>
-          {msg && <div className={`ad-msg ${msg.startsWith("Success") ? "ok" : "err"}`}>{msg}</div>}
-        </section>
-      )}
-
-      {tab === "history" && (
-        <section className="ad-panel">
-          <div className="ad-panel-head">
-            <h3>Coin Ledger</h3>
-            <small>{txs.length} recent transactions</small>
-          </div>
-          <div className="ad-ledger">
-            {(ledgerOpen ? txs : txs.slice(0, 8)).map(tx => {
-              const out = isOut(tx);
-              return (
-                <div className="ad-ledger-row" key={tx.id || tx.txn_no}>
-                  <div>
-                    <strong>{tx.target_user_name || tx.target_user_email || "Unknown user"}</strong>
-                    <span>{tx.txn_no} - {shortDate(tx.created_at)}</span>
-                  </div>
-                  <div className={out ? "out" : "in"}>
-                    {out ? "-" : "+"}{nfmt(tx.amount)} AIDLA
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          {txs.length > 8 && (
-            <button className="ad-expand" onClick={() => setLedgerOpen(v => !v)}>
-              {ledgerOpen ? "Show less" : `Expand ${txs.length - 8} more transactions`}
-            </button>
-          )}
-        </section>
-      )}
     </div>
   );
 }

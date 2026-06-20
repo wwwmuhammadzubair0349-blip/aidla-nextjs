@@ -26,7 +26,7 @@ function msToHMS(ms) {
 }
 function prizeToText(p) {
   if (!p) return "-";
-  if (p.type === "coins") return `${Number(p.coins || 0)} perks`;
+  if (p.type === "perks" || p.type === "coins") return `${Number(p.coins || 0)} perks`;
   if (p.type === "item") return p.name || "Item";
   return p.name || "Prize";
 }

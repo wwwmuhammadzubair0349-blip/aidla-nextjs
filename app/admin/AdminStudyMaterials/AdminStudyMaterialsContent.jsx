@@ -128,8 +128,6 @@ export default function AdminStudyMaterials() {
   const [savingReward,       setSavingReward]        = useState(false);
   const [rewardMsg,          setRewardMsg]           = useState("");
 
-  // Revenue dashboard
-  const [revenue, setRevenue] = useState({ received:0, paid:0 });
 
   const fileRef = useRef(null);
 
@@ -180,19 +178,7 @@ export default function AdminStudyMaterials() {
     if (data) setUploadReward(Number(data.upload_reward_coins));
   }, []);
 
-  // ── Load revenue stats from admin_pool_transactions ────
-  const loadRevenue = useCallback(async () => {
-    const { data } = await supabase.from("admin_pool_transactions")
-      .select("txn_no,amount");
-    if (!data) return;
-    const received = data.filter(r => r.txn_no?.startsWith("RES-BUY"))
-      .reduce((s,r) => s + Number(r.amount||0), 0);
-    const paid = data.filter(r => r.txn_no?.startsWith("RES-APR"))
-      .reduce((s,r) => s + Number(r.amount||0), 0);
-    setRevenue({ received, paid });
-  }, []);
-
-  useEffect(() => { load(); loadReward(); loadRevenue(); }, [load, loadReward, loadRevenue]);
+  useEffect(() => { load(); loadReward(); }, [load, loadReward]);
 
   useEffect(() => {
     if (mainTab === "userUploads") loadUserUploads();
@@ -447,36 +433,13 @@ export default function AdminStudyMaterials() {
       {mainTab === "adminRes" && (
         <div>
 
-          {/* ── Revenue Mini Dashboard ── */}
+          {/* ── Mini Dashboard ── */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))", gap:12, marginBottom:20 }}>
             {[
               {
-                icon:"💰", label:"Total Revenue",
-                value:revenue.received.toLocaleString(),
-                sub:"coins received from purchases",
-                bg:"rgba(22,163,74,0.06)", border:"rgba(22,163,74,0.2)",
-                valColor:"#15803d", iconBg:"rgba(22,163,74,0.12)",
-              },
-              {
-                icon:"🎁", label:"Paid to Users",
-                value:revenue.paid.toLocaleString(),
-                sub:"coins rewarded for uploads",
-                bg:"rgba(139,92,246,0.05)", border:"rgba(139,92,246,0.18)",
-                valColor:"#7c3aed", iconBg:"rgba(139,92,246,0.1)",
-              },
-              {
-                icon:"📊", label:"Net Revenue",
-                value:(revenue.received - revenue.paid).toLocaleString(),
-                sub:"after upload rewards deducted",
-                bg: (revenue.received - revenue.paid) >= 0 ? "rgba(26,58,143,0.05)" : "rgba(239,68,68,0.05)",
-                border: (revenue.received - revenue.paid) >= 0 ? "rgba(26,58,143,0.15)" : "rgba(239,68,68,0.2)",
-                valColor: (revenue.received - revenue.paid) >= 0 ? "#1a3a8f" : "#dc2626",
-                iconBg: (revenue.received - revenue.paid) >= 0 ? "rgba(26,58,143,0.1)" : "rgba(239,68,68,0.1)",
-              },
-              {
                 icon:"🛒", label:"Paid Resources",
                 value:materials.filter(m=>m.is_free===false&&m.coin_price>0).length,
-                sub:"resources with coin price set",
+                sub:"resources with perks price set",
                 bg:"rgba(245,158,11,0.05)", border:"rgba(245,158,11,0.2)",
                 valColor:"#b45309", iconBg:"rgba(245,158,11,0.1)",
               },

@@ -1269,18 +1269,10 @@ export default function BattlePage() {
     const newBal = (profile?.total_aidla_perks || 0) - cost;
     setProfile(prev => ({ ...prev, total_aidla_perks: newBal }));
     const txnNo  = "HINT-BTL-" + Date.now();
-    const poolBal= await supabase.from("admin_pool").select("total_aidla_perks").eq("id",1).single().then(r => r.data?.total_aidla_perks || 0);
     await supabase.from("users_transactions").insert({
       txn_no: txnNo+"-U", user_id: user.id, user_email: profile?.email || user.email,
       txn_type:"battle_hint", direction:"OUT", amount: cost,
       balance_before: profile?.total_aidla_perks || 0, balance_after: newBal, note:"Battle hint used",
-    });
-    await supabase.from("admin_pool_transactions").insert({
-      txn_no: txnNo+"-A", txn_type:"battle_hint", direction:"IN", amount: cost,
-      admin_email:"system@battle", target_user_id: user.id, target_user_email: profile?.email || user.email,
-      target_user_name: profile?.full_name || "User",
-      pool_balance_before: poolBal, pool_balance_after: poolBal + cost,
-      user_balance_before: profile?.total_aidla_perks || 0, user_balance_after: newBal, note:"Hint fee collected from battle",
     });
     hintLockRef.current = false;
   }

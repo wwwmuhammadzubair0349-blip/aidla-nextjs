@@ -759,6 +759,7 @@ export default function ProfilePage() {
   const [quizData,     setQuizData]     = useState(null);
   const [enrollments,  setEnrollments]  = useState([]);
   const [certs,        setCerts]        = useState([]);
+  const [leaderboard,  setLeaderboard]  = useState([]);
 
   const [form, setForm] = useState({
     avatar_url: "", full_name: "", email: "", phone: "",
@@ -777,13 +778,15 @@ export default function ProfilePage() {
       if (!user) { router.push("/login"); return; }
       setUserId(user.id);
 
-      const [profRes, quizRes, enrollRes, certRes] = await Promise.all([
+      const [profRes, quizRes, enrollRes, certRes, lbRes] = await Promise.all([
         supabase.from("users_profiles").select("*").eq("user_id", user.id).single(),
         supabase.from("daily_quiz_attempts").select("streak_days,status,coins_earned")
           .eq("user_id", user.id).eq("status", "passed"),
         supabase.from("course_enrollments").select("*").eq("user_id", user.id),
         supabase.from("course_certificates").select("*, course:course_id(title,level,category)")
           .eq("user_id", user.id).order("issued_at", { ascending: false }),
+        supabase.from("users_profiles").select("full_name,avatar_url,rank,my_referals")
+          .gt("my_referals", 0).order("my_referals", { ascending: false }).limit(10),
       ]);
 
       const prof = profRes.data;
@@ -816,6 +819,7 @@ export default function ProfilePage() {
 
       setEnrollments(enrollRes.data || []);
       setCerts(certRes.data || []);
+      setLeaderboard(lbRes.data || []);
       setLoading(false);
     })();
   }, [router]);
@@ -924,13 +928,13 @@ export default function ProfilePage() {
   /* ── Derived values ── */
   const pct         = calcCompletion(profile);
   const missing     = getMissing(profile);
-  const rank        = computeRank(profile?.my_referals || 0, quizData?.maxStreak || 0);
+  const rank        = computeRank(profile?.my_referals || 0, profile?.current_streak || 0);
   const achievements = computeAchievements(profile, quizData, enrollments, certs);
   const isVerified  = profile?.is_verified || false;
   const rankIndex   = RANKS.findIndex(r => r.key === rank.key);
   const nextRank    = RANKS[rankIndex + 1] || null;
   const refs        = profile?.my_referals || 0;
-  const streak      = quizData?.maxStreak || 0;
+  const streak      = profile?.current_streak || 0;
   const nextRefPct  = nextRank?.minReferrals ? Math.min(100, Math.round((refs / nextRank.minReferrals) * 100)) : 100;
   const nextStrPct  = nextRank?.minStreak ? Math.min(100, Math.round((streak / nextRank.minStreak) * 100)) : 100;
   const nextPct     = nextRank ? Math.min(nextRefPct, nextStrPct) : 100;
@@ -1095,6 +1099,37 @@ export default function ProfilePage() {
                 );
               })}
             </div>
+
+            {leaderboard.length > 0 && (
+              <div style={{ marginTop: 20, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 18, padding: "16px 18px" }}>
+                <div style={{ fontSize: ".7rem", fontWeight: 900, color: "#94a3b8", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 12 }}>
+                  Top Referrers
+                </div>
+                {leaderboard.map((u, i) => {
+                  const r = RANKS.find(r => r.key === u.rank) || RANKS[0];
+                  const initials = u.full_name?.[0]?.toUpperCase() || "A";
+                  return (
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 0", borderBottom: i < leaderboard.length - 1 ? "1px solid #f1f5f9" : "none" }}>
+                      <span style={{ width: 20, textAlign: "center", fontSize: ".78rem", fontWeight: 900, color: i === 0 ? "#f59e0b" : i === 1 ? "#94a3b8" : i === 2 ? "#b45309" : "#64748b" }}>
+                        {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`}
+                      </span>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: r.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: ".9rem", fontWeight: 900, color: r.color, flexShrink: 0, overflow: "hidden" }}>
+                        {u.avatar_url ? <img src={u.avatar_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} /> : initials}
+                      </div>
+                      <span style={{ flex: 1, fontSize: ".86rem", fontWeight: 700 }}>{u.full_name || "Learner"}</span>
+                      <span style={{ fontSize: ".78rem", fontWeight: 800, color: "#1e3a8a" }}>{u.my_referals} refs</span>
+                    </div>
+                  );
+                })}
+                {inviteLink && (
+                  <button
+                    style={{ marginTop: 12, width: "100%", padding: "9px", background: "linear-gradient(135deg,#1e3a8a,#3b82f6)", color: "#fff", border: "none", borderRadius: 10, fontWeight: 800, fontSize: ".84rem", cursor: "pointer" }}
+                    onClick={handleShareProfile}>
+                    Invite Friends & Climb the Leaderboard
+                  </button>
+                )}
+              </div>
+            )}
           </>
         )}
 

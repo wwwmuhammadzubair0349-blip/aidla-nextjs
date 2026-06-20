@@ -202,15 +202,14 @@ export default function UserDashboardContent() {
         if (!session) return;
         const uid = session.user.id;
         const sevenDaysAgo = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
-        const [pRes, eRes, sRes, wRes] = await Promise.all([
-          supabase.from("users_profiles").select("full_name,total_aidla_perks,rank,avatar_url").eq("user_id", uid).single(),
+        const [pRes, eRes, wRes] = await Promise.all([
+          supabase.from("users_profiles").select("full_name,total_aidla_perks,rank,avatar_url,current_streak").eq("user_id", uid).single(),
           supabase.from("course_enrollments").select("course_id,progress,enrolled_at,course_courses(id,title,category)").eq("user_id", uid).order("enrolled_at", { ascending: false }).limit(10),
-          supabase.from("daily_quiz_attempts").select("streak_days").eq("user_id", uid).order("attempt_date", { ascending: false }).limit(1).single(),
           supabase.from("daily_quiz_attempts").select("attempt_date").eq("user_id", uid).gte("attempt_date", sevenDaysAgo),
         ]);
         const p = pRes.data || {};
         setProfile({ name: p.full_name || "", perks: p.total_aidla_perks || 0, rank: p.rank || "Learner", avatarUrl: p.avatar_url || null });
-        setStreak(sRes.data?.streak_days || 0);
+        setStreak(p.current_streak || 0);
         const doneDates = new Set((wRes.data || []).map(r => r.attempt_date?.slice(0, 10)));
         const today = new Date();
         setWeekDays(Array.from({ length: 7 }, (_, i) => {

@@ -89,15 +89,6 @@ const CSS = `
 const SCORE_COLOR = s => s >= 80 ? "#15803d" : s >= 60 ? "#b45309" : "#dc2626";
 const SCORE_ICON  = s => s >= 80 ? "✅" : s >= 60 ? "⚠️" : "❌";
 
-const VOICE_KEY = "aidla_brand_voice";
-
-function loadVoice() {
-  try { return localStorage.getItem(VOICE_KEY) || DEFAULT_VOICE; } catch { return DEFAULT_VOICE; }
-}
-function saveVoice(v) {
-  try { localStorage.setItem(VOICE_KEY, v); } catch {}
-}
-
 const DEFAULT_VOICE = `AIDLA Brand Voice Guidelines:
 - Tone: Professional yet approachable; inspiring but grounded
 - Audience: Pakistani students and early-career professionals aged 16–30
@@ -117,7 +108,11 @@ export default function AIContentEngine() {
   const [voiceMsg, setVoiceMsg]         = useState("");
   const [actionMsg, setActionMsg]       = useState("");
 
-  useEffect(() => { setVoice(loadVoice()); }, []);
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "brand_voice").maybeSingle().then(({ data }) => {
+      setVoice(data?.value?.voice || DEFAULT_VOICE);
+    });
+  }, []);
 
   const loadStats = useCallback(async () => {
     setStatsLoading(true);
@@ -178,11 +173,11 @@ export default function AIContentEngine() {
 
   async function handleSaveVoice() {
     setSavingVoice(true);
-    saveVoice(voice);
-    await new Promise(r => setTimeout(r, 400));
+    const { error } = await supabase.from("platform_settings")
+      .upsert({ key: "brand_voice", value: { voice }, description: "AIDLA AI content brand voice rules" }, { onConflict: "key" });
     setSavingVoice(false);
-    setVoiceMsg("Saved!");
-    setTimeout(() => setVoiceMsg(""), 2500);
+    setVoiceMsg(error ? "Save failed: " + error.message : "Saved to database!");
+    setTimeout(() => setVoiceMsg(""), 3000);
   }
 
   return (

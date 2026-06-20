@@ -16,6 +16,7 @@ const CSS = `
 .roles-btn { padding:9px 18px; background:linear-gradient(135deg,#1e3a8a,#3b82f6); color:#fff; border:none; border-radius:10px; font-weight:800; font-size:.85rem; cursor:pointer; white-space:nowrap; }
 .roles-btn:disabled { opacity:.5; cursor:not-allowed; }
 .roles-btn.danger { background:linear-gradient(135deg,#dc2626,#ef4444); }
+.roles-btn.seed { background:linear-gradient(135deg,#d97706,#f59e0b); }
 .roles-msg { margin-top:10px; font-size:.82rem; font-weight:700; padding:8px 12px; border-radius:8px; }
 .roles-table { width:100%; border-collapse:collapse; }
 .roles-table th { text-align:left; font-size:.73rem; font-weight:800; color:#94a3b8; text-transform:uppercase; letter-spacing:.07em; padding:8px 12px; border-bottom:2px solid #f1f5f9; }
@@ -30,6 +31,8 @@ const CSS = `
 .roles-card { background:#fff; border:1px solid #dbe5f3; border-radius:16px; padding:20px; }
 .roles-empty { text-align:center; padding:32px; color:#94a3b8; font-size:.88rem; }
 .roles-shimmer { background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%); background-size:200% 100%; animation:sh .9s infinite; border-radius:8px; height:44px; margin-bottom:8px; }
+.roles-bootstrap { background:#fffbeb; border:1px solid #fcd34d; border-radius:12px; padding:14px 16px; margin-bottom:20px; font-size:.84rem; }
+.roles-bootstrap strong { color:#92400e; }
 @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 `;
 
@@ -38,21 +41,27 @@ function fmt(iso) {
   return new Date(iso).toLocaleDateString("en-GB", { day:"numeric", month:"short", year:"numeric" });
 }
 
+async function getAuthHeader() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token ? `Bearer ${session.access_token}` : "";
+}
+
 export default function RolesContent() {
-  const [roles,    setRoles]    = useState([]);
-  const [loading,  setLoading]  = useState(true);
-  const [email,    setEmail]    = useState("");
-  const [role,     setRole]     = useState("admin");
-  const [notes,    setNotes]    = useState("");
-  const [msg,      setMsg]      = useState({ text:"", ok:true });
-  const [adding,   setAdding]   = useState(false);
+  const [roles,   setRoles]   = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [email,   setEmail]   = useState("");
+  const [role,    setRole]    = useState("admin");
+  const [notes,   setNotes]   = useState("");
+  const [msg,     setMsg]     = useState({ text:"", ok:true });
+  const [adding,  setAdding]  = useState(false);
+  const [seeding, setSeeding] = useState(false);
 
   async function loadRoles() {
-    const { data } = await supabase
-      .from("admin_roles")
-      .select("*")
-      .order("granted_at", { ascending: false });
-    setRoles(data || []);
+    setLoading(true);
+    const auth = await getAuthHeader();
+    const res  = await fetch("/api/admin/roles", { headers: { Authorization: auth } });
+    const data = await res.json();
+    setRoles(Array.isArray(data) ? data : []);
     setLoading(false);
   }
 
@@ -75,28 +84,62 @@ export default function RolesContent() {
       return;
     }
 
-    const { error } = await supabase.from("admin_roles").upsert({
-      user_id:    prof.user_id,
-      email:      email.trim().toLowerCase(),
-      role,
-      notes:      notes.trim() || null,
-      is_active:  true,
-      granted_at: new Date().toISOString(),
-    }, { onConflict: "user_id" });
+    const auth = await getAuthHeader();
+    const res = await fetch("/api/admin/roles", {
+      method: "POST",
+      headers: { Authorization: auth, "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: prof.user_id, email: email.trim().toLowerCase(), role, notes: notes.trim() || null }),
+    });
 
-    if (error) {
-      setMsg({ text: error.message, ok: false });
-    } else {
+    if (res.ok) {
       setMsg({ text: `Admin role granted to ${prof.full_name || email}.`, ok: true });
       setEmail(""); setNotes("");
       loadRoles();
+    } else {
+      const err = await res.json().catch(() => ({}));
+      setMsg({ text: err?.error || "Failed to grant role.", ok: false });
     }
     setAdding(false);
   }
 
   async function toggleActive(id, current) {
-    await supabase.from("admin_roles").update({ is_active: !current }).eq("id", id);
+    const auth = await getAuthHeader();
+    if (current) {
+      await fetch(`/api/admin/roles?id=${id}`, { method: "DELETE", headers: { Authorization: auth } });
+    } else {
+      await fetch("/api/admin/roles", {
+        method: "POST",
+        headers: { Authorization: auth, "Content-Type": "application/json" },
+        body: JSON.stringify({ ...roles.find(r => r.id === id), is_active: true }),
+      });
+    }
     loadRoles();
+  }
+
+  async function seedSelf() {
+    setSeeding(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setSeeding(false); return; }
+
+    const { data: prof } = await supabase.from("users_profiles").select("user_id, full_name").eq("user_id", user.id).maybeSingle();
+    const auth = await getAuthHeader();
+    const res = await fetch("/api/admin/roles", {
+      method: "POST",
+      headers: { Authorization: auth, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: user.id,
+        email:   user.email,
+        role:    "super_admin",
+        notes:   "Founder — bootstrapped from admin panel",
+      }),
+    });
+    if (res.ok) {
+      setMsg({ text: "You are now seeded as super_admin in admin_roles.", ok: true });
+      loadRoles();
+    } else {
+      setMsg({ text: "Seed failed — check SUPABASE_SERVICE_ROLE_KEY in env.", ok: false });
+    }
+    setSeeding(false);
   }
 
   return (
@@ -104,8 +147,18 @@ export default function RolesContent() {
       <style>{CSS}</style>
       <div className="roles-head">
         <h1>Admin Role Management</h1>
-        <p>Grant, revoke and manage admin access. Changes take effect immediately.</p>
+        <p>Grant, revoke, and manage admin access. Changes take effect immediately.</p>
       </div>
+
+      {!loading && roles.length === 0 && (
+        <div className="roles-bootstrap">
+          <strong>No admins in the roles table yet.</strong> Click below to seed yourself as super_admin (one-time setup).
+          <br /><br />
+          <button className="roles-btn seed" onClick={seedSelf} disabled={seeding}>
+            {seeding ? "Seeding…" : "Seed Me as Super Admin"}
+          </button>
+        </div>
+      )}
 
       <div className="roles-add">
         <h2>Grant Admin Access</h2>
@@ -131,19 +184,14 @@ export default function RolesContent() {
       <div className="roles-card">
         {loading ? (
           [1,2,3].map(i => <div key={i} className="roles-shimmer" />)
+        ) : roles.filter(r => r.is_active).length === 0 && roles.length > 0 ? (
+          <div className="roles-empty">No active admin roles. All were revoked.</div>
         ) : roles.length === 0 ? (
           <div className="roles-empty">No admin roles configured yet.</div>
         ) : (
           <table className="roles-table">
             <thead>
-              <tr>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Granted</th>
-                <th>Notes</th>
-                <th>Action</th>
-              </tr>
+              <tr><th>Email</th><th>Role</th><th>Status</th><th>Granted</th><th>Notes</th><th>Action</th></tr>
             </thead>
             <tbody>
               {roles.map(r => (

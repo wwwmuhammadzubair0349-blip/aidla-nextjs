@@ -555,6 +555,127 @@ None applied. achievement_definitions and user_achievements tables NOT created.
 
 ---
 
+## 2026-06-20 — Post-Revolution: Dashboard Redesign + Header Cleanup
+
+**Date:** 2026-06-20
+**Status:** ✅ Complete
+
+### Changes
+- Removed **Tools** tab from header nav (was never supposed to be there)
+- Removed **Search** icon button from header
+- Removed **Tools** option from mobile dropdown
+- Full **VVIP mobile-first dashboard redesign** (`app/user/UserDashboardContent.jsx`):
+  - Dark navy hero with gold avatar ring, name, rank pill, perks/streak/week stats
+  - Weekly streak bar with 7-day flame dot circles
+  - Horizontal quick-action icon row (Daily Quiz, AIDLA AI, Learn, Battle, Lucky Wheel, Perks Store)
+  - Continue Learning card (shows last enrolled course + progress bar)
+  - Getting Started 2×2 grid for new users only
+  - Learning / Career / Perks sections — each destination appears exactly once
+- Fixed double greeting (header already shows "Good Afternoon, Muhammad" — removed it from hero)
+- Removed Featured Cards section (was duplicating Quick Actions)
+- Removed Daily Quiz from Learning section grid (it was in Quick Actions already)
+
+### Files Changed
+- `app/user/UserLayoutClient.jsx` — removed Tools tab, removed search button, removed Tools from mobile dropdown
+- `app/user/UserDashboardContent.jsx` — full rewrite (VVIP design)
+
+### Database Changes
+None
+
+### Edge Functions Changed
+None
+
+---
+
+## 2026-06-20 — Post-Revolution: Fix All Broken DB Functions (Migration 3)
+
+**Date:** 2026-06-20
+**Status:** ✅ Complete — Migration applied to production
+
+### Changes
+All Supabase stored functions were broken because they referenced `total_aidla_coins` (renamed) and `admin_pool`/`admin_pool_transactions` (dropped). This migration fixed everything:
+
+- `apply_users_transaction_to_wallet` trigger: `total_aidla_coins` → `total_aidla_perks` **(critical — all balance updates were broken)**
+- `block_user_coin_edits` guard trigger: same rename
+- `lw_claim`: removed admin_pool refs, reads `total_aidla_perks`, inserts users_transactions IN
+- `lw_draw`: replaced dropped `admin_transfer_coins()` call with direct users_transactions OUT insert; handles both `'coins'` and `'perks'` slice types
+- `battle_add_bot`: **refunds player1's entry stake when bot joins** (bot battles are now free)
+- `battle_complete`: bot battles = 0 perks change + no transactions; real battles = winner gets prize directly via users_transactions (no admin_pool middleman)
+- `battle_find_or_create`: `total_aidla_perks`, "Insufficient perks" error, no admin_pool
+- `battle_join_room`: same
+- `battle_admin_stats`: removed admin_pool_transactions refs, uses users_transactions instead
+- Dropped dead functions: `aidla_lw_claim`, `aidla_lw_spin`, `apply_admin_pool_txn_to_pool`
+- `BattleContent.jsx`: `coinsChange: 0` for bot battles in result screen
+- `LuckyWheelContent.jsx`: "CLAIM COINS" → "CLAIM PERKS" button
+
+### Files Changed
+- `supabase/migrations/20260620000003_fix_db_functions_for_perks.sql` — created + applied
+- `app/user/battle/BattleContent.jsx` — coinsChange=0 for bot battles
+- `app/user/lucky-wheel/LuckyWheelContent.jsx` — CLAIM PERKS button text
+
+### Database Changes
+- Applied via `npx supabase db push`: rewrote 8 stored functions + 2 triggers, dropped 3 dead functions
+
+---
+
+## 2026-06-20 — Post-Revolution: Brand Pivot + Admin Pool Removal + Edge Functions
+
+**Date:** 2026-06-20
+**Status:** ✅ Complete
+
+### Changes
+
+#### Brand Pivot — Coins → Perks + Remove Mining/Wallet
+- Renamed all `coins` → `perks` throughout frontend
+- Removed mining page (`/user/mining`), wallet page (`/user/wallet`), withdrawal flow
+- Renamed `/user/shop` → `/user/perks` (Perks Store)
+- All UI labels, stat displays, badge classes updated
+
+#### Admin Panel — Remove admin_pool
+- `app/admin/AdminCommandCenterContent.jsx`: removed pool balance, coin ledger tab, pool transfer tab, financial flow section, withdrawals queue, admin_pool/admin_pool_transactions queries
+- Stats: removed sent/received/todaySent/todayReceived, renamed userCoins → userPerks
+
+#### Lucky Draw / Lucky Wheel — Fix prize type
+- `app/admin/lucky-draw/AdminLuckyDrawContent.jsx`: `type: "coins"` → `"perks"` everywhere
+- `app/admin/lucky-wheel/AdminLuckyWheelContent.jsx`: same
+- `app/user/lucky-wheel/LuckyWheelContent.jsx`: fixed critical bug — was selecting `perks_won` but DB column is `coins_won`; handles both `'coins'` and `'perks'` result types
+- `app/user/lucky-draw/LuckyDrawContent.jsx`: handles both types
+
+#### Edge Functions
+- `supabase/functions/shop-notify/index.ts`: updated FROM_EMAIL, header, all email copy (coins→perks), AI prompt
+- `supabase/functions/auto-faq-answer/index.ts`: removed mining/wallet/withdrawal from knowledge base; updated coin/perks regex
+- `supabase/functions/withdraw-notify/`: **deleted** (withdrawal feature removed)
+
+#### DB Migration 2 — Drop admin_pool + Rename Prize Types
+- `supabase/migrations/20260620000002_drop_admin_pool_and_rename_draw_prizes.sql`: applied
+  - Renamed `"coins"` → `"perks"` in `luckydraw_settings.prizes` (JSONB), `luckydraw_active.prizes` (JSONB), `luckywheel_settings.slices` (JSONB)
+  - Dropped `admin_pool_transactions` table (CASCADE)
+  - Dropped `admin_pool` table
+  - Dropped `admin_transfer_coins`, `wd_admin_get_all`, `wd_admin_approve`, `wd_admin_reject` functions
+
+### Files Changed
+- `app/admin/AdminCommandCenterContent.jsx`
+- `app/admin/lucky-draw/AdminLuckyDrawContent.jsx`
+- `app/admin/lucky-wheel/AdminLuckyWheelContent.jsx`
+- `app/user/lucky-wheel/LuckyWheelContent.jsx`
+- `app/user/lucky-draw/LuckyDrawContent.jsx`
+- `app/admin/AdminStudyMaterials/AdminStudyMaterialsContent.jsx` — removed revenue section
+- `supabase/functions/shop-notify/index.ts`
+- `supabase/functions/auto-faq-answer/index.ts`
+- `supabase/migrations/20260620000002_drop_admin_pool_and_rename_draw_prizes.sql`
+
+### Edge Functions Deployed
+- `shop-notify` ✅
+- `auto-faq-answer` ✅
+- `withdraw-notify` — deleted from Supabase ✅
+
+### Database Changes Applied
+- `admin_pool` dropped
+- `admin_pool_transactions` dropped
+- Lucky draw/wheel JSONB updated: `"coins"` → `"perks"`
+
+---
+
 ## 2026-06-20 — Reality Audit
 
 **Date:** 2026-06-20  

@@ -200,32 +200,36 @@ Status: ⚠️ — Code live. Crashes on save until migration 20260618000002 run
 
 ### 2.2 — Dashboard Hero Redesign
 ```
-[x] DashHero: streak, coins, rank, courses count, continue-learning widget, today's quiz CTA
-Status: ✅ LIVE
+[x] DashHero: streak, perks, rank, courses count, continue-learning widget, today's quiz CTA
+[x] VVIP Redesign (2026-06-20): dark navy hero, gold avatar ring, perks/streak/week stats row
+[x] Weekly streak 7-dot bar, Quick Actions horizontal scroll (6 unique items)
+[x] Duplicate items removed — each destination appears exactly once
+Status: ✅ LIVE (redesigned 2026-06-20)
 ```
 
 ### 2.3 — Context-Aware Navigation
 ```
-[x] UserLayoutClient: 5 tabs, search icon, bell with unread dot, Settings in mobile dropdown
-Status: ✅ LIVE
+[x] UserLayoutClient: 4 tabs, bell with unread dot, Settings in mobile dropdown
+[x] Removed Tools tab (2026-06-20)
+[x] Removed Search icon button (2026-06-20)
+[x] Remaining tabs: Home, Learn, Community, Profile
+Status: ✅ LIVE (cleaned 2026-06-20)
 ```
 
 ### 2.4 — Learning Hub Merge
 ```
 [x] app/user/learn/page.jsx — My Courses | Discover | Resources tabs
-[x] app/user/courses/page.jsx — redirects to /user/learn
-[ ] app/user/learning/page.jsx — NOT redirected
-    NOTE: /user/learning is an AI assistant (model selector), NOT a courses page.
-          Needs decision: is this duplicate of /user/aidla-ai? See Page Decisions below.
-Status: ⚠️ PARTIAL
+[x] app/user/courses/ — entire folder deleted, all references updated to /user/learn
+[x] app/user/learning/ — merged into /user/aidla-ai (8 career modes), folder deleted
+Status: ✅ COMPLETE (2026-06-20)
 ```
 
 ### 2.5 — Community Hub Merge
 ```
 [x] app/user/community/page.jsx — Forum + Channels tabs (lazy-loads forum/social content)
-[ ] app/user/social/page.jsx — still standalone, NOT redirected to /user/community
-[ ] app/user/forum/page.jsx — still standalone, NOT redirected to /user/community
-Status: ⚠️ PARTIAL — Hub exists. Old standalone pages still reachable via direct URL.
+[x] app/user/social/page.jsx — deleted (SocialContent.jsx still used via /user/community)
+[x] app/user/forum/page.jsx — deleted (ForumContent.jsx still used via /user/community)
+Status: ✅ COMPLETE (2026-06-20)
 ```
 
 ### 2.6 — Profile / Settings Split
@@ -572,5 +576,78 @@ CONTENT DECISIONS:
 
 ---
 
-*Last Updated: 2026-06-20 — Recovery Cleanup Complete*  
-*Page merges done, converter tools removed, all dead references cleaned.*
+---
+
+# POST-REVOLUTION FIXES — 2026-06-20
+
+## Brand Pivot: Coins → Perks + Mining/Wallet Removal
+
+```
+[x] Renamed total_aidla_coins → total_aidla_perks in users_profiles
+[x] All frontend labels, stats, badges updated (coins → perks)
+[x] /user/mining removed
+[x] /user/wallet and withdrawal flow removed
+[x] /user/shop renamed to /user/perks (Perks Store)
+Status: ✅ LIVE
+```
+
+## Admin Pool Removal (Migration 2 — Applied)
+
+```
+[x] Drop admin_pool table (CASCADE removes all FKs)
+[x] Drop admin_pool_transactions table
+[x] Drop admin_transfer_coins(), wd_admin_get_all(), wd_admin_approve(), wd_admin_reject()
+[x] Rename prize type "coins" → "perks" in luckydraw_settings/luckydraw_active/luckywheel_settings JSONB
+[x] AdminCommandCenterContent.jsx — removed pool balance, coin ledger, pool transfers, withdrawals queue
+[x] AdminLuckyDrawContent.jsx + AdminLuckyWheelContent.jsx — type: "perks"
+[x] Migration: 20260620000002_drop_admin_pool_and_rename_draw_prizes.sql — APPLIED ✅
+Status: ✅ LIVE
+```
+
+## Fix All Broken DB Functions (Migration 3 — Applied)
+
+```
+[x] apply_users_transaction_to_wallet trigger: total_aidla_coins → total_aidla_perks (CRITICAL)
+[x] block_user_coin_edits trigger: same rename
+[x] lw_claim: removed admin_pool refs, uses total_aidla_perks, inserts users_transactions IN
+[x] lw_draw: replaced admin_transfer_coins() with direct users_transactions OUT
+[x] battle_add_bot: refunds player1 stake on bot join (entry_refund transaction)
+[x] battle_complete: bot = 0 perks change; real = winner gets prize via users_transactions IN
+[x] battle_find_or_create + battle_join_room: total_aidla_perks, "Insufficient perks"
+[x] battle_admin_stats: uses users_transactions (removed admin_pool_transactions refs)
+[x] Dropped dead functions: aidla_lw_claim, aidla_lw_spin, apply_admin_pool_txn_to_pool
+[x] Migration: 20260620000003_fix_db_functions_for_perks.sql — APPLIED ✅
+Status: ✅ LIVE
+```
+
+## Battle: Bot Battles Now Free
+
+```
+[x] battle_add_bot DB function refunds player1's entry stake (users_transactions IN, type=battle_entry_refund)
+[x] battle_complete: bot rooms get coins_change=0, no transactions
+[x] BattleContent.jsx: coinsChange=0 when r.is_bot (frontend result screen)
+Status: ✅ LIVE
+```
+
+## Lucky Wheel Fixes
+
+```
+[x] LuckyWheelContent.jsx: fixed column read (was "perks_won", correct column is "coins_won")
+[x] LuckyWheelContent.jsx: handles both 'coins' and 'perks' result types from lw_draw
+[x] LuckyWheelContent.jsx: button "CLAIM COINS" → "CLAIM PERKS"
+[x] LuckyDrawContent.jsx: handles both 'coins' and 'perks' prize types
+Status: ✅ LIVE
+```
+
+## Edge Functions (Updated + Deployed)
+
+```
+[x] shop-notify: updated FROM_EMAIL, header, all email copy (coins→perks), AI prompt
+[x] auto-faq-answer: removed mining/wallet/withdrawal from knowledge base; perks regex updated
+[x] withdraw-notify: DELETED (withdrawal feature removed from platform)
+Status: ✅ DEPLOYED
+```
+
+---
+
+*Last Updated: 2026-06-20 — Post-Revolution fixes: brand pivot, admin_pool removal, DB migrations 2 & 3 applied, dashboard VVIP redesign, header cleanup, bot battles free, lucky wheel fixes.*

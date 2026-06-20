@@ -286,7 +286,7 @@ export default function LuckyWheel() {
                       <strong className="lw-claim-val">{Number(profile?.lw_earned_coins??0)}</strong>
                     </div>
                     <button onClick={onClaim} disabled={!canClaim||spinning} className="lw-btn">
-                      {canClaim?"CLAIM COINS":"NOTHING TO CLAIM"}
+                      {canClaim?"CLAIM PERKS":"NOTHING TO CLAIM"}
                     </button>
                   </div>
                   {drawsLeft<=0&&(

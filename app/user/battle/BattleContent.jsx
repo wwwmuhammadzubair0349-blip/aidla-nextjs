@@ -1230,7 +1230,7 @@ export default function BattlePage() {
       oppName:    iAmP1 ? (r.bot_name || r.player2_name) : r.player1_name,
       oppAvatar:  opponentProfile?.avatar_url || null,
       oppIsBot:   r.is_bot,
-      coinsChange:r.is_tie ? -(modeObj.tax / 2) : iWon ? modeObj.prize : -modeObj.stake,
+      coinsChange:r.is_bot ? 0 : (r.is_tie ? -(modeObj.tax / 2) : iWon ? modeObj.prize : -modeObj.stake),
       prize:      modeObj.prize,
       mode:       r.mode,
       isBot:      r.is_bot,

@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
+import { verifyAdmin } from "@/lib/adminAuth";
 
 const SUPABASE_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").replace(/\/$/, "");
 const SERVICE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 export async function DELETE(request) {
+  // SECURITY: verify the caller is an authenticated admin before any deletion.
+  const auth = await verifyAdmin(request);
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  }
+
   if (!SERVICE_KEY) {
     return NextResponse.json({ error: "Server misconfigured: missing service role key" }, { status: 500 });
   }

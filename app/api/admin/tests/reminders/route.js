@@ -66,9 +66,10 @@ function reminderHtml(test) {
 }
 
 export async function GET(request) {
-  // Protect with a secret so only the cron caller can trigger this
+  // Protect with a secret so only the cron caller can trigger this.
+  // Fail CLOSED: if CRON_SECRET is not configured, refuse rather than run open.
   const { searchParams } = new URL(request.url);
-  if (CRON_SECRET && searchParams.get("secret") !== CRON_SECRET) {
+  if (!CRON_SECRET || searchParams.get("secret") !== CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (!SERVICE_KEY) return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });

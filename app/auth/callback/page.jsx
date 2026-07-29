@@ -11,7 +11,9 @@ function CallbackHandler() {
   useEffect(() => {
     const handle = async () => {
       const code = searchParams.get("code");
-      const next = searchParams.get("next") || "/user";
+      // SECURITY: only allow same-site relative paths to prevent open-redirect / phishing.
+      const rawNext = searchParams.get("next") || "/user";
+      const next = (rawNext.startsWith("/") && !rawNext.startsWith("//")) ? rawNext : "/user";
 
       if (code) {
         await supabase.auth.exchangeCodeForSession(code);

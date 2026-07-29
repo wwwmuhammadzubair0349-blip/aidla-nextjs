@@ -8,14 +8,13 @@ import styles from "./contact.module.css";
 /* ── Bot Knowledge Base ── */
 const BOT_KB = [
   { keywords: ["hello", "hi", "hey", "salam"], answer: "Welcome to AIDLA support! How can I help you today?" },
-  { keywords: ["what is aidla", "about aidla", "aidla platform"], answer: "AIDLA is an educational platform where you can learn, take tests, participate in lucky draws and wheel spins, and earn digital coin rewards!" },
+  { keywords: ["what is aidla", "about aidla", "aidla platform"], answer: "AIDLA is an educational platform where you can learn, take tests, participate in the Spin & Win, and earn digital coin rewards!" },
   { keywords: ["register", "signup", "sign up", "create account", "join"], answer: "To register:\n1. Click Sign Up on the home page\n2. Enter your name, email, and password\n3. Verify your email\n4. Start learning and earning!" },
   { keywords: ["login", "log in", "sign in", "cant login", "login problem"], answer: "Having trouble logging in? Try:\n1. Check your email and password\n2. Use Forgot Password to reset\n3. Make sure your email is verified\n4. Contact support if the issue persists" },
-  { keywords: ["coins", "earn coins", "how to earn", "rewards"], answer: "You can earn coins on AIDLA by:\n- Completing tests and quizzes\n- Spinning the Lucky Wheel\n- Winning Lucky Draws\n- Participating in events\nCoins can be redeemed for prizes!" },
-  { keywords: ["lucky wheel", "wheel", "spin"], answer: "The Lucky Wheel gives you a chance to win coins, gifts, or bonus spins!\n- Free spin available daily\n- Paid spins available anytime\n- Results are instant" },
-  { keywords: ["lucky draw", "draw", "raffle"], answer: "Lucky Draws are special events where participants can win big prizes!\n- Eligibility varies per draw\n- Winners are announced officially\n- Check the Leaderboard for results" },
+  { keywords: ["coins", "earn coins", "how to earn", "rewards"], answer: "You can earn coins on AIDLA by:\n- Completing tests and quizzes\n- Spinning the Spin & Win\n- Participating in events\nCoins can be redeemed for prizes!" },
+  { keywords: ["Spin & Win", "wheel", "spin"], answer: "The Spin & Win gives you a chance to win coins, gifts, or bonus spins!\n- Free spin available daily\n- Paid spins available anytime\n- Results are instant" },
   { keywords: ["test", "quiz", "exam"], answer: "AIDLA tests are scored by correct answers and speed.\n- Faster and more accurate = higher rank\n- Live leaderboard updates in real time\n- Results and winners are posted on the Leaderboard page" },
-  { keywords: ["leaderboard", "ranking", "rank"], answer: "The AIDLA Leaderboard shows:\n- Live Board: real-time test rankings\n- Test Results: official winners\n- Lucky Draw: draw winners\n- Lucky Wheel: recent wins" },
+  { keywords: ["leaderboard", "ranking", "rank"], answer: "The AIDLA Leaderboard shows:\n- Live Board: real-time test rankings\n- Test Results: official winners\n- Spin & Win: recent wins" },
   { keywords: ["password", "forgot password", "reset password"], answer: "To reset your password:\n1. Go to the login page\n2. Click Forgot Password\n3. Enter your registered email\n4. Check your inbox for a reset link" },
   { keywords: ["contact", "support", "help", "email"], answer: "You can reach AIDLA support at support@aidla.online or use the contact form on this page!" },
 ];
@@ -28,7 +27,7 @@ function getBotAnswer(message) {
   return "I'm not sure about that yet. For detailed help, please use the contact form or email support@aidla.online!";
 }
 
-const QUICK_REPLIES = ["What is AIDLA?", "How to earn coins?", "Lucky Wheel help", "Reset password", "Contact support"];
+const QUICK_REPLIES = ["What is AIDLA?", "How to earn coins?", "Spin & Win help", "Reset password", "Contact support"];
 
 /* ── Contact Form ── */
 function ContactForm() {

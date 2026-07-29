@@ -266,7 +266,7 @@ export default async function sitemap() {
   const faqCategories = [
     "pakistan-boards","university-admissions","css-pms","scholarships","study-abroad",
     "technology","ai-tools","health","education","finance","job-search","freelancing",
-    "remote-work","career-growth","coins-rewards","general","tests-quizzes","lucky-draw",
+    "remote-work","career-growth","coins-rewards","general","tests-quizzes",
     "account-profile","withdrawals","career",
   ];
   const faqCategoryPages = faqCategories.map(cat => ({

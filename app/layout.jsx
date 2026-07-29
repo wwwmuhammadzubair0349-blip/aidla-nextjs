@@ -62,7 +62,7 @@ export const metadata = {
     "AI learning platform",
     "earn coins learning",
     "online quizzes",
-    "lucky draw rewards",
+    "Spin & Win rewards",
     "student rewards",
     "global education platform",
     "free online education",

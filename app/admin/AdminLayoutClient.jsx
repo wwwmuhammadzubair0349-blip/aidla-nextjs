@@ -20,7 +20,6 @@ const NAV_GROUPS = [
     items: [
       ["/admin/shop", "Perks Redemption Center"],
       ["/admin/lucky-wheel", "Perks Spin"],
-      ["/admin/lucky-draw", "Learning Draw"],
       ["/admin/invite", "Invite Rewards"],
     ],
   },
@@ -53,7 +52,7 @@ const NAV_GROUPS = [
       ["/admin/courses", "Courses"],
       ["/admin/tests", "Tests"],
       ["/admin/dailyquizz", "Daily Quiz"],
-      ["/admin/battle", "Battle Arena"],
+      ["/admin/battle", "Knowledge Arena"],
       ["/admin/AdminStudyMaterials", "Study Materials"],
       ["/admin/AdminProjects", "Projects"],
     ],

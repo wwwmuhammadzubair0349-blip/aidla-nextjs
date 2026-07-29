@@ -15,16 +15,16 @@ function getDateKey(offsetDays = 0) {
 export const metadata = {
   title: "AIDLA Leaderboard � Quiz Winners, Battles & Rankings",
   description:
-    "See AIDLA live rankings, daily quiz winners, battle leaders, test champions, lucky draw results, lucky wheel wins, rewards and learner achievements.",
+    "See AIDLA live rankings, daily quiz winners, battle leaders, test champions, Spin & Win wins, rewards and learner achievements.",
   keywords: [
-    "AIDLA leaderboard", "quiz winners", "battle leaderboard", "test rankings", "lucky draw winners",
+    "AIDLA leaderboard", "quiz winners", "battle leaderboard", "test rankings", "Spin & Win winners",
     "learning rewards", "AIDLA rankings", "online learning leaderboard",
   ],
   robots: { index: true, follow: true, "max-image-preview": "large" },
   alternates: { canonical: `${SITE_URL}/leaderboard` },
   openGraph: {
     title: "AIDLA Leaderboard � Quiz Winners, Battles & Rankings",
-    description: "Live rankings: daily quiz winners, battle leaders, test champions, lucky draw and wheel winners on AIDLA.",
+    description: "Live rankings: daily quiz winners, battle leaders, test champions, Spin & Win winners on AIDLA.",
     type: "website",
     url: `${SITE_URL}/leaderboard`,
     siteName: "AIDLA",
@@ -47,7 +47,7 @@ export default async function LeaderboardPage() {
     buildWebPageSchema({
       path: "/leaderboard",
       name: "AIDLA Leaderboard � Quiz Winners, Battles & Rankings",
-      description: "Live leaderboards showing daily quiz winners, battle leaders, test champions, lucky draw results, lucky wheel wins and learner achievements.",
+      description: "Live leaderboards showing daily quiz winners, battle leaders, test champions, Spin & Win wins and learner achievements.",
     }),
     buildBreadcrumbSchema(
       [{ name: "Home", url: "/" }, { name: "Leaderboard", url: "/leaderboard" }],
@@ -70,7 +70,7 @@ export default async function LeaderboardPage() {
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>
         <h1>AIDLA Leaderboard — Quiz Winners, Battles &amp; Rankings</h1>
-        <p>Live rankings for AIDLA daily quiz winners, battle leaders, test champions, lucky draw results, lucky wheel wins, and learner achievements. Updated every 60 seconds.</p>
+        <p>Live rankings for AIDLA daily quiz winners, battle leaders, test champions, Spin & Win wins, and learner achievements. Updated every 60 seconds.</p>
         {topUsers.length > 0 && (
           <ol>
             {topUsers.map((u, i) => (

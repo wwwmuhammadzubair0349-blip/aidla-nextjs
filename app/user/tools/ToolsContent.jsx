@@ -84,13 +84,13 @@ const AI_TOOLS = [
 
 const LEARNING_TOOLS = [
   {
-    name: "Battle Arena",
+    name: "Knowledge Arena",
     desc: "Live quiz battles against other students",
     icon: "⚔️",
     href: "/user/battle",
     color: "#ef4444",
     bg: "rgba(239,68,68,0.12)",
-    label: "Battle now",
+    label: "Enter Arena",
   },
   {
     name: "Daily Quiz",

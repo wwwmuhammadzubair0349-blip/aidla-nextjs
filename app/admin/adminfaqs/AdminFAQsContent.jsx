@@ -50,7 +50,6 @@ const CATS = [
   { value: "general",               label: "🌐 General" },
   { value: "coins_rewards",         label: "🪙 Coins & Rewards" },
   { value: "tests_quizzes",         label: "📝 Tests & Quizzes" },
-  { value: "lucky_draw",            label: "🎲 Lucky Draw & Wheel" },
   { value: "account_profile",       label: "👤 Account & Profile" },
   { value: "withdrawals",           label: "💵 Withdrawals" },
   { value: "education",             label: "🎓 Education" },

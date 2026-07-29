@@ -15,7 +15,6 @@ const CATEGORIES = [
   { id: "general",               label: "General",          icon: "🌐" },
   { id: "coins_rewards",         label: "Perks & Rewards",  icon: "⭐" },
   { id: "tests_quizzes",         label: "Tests & Quizzes",  icon: "📝" },
-  { id: "lucky_draw",            label: "Lucky Draw",       icon: "🎲" },
   { id: "account_profile",       label: "Account",          icon: "👤" },
   { id: "withdrawals",           label: "Withdrawals",      icon: "💵" },
   { id: "education",             label: "Education",        icon: "🎓" },

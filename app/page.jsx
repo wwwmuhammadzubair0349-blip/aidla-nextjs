@@ -99,7 +99,7 @@ const FEATURES = [
   { emoji: "🤖", title: "AI Career Tools", text: "CV, cover letter, summarizer, paraphraser, interview prep, email writer, and more.", href: "/tools", label: "Open tools" },
   { emoji: "⭐", title: "Perks & Rewards", text: "Earn AIDLA Perks through learning activities and redeem them for premium content and features.", href: "/user/perks", label: "See perks" },
   { emoji: "🏆", title: "Leaderboards & Tests", text: "Live rankings, quiz champions, test winners, and prize history in one place.", href: "/leaderboard", label: "View ranks" },
-  { emoji: "🤝", title: "Community Learning", text: "Forum, social learning, lucky draw, lucky wheel, referrals, and learner milestones.", href: "/user", label: "Go to dashboard" },
+  { emoji: "🤝", title: "Community Learning", text: "Forum, social learning, Spin & Win, referrals, and learner milestones.", href: "/user", label: "Go to dashboard" },
 ];
 
 const FALLBACK_REVIEWS = [];

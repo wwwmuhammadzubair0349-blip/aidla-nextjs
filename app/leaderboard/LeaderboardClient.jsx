@@ -336,94 +336,8 @@ function TestResults() {
   );
 }
 
-/* ── Lucky Draw Results ── */
-function LuckyDrawResults() {
-  const [draws, setDraws] = useState([]);
-  const [selectedDraw, setSelectedDraw] = useState(null);
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    supabase.from("luckydraw_results").select("draw_id,draw_title")
-      .order("announced_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (error) { setError(error.message); setLoading(false); return; }
-        const seen = new Set();
-        const unique = (data || []).filter(d => {
-          if (seen.has(d.draw_id)) return false;
-          seen.add(d.draw_id); return true;
-        });
-        setDraws(unique);
-        if (unique.length > 0) setSelectedDraw(unique[0]);
-        else setLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (!selectedDraw) return;
-    setLoading(true); setError("");
-    supabase.from("luckydraw_results").select("*")
-      .eq("draw_id", selectedDraw.draw_id)
-      .order("seq_no", { ascending: true })
-      .then(({ data, error }) => {
-        if (error) setError(error.message);
-        else setResults(data || []);
-        setLoading(false);
-      });
-  }, [selectedDraw]);
-
-  return (
-    <section className={styles.lbSection} aria-label="Lucky Draw Results">
-      <div className={styles.lbSectionHeader}>
-        <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🎰</span> Lucky Draw Results</h2>
-        <Link href="/user/lucky-draw" className={styles.sectionLink}>Draw now →</Link>
-      </div>
-      {draws.length > 0 && (
-        <div className={styles.drawSelector} role="group" aria-label="Select a draw">
-          {draws.map(d => (
-            <button key={d.draw_id}
-              className={`${styles.testPill} ${selectedDraw?.draw_id === d.draw_id ? styles.active : ""}`}
-              onClick={() => setSelectedDraw(d)}
-              aria-pressed={selectedDraw?.draw_id === d.draw_id}>
-              {d.draw_title || "Draw"}
-            </button>
-          ))}
-        </div>
-      )}
-      {selectedDraw && (
-        <div className={styles.eventStrip}>
-          <span aria-hidden="true">🎰</span> {selectedDraw.draw_title || "Lucky Draw"}
-        </div>
-      )}
-      {error && <div className={styles.lbError} role="alert">{error}</div>}
-      {loading ? (
-        <div style={{ padding: "12px 0" }} role="status" aria-label="Loading results"><SkeletonRows n={4} /></div>
-      ) : results.length === 0 ? (
-        <div className={styles.lbEmpty} role="status">
-          <span className={styles.lbEmptyIcon} aria-hidden="true">🎰</span>
-          No lucky draw results yet.
-        </div>
-      ) : results.map((r, i) => (
-        <motion.div key={r.id} className={styles.resultRow}
-          aria-label={`Winner ${r.seq_no}: ${r.winner_name}`}
-          initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: i * 0.05 }}>
-          <div className={styles.resultSeq} aria-hidden="true">{r.seq_no}</div>
-          <div className={styles.resultInfo}>
-            <div className={styles.resultName}>{r.winner_name}</div>
-            <div className={styles.resultSub}>
-              <span aria-hidden="true">🎰</span> {r.draw_title || selectedDraw?.draw_title || "Lucky Draw"} · <time dateTime={r.announced_at}>{fmtDate(r.announced_at)}</time>
-            </div>
-          </div>
-          <div className={`${styles.resultPrize} ${styles.gold}`}>{fmtDrawPrize(r)}</div>
-        </motion.div>
-      ))}
-    </section>
-  );
-}
-
-/* ── Lucky Wheel History ── */
+/* ── Spin & Win History ── */
 function LuckyWheelHistory() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -507,7 +421,6 @@ const TABS = [
   { id: "daily",   label: "🧠 Daily Quiz"   },
   { id: "battle",  label: "⚔️ Battle"       },
   { id: "results", label: "🏆 Test Results" },
-  { id: "draw",    label: "🎰 Lucky Draw"   },
   { id: "wheel",   label: "Spin & Win"  },
 ];
 
@@ -526,7 +439,7 @@ export default function LeaderboardClient() {
           <span className={styles.secLabel}>Community</span>
           {/* ✅ ACCESSIBILITY FIX: h1 is the page title */}
           <h1 className={styles.secTitle}>AIDLA <span>Leaderboard</span></h1>
-          <p className={styles.secDesc}>Daily quiz results, battle champions, test winners, lucky draw and wheel winners.</p>
+          <p className={styles.secDesc}>Daily quiz results, battle champions, test winners, Spin & Win winners.</p>
         </motion.div>
 
         {/* ✅ ACCESSIBILITY FIX: nav + role="tablist" for proper tab semantics */}
@@ -568,7 +481,6 @@ export default function LeaderboardClient() {
             {activeTab === "daily"   && <DailyQuizResults />}
             {activeTab === "battle"  && <BattleLeaderboard />}
             {activeTab === "results" && <TestResults />}
-            {activeTab === "draw"    && <LuckyDrawResults />}
             {activeTab === "wheel"   && <LuckyWheelHistory />}
           </motion.div>
         </AnimatePresence>

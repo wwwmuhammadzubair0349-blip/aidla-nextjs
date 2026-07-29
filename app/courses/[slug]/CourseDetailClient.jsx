@@ -502,7 +502,7 @@ export default function CourseDetailClient({ slug, initialCourse = null, initial
                   {[
                     { icon: "🪙", title: "Earn Real Coins", desc: "Every quiz, test, and course completion rewards you with AIDLA Coins — redeemable for real prizes and cash." },
                     { icon: "🤖", title: "AI-Powered Learning", desc: "Personalised learning paths that adapt to your pace and style. Get instant explanations from our AI tutor 24/7." },
-                    { icon: "🏆", title: "Compete & Win", desc: "Rise on the leaderboard, enter Lucky Draws, and spin the Lucky Wheel for bonus rewards." },
+                    { icon: "🏆", title: "Compete & Win", desc: "Rise on the leaderboard and spin the Spin & Win for bonus rewards." },
                     { icon: "💸", title: "100% Free to Join", desc: "No subscription, no hidden fees. Create your free account in 60 seconds and start learning today." },
                   ].map(item => (
                     <li key={item.title} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>

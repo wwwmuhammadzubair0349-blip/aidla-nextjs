@@ -1365,7 +1365,7 @@ export default function BattlePage() {
   if (loading) return (
     <div style={{ width:"100%", maxWidth:480, margin:"0 auto", flex:1, minHeight:0, background:"linear-gradient(160deg,#eef0ff 0%,#f5f3ff 100%)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", fontFamily:"'DM Sans',sans-serif", borderRadius:"14px 14px 0 0" }}>
       <div style={{ fontSize:36, marginBottom:14, animation:"spin 1s linear infinite" }}>⚔️</div>
-      <div style={{ color:"#4338ca", fontSize:14, fontWeight:700 }}>Loading Battle Arena...</div>
+      <div style={{ color:"#4338ca", fontSize:14, fontWeight:700 }}>Loading Knowledge Arena...</div>
     </div>
   );
 
@@ -1432,7 +1432,7 @@ export default function BattlePage() {
         <button style={S.backBtn} onClick={() => { if (["selecting","in_progress","waiting_round","waiting_round2"].includes(view)) { setConfirmForfeit(true); } else if (view === "lobby") { window.location.href = "/user"; } else { goLobby(); } }}>←</button>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           <span style={{ fontSize:18 }}>⚔️</span>
-          <span style={S.headerTitle}>1v1 Battle Arena</span>
+          <span style={S.headerTitle}>1v1 Knowledge Arena</span>
         </div>
         <div style={S.coinsBadge}>
           <span style={{ fontSize:14 }}>⭐</span>
@@ -2313,7 +2313,7 @@ function BattleShareCard({ profile, result, onClose }) {
   }, []);
 
   const caption = [
-    `I just WON a 1v1 Battle on AIDLA!`,``,
+    `I just WON a 1v1 Knowledge Arena on AIDLA!`,``,
     `vs ${result.oppName}`,
     `Score: ${result.myScore} vs ${result.oppScore}`,
     `Earned: +${result.coinsChange} perks`,``,
@@ -2345,7 +2345,7 @@ function BattleShareCard({ profile, result, onClose }) {
               <img src="/logo.png" alt="AIDLA" style={{ width:24, height:24, borderRadius:6 }} />
               <div>
                 <div style={{ fontSize:12, fontWeight:900, color:"white" }}>AIDLA</div>
-                <div style={{ fontSize:8, color:"rgba(255,255,255,0.5)" }}>1v1 Battle</div>
+                <div style={{ fontSize:8, color:"rgba(255,255,255,0.5)" }}>1v1 Knowledge Arena</div>
               </div>
             </div>
             <div style={{ background:"rgba(255,255,255,0.15)", color:"white", fontSize:10, fontWeight:700, padding:"2px 8px", borderRadius:20 }}>Winner</div>

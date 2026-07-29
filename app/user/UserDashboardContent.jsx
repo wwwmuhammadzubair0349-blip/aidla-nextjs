@@ -286,8 +286,8 @@ export default function UserDashboardContent() {
           { icon:"❓", label:"Daily Quiz",  cls:"qa-1", path:"/user/dailyquizz"  },
           { icon:"🤖", label:"AIDLA AI",    cls:"qa-2", path:"/user/aidla-ai"    },
           { icon:"📚", label:"Learn",       cls:"qa-3", path:"/user/learn"        },
-          { icon:"⚔️", label:"Battle",      cls:"qa-4", path:"/user/battle"       },
-          { icon:"🎡", label:"Lucky Wheel", cls:"qa-5", path:"/user/lucky-wheel"  },
+          { icon:"⚔️", label:"Arena",       cls:"qa-4", path:"/user/battle"       },
+          { icon:"🎡", label:"Spin & Win", cls:"qa-5", path:"/user/lucky-wheel"  },
           { icon:"🎁", label:"Perks Store", cls:"qa-6", path:"/user/perks"        },
         ].map(a => (
           <button key={a.path} className="vd-qa" onClick={() => go(a.path)}>
@@ -382,9 +382,8 @@ export default function UserDashboardContent() {
         </div>
         <div className="vd-grid">
           {[
-            { icon:"⚔️", title:"Battle Arena",  sub:"1v1 quiz battles",          cls:"ci-a", path:"/user/battle"       },
-            { icon:"🎟️", title:"Lucky Draw",    sub:"Draws & prizes",            cls:"ci-a", path:"/user/lucky-draw"   },
-            { icon:"🎡", title:"Lucky Wheel",   sub:"Spin & win",                cls:"ci-g", path:"/user/lucky-wheel"  },
+            { icon:"⚔️", title:"Knowledge Arena",  sub:"1v1 quiz battles",          cls:"ci-a", path:"/user/battle"       },
+            { icon:"🎡", title:"Spin & Win",   sub:"Daily free spin",           cls:"ci-g", path:"/user/lucky-wheel"  },
             { icon:"🎁", title:"Perks Store",   sub:"Redeem perks for content",  cls:"ci-o", path:"/user/perks"        },
             { icon:"💬", title:"Community",     sub:"Forum & social",            cls:"ci-r", path:"/user/community"    },
           ].map(c => (

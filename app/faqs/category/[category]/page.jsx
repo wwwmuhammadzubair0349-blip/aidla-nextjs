@@ -32,7 +32,6 @@ const CATEGORY_META = {
   coins_rewards:         { label: "Coins & Rewards",          desc: "FAQs about AIDLA Coins, how to earn rewards on the platform, the wallet system, redemption options, and coin withdrawal rules." },
   general:               { label: "General",                  desc: "General frequently asked questions about the AIDLA platform — how it works, what's free, features, and how to get started." },
   tests_quizzes:         { label: "Tests & Quizzes",          desc: "Common questions about AIDLA's daily quiz competitions, how scoring works, the leaderboard, and how to win prizes." },
-  lucky_draw:            { label: "Lucky Draw",               desc: "FAQs about AIDLA's lucky draw and lucky wheel — prizes, eligibility, how winners are selected, and how to participate." },
   account_profile:       { label: "Account & Profile",        desc: "Common questions about creating an AIDLA account, updating your profile, managing account settings, and fixing login issues." },
   withdrawals:           { label: "Withdrawals",              desc: "FAQs about withdrawing AIDLA Coins — supported payment methods, minimum thresholds, processing times, and withdrawal conditions." },
   career:                { label: "Career",                   desc: "Common career questions — job search strategies, resume tips, interview advice, salary negotiation, and long-term professional growth." },

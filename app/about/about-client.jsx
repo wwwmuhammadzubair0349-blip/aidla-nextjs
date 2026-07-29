@@ -76,7 +76,7 @@ const MILESTONES = [
 const VALUES = [
   { icon: "ðŸ¤", title: "Inclusivity",    desc: "Education and career growth should be accessible to students, professionals, freshers, and self-learners everywhere." },
   { icon: "ðŸ’¡", title: "Innovation",     desc: "Leveraging cutting-edge AI to solve real learning, productivity, career, and skill-building challenges." },
-  { icon: "ðŸ”", title: "Transparency",   desc: "From lucky draws to perks redemption â€” everything on AIDLA is openly tracked and verified." },
+  { icon: "ðŸ”", title: "Transparency",   desc: "From Spin & Win to perks redemption â€” everything on AIDLA is openly tracked and verified." },
   { icon: "ðŸš€", title: "Accessibility",  desc: "Every tool, course, and reward is designed to work on any device for users worldwide." },
 ];
 

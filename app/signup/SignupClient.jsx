@@ -383,8 +383,8 @@ export default function SignupClient() {
     setEmailFmtError("");
     const t = setTimeout(async () => {
       try {
-        const { data } = await supabase.from("users_profiles").select("email").eq("email", email.toLowerCase()).maybeSingle();
-        setEmailError(data ? "Email already registered. Please login." : "");
+        const { data: existingName } = await supabase.rpc("profile_name_by_email", { p_email: email.toLowerCase() });
+        setEmailError(existingName ? "Email already registered. Please login." : "");
       } catch (err) { console.error(err); }
     }, 500);
     return () => clearTimeout(t);

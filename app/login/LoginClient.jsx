@@ -375,13 +375,10 @@ export default function LoginClient() {
         setUserName(""); setUserExists(null); setUserNotFoundMsg(""); return;
       }
       try {
-        const { data } = await supabase
-          .from("users_profiles")
-          .select("full_name")
-          .eq("email", email.toLowerCase())
-          .maybeSingle();
-        if (data?.full_name) {
-          setUserName(data.full_name.split(" ")[0]);
+        const { data: fullName } = await supabase
+          .rpc("profile_name_by_email", { p_email: email.toLowerCase() });
+        if (fullName) {
+          setUserName(String(fullName).split(" ")[0]);
           setUserExists(true);
           setUserNotFoundMsg("");
         } else {

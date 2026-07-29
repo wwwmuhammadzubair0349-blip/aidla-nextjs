@@ -167,15 +167,12 @@ export default function ForgotPassword() {
     debounceRef.current = setTimeout(async () => {
       setEmailChecking(true);
       try {
-        const { data, error } = await supabase
-          .from("users_profiles")
-          .select("email")
-          .eq("email", email.trim().toLowerCase())
-          .maybeSingle();
+        const { data: fullName, error } = await supabase
+          .rpc("profile_name_by_email", { p_email: email.trim().toLowerCase() });
 
         if (error) throw error;
-        if (data) { setEmailValid(true);  setEmailStatus("found"); }
-        else      { setEmailValid(false); setEmailStatus("notfound"); }
+        if (fullName) { setEmailValid(true);  setEmailStatus("found"); }
+        else          { setEmailValid(false); setEmailStatus("notfound"); }
       } catch {
         setEmailValid(false); setEmailStatus("error");
       } finally {

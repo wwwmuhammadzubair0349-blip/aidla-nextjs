@@ -31,8 +31,8 @@ const MODELS = [
   {
     key: "vision",
     label: "Vision",
-    desc: "NVIDIA · image+text",
-    model: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+    desc: "Groq Llama-4 · image+text",
+    model: "meta-llama/llama-4-scout-17b-16e-instruct",
     temp: 0.7,
     tokens: 3000,
     note: "You can understand both text and images. Analyze images carefully.",

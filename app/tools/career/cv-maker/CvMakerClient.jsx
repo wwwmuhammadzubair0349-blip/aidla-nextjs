@@ -645,7 +645,7 @@ function SItem({ item, onUpdate, onRemove, onAiDesc, onAiNotes, children }) {
 }
 
 export default function CvMakerClient({
-  answerBlocks, trustStats, templates, features, audiences, regions, helpfulContent
+  answerBlocks, trustStats, templates, features, audiences, regions, helpfulContent, embedded = false
 }) {
   const [data,      setData]      = useState(INIT_DATA);
   const [tmpl,      setTmpl]      = useState("modern-stack");
@@ -1316,26 +1316,32 @@ Rules:
 
           {/* ── COMPACT TOP BAR ── */}
           <header className="cv-topbar">
-            <div className="cv-topbar-brand">
-              <nav className="crumb" aria-label="Breadcrumb">
-                <Link href="/">Home</Link><span aria-hidden="true">›</span>
-                <Link href="/tools">Tools</Link><span aria-hidden="true">›</span>
-                <Link href="/tools/career">Career</Link><span aria-hidden="true">›</span>
-                <span style={{ color: "var(--text-1)", fontWeight: 700 }} aria-current="page">CV Maker</span>
-              </nav>
-              <span className="cv-topbar-title">Professional <span className="cv-grad">CV Maker</span></span>
-            </div>
+            {!embedded && (
+              <div className="cv-topbar-brand">
+                <nav className="crumb" aria-label="Breadcrumb">
+                  <Link href="/">Home</Link><span aria-hidden="true">›</span>
+                  <Link href="/tools">Tools</Link><span aria-hidden="true">›</span>
+                  <Link href="/tools/career">Career</Link><span aria-hidden="true">›</span>
+                  <span style={{ color: "var(--text-1)", fontWeight: 700 }} aria-current="page">CV Maker</span>
+                </nav>
+                <span className="cv-topbar-title">Professional <span className="cv-grad">CV Maker</span></span>
+              </div>
+            )}
 
             <div className="cv-topbar-spacer" />
 
             <div className="cv-topbar-actions">
-              <label className="cv-btn cv-btn-ghost cv-btn-sm cv-file-btn" title="Load saved CV">
-                <span aria-hidden="true">📂</span> Load
-                <input type="file" accept=".json" onChange={importJSON} aria-label="Load CV from JSON file" />
-              </label>
-              <button className="cv-btn cv-btn-ghost cv-btn-sm" onClick={exportJSON}>
-                <span aria-hidden="true">💾</span> Save
-              </button>
+              {!embedded && (
+                <>
+                  <label className="cv-btn cv-btn-ghost cv-btn-sm cv-file-btn" title="Load saved CV">
+                    <span aria-hidden="true">📂</span> Load
+                    <input type="file" accept=".json" onChange={importJSON} aria-label="Load CV from JSON file" />
+                  </label>
+                  <button className="cv-btn cv-btn-ghost cv-btn-sm" onClick={exportJSON}>
+                    <span aria-hidden="true">💾</span> Save
+                  </button>
+                </>
+              )}
 
               {/* ATS score chip with animated ring + checklist popover */}
               <div style={{ position: "relative" }}>

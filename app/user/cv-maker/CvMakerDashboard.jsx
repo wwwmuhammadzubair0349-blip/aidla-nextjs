@@ -583,7 +583,7 @@ export default function CvMakerDashboard() {
         </aside>
 
         {/* Editor — remounts when editorKey changes */}
-        <CvMakerClient key={editorKey} />
+        <CvMakerClient key={editorKey} embedded />
 
         {/* Toast */}
         {toast && (

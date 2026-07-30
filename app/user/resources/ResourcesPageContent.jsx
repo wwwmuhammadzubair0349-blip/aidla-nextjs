@@ -505,8 +505,8 @@ export default function ResourcesPage() {
             <div className="res-stats-grid">
               {[
                 { icon:"📚", label:"Library",      value:stats.total },
-                { icon:"🎁", label:"Coins Earned",  value:coinsEarned.toLocaleString() },
-                { icon:"💸", label:"Coins Spent",   value:coinsSpent.toLocaleString() },
+                { icon:"🎁", label:"Perks Earned",  value:coinsEarned.toLocaleString() },
+                { icon:"💸", label:"Perks Spent",   value:coinsSpent.toLocaleString() },
                 { icon:"🔓", label:"Unlocked",      value:purchasedIds.size },
               ].map(s => (
                 <div key={s.label} className="res-stat-card">

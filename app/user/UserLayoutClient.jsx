@@ -590,7 +590,6 @@ export default function UserLayoutClient({ children }) {
         {isFullscreen ? children : <div className="ul-outlet">{children}</div>}
       </main>
     </div>
-    <FloatingTrigger />
     </>
   );
 }

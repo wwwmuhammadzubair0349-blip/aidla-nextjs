@@ -350,7 +350,11 @@ export default function PerksContent() {
 
             <div style={{ fontWeight: 800, fontSize: 15, marginBottom: 10 }}>All Products ({filteredProducts.length})</div>
             {filteredProducts.length === 0 ? (
-              <div style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>No products found.</div>
+              <div style={{ textAlign: "center", padding: "48px 20px", color: "#94a3b8" }}>
+                <div style={{ fontSize: 40, marginBottom: 10 }}>🎁</div>
+                <div style={{ fontWeight: 800, color: "#475569", marginBottom: 4 }}>No rewards available yet</div>
+                <div style={{ fontSize: 13 }}>New perks to redeem are on the way — keep earning!</div>
+              </div>
             ) : (
               <div style={S.grid}>
                 {filteredProducts.map(p => (

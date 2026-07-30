@@ -377,7 +377,7 @@ export default function UserDashboardContent() {
       {/* PERKS & COMMUNITY — no Battle/Wheel/Perks duplication with quick actions, but they belong here as the full menu */}
       <div className="vd-section">
         <div className="vd-sec-head">
-          <span className="vd-sec-title">⭐ Perks & Community</span>
+          <span className="vd-sec-title">⭐ Perks & Rewards</span>
           <div className="vd-sec-line" />
         </div>
         <div className="vd-grid">

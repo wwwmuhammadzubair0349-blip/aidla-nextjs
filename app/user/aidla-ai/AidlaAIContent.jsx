@@ -134,12 +134,12 @@ Focus: salary benchmarks by role and location, negotiation strategy, asking for 
 ];
 
 const MODE_CHIPS = {
-  general: ["How do I earn coins on AIDLA? 🪙", "Write a Python function to sort a list", "Help me write a professional email", "Explain quantum computing simply", "Give me 5 business ideas for 2025", "Debug my code"],
+  general: ["How do I earn perks on AIDLA? 🪙", "Write a Python function to sort a list", "Help me write a professional email", "Explain quantum computing simply", "Give me 5 business ideas", "Debug my code"],
   career:  ["I'm confused about which career to choose", "I want to switch from engineering to business", "How do I plan my career for the next 5 years?", "I feel stuck in my current job"],
   roadmap: ["Create a roadmap to become a data scientist", "How do I go from zero to full-stack developer?", "Give me a 6-month plan to get job-ready in AI"],
   interview: ["Do a mock interview for a software engineer role", "What are the most common HR questions?", "How do I answer 'Tell me about yourself'?"],
   resume: ["Review my resume for a software developer role", "Help me write my professional summary", "How do I make my CV ATS-friendly?"],
-  skills: ["What skills do I need to become a product manager?", "Analyze my skills for a data analyst role", "What are the top skills employers want in 2025?"],
+  skills: ["What skills do I need to become a product manager?", "Analyze my skills for a data analyst role", "What are the top skills employers want today?"],
   uni:    ["Best universities for CS in Pakistan", "How do I get a scholarship to study in Germany?", "Should I do BS or BCS for software engineering?"],
   salary: ["What's the salary range for a junior developer in Pakistan?", "How do I negotiate my first salary?", "I have two job offers — help me compare them"],
 };
@@ -640,13 +640,13 @@ const CSS = `
 
 // ─── Suggestion chips ─────────────────────────────────────────────────────────
 const CHIPS = [
-  "How do I earn coins on AIDLA? 🪙",
+  "How do I earn perks on AIDLA? 🪙",
   "What courses does AIDLA offer?",
   "Write a Python function to sort a list",
   "Explain a concept I'm struggling with",
   "Help me write a professional email",
   "Debug my code",
-  "Give me 5 business ideas for 2025",
+  "Give me 5 business ideas",
   "Explain quantum computing simply",
 ];
 

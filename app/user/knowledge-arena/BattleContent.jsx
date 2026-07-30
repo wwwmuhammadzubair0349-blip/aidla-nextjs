@@ -1436,7 +1436,7 @@ export default function BattlePage() {
         </div>
         <div style={S.coinsBadge}>
           <span style={{ fontSize:14 }}>⭐</span>
-          <span style={{ fontWeight:800, fontSize:13 }}>{(profile?.total_aidla_perks||0).toLocaleString()}</span>
+          <span style={{ fontWeight:800, fontSize:13 }}>{Math.round(profile?.total_aidla_perks||0).toLocaleString()}</span>
         </div>
       </div>
 

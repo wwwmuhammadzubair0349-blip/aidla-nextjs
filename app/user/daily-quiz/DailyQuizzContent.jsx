@@ -323,7 +323,7 @@ export default function DailyQuizPage() {
     console.log("[Quiz] my_status raw:", JSON.stringify(data));
     console.log("[Quiz] my_status error:", error);
     if (error) { console.error("[Quiz] RPC error:", error.message); setView("info"); return; }
-    if (!data?.ok) { console.error("[Quiz] ok=false:", data); return; }
+    if (!data?.ok) { console.error("[Quiz] ok=false:", data); setView("info"); return; }
     setStatus(data);
     const cfg = data.config;
     console.log("[Quiz] config:", JSON.stringify(cfg));
@@ -583,7 +583,7 @@ export default function DailyQuizPage() {
       <div style={S.header}>
         <Link href="/user" style={S.back}>←</Link>
         <span style={S.headerTitle}>Daily Quiz</span>
-        <span style={S.coins}>⭐ {(profile?.total_aidla_perks || 0).toLocaleString()}</span>
+        <span style={S.coins}>⭐ {Math.round(profile?.total_aidla_perks || 0).toLocaleString()}</span>
       </div>
 
       {showShareCard && result && (

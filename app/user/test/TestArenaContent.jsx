@@ -929,7 +929,7 @@ function TestArenaInner() {
               <div className="ta-card ta-select-prompt">
                 <div style={{ fontSize: 44, marginBottom: 10 }}>⚡</div>
                 <div style={{ fontWeight: 800, fontSize: "1.1rem", color: "#334155" }}>Select a test to begin</div>
-                <div style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: 4 }}>Choose from the list on the left</div>
+                <div style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: 4 }}>Select a test to get started</div>
               </div>
             ) : (
               <>

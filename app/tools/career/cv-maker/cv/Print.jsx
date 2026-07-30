@@ -3,6 +3,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 const PAPER_SIZES = {
   a4:     { mm_w: 210, mm_h: 297, label: "A4"     },
@@ -336,10 +338,21 @@ function PrintModal({ defaultName, paper, onConfirm, onCancel }) {
 
 export default function Print({ paperRef, paper, fullName, toast }) {
   const [showModal, setShowModal] = useState(false);
+  const router = useRouter();
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (!fullName?.trim()) {
       toast?.("Please enter your full name before downloading.", "err");
+      return;
+    }
+    // Download requires an account. If not logged in, keep the CV (already in
+    // localStorage) and send the user to sign up / log in — they'll return to
+    // /user/cv-maker with all their data intact and download from there.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      try { localStorage.setItem("cvmk_carry", "1"); } catch {}
+      toast?.("Sign up or log in to download — your CV is saved. 📄", "ok");
+      setTimeout(() => router.push("/login?redirect=/user/cv-maker"), 800);
       return;
     }
     setShowModal(true);

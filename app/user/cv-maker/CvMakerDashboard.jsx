@@ -338,6 +338,17 @@ export default function CvMakerDashboard() {
   /* On first load: load most recent CV (or create a blank one) into localStorage */
   useEffect(() => {
     if (cvsLoading || !user) return;
+    // If the user just came from the public CV tool (clicked download while
+    // logged out), keep the CV they built — do NOT overwrite it with a saved CV.
+    let carry = false;
+    try { carry = localStorage.getItem("cvmk_carry") === "1"; } catch {}
+    if (carry) {
+      try { localStorage.removeItem("cvmk_carry"); } catch {}
+      setCvsLoading(false);
+      setEditorKey(k => k + 1); // CvMakerClient mounts and reads the carried data
+      showToast("Your CV is ready — download it below 📄", "ok");
+      return;
+    }
     if (cvs.length > 0) {
       loadCvIntoEditor(cvs[0].id, false);
     } else {

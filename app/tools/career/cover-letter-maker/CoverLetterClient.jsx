@@ -13,6 +13,8 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import "./CoverLetterClient.css";
 
 /* ─────────────────────────────────────────────
@@ -384,6 +386,7 @@ export default function CoverLetterClient() {
 
   const [template, setTemplate]   = useState("classic");
   const [accent, setAccent]       = useState(ACCENT_PALETTES[0]);
+  const router = useRouter();
   const [mobileTab, setMobileTab] = useState("form");
 
   const [genLetter, setGenLetter]         = useState(null);
@@ -544,10 +547,24 @@ export default function CoverLetterClient() {
   };
 
   /* ── Print (identical to original, accent injected via CSS var) ── */
-  const handlePrint = useCallback(() => {
+  const handlePrint = useCallback(async () => {
     if (!safeText(data.fullName)) return showToast("Full name is required.", "error");
     if (!safeText(data.company))  return showToast("Company name is required.", "error");
     if (!safeText(data.jobTitle)) return showToast("Job title is required.", "error");
+
+    // Download requires an account. If logged out, keep the letter (localStorage)
+    // and send the user to sign up / log in — they return to /user/cover-letter
+    // with everything intact and download from there.
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      try {
+        localStorage.setItem("aidla_clm_v3", JSON.stringify(data));
+        localStorage.setItem("clm_carry", "1");
+      } catch {}
+      showToast("Sign up or log in to download — your letter is saved. ✉️", "ok");
+      setTimeout(() => router.push("/login?redirect=/user/cover-letter"), 800);
+      return;
+    }
 
     const previewPaper = document.querySelector(".cvm-preview-scroll .cl-paper-wrap");
     if (!previewPaper) return showToast("Preview not found.", "error");

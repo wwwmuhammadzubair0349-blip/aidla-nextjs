@@ -295,7 +295,7 @@ export default function PerksContent() {
             <div style={{ fontWeight: 900, fontSize: 18, textAlign: "center", marginBottom: 8 }}>Not Enough Perks</div>
             <div style={{ color: "#64748b", textAlign: "center", marginBottom: 16, fontSize: 14 }}>You don&apos;t have enough perks for this redemption. Earn more by completing quizzes and courses.</div>
             <div style={{ display: "flex", gap: 10, flexDirection: "column" }}>
-              <button style={S.btn} onClick={() => { setShowInsufficientModal(false); window.location.href = "/user/dailyquizz"; }}>❓ Take Daily Quiz</button>
+              <button style={S.btn} onClick={() => { setShowInsufficientModal(false); window.location.href = "/user/daily-quiz"; }}>❓ Take Daily Quiz</button>
               <button style={{ ...S.btn, background: "#94a3b8" }} onClick={() => setShowInsufficientModal(false)}>Cancel</button>
             </div>
           </div>

@@ -228,7 +228,7 @@ export default function MyCertificates() {
           </p>
         </div>
         {/* navigate → router.push */}
-        <button onClick={() => router.push("/user/learn")}
+        <button onClick={() => router.push("/courses")}
           style={{ background:C.blue, color:C.white, border:"none", borderRadius:8, padding:"10px 18px", fontWeight:700, fontSize:13, cursor:"pointer", fontFamily:"inherit" }}>
           + Earn More
         </button>
@@ -244,7 +244,7 @@ export default function MyCertificates() {
           <p style={{ color:C.muted, fontSize:14, marginBottom:20 }}>
             Complete a course to earn your first AIDLA certificate
           </p>
-          <button onClick={() => router.push("/user/learn")}
+          <button onClick={() => router.push("/courses")}
             style={{ background:C.blue, color:C.white, border:"none", borderRadius:8, padding:"11px 24px", fontWeight:700, fontSize:14, cursor:"pointer", fontFamily:"inherit" }}>
             Browse Courses
           </button>

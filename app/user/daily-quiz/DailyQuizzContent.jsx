@@ -43,7 +43,7 @@ function SocialShareCard({ profile, result, cfg, onClose }) {
     result?.date ? `📅 Date: ${result.date}` : "",
     "",
     `Think you can beat ${name.split(" ")[0]}? 💪`,
-    "👉 www.aidla.online/user/dailyquizz",
+    "👉 www.aidla.online/user/daily-quiz",
     "",
     "#AIDLA #DailyQuiz #LearnAndEarn",
   ].filter(Boolean).join("\n");

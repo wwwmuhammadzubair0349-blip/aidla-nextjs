@@ -515,7 +515,7 @@ export default function AboutClient({ reviews = [], faqs = [], featuredIn = [] }
                   <span key={r} className="ab-careers-role-tag">{r}</span>
                 ))}
               </div>
-              <Link href="/careers" className="ab-careers-btn">
+              <Link href="/contact" className="ab-careers-btn">
                 View Open Positions â†’
               </Link>
             </div>

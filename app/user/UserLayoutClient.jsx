@@ -9,12 +9,12 @@ import { useAuth } from "@/hooks/useAuth";
 import FloatingAssistant from "@/components/FloatingAssistant";
 import SkeletonDashboard from "@/components/SkeletonDashboard";
 
-const FULLSCREEN_ROUTES = ["/user/aidla-ai", "/user/battle"];
+const FULLSCREEN_ROUTES = ["/user/aidla-ai", "/user/knowledge-arena"];
 
 const TABS = [
   { to: "/user",              label: "Home",      icon: "⚡" },
-  { to: "/user/learn",        label: "Learn",     icon: "📚" },
-  { to: "/user/community",    label: "Community", icon: "💬" },
+  { to: "/courses",           label: "Courses",   icon: "📚" },
+  { to: "/user/tools",        label: "Tools",     icon: "🛠️" },
   { to: "/user/profile",      label: "Profile",   icon: "👤" },
 ];
 
@@ -564,10 +564,7 @@ export default function UserLayoutClient({ children }) {
                 {TABS.map(({ to, label, icon }) => (
                   <option key={to} value={to}>{icon} {label}</option>
                 ))}
-                <option value="/user/insights">✨ Insights</option>
                 <option value="/user/achievements">🏆 Achievements</option>
-                <option value="/user/changelog">📋 Changelog</option>
-                <option value="/user/search">🔍 Search</option>
                 <option value="/user/notifications">🔔 Notifications</option>
                 <option value="/user/settings">⚙️ Settings</option>
               </select>

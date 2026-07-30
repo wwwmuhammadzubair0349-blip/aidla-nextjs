@@ -382,7 +382,7 @@ function LuckyWheelHistory() {
     <section className={styles.lbSection} aria-label="Spin and Win Results">
       <div className={styles.lbSectionHeader}>
         <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🎡</span> Spin &amp; Win</h2>
-        <Link href="/user/lucky-wheel" className={styles.sectionLink}>Spin now →</Link>
+        <Link href="/user/spin-win" className={styles.sectionLink}>Spin now →</Link>
       </div>
       <div className={styles.eventStrip}><span aria-hidden="true">🎡</span> Latest 10 Spin &amp; Win results</div>
       {error && <div className={styles.lbError} role="alert">{error}</div>}
@@ -518,7 +518,7 @@ function DailyQuizResults() {
     <section className={styles.lbSection} aria-label="Daily Quiz Results">
       <div className={styles.lbSectionHeader}>
         <h2 className={styles.lbSectionTitle}><span aria-hidden="true">🧠</span> Daily Quiz Results</h2>
-        <Link href="/user/dailyquizz" className={styles.sectionLink}>Play quiz →</Link>
+        <Link href="/user/daily-quiz" className={styles.sectionLink}>Play quiz →</Link>
       </div>
       <div className={styles.eventStrip}><span aria-hidden="true">🏆</span> Yesterday winners {data.winner_date ? `· ${data.winner_date}` : ""}</div>
       {error && <div className={styles.lbError} role="alert">{error}</div>}
@@ -566,7 +566,7 @@ function BattleLeaderboard() {
     <section className={styles.lbSection} aria-label="Battle Leaderboard">
       <div className={styles.lbSectionHeader}>
         <h2 className={styles.lbSectionTitle}><span aria-hidden="true">⚔️</span> Battle Leaderboard</h2>
-        <Link href="/user/battle" className={styles.sectionLink}>Start battle →</Link>
+        <Link href="/user/knowledge-arena" className={styles.sectionLink}>Start battle →</Link>
       </div>
       <div className={styles.testSelector} role="group" aria-label="Battle leaderboard period">
         {["daily", "weekly", "monthly"].map(p => (

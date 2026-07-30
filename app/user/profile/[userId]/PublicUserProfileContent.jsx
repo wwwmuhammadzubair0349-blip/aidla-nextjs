@@ -164,7 +164,7 @@ export default function PublicUserProfile() {
   return (
     <div className="pp-wrap">
       <style>{CSS}</style>
-      <Link href="/user/community?tab=forum" className="pp-back">← Back to Community</Link>
+      <Link href="/user" className="pp-back">← Back to Community</Link>
 
       {/* Hero */}
       <div className="pp-hero">

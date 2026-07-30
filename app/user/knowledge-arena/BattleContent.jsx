@@ -1346,7 +1346,7 @@ export default function BattlePage() {
 
   function copyRoomLink() {
     if (!currentRoomId) return;
-    const link = `${window.location.origin}/user/battle?room=${currentRoomId}`;
+    const link = `${window.location.origin}/user/knowledge-arena?room=${currentRoomId}`;
     navigator.clipboard.writeText(link)
       .then(() => { setCopiedLink(true); setTimeout(() => setCopiedLink(false), 2000); })
       .catch(() => flash("Copy failed — try manually"));
@@ -2318,7 +2318,7 @@ function BattleShareCard({ profile, result, onClose }) {
     `Score: ${result.myScore} vs ${result.oppScore}`,
     `Earned: +${result.coinsChange} perks`,``,
     `Can you beat me? Challenge now`,
-    `www.aidla.online/user/battle`,``,
+    `www.aidla.online/user/knowledge-arena`,``,
     `#AIDLA #1v1Battle #LearnAndEarn`,
   ].join("\n");
 

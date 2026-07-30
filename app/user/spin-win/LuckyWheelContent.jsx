@@ -1,5 +1,5 @@
 "use client";
-// app/user/lucky-wheel/page.jsx
+// app/user/spin-win/page.jsx
 // Converted from React Router LuckyWheel.jsx
 //
 // Changes:

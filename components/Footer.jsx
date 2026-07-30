@@ -60,7 +60,6 @@ export default function Footer() {
     { label: "Terms of Use",   href: "/terms" },
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Contact Us",     href: "/contact" },
-    { label: "Careers",        href: "/careers" },
   ];
 
   // Original CSS with Gold/Yellow colors restored

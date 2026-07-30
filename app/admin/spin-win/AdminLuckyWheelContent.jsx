@@ -1,4 +1,4 @@
-// app/admin/lucky-wheel/page.jsx
+// app/admin/spin-win/page.jsx
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";

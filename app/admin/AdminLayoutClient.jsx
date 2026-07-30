@@ -19,7 +19,7 @@ const NAV_GROUPS = [
     title: "Perks & Rewards",
     items: [
       ["/admin/shop", "Perks Redemption Center"],
-      ["/admin/lucky-wheel", "Perks Spin"],
+      ["/admin/spin-win", "Perks Spin"],
       ["/admin/invite", "Invite Rewards"],
     ],
   },
@@ -51,8 +51,8 @@ const NAV_GROUPS = [
     items: [
       ["/admin/courses", "Courses"],
       ["/admin/tests", "Tests"],
-      ["/admin/dailyquizz", "Daily Quiz"],
-      ["/admin/battle", "Knowledge Arena"],
+      ["/admin/daily-quiz", "Daily Quiz"],
+      ["/admin/knowledge-arena", "Knowledge Arena"],
       ["/admin/AdminStudyMaterials", "Study Materials"],
       ["/admin/AdminProjects", "Projects"],
     ],
@@ -60,7 +60,6 @@ const NAV_GROUPS = [
   {
     title: "Community",
     items: [
-      ["/admin/FeedAdmin", "Forum"],
       ["/admin/adminfaqs", "FAQs"],
       ["/admin/reviews", "Reviews"],
       ["/admin/email-blast", "Email Blast"],

@@ -283,11 +283,11 @@ export default function UserDashboardContent() {
       {/* QUICK ACTIONS — shortcuts only, unique destinations */}
       <div className="vd-quick">
         {[
-          { icon:"❓", label:"Daily Quiz",  cls:"qa-1", path:"/user/dailyquizz"  },
+          { icon:"❓", label:"Daily Quiz",  cls:"qa-1", path:"/user/daily-quiz"  },
           { icon:"🤖", label:"AIDLA AI",    cls:"qa-2", path:"/user/aidla-ai"    },
-          { icon:"📚", label:"Learn",       cls:"qa-3", path:"/user/learn"        },
-          { icon:"⚔️", label:"Arena",       cls:"qa-4", path:"/user/battle"       },
-          { icon:"🎡", label:"Spin & Win", cls:"qa-5", path:"/user/lucky-wheel"  },
+          { icon:"📚", label:"Learn",       cls:"qa-3", path:"/courses"        },
+          { icon:"⚔️", label:"Arena",       cls:"qa-4", path:"/user/knowledge-arena"       },
+          { icon:"🎡", label:"Spin & Win", cls:"qa-5", path:"/user/spin-win"  },
           { icon:"🎁", label:"Perks Store", cls:"qa-6", path:"/user/perks"        },
         ].map(a => (
           <button key={a.path} className="vd-qa" onClick={() => go(a.path)}>
@@ -319,10 +319,10 @@ export default function UserDashboardContent() {
           <div className="vd-start-sub">Complete these to earn perks and unlock your full profile.</div>
           <div className="vd-start-grid">
             {[
-              { icon:"❓", title:"Daily Quiz",     perks:"+15 perks",  path:"/user/dailyquizz"  },
-              { icon:"🎓", title:"Enroll a Course", perks:"+10/lesson", path:"/user/learn"        },
+              { icon:"❓", title:"Daily Quiz",     perks:"+15 perks",  path:"/user/daily-quiz"  },
+              { icon:"🎓", title:"Enroll a Course", perks:"+10/lesson", path:"/courses"        },
               { icon:"📝", title:"Build your CV",   perks:"AI-powered", path:"/user/cv-maker"     },
-              { icon:"⚔️", title:"Quiz Battle",     perks:"Win perks",  path:"/user/battle"       },
+              { icon:"⚔️", title:"Quiz Battle",     perks:"Win perks",  path:"/user/knowledge-arena"       },
             ].map(s => (
               <button key={s.path} className="vd-start-item" onClick={() => go(s.path)}>
                 <span className="vd-si-icon">{s.icon}</span>
@@ -345,7 +345,7 @@ export default function UserDashboardContent() {
             { icon:"✅", title:"Assessments",  sub:"Tests & skill evaluations",     cls:"ci-b", path:"/user/test"         },
             { icon:"📄", title:"Resources",    sub:"Study materials & past papers",  cls:"ci-b", path:"/user/resources"    },
             { icon:"🛠️", title:"Projects",     sub:"Project ideas & FYP guidance",  cls:"ci-b", path:"/user/projects"     },
-            { icon:"🎓", title:"Browse Courses",sub:"Free & paid courses",           cls:"ci-b", path:"/user/learn"        },
+            { icon:"🎓", title:"Browse Courses",sub:"Free & paid courses",           cls:"ci-b", path:"/courses"        },
           ].map(c => (
             <button key={c.path} className="vd-card" onClick={() => go(c.path)}>
               <div className={`vd-ci ${c.cls}`}>{c.icon}</div>
@@ -382,10 +382,9 @@ export default function UserDashboardContent() {
         </div>
         <div className="vd-grid">
           {[
-            { icon:"⚔️", title:"Knowledge Arena",  sub:"1v1 quiz battles",          cls:"ci-a", path:"/user/battle"       },
-            { icon:"🎡", title:"Spin & Win",   sub:"Daily free spin",           cls:"ci-g", path:"/user/lucky-wheel"  },
+            { icon:"⚔️", title:"Knowledge Arena",  sub:"1v1 quiz battles",          cls:"ci-a", path:"/user/knowledge-arena"       },
+            { icon:"🎡", title:"Spin & Win",   sub:"Daily free spin",           cls:"ci-g", path:"/user/spin-win"  },
             { icon:"🎁", title:"Perks Store",   sub:"Redeem perks for content",  cls:"ci-o", path:"/user/perks"        },
-            { icon:"💬", title:"Community",     sub:"Forum & social",            cls:"ci-r", path:"/user/community"    },
           ].map(c => (
             <button key={c.path} className="vd-card" onClick={() => go(c.path)}>
               <div className={`vd-ci ${c.cls}`}>{c.icon}</div>

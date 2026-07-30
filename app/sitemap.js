@@ -201,12 +201,6 @@ export default async function sitemap() {
       lastModified: new Date("2026-01-01"),
     },
     {
-      url: `${base}/careers`,
-      priority: 0.55,
-      changefreq: "monthly",
-      lastModified: now,
-    },
-    {
       url: `${base}/privacy-policy`,
       priority: 0.3,
       changefreq: "yearly",

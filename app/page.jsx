@@ -94,7 +94,7 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { emoji: "🎯", title: "Daily Quiz", text: "Compete every day, see yesterday's winners, and earn perks for consistent learning.", href: "/user/dailyquizz", label: "Play daily quiz" },
+  { emoji: "🎯", title: "Daily Quiz", text: "Compete every day, see yesterday's winners, and earn perks for consistent learning.", href: "/user/daily-quiz", label: "Play daily quiz" },
   { emoji: "📚", title: "Courses & Resources", text: "Structured courses and study resources for learners who want clear next steps.", href: "/courses", label: "Browse courses" },
   { emoji: "🤖", title: "AI Career Tools", text: "CV, cover letter, summarizer, paraphraser, interview prep, email writer, and more.", href: "/tools", label: "Open tools" },
   { emoji: "⭐", title: "Perks & Rewards", text: "Earn AIDLA Perks through learning activities and redeem them for premium content and features.", href: "/user/perks", label: "See perks" },
@@ -206,7 +206,7 @@ export default async function Home() {
                   Start Learning Free
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </Link>
-                <Link href="/user/dailyquizz" className="hp-btn-ghost">
+                <Link href="/user/daily-quiz" className="hp-btn-ghost">
                   Play Daily Quiz →
                 </Link>
               </div>
@@ -244,7 +244,7 @@ export default async function Home() {
                   <small className="hp-card-kicker">{formatDateKey(winnerDate)}</small>
                   <strong>Yesterday&apos;s Winners</strong>
                 </div>
-                <Link href="/user/dailyquizz" className="hp-card-badge">Live</Link>
+                <Link href="/user/daily-quiz" className="hp-card-badge">Live</Link>
               </div>
 
               <div className="hp-card-score-bar">
@@ -252,7 +252,7 @@ export default async function Home() {
                   <span className="hp-score-label">Daily Quiz</span>
                   <strong className="hp-score-num">{dailyWinners.length > 0 ? `${dailyWinners.length} Winners` : "Join Now"}</strong>
                 </div>
-                <Link href="/user/dailyquizz" className="hp-card-join-btn">Join Today</Link>
+                <Link href="/user/daily-quiz" className="hp-card-join-btn">Join Today</Link>
               </div>
 
               <div className="hp-card-winners">
@@ -502,7 +502,7 @@ export default async function Home() {
                 Create Free Account
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </Link>
-              <Link href="/user/dailyquizz" className="hp-cta-ghost-btn">Play Daily Quiz →</Link>
+              <Link href="/user/daily-quiz" className="hp-cta-ghost-btn">Play Daily Quiz →</Link>
             </div>
           </div>
         </section>

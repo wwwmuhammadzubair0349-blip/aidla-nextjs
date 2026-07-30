@@ -653,7 +653,7 @@ export default function CoverLetterClient() {
           <header className="cvm-hero fade-up">
             <p className="cvm-badge">✉️ AIDLA AI — Cover Letter</p>
             <h1 className="cvm-title">Cover Letter <span className="cvm-title-acc">Maker</span></h1>
-            <p className="cvm-sub">Fill your details manually or let AI write any field. 6 templates, live preview, print to PDF — no sign-up needed.</p>
+            <p className="cvm-sub">Fill your details manually or let AI write any field. 6 templates, live preview, and one-click PDF download — free to use.</p>
           </header>
 
           {/* Pills */}

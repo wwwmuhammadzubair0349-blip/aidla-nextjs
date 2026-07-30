@@ -413,6 +413,9 @@ export default function Footer() {
       .ft-bottom-links {
         justify-content: center;
       }
+      .ft-inner { padding-left: 16px; padding-right: 16px; }
+      .ft-grid, .ft-col, .ft-brand { min-width: 0; }
+      .ft-col ul li a { white-space: normal; }
     }
   `;
 

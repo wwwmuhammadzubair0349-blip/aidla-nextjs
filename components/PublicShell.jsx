@@ -19,7 +19,7 @@ import Footer from "@/components/Footer";
 import FloatingAssistant from "@/components/FloatingAssistant";
 
 const HIDE_PUBLIC_CHROME = ["/user", "/admin"];
-const HIDE_ASSISTANT = ["/login", "/signup", "/forgot-password", "/reset-password"];
+const HIDE_ASSISTANT = ["/login", "/signup", "/forgot-password", "/reset-password", "/tools/career/cv-maker", "/tools/career/cover-letter-maker"];
 const WIZARD_PAGES = ["/cover-letter", "/cv-builder"];
 
 function FloatingTrigger() {

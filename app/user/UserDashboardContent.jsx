@@ -285,7 +285,7 @@ export default function UserDashboardContent() {
         {[
           { icon:"❓", label:"Daily Quiz",  cls:"qa-1", path:"/user/daily-quiz"  },
           { icon:"🤖", label:"AIDLA AI",    cls:"qa-2", path:"/user/aidla-ai"    },
-          { icon:"📚", label:"Learn",       cls:"qa-3", path:"/courses"        },
+          { icon:"📚", label:"Learn",       cls:"qa-3", path:"/user/courses"        },
           { icon:"⚔️", label:"Arena",       cls:"qa-4", path:"/user/knowledge-arena"       },
           { icon:"🎡", label:"Spin & Win", cls:"qa-5", path:"/user/spin-win"  },
           { icon:"🎁", label:"Perks Store", cls:"qa-6", path:"/user/perks"        },
@@ -320,7 +320,7 @@ export default function UserDashboardContent() {
           <div className="vd-start-grid">
             {[
               { icon:"❓", title:"Daily Quiz",     perks:"+15 perks",  path:"/user/daily-quiz"  },
-              { icon:"🎓", title:"Enroll a Course", perks:"+10/lesson", path:"/courses"        },
+              { icon:"🎓", title:"Enroll a Course", perks:"+10/lesson", path:"/user/courses"        },
               { icon:"📝", title:"Build your CV",   perks:"AI-powered", path:"/user/cv-maker"     },
               { icon:"⚔️", title:"Quiz Battle",     perks:"Win perks",  path:"/user/knowledge-arena"       },
             ].map(s => (
@@ -345,7 +345,7 @@ export default function UserDashboardContent() {
             { icon:"✅", title:"Assessments",  sub:"Tests & skill evaluations",     cls:"ci-b", path:"/user/test"         },
             { icon:"📄", title:"Resources",    sub:"Study materials & past papers",  cls:"ci-b", path:"/user/resources"    },
             { icon:"🛠️", title:"Projects",     sub:"Project ideas & FYP guidance",  cls:"ci-b", path:"/user/projects"     },
-            { icon:"🎓", title:"Browse Courses",sub:"Free & paid courses",           cls:"ci-b", path:"/courses"        },
+            { icon:"🎓", title:"Browse Courses",sub:"Free & paid courses",           cls:"ci-b", path:"/user/courses"        },
           ].map(c => (
             <button key={c.path} className="vd-card" onClick={() => go(c.path)}>
               <div className={`vd-ci ${c.cls}`}>{c.icon}</div>

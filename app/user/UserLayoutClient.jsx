@@ -13,8 +13,7 @@ const FULLSCREEN_ROUTES = ["/user/aidla-ai", "/user/knowledge-arena"];
 
 const TABS = [
   { to: "/user",              label: "Home",      icon: "⚡" },
-  { to: "/courses",           label: "Courses",   icon: "📚" },
-  { to: "/user/tools",        label: "Tools",     icon: "🛠️" },
+  { to: "/user/courses",      label: "Courses",   icon: "📚" },
   { to: "/user/profile",      label: "Profile",   icon: "👤" },
 ];
 
